@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-and-build:
+  test-and-build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
