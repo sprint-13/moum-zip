@@ -1,0 +1,19 @@
+# Dependencies
+node_modules
+.pnpm-debug.log
+
+# Build outputs
+.next
+dist
+build
+out
+
+# Environment variables
+.env*
+!.env.example
+
+# Tools
+.turbo
+.husky/_
+*storybook.log
+storybook-static

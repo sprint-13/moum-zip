@@ -1,0 +1,45 @@
+{
+  "name": "moum-zip",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=web",
+    "dev:admin": "turbo dev --filter=admin",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=web",
+    "build:admin": "turbo build --filter=admin",
+    "lint": "turbo lint",
+    "format": "biome check --write .",
+    "prepare": "husky",
+    "storybook:ui": "turbo storybook --filter=@moim/ui",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "@biomejs/biome": "2.4.6",
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.3",
+    "turbo": "^2.8.15"
+  },
+  "engines": {
+    "node": "24.14.0",
+    "pnpm": "10.28.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,json,jsonc,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@moum-zip/api",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "generate": "swagger-typescript-api generate -p https://dallaem-backend.vercel.app/doc -o ./src --modular --module-name-first-tag -d --extract-request-body --extract-response-body --extract-response-error"
+  },
+  "devDependencies": {
+    "swagger-typescript-api": "^13.3.1"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  }
+}

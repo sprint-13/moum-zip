@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.16.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm biome check .
+
+      # 2. 타입 체크 및 테스트 (변경된 패키지만!)
+      - name: Type Check & Test
+        run: pnpm turbo type-check test --filter=...[origin/dev]
+
+      # 3. 빌드 (변경된 패키지만!)
+      - name: Build
+        run: pnpm turbo build --filter=...[origin/dev]
+
+
+

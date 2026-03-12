@@ -1,0 +1,24 @@
+// https://turborepo.dev/docs/getting-started/add-to-existing-repository#add-a-turbojson-file
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"], // ^: 의존하는 패키지들 의미, 패키지들의 빌드가 먼저 끝나야 함
+      "outputs": [".next/**", "!.next/cache/**"] // 해당 폴더 캐싱
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "persistent": true, //
+      "cache": false // 개발모드 캐싱 X
+    },
+    "storybook": {
+      "persistent": true,
+      "cache": false
+    }
+  }
+}
