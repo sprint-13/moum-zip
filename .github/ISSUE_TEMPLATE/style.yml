@@ -1,0 +1,27 @@
+name: 'style: 스타일 및 UI/UX'
+description: '스타일 및 UI/UX 관련 이슈를 생성할 때 사용하는 템플릿입니다'
+title: '[style] '
+labels: ['style']
+body:
+  - type: textarea
+    attributes:
+      label: 📄 Description
+      description: 스타일 관련 내용을 작성해 주세요.
+      placeholder: 어떤 스타일을 개선하거나 수정해야 하는지 구체적으로 작성해주세요.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✅ Tasks
+      description: 스타일 작업을 위한 세부 작업 목록을 체크리스트로 작성해주세요.
+      placeholder: |-
+        - [ ] 디자인 시안 확인
+        - [ ] CSS/스타일 코드 수정
+        - [ ] 반응형 대응 확인
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 📎 ETC
+      description: 디자인 참고 자료나 스크린샷이 있다면 작성해주세요.
+      placeholder: 디자인 시안, 참고 이미지, 스타일 가이드, 브랜드 컬러 등
