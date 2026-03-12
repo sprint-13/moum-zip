@@ -51,7 +51,7 @@ jobs:
       # Production (실제 서비스) 환경용으로 빌드 
       - name: 프로젝트 빌드
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-			
+
       # Production (실제 서비스) 도메인으로 배포
       - name: Vercel에 프로젝트 배포
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
