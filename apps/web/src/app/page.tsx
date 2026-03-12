@@ -1,6 +1,5 @@
 import { Button } from "@moum-zip/ui/components";
-
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon } from "@moum-zip/ui/icons";
 
 import Image from "next/image";
 
