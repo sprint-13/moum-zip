@@ -35,7 +35,7 @@ jobs:
 
       # 2. 타입 체크 및 테스트 (변경된 패키지만!)
       - name: Type Check & Test
-        run: pnpm turbo type-check test --filter=...[origin/dev]
+        run: pnpm turbo check-types test --filter=...[origin/dev]
 
       # 3. 빌드 (변경된 패키지만!)
       - name: Build
