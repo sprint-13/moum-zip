@@ -47,8 +47,8 @@ export default function Home() {
             <Image className="dark:invert" src="/vercel.svg" alt="Vercel logomark" width={16} height={16} />
             Deploy Now
           </a>
-          <div className="flex flex-wrap items-center gap-2 md:flex-row">
-            <Button variant="outline">Button</Button>
+          <div className="flex flex-wrap items-center gap-2 md:flex-row bg-background-gradient">
+            <Button variant="default">Button</Button>
             <Button variant="outline" size="icon" aria-label="Submit">
               <ArrowUpIcon />
             </Button>
