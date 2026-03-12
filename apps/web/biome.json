@@ -22,6 +22,16 @@
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn"
       },
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "lucide-react": "직접 'lucide-react'를 참조하지 마세요. '@moum-zip/ui/icons'를 사용해야 합니다."
+            }
+          }
+        }
+      },
 
       "suspicious": {
         "noConfusingVoidType": "off",
