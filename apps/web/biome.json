@@ -49,6 +49,11 @@
     "defaultBranch": "develop",
     "useIgnoreFile": true
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "assist": {
     "actions": {
       "recommended": true,
