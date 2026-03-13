@@ -1,4 +1,11 @@
-import { Button } from "@moum-zip/ui/components";
+import {
+  Button,
+  CompletedBadge,
+  CompletedGradientBadge,
+  ConfirmedBadge,
+  ScheduledBadge,
+  WaitingBadge,
+} from "@moum-zip/ui/components";
 import { ArrowUpIcon } from "@moum-zip/ui/icons";
 
 import Image from "next/image";
@@ -51,6 +58,13 @@ export default function Home() {
             <Button variant="outline" size="icon" aria-label="Submit">
               <ArrowUpIcon />
             </Button>
+          </div>
+          <div className="flex flex-wrap gap-4 p-6">
+            <ScheduledBadge />
+            <WaitingBadge />
+            <CompletedBadge />
+            <CompletedGradientBadge />
+            <ConfirmedBadge />
           </div>
 
           <a
