@@ -6,6 +6,7 @@ import {
   DeadlineTag,
   DeadlineTagSmall,
   ScheduledBadge,
+  StatusLabel,
   TimeTag,
   TimeTagSmall,
   WaitingBadge,
@@ -75,7 +76,8 @@ export default function Home() {
             <DeadlineTagSmall />
             <TimeTag />
             <TimeTagSmall />
-            <ConfirmedBadge />
+            <StatusLabel />
+            <StatusLabel size="small" />
           </div>
 
           <a

@@ -1,8 +1,6 @@
-﻿import { cn } from "@ui/lib/utils";
+import { cn } from "@ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ComponentPropsWithoutRef } from "react";
-
-// badge 종류가 5개이므로 shadcn 대신 피그마mcp 사용
+import { type ComponentPropsWithoutRef, useId } from "react";
 
 const badgeVariants = cva(
   "inline-flex h-8 shrink-0 items-center justify-center overflow-hidden rounded-[24px] border whitespace-nowrap text-sm leading-5",
@@ -24,97 +22,108 @@ const badgeVariants = cva(
   },
 );
 
+type StatusLabelSize = "large" | "small";
+
 interface BadgeProps extends ComponentPropsWithoutRef<"span">, VariantProps<typeof badgeVariants> {}
 
 interface BadgePresetProps extends Omit<BadgeProps, "children" | "variant"> {}
 
-const statusLabelVariants = cva("inline-flex items-center gap-0.5", {
-  variants: {
-    size: {
-      large: "",
-      small: "",
-    },
-  },
-  defaultVariants: {
-    size: "large",
-  },
-});
-
-const statusLabelTextVariants = cva("font-medium whitespace-nowrap text-primary", {
-  variants: {
-    size: {
-      large: "text-sm leading-5",
-      small: "text-xs leading-4",
-    },
-  },
-  defaultVariants: {
-    size: "large",
-  },
-});
-
-const checkCircleIconVariants = cva("relative overflow-hidden shrink-0", {
-  variants: {
-    size: {
-      large: "size-6",
-      small: "size-4.5",
-    },
-  },
-  defaultVariants: {
-    size: "large",
-  },
-});
-
-const checkCircleGradientVariants = cva(
-  "bg-background-gradient absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full",
-  {
-    variants: {
-      size: {
-        large: "size-4.5",
-        small: "size-3.5",
-      },
-    },
-    defaultVariants: {
-      size: "large",
-    },
-  },
-);
-
 interface CheckCircleIconProps {
-  size?: "large" | "small";
+  size?: StatusLabelSize;
 }
 
-interface StatusLabelProps extends ComponentPropsWithoutRef<"span">, VariantProps<typeof statusLabelVariants> {}
+interface StatusLabelProps extends Omit<ComponentPropsWithoutRef<"span">, "children"> {
+  label?: string;
+  size?: StatusLabelSize;
+}
+
+const CONFIRMED_LABEL = "개설확정"; // ConfirmedBadge와 StatusLabel이 같은 기본 문구를 공유하므로 상수로 분리함.
+
+const statusLabelStyles = {
+  large: {
+    iconSizeClassName: "size-6",
+    textClassName: "text-sm leading-5",
+  },
+  small: {
+    iconSizeClassName: "size-4.5",
+    textClassName: "text-xs leading-4",
+  },
+} satisfies Record<
+  StatusLabelSize,
+  {
+    iconSizeClassName: string;
+    textClassName: string;
+  }
+>;
+
+const CheckCircleLargeIcon = () => {
+  const gradientId = useId();
+
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" fill={`url(#${gradientId})`} />
+      <path
+        d="M8.5 11.8245L11.0087 14.3333L15.342 10"
+        stroke="var(--color-primary-foreground)"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <defs>
+        <linearGradient id={gradientId} x1="3" x2="21" y1="12" y2="12" gradientUnits="userSpaceOnUse">
+          <stop stopColor="var(--color-primary)" />
+          <stop offset="1" stopColor="var(--color-secondary)" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+const CheckCircleSmallIcon = () => {
+  const gradientId = useId();
+
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="9" cy="9" r="7" fill={`url(#${gradientId})`} />
+      <path
+        d="M6 8.68421L8.2 11L12 7"
+        stroke="var(--color-primary-foreground)"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+      <defs>
+        <linearGradient id={gradientId} x1="2" x2="16" y1="9" y2="9" gradientUnits="userSpaceOnUse">
+          <stop stopColor="var(--color-primary)" />
+          <stop offset="1" stopColor="var(--color-secondary)" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+const checkCircleIconBySize = {
+  large: CheckCircleLargeIcon,
+  small: CheckCircleSmallIcon,
+} satisfies Record<StatusLabelSize, typeof CheckCircleLargeIcon>;
 
 const CheckCircleIcon = ({ size = "large" }: CheckCircleIconProps) => {
+  const CheckCircle = checkCircleIconBySize[size];
+
   return (
-    <span aria-hidden="true" className={checkCircleIconVariants({ size })}>
-      <span className={checkCircleGradientVariants({ size })} />
-      <svg
-        aria-hidden="true"
-        className="absolute inset-0 size-full"
-        fill="none"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M8.4 12.15L10.6313 14.4L15.6 9.4"
-          stroke="var(--color-primary-foreground)"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.8"
-        />
-      </svg>
+    <span aria-hidden="true" className={statusLabelStyles[size].iconSizeClassName}>
+      <CheckCircle />
     </span>
   );
 };
 
-const StatusLabel = ({ className, size = "large", children, ...props }: StatusLabelProps) => {
-  const statusLabelSize = size ?? "large";
+const StatusLabel = ({ className, label = CONFIRMED_LABEL, size = "large", ...props }: StatusLabelProps) => {
+  const { textClassName } = statusLabelStyles[size];
 
   return (
-    <span className={cn(statusLabelVariants({ size: statusLabelSize }), className)} {...props}>
-      <CheckCircleIcon size={statusLabelSize} />
-      <span className={statusLabelTextVariants({ size: statusLabelSize })}>{children}</span>
+    <span className={cn("inline-flex items-center gap-0.5", className)} {...props}>
+      <CheckCircleIcon size={size} />
+      <span className={cn("font-medium whitespace-nowrap text-primary", textClassName)}>{label}</span>
     </span>
   );
 };
@@ -162,7 +171,7 @@ const CompletedGradientBadge = (props: BadgePresetProps) => {
 const ConfirmedBadge = (props: BadgePresetProps) => {
   return (
     <Badge variant="confirmed" {...props}>
-      <StatusLabel>개설확정</StatusLabel>
+      <StatusLabel />
     </Badge>
   );
 };
@@ -177,4 +186,4 @@ export {
   StatusLabel,
   WaitingBadge,
 };
-export type { BadgeProps, StatusLabelProps };
+export type { BadgeProps, StatusLabelProps, StatusLabelSize };
