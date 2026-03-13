@@ -6,6 +6,7 @@ import {
   CompletedGradientBadge,
   ConfirmedBadge,
   ScheduledBadge,
+  StatusLabel,
   WaitingBadge,
 } from "@ui/components";
 
@@ -37,6 +38,17 @@ export const AllVariants: Story = {
         <CompletedBadge />
         <ConfirmedBadge />
         <CompletedGradientBadge />
+      </div>
+    );
+  },
+};
+
+export const StatusLabels: Story = {
+  render: () => {
+    return (
+      <div className="flex flex-col gap-4 rounded-2xl bg-[#3b3b3b] p-4">
+        <StatusLabel size="large">개설확정</StatusLabel>
+        <StatusLabel size="small">개설확정</StatusLabel>
       </div>
     );
   },
