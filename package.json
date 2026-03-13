@@ -15,6 +15,8 @@
     "build": "turbo build",
     "build:web": "turbo build --filter=web",
     "build:admin": "turbo build --filter=admin",
+    "test:web": "turbo test --filter=web",
+    "test:web:watch": "turbo test:watch --filter=web",
     "lint": "turbo lint",
     "format": "biome check --write .",
     "prepare": "husky",
