@@ -21,6 +21,7 @@ const InputField = ({
   required = false,
   ...props
 }: InputFieldProps) => {
+  // 입력 요소와 안내 문구를 접근성 속성으로 연결합니다.
   const generatedId = React.useId();
   const inputId = id ?? generatedId;
   const messageId = message ? `${inputId}-message` : undefined;
