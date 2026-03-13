@@ -37,7 +37,7 @@ const InputField = ({
         aria-invalid={isDestructive || undefined}
         disabled={disabled}
         className={cn(
-          "h-[48px] w-[456px] border border-transparent bg-[#F3F4F6]  text-[16px] leading-[1.2] font-medium text-[#333333] shadow-none placeholder:text-[#A4A4A4] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-60",
+          "h-[48px] w-[456px] border border-transparent bg-[#F3F4F6] text-[16px] leading-[1.2] font-medium text-[#333333] shadow-none placeholder:text-[#A4A4A4] focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-60 max-md:w-[311px]",
           isDestructive ? "border-[#E91616] focus-visible:border-[#E91616]" : "focus-visible:border-[#00BB86]",
           className,
         )}

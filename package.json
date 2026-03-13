@@ -20,7 +20,7 @@
     "lint": "turbo lint",
     "format": "biome check --write .",
     "prepare": "husky",
-    "storybook:ui": "turbo storybook --filter=@moim/ui",
+    "storybook:ui": "turbo storybook --filter=@moum-zip/ui",
     "preinstall": "npx only-allow pnpm"
   },
   "keywords": [],
