@@ -11,7 +11,7 @@ import {
 } from "@moum-zip/api/index";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
-const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip";
+const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 
 const core = {
   auth: new Auth({ baseUrl }),
