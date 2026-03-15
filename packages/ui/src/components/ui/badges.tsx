@@ -37,7 +37,7 @@ interface StatusLabelProps extends Omit<ComponentPropsWithoutRef<"span">, "child
   size?: StatusLabelSize;
 }
 
-const CONFIRMED_LABEL = "개설확정"; // ConfirmedBadge와 StatusLabel이 같은 기본 문구를 공유하므로 상수로 분리함.
+const CONFIRMED_LABEL = "개설확정"; // ConfirmedBadge와 StatusLabel이 고유하고 재사용성 없는 기본 문구를 공유하므로 상수로 분리함.
 
 const statusLabelStyles = {
   large: {

@@ -3,6 +3,7 @@ import {
   CompletedBadge,
   CompletedGradientBadge,
   ConfirmedBadge,
+  CountBadge,
   DeadlineTag,
   DeadlineTagSmall,
   ScheduledBadge,
@@ -78,6 +79,11 @@ export default function Home() {
             <TimeTagSmall />
             <StatusLabel />
             <StatusLabel size="small" />
+          </div>
+          <div>
+            <CountBadge count={10} size="small" />
+            <CountBadge count={12} />
+            <CountBadge count={1} size="small" />
           </div>
 
           <a
