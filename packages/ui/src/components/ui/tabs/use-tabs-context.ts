@@ -1,4 +1,3 @@
-import { Tabs } from "radix-ui";
 import { createContext, useContext } from "react";
 
 export type TabsSize = "small" | "large";
