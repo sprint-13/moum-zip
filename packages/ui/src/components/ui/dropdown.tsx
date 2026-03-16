@@ -15,7 +15,7 @@ const DropdownBase = ({ trigger, children, contentClassName }: DropdownProps) =>
   return (
     <Shadcn.DropdownMenu>
       <Shadcn.DropdownMenuTrigger asChild>{trigger}</Shadcn.DropdownMenuTrigger>
-      <Shadcn.DropdownMenuContent className={cn("min-w-27.5 space-y-2 shadow-xl rounded-xl", contentClassName)}>
+      <Shadcn.DropdownMenuContent className={cn("min-w-[110px] space-y-2 shadow-xl rounded-xl", contentClassName)}>
         {children}
       </Shadcn.DropdownMenuContent>
     </Shadcn.DropdownMenu>
