@@ -4,42 +4,43 @@ import { cn } from "@ui/lib/utils";
 import { ChevronDown } from "lucide-react";
 import type * as React from "react";
 
-interface SelectBoxProps extends React.ComponentProps<typeof Shadcn.Select> {
+type SelectBoxProps = React.ComponentProps<typeof Shadcn.Select>;
+
+interface SelectBoxTriggerProps extends React.ComponentProps<typeof Shadcn.SelectTrigger> {
   placeholder?: string;
   icon?: React.ReactNode;
-  triggerClassName?: string;
-  contentClassName?: string;
 }
-
 type SelectBoxItemProps = React.ComponentProps<typeof Shadcn.SelectItem>;
+type SelectBoxContentProps = React.ComponentProps<typeof Shadcn.SelectContent>;
 
-const SelectBoxBase = ({
-  placeholder,
-  children,
-  icon,
-  triggerClassName,
-  contentClassName,
-  ...props
-}: SelectBoxProps) => {
+const SelectBoxBase = ({ children, ...props }: SelectBoxProps) => {
+  return <Shadcn.Select {...props}>{children}</Shadcn.Select>;
+};
+
+const SelectBoxTrigger = ({ placeholder, icon, className, ...props }: SelectBoxTriggerProps) => {
   return (
-    <Shadcn.Select {...props}>
-      <Shadcn.SelectTrigger
-        className={cn("group py-2 min-h-11 sm:p-3 sm:min-h-12 text-base rounded-xl [&>svg]:hidden", triggerClassName)}
-      >
-        <Shadcn.SelectValue placeholder={placeholder} />
-        <span className="inline-flex items-center justify-center transition-transform group-data-[state=open]:rotate-180">
-          {icon ?? <ChevronDown />}
-        </span>
-      </Shadcn.SelectTrigger>
+    <Shadcn.SelectTrigger
+      className={cn("group min-h-11 py-2 text-base rounded-xl sm:min-h-12 sm:p-3 [&>svg]:hidden", className)}
+      {...props}
+    >
+      <Shadcn.SelectValue placeholder={placeholder} />
+      <span className="inline-flex items-center justify-center transition-transform group-data-[state=open]:rotate-180">
+        {icon ?? <ChevronDown />}
+      </span>
+    </Shadcn.SelectTrigger>
+  );
+};
 
-      <Shadcn.SelectContent
-        position="popper"
-        sideOffset={4}
-        className={cn("space-y-2 shadow-xl rounded-xl", contentClassName)}
-      >
-        <Shadcn.SelectGroup>{children}</Shadcn.SelectGroup>
-      </Shadcn.SelectContent>
-    </Shadcn.Select>
+const SelectBoxContent = ({ children, className, ...props }: SelectBoxContentProps) => {
+  return (
+    <Shadcn.SelectContent
+      position="popper"
+      sideOffset={4}
+      className={cn("space-y-2 rounded-xl shadow-xl", className)}
+      {...props}
+    >
+      <Shadcn.SelectGroup>{children}</Shadcn.SelectGroup>
+    </Shadcn.SelectContent>
   );
 };
 
@@ -55,5 +56,7 @@ const SelectBoxItem = ({ children, className, ...props }: SelectBoxItemProps) =>
 };
 
 export const SelectBox = Object.assign(SelectBoxBase, {
+  Trigger: SelectBoxTrigger,
+  Content: SelectBoxContent,
   Item: SelectBoxItem,
 });
