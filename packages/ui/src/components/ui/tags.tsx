@@ -27,12 +27,12 @@ const tagVariants = cva("inline-flex self-start items-center justify-center whit
     {
       tone: "white",
       size: "large",
-      className: "rounded-[0.5rem] px-[0.5rem] py-[0.125rem]",
+      className: "gap-1 rounded-[0.5rem] pl-[0.25rem] pr-[0.5rem]",
     },
     {
       tone: "white",
       size: "small",
-      className: "rounded-[0.375rem] px-[0.5rem] py-[0.125rem]",
+      className: "gap-1 rounded-[0.375rem] pl-[0.25rem] pr-[0.5rem]",
     },
   ],
   defaultVariants: {
