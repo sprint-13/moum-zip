@@ -80,6 +80,10 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  --gradient-500-start: #17da71;
+  --gradient-500-end: #08ddf0;
+  --green-500: #00bb86;
+
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 }
 
