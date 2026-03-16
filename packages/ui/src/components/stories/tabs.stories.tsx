@@ -22,17 +22,11 @@ export const AllCases: Story = {
     return (
       <div className="flex w-full flex-col gap-16 p-8">
         <div className="w-full">
-          <Tabs defaultTab="my-groups" className="w-full">
-            <Tabs.List size="large">
-              <Tabs.Trigger value="my-groups" size="large">
-                나의 모임
-              </Tabs.Trigger>
-              <Tabs.Trigger value="created-groups" size="large">
-                내가 만든 모임
-              </Tabs.Trigger>
-              <Tabs.Trigger value="liked-groups" size="large">
-                찜한 모임
-              </Tabs.Trigger>
+          <Tabs defaultTab="my-groups" size="large" className="w-full">
+            <Tabs.List>
+              <Tabs.Trigger value="my-groups">나의 모임</Tabs.Trigger>
+              <Tabs.Trigger value="created-groups">내가 만든 모임</Tabs.Trigger>
+              <Tabs.Trigger value="liked-groups">찜한 모임</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="my-groups" className="pt-6 text-white">
@@ -48,17 +42,11 @@ export const AllCases: Story = {
         </div>
 
         <div className="w-fit">
-          <Tabs defaultTab="my-groups">
-            <Tabs.List size="small">
-              <Tabs.Trigger value="my-groups" size="small">
-                나의 모임
-              </Tabs.Trigger>
-              <Tabs.Trigger value="created-groups" size="small">
-                내가 만든 모임
-              </Tabs.Trigger>
-              <Tabs.Trigger value="liked-groups" size="small">
-                찜한 모임
-              </Tabs.Trigger>
+          <Tabs defaultTab="my-groups" size="small">
+            <Tabs.List>
+              <Tabs.Trigger value="my-groups">나의 모임</Tabs.Trigger>
+              <Tabs.Trigger value="created-groups">내가 만든 모임</Tabs.Trigger>
+              <Tabs.Trigger value="liked-groups">찜한 모임</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="my-groups" className="pt-6 text-white">

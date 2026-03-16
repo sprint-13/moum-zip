@@ -4,26 +4,23 @@ import { cn } from "@ui/lib/utils";
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 import { useCallback, useState } from "react";
 import { UnderlineTabButton } from "./underline-tab-button";
-import { TabsContext, useTabsContext } from "./use-tabs-context";
-
-type TabsSize = "small" | "large";
+import { TabsContext, type TabsSize, useTabsContext } from "./use-tabs-context";
 
 // Root 컴포넌트
 interface TabsRootProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   defaultTab: string; // 탭 기본값
   onTabChange?: (value: string) => void; // 탭 변경 시 콜백
+  size?: TabsSize;
 }
 
 interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  size?: TabsSize;
 }
 
 interface TabsTriggerProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
   children: ReactNode;
   value: string;
-  size?: TabsSize;
 }
 
 interface TabsContentProps extends HTMLAttributes<HTMLDivElement> {
@@ -31,7 +28,7 @@ interface TabsContentProps extends HTMLAttributes<HTMLDivElement> {
   value: string;
 }
 
-const TabsRoot = ({ children, defaultTab, onTabChange, className, ...props }: TabsRootProps) => {
+const TabsRoot = ({ children, defaultTab, onTabChange, size = "small", className, ...props }: TabsRootProps) => {
   const [selectedTab, setSelectedTab] = useState(defaultTab);
 
   const changeTab = useCallback(
@@ -43,7 +40,7 @@ const TabsRoot = ({ children, defaultTab, onTabChange, className, ...props }: Ta
   );
 
   return (
-    <TabsContext.Provider value={{ selectedTab, changeTab }}>
+    <TabsContext.Provider value={{ selectedTab, changeTab, size }}>
       <div className={cn("w-full", className)} {...props}>
         {children}
       </div>
@@ -51,7 +48,9 @@ const TabsRoot = ({ children, defaultTab, onTabChange, className, ...props }: Ta
   );
 };
 
-const TabsList = ({ children, size = "small", className, ...props }: TabsListProps) => {
+const TabsList = ({ children, className, ...props }: TabsListProps) => {
+  const { size } = useTabsContext();
+
   return (
     <div
       role="tablist"
@@ -66,21 +65,18 @@ const TabsList = ({ children, size = "small", className, ...props }: TabsListPro
   );
 };
 
-const TabsTrigger = ({ children, value, size = "small", className, onClick, ...props }: TabsTriggerProps) => {
-  const { selectedTab, changeTab } = useTabsContext();
+const TabsTrigger = ({ children, value, className, onClick, ...props }: TabsTriggerProps) => {
+  const { selectedTab, changeTab, size } = useTabsContext();
   const isActive = selectedTab === value;
-
-  const handleTabClick = () => {
-    changeTab(value);
-  };
 
   return (
     <UnderlineTabButton
+      type="button"
       variant={isActive ? "active" : "default"}
       size={size}
       className={className}
       onClick={(event) => {
-        handleTabClick();
+        changeTab(value);
         onClick?.(event);
       }}
       {...props}
