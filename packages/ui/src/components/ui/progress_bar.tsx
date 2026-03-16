@@ -1,10 +1,18 @@
 import { cn } from "@ui/lib/utils";
-import type { ComponentPropsWithoutRef, CSSProperties } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 
 interface ProgressBarProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   maxValue: number;
   value: number;
   width?: CSSProperties["width"];
+}
+
+interface LabeledProgressBarProps extends Pick<ProgressBarProps, "maxValue" | "value" | "width"> {
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+  className?: string;
+  icon?: ReactNode;
+  style?: CSSProperties;
 }
 
 const clampProgressValue = (value: number, maxValue: number) => {
@@ -13,6 +21,35 @@ const clampProgressValue = (value: number, maxValue: number) => {
   }
 
   return Math.min(Math.max(value, 0), maxValue);
+};
+
+const getProgressMetrics = (value: number, maxValue: number) => {
+  const resolvedMaxValue = Math.max(maxValue, 0);
+  const resolvedValue = clampProgressValue(value, resolvedMaxValue);
+  const progressPercent = resolvedMaxValue > 0 ? (resolvedValue / resolvedMaxValue) * 100 : 0;
+
+  return {
+    progressPercent,
+    resolvedMaxValue,
+    resolvedValue,
+  };
+};
+
+const getValueLabelWidth = (maxValue: number) => {
+  const maxValueDigits = String(Math.max(maxValue, 0)).length;
+
+  return `${maxValueDigits * 2 + 1}ch`;
+};
+
+const getWidthStyle = (style: CSSProperties | undefined, width: CSSProperties["width"]) => {
+  if (width === undefined) {
+    return style;
+  }
+
+  return {
+    ...style,
+    width,
+  };
 };
 
 const ProgressPersonIcon = ({ className }: ComponentPropsWithoutRef<"svg">) => {
@@ -34,14 +71,8 @@ const ProgressPersonIcon = ({ className }: ComponentPropsWithoutRef<"svg">) => {
 };
 
 const ProgressBar = ({ className, maxValue, style, value, width, ...props }: ProgressBarProps) => {
-  const resolvedMaxValue = Math.max(maxValue, 0);
-  const resolvedValue = clampProgressValue(value, resolvedMaxValue);
-  const progressPercent = resolvedMaxValue > 0 ? (resolvedValue / resolvedMaxValue) * 100 : 0;
-  const progressBarStyle = width === undefined ? style : { ...style, width };
-
-  // value가 한자릿수일 경우, value의 width가 줄어들며 progressbar의 width가 늘어나는 경우가 발생해 고정width를 정해줌
-  const maxValueDigits = String(resolvedMaxValue).length;
-  const valueLabelWidth = `${maxValueDigits * 2 + 1}ch`;
+  const { progressPercent, resolvedMaxValue, resolvedValue } = getProgressMetrics(value, maxValue);
+  const progressBarStyle = getWidthStyle(style, width);
 
   return (
     <div
@@ -49,16 +80,44 @@ const ProgressBar = ({ className, maxValue, style, value, width, ...props }: Pro
       aria-valuemin={0}
       aria-valuenow={resolvedValue}
       aria-valuetext={`${resolvedValue}/${resolvedMaxValue}`}
-      className={cn("flex min-w-32 w-full items-center gap-2", className)}
+      className={cn("flex min-w-32 w-full items-center", className)}
       role="progressbar"
       style={progressBarStyle}
       {...props}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-1.25">
-        <ProgressPersonIcon />
-        <div className="h-1.25 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full bg-background-gradient" style={{ width: `${progressPercent}%` }} />
-        </div>
+      <div className="h-1.25 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-background-gradient" style={{ width: `${progressPercent}%` }} />
+      </div>
+    </div>
+  );
+};
+
+const LabeledProgressBar = ({
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
+  className,
+  icon = <ProgressPersonIcon />,
+  maxValue,
+  style,
+  value,
+  width,
+}: LabeledProgressBarProps) => {
+  const { resolvedMaxValue, resolvedValue } = getProgressMetrics(value, maxValue);
+  const valueLabelWidth = getValueLabelWidth(resolvedMaxValue);
+  const isTrackWidthControlled = width !== undefined;
+
+  return (
+    <div className={cn("flex items-center gap-2", !isTrackWidthControlled && "w-full", className)} style={style}>
+      <div className={cn("flex min-w-0 items-center gap-1.25", !isTrackWidthControlled && "flex-1")}>
+        {icon}
+        <ProgressBar
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledby}
+          className={cn("min-w-0", !isTrackWidthControlled && "flex-1")}
+          maxValue={resolvedMaxValue}
+          value={resolvedValue}
+          width={width}
+        />
       </div>
       <p
         className="shrink-0 text-right text-sm leading-5 font-medium tabular-nums whitespace-nowrap text-muted-foreground"
@@ -71,5 +130,5 @@ const ProgressBar = ({ className, maxValue, style, value, width, ...props }: Pro
   );
 };
 
-export { ProgressBar };
-export type { ProgressBarProps };
+export { LabeledProgressBar, ProgressBar };
+export type { LabeledProgressBarProps, ProgressBarProps };
