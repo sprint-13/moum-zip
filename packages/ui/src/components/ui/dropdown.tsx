@@ -24,7 +24,10 @@ const DropdownBase = ({ trigger, children, contentClassName }: DropdownProps) =>
 
 const DropdownItem = ({ children, className, ...props }: DropdownItemProps) => {
   return (
-    <Shadcn.DropdownMenuItem className={cn("rounded-lg py-1.5 text-sm font-medium", className)} {...props}>
+    <Shadcn.DropdownMenuItem
+      className={cn("rounded-lg py-1 sm:py-1.5 text-sm sm:text-base font-medium", className)}
+      {...props}
+    >
       {children}
     </Shadcn.DropdownMenuItem>
   );

@@ -23,7 +23,9 @@ const SelectBoxBase = ({
 }: SelectBoxProps) => {
   return (
     <Shadcn.Select {...props}>
-      <Shadcn.SelectTrigger className={cn("group min-h-12 p-3 text-base rounded-xl [&>svg]:hidden", triggerClassName)}>
+      <Shadcn.SelectTrigger
+        className={cn("group py-2 min-h-11 sm:p-3 sm:min-h-12 text-base rounded-xl [&>svg]:hidden", triggerClassName)}
+      >
         <Shadcn.SelectValue placeholder={placeholder} />
         <span className="inline-flex items-center justify-center transition-transform group-data-[state=open]:rotate-180">
           {icon ?? <ChevronDown />}
@@ -43,7 +45,10 @@ const SelectBoxBase = ({
 
 const SelectBoxItem = ({ children, className, ...props }: SelectBoxItemProps) => {
   return (
-    <Shadcn.SelectItem className={cn("rounded-lg py-3 pl-3 text-base font-medium", className)} {...props}>
+    <Shadcn.SelectItem
+      className={cn("rounded-lg py-2 sm:py-2.5 pl-2 sm:pl-3 text-sm sm:text-base font-medium", className)}
+      {...props}
+    >
       {children}
     </Shadcn.SelectItem>
   );
