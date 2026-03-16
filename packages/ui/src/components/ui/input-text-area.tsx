@@ -1,7 +1,8 @@
 import { cn } from "@ui/lib/utils";
-import * as React from "react";
+import type { ComponentProps } from "react";
+import { useId } from "react";
 
-interface InputTextAreaProps extends Omit<React.ComponentProps<"textarea">, "id"> {
+interface InputTextAreaProps extends Omit<ComponentProps<"textarea">, "id"> {
   label: string;
   id?: string;
   message?: string;
@@ -20,15 +21,15 @@ const InputTextArea = ({
   ...props
 }: InputTextAreaProps) => {
   // textarea와 안내 문구를 접근성 속성으로 연결합니다.
-  const generatedId = React.useId();
+  const generatedId = useId();
   const textAreaId = id ?? generatedId;
   const messageId = message ? `${textAreaId}-message` : undefined;
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <label htmlFor={textAreaId} className="text-[14px] leading-[1.2] font-semibold text-[#333333]">
+      <label htmlFor={textAreaId} className="text-sm leading-[1.2] font-semibold text-foreground">
         {label}
-        {required ? <span className="ml-1 text-[#00BB86]">*</span> : null}
+        {required ? <span className="ml-1 text-primary">*</span> : null}
       </label>
       <textarea
         id={textAreaId}
@@ -36,8 +37,8 @@ const InputTextArea = ({
         aria-invalid={isDestructive || undefined}
         disabled={disabled}
         className={cn(
-          "min-h-[120px] w-[456px] resize-none rounded-[16px] border border-transparent bg-[#F3F4F6] px-4 py-4 text-[16px] leading-[1.2] font-medium text-[#333333] outline-none placeholder:text-[#A4A4A4] focus:border-[#00BB86] disabled:opacity-60 max-md:w-[311px]",
-          isDestructive ? "border-[#E91616] focus:border-[#E91616]" : "",
+          "min-h-[120px] w-full max-w-[456px] resize-none rounded-[16px] border border-input bg-background px-4 py-4 text-base leading-[1.2] font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-ring disabled:opacity-60 max-md:max-w-[311px]",
+          isDestructive ? "border-destructive focus:border-destructive" : "",
           className,
         )}
         {...props}
@@ -45,7 +46,10 @@ const InputTextArea = ({
       {message ? (
         <p
           id={messageId}
-          className={cn("text-[14px] leading-[1.2] font-medium", isDestructive ? "text-[#E91616]" : "text-[#A4A4A4]")}
+          className={cn(
+            "text-sm leading-[1.2] font-medium",
+            isDestructive ? "text-destructive" : "text-muted-foreground",
+          )}
         >
           {message}
         </p>

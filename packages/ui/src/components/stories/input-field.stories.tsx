@@ -16,7 +16,7 @@ const meta: Meta<typeof InputField> = {
   },
   decorators: [
     (Story) => (
-      <div className="w-[1080px] bg-[#4A4A4A] p-8">
+      <div className="w-[1080px] p-8">
         <Story />
       </div>
     ),

@@ -16,7 +16,7 @@ const meta: Meta<typeof InputTextArea> = {
   },
   decorators: [
     (Story) => (
-      <div className="bg-[#4A4A4A] p-8">
+      <div className="w-[1000px] p-8">
         <Story />
       </div>
     ),

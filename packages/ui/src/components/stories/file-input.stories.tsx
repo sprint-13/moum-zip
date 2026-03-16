@@ -10,7 +10,7 @@ const meta: Meta<typeof FileInput> = {
   },
   decorators: [
     (Story) => (
-      <div className="bg-[#4A4A4A] p-8">
+      <div className="p-8">
         <Story />
       </div>
     ),
@@ -25,8 +25,8 @@ export const Empty: Story = {};
 
 export const WithPreview: Story = {
   args: {
-    defaultPreviewClassName:
-      "bg-[linear-gradient(45deg,#ececec_25%,transparent_25%),linear-gradient(-45deg,#ececec_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#ececec_75%),linear-gradient(-45deg,transparent_75%,#ececec_75%)] bg-[length:12px_12px] bg-[position:0_0,0_6px,6px_-6px,-6px_0]",
-    defaultPreviewPlaceholderCount: 1,
+    previewClassName:
+      "bg-[linear-gradient(45deg,var(--color-border)_25%,transparent_25%),linear-gradient(-45deg,var(--color-border)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,var(--color-border)_75%),linear-gradient(-45deg,transparent_75%,var(--color-border)_75%)] bg-[length:12px_12px] bg-[position:0_0,0_6px,6px_-6px,-6px_0]",
+    previewItems: [{ id: "preview-placeholder" }],
   },
 };
