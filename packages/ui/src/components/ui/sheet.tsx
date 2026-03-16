@@ -1,4 +1,4 @@
-import { cn } from "../../lib/utils";
+import { cn } from "@ui/lib/utils";
 import * as Shadcn from "../shadcn/sheet";
 
 const SheetRoot = (props: React.ComponentProps<typeof Shadcn.Sheet>) => <Shadcn.Sheet {...props} />;
@@ -19,7 +19,6 @@ const SheetContent = ({
   ...props
 }: React.ComponentProps<typeof Shadcn.SheetContent>) => {
   const rounded = sideMap[side];
-
   return (
     <Shadcn.SheetContent
       className={cn("flex flex-col gap-0 py-4", rounded, className)}
@@ -31,17 +30,17 @@ const SheetContent = ({
 };
 
 const SheetHeader = ({ children, className, ...props }: React.ComponentProps<typeof Shadcn.SheetHeader>) => (
-  <Shadcn.SheetHeader className={cn(" flex-row items-center gap-2", className)} {...props}>
+  <Shadcn.SheetHeader className={cn("flex-row items-center gap-2", className)} {...props}>
     {children}
   </Shadcn.SheetHeader>
 );
 
 const SheetTitle = ({ className, ...props }: React.ComponentProps<typeof Shadcn.SheetTitle>) => (
-  <Shadcn.SheetTitle className={cn("text-base font-semibold text-foreground", className)} {...props} />
+  <Shadcn.SheetTitle className={cn("font-semibold text-base text-foreground", className)} {...props} />
 );
 
 const SheetList = ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-  <ul className={cn("flex flex-1 flex-col overflow-y-auto gap-1 no-scrollbar", className)} {...props} />
+  <ul className={cn("no-scrollbar flex flex-1 flex-col gap-1 overflow-y-auto", className)} {...props} />
 );
 
 const SheetItem = ({ className, children, ...props }: React.HTMLAttributes<HTMLLIElement>) => {
