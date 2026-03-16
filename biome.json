@@ -16,6 +16,9 @@
     "indentStyle": "space",
     "indentWidth": 2
   },
+  "files": {
+    "includes": ["**/*", "!packages/api"]
+  },
   "css": {
     "parser": {
       "cssModules": true

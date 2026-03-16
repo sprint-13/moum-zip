@@ -9,7 +9,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.5.8",
-    "storybook": "10.2.17",
+    "storybook": "^10.2.17",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.0.0",
     "vite": "^7.3.1",
