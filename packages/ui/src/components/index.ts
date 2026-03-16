@@ -4,4 +4,5 @@ export * from "./ui/category_tab";
 export * from "./ui/count_badge";
 export * from "./ui/empty";
 export * from "./ui/filter";
+export * from "./ui/progress_bar";
 export * from "./ui/tags";
