@@ -9,7 +9,7 @@ interface DropdownProps {
   contentClassName?: string;
 }
 
-type DropdownItemProps = React.ComponentPropsWithoutRef<typeof Shadcn.DropdownMenuItem>;
+type DropdownItemProps = React.ComponentProps<typeof Shadcn.DropdownMenuItem>;
 
 const DropdownBase = ({ trigger, children, contentClassName }: DropdownProps) => {
   return (
