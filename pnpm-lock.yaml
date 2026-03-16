@@ -158,7 +158,11 @@ importers:
         specifier: ^8.5.8
         version: 8.5.8
       storybook:
+<<<<<<< HEAD
         specifier: 10.2.17
+=======
+        specifier: ^10.2.17
+>>>>>>> 111b306ca91a252f9b28890340b465aab3f78948
         version: 10.2.17(@testing-library/dom@10.4.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       tailwindcss:
         specifier: ^4.2.1
