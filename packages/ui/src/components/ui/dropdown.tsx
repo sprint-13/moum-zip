@@ -4,7 +4,9 @@ import { cn } from "@ui/lib/utils";
 import type * as React from "react";
 
 type DropdownProps = React.ComponentProps<typeof Shadcn.DropdownMenu>;
-type DropdownTriggerProps = React.ComponentProps<typeof Shadcn.DropdownMenuTrigger>;
+type DropdownTriggerProps = Omit<React.ComponentProps<typeof Shadcn.DropdownMenuTrigger>, "children"> & {
+  children: React.ReactElement;
+};
 type DropdownContentProps = React.ComponentProps<typeof Shadcn.DropdownMenuContent>;
 type DropdownItemProps = React.ComponentProps<typeof Shadcn.DropdownMenuItem>;
 
