@@ -3,22 +3,28 @@ import * as Shadcn from "@ui/components/shadcn/dropdown-menu";
 import { cn } from "@ui/lib/utils";
 import type * as React from "react";
 
-interface DropdownProps {
-  trigger: React.ReactNode;
-  children: React.ReactNode;
-  contentClassName?: string;
-}
-
+type DropdownProps = React.ComponentProps<typeof Shadcn.DropdownMenu>;
+type DropdownTriggerProps = React.ComponentProps<typeof Shadcn.DropdownMenuTrigger>;
+type DropdownContentProps = React.ComponentProps<typeof Shadcn.DropdownMenuContent>;
 type DropdownItemProps = React.ComponentProps<typeof Shadcn.DropdownMenuItem>;
 
-const DropdownBase = ({ trigger, children, contentClassName }: DropdownProps) => {
+const DropdownBase = ({ children, ...props }: DropdownProps) => {
+  return <Shadcn.DropdownMenu {...props}>{children}</Shadcn.DropdownMenu>;
+};
+
+const DropdownTrigger = ({ children, ...props }: DropdownTriggerProps) => {
   return (
-    <Shadcn.DropdownMenu>
-      <Shadcn.DropdownMenuTrigger asChild>{trigger}</Shadcn.DropdownMenuTrigger>
-      <Shadcn.DropdownMenuContent className={cn("min-w-[110px] space-y-2 shadow-xl rounded-xl", contentClassName)}>
-        {children}
-      </Shadcn.DropdownMenuContent>
-    </Shadcn.DropdownMenu>
+    <Shadcn.DropdownMenuTrigger asChild {...props}>
+      {children}
+    </Shadcn.DropdownMenuTrigger>
+  );
+};
+
+const DropdownContent = ({ children, className, ...props }: DropdownContentProps) => {
+  return (
+    <Shadcn.DropdownMenuContent className={cn("min-w-[110px] space-y-2 shadow-xl rounded-xl", className)} {...props}>
+      {children}
+    </Shadcn.DropdownMenuContent>
   );
 };
 
@@ -34,5 +40,7 @@ const DropdownItem = ({ children, className, ...props }: DropdownItemProps) => {
 };
 
 export const Dropdown = Object.assign(DropdownBase, {
+  Trigger: DropdownTrigger,
+  Content: DropdownContent,
   Item: DropdownItem,
 });
