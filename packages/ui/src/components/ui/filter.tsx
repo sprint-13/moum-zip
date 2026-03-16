@@ -48,9 +48,13 @@ const Filter = ({
   const { leftIconClass, rightIconClass, rootClass, textClass } = filterStyles[size];
   const resolvedLeftIcon = leftIcon === undefined ? <ListFilter strokeWidth={1.8} /> : leftIcon;
   const resolvedRightIcon = rightIcon === undefined ? <ChevronDown strokeWidth={1.8} /> : rightIcon;
+  const resolvedAriaPressed = props.role === "tab" ? undefined : (props["aria-pressed"] ?? selected);
+  const resolvedAriaSelectedProps =
+    props.role === "tab" ? { "aria-selected": props["aria-selected"] ?? selected } : undefined;
 
   return (
     <button
+      aria-pressed={resolvedAriaPressed}
       data-selected={selected}
       className={cn(
         "inline-flex items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring data-[selected=true]:text-foreground/70 [&_svg]:shrink-0 disabled:pointer-events-none disabled:opacity-50",
@@ -58,6 +62,7 @@ const Filter = ({
         className,
       )}
       type={type ?? "button"}
+      {...resolvedAriaSelectedProps}
       {...props}
     >
       {resolvedLeftIcon ? <span className={leftIconClass}>{resolvedLeftIcon}</span> : null}

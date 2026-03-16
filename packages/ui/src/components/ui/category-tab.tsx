@@ -26,9 +26,13 @@ const categoryTabStyles = {
 
 const CategoryTab = ({ className, illustration, label, selected = false, type, ...props }: CategoryTabProps) => {
   const { contentClassName, rootClassName } = selected ? categoryTabStyles.selected : categoryTabStyles.default;
+  const resolvedAriaPressed = props.role === "tab" ? undefined : (props["aria-pressed"] ?? selected);
+  const resolvedAriaSelectedProps =
+    props.role === "tab" ? { "aria-selected": props["aria-selected"] ?? selected } : undefined;
 
   return (
     <button
+      aria-pressed={resolvedAriaPressed}
       className={cn(
         "inline-flex size-34 shrink-0 items-center justify-center overflow-hidden rounded-2xl border px-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
         rootClassName,
@@ -36,6 +40,7 @@ const CategoryTab = ({ className, illustration, label, selected = false, type, .
       )}
       data-selected={selected}
       type={type ?? "button"}
+      {...resolvedAriaSelectedProps}
       {...props}
     >
       <span className={cn("inline-flex flex-col items-center justify-center", contentClassName)}>
