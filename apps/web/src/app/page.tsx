@@ -6,6 +6,7 @@ import {
   CountBadge,
   DeadlineTag,
   DeadlineTagSmall,
+  Filter,
   ScheduledBadge,
   StatusLabel,
   TimeTag,
@@ -84,6 +85,11 @@ export default function Home() {
             <CountBadge count={10} size="small" />
             <CountBadge count={12} />
             <CountBadge count={1} size="small" />
+          </div>
+          <div>
+            <Filter size="small" />
+            <Filter size="large" leftIcon={null} />
+            <Filter size="small" rightIcon={null} />
           </div>
 
           <a
