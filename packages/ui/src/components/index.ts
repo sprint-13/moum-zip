@@ -7,3 +7,4 @@ export * from "./ui/filter";
 export * from "./ui/pagination";
 export * from "./ui/progress_bar";
 export * from "./ui/tags";
+export * from "./ui/toast";

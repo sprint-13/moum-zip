@@ -1,35 +1,14 @@
-"use client";
-
-import {
-  Button,
-  CategoryTab,
-  CompletedBadge,
-  CompletedGradientBadge,
-  ConfirmedBadge,
-  CountBadge,
-  DeadlineTag,
-  DeadlineTagSmall,
-  Empty,
-  Filter,
-  LabeledProgressBar,
-  Pagination,
-  ProgressBar,
-  ScheduledBadge,
-  StatusLabel,
-  TimeTag,
-  TimeTagSmall,
-  WaitingBadge,
-} from "@moum-zip/ui/components";
+import { Button } from "@moum-zip/ui/components";
 import { ArrowUpIcon } from "@moum-zip/ui/icons";
+
 import Image from "next/image";
-import { useState } from "react";
+
 import FileIcon from "../../public/file.svg";
 
 export default function Home() {
-  const [currentPage, setCurrentPage] = useState(1);
   return (
-    <div className="justify-col min-h-screen flex items-center justify-center bg-zinc-50  dark:bg-black">
-      <main className="flex min-h-screen w-full  flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={100} height={20} priority />
         <div className="flex items-center gap-4">
           {/* SVG 파일 자체를 리액트 컴포넌트처럼 사용 */}
@@ -57,7 +36,7 @@ export default function Home() {
             center.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-col">
+        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
             className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -73,46 +52,7 @@ export default function Home() {
               <ArrowUpIcon />
             </Button>
           </div>
-          <div className="flex flex-wrap gap-4 p-6">
-            <ScheduledBadge />
-            <WaitingBadge />
-            <CompletedBadge />
-            <CompletedGradientBadge />
-            <ConfirmedBadge />
-          </div>
-          <div className="flex flex-wrap gap-2 ">
-            <DeadlineTag />
-            <DeadlineTagSmall />
-            <TimeTag />
-            <TimeTagSmall />
-            <StatusLabel />
-            <StatusLabel size="small" />
-          </div>
-          <div>
-            <CountBadge count={10} size="small" />
-            <CountBadge count={12} />
-            <CountBadge count={1} size="small" />
-          </div>
-          <div>
-            <Filter size="small" />
-            <Filter size="large" leftIcon={null} />
-            <Filter size="small" rightIcon={null} />
-          </div>
-          <div>
-            <Empty label={`아직 만든 모임이 없어요. \n지금 바로 모임을 만들어보세요!`} size="small" />
-          </div>
-          <div>
-            <CategoryTab label="취미/여가" />
-          </div>
-          <div className="justify-col">
-            <div>
-              <LabeledProgressBar maxValue={20} width="16rem" value={20} />
-              <LabeledProgressBar maxValue={20} width="12rem" value={10} />
-            </div>
-            <div className="mt-4">
-              <ProgressBar maxValue={20} width="16rem" value={4} />
-            </div>
-          </div>
+
           <a
             className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -121,8 +61,6 @@ export default function Home() {
           >
             Documentation
           </a>
-          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={9} size="small" />
-          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={0} />
         </div>
       </main>
     </div>
