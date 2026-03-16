@@ -131,3 +131,11 @@
 @utility bg-background-gradient {
   background: var(--background-gradient);
 }
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
