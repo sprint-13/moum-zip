@@ -4,6 +4,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit"
   },
+
   "files.associations": {
     "biome.json": "jsonc",
     "turbo.json": "jsonc"
