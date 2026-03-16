@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Button,
   CategoryTab,
@@ -10,6 +12,7 @@ import {
   Empty,
   Filter,
   LabeledProgressBar,
+  Pagination,
   ProgressBar,
   ScheduledBadge,
   StatusLabel,
@@ -19,11 +22,13 @@ import {
 } from "@moum-zip/ui/components";
 import { ArrowUpIcon } from "@moum-zip/ui/icons";
 import Image from "next/image";
+import { useState } from "react";
 import FileIcon from "../../public/file.svg";
 
 export default function Home() {
+  const [currentPage, setCurrentPage] = useState(1);
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50  dark:bg-black">
+    <div className="justify-col min-h-screen flex items-center justify-center bg-zinc-50  dark:bg-black">
       <main className="flex min-h-screen w-full  flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={100} height={20} priority />
         <div className="flex items-center gap-4">
@@ -52,7 +57,7 @@ export default function Home() {
             center.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+        <div className="flex flex-col gap-4 text-base font-medium sm:flex-col">
           <a
             className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -116,6 +121,8 @@ export default function Home() {
           >
             Documentation
           </a>
+          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={9} size="small" />
+          <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={0} />
         </div>
       </main>
     </div>
