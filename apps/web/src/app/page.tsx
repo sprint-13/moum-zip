@@ -47,8 +47,8 @@ export default function Home() {
             Deploy Now
           </a>
           <div className="flex flex-wrap items-center gap-2 md:flex-row bg-background-gradient">
-            <Button variant="default">Button</Button>
-            <Button variant="outline" size="icon" aria-label="Submit">
+            <Button variant="primary">Button</Button>
+            <Button variant="secondary" size="small" aria-label="Submit">
               <ArrowUpIcon />
             </Button>
           </div>
