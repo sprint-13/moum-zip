@@ -48,7 +48,7 @@ const tagTextVariants = cva("whitespace-nowrap", {
       white: "font-medium text-muted-foreground",
     },
     size: {
-      large: "text-sm leading-5 ",
+      large: "text-sm leading-5",
       small: "text-xs leading-4",
     },
   },
@@ -72,10 +72,6 @@ const alarmIconVariants = cva("shrink-0 text-secondary", {
 
 interface TagProps extends ComponentPropsWithoutRef<"span">, VariantProps<typeof tagVariants> {
   icon?: boolean;
-}
-
-interface TagPresetProps extends Omit<TagProps, "children"> {
-  label?: string;
 }
 
 interface AlarmIconProps {
@@ -133,37 +129,5 @@ const Tag = ({ className, tone = "blue", size = "large", icon = false, children,
   );
 };
 
-const DeadlineTag = ({ label = "오늘 21시 마감", ...props }: TagPresetProps) => {
-  return (
-    <Tag tone="blue" size="large" icon {...props}>
-      {label}
-    </Tag>
-  );
-};
-
-const DeadlineTagSmall = ({ label = "오늘 21시 마감", ...props }: TagPresetProps) => {
-  return (
-    <Tag tone="blue" size="small" icon {...props}>
-      {label}
-    </Tag>
-  );
-};
-
-const TimeTag = ({ label = "17:30", ...props }: TagPresetProps) => {
-  return (
-    <Tag tone="white" size="large" {...props}>
-      {label}
-    </Tag>
-  );
-};
-
-const TimeTagSmall = ({ label = "17:30", ...props }: TagPresetProps) => {
-  return (
-    <Tag tone="white" size="small" {...props}>
-      {label}
-    </Tag>
-  );
-};
-
-export { DeadlineTag, DeadlineTagSmall, Tag, tagVariants, TimeTag, TimeTagSmall };
+export { Tag, tagVariants };
 export type { TagProps };

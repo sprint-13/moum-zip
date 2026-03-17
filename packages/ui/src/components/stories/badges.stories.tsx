@@ -26,7 +26,7 @@ export const Playground: Story = {};
 export const AllVariants: Story = {
   render: () => {
     return (
-      <div className="flex max-w-105 flex-wrap gap-4 rounded-2xl bg-[#3b3b3b] p-4">
+      <div className="flex max-w-105 flex-wrap gap-4 rounded-2xl bg-foreground p-4">
         <Badge variant="scheduled">이용 예정</Badge>
         <Badge variant="waiting">개설 대기</Badge>
         <Badge variant="completed">이용 완료</Badge>
@@ -43,7 +43,7 @@ export const AllVariants: Story = {
 export const Containerless: Story = {
   render: () => {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl bg-[#3b3b3b] p-4">
+      <div className="flex flex-col gap-4 rounded-2xl bg-foreground p-4">
         <Badge container="none" variant="confirmed">
           <CheckCircleIcon />
           개설 확정

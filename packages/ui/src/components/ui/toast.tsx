@@ -20,7 +20,7 @@ interface ToastOptions {
   size?: ToastSize;
 }
 
-interface UpdateToastOptions extends Partial<ToastOptions> {}
+interface UpdateToastOptions extends Partial<Omit<ToastOptions, "id">> {}
 
 interface ToastItem extends Required<Pick<ToastOptions, "message" | "size">> {
   duration?: number;

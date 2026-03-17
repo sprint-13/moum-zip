@@ -24,7 +24,7 @@ export const Playground: Story = {};
 export const AllVariants: Story = {
   render: () => {
     return (
-      <div className="flex items-center gap-4 rounded-2xl bg-[#3b3b3b] p-4">
+      <div className="flex items-center gap-4 rounded-2xl bg-foreground p-4">
         <CountBadge count={1} size="large" />
         <CountBadge count={1} size="small" />
         <CountBadge count={12} size="large" />

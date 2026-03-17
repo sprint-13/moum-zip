@@ -18,9 +18,12 @@ interface PaginationPageItem {
 type PaginationItem = PaginationEllipsisItem | PaginationPageItem;
 
 interface PaginationProps extends Omit<ComponentPropsWithoutRef<"nav">, "children"> {
+  ariaLabel: string;
   currentPage: number;
   disabled?: boolean;
+  nextAriaLabel: string;
   onPageChange?: (page: number) => void;
+  previousAriaLabel: string;
   size?: PaginationSize;
   totalPages: number;
 }
@@ -28,7 +31,9 @@ interface PaginationProps extends Omit<ComponentPropsWithoutRef<"nav">, "childre
 interface PaginationContentProps {
   currentPage: number;
   disabled: boolean;
+  nextAriaLabel: string;
   onPageChange?: (page: number) => void;
+  previousAriaLabel: string;
   size: Exclude<PaginationSize, "responsive">;
   totalPages: number;
   visibilityClassName?: string;
@@ -120,7 +125,9 @@ const getPaginationItems = (currentPage: number, totalPages: number, pageSlotCou
 const PaginationContent = ({
   currentPage,
   disabled,
+  nextAriaLabel,
   onPageChange,
+  previousAriaLabel,
   size,
   totalPages,
   visibilityClassName,
@@ -154,7 +161,7 @@ const PaginationContent = ({
   return (
     <div className={cn("items-start", containerClassName, visibilityClassName)}>
       <button
-        aria-label="Previous page"
+        aria-label={previousAriaLabel}
         className={cn(
           "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:text-muted-foreground/40",
           iconButtonClassName,
@@ -194,6 +201,7 @@ const PaginationContent = ({
                   : "text-muted-foreground/70 hover:bg-muted/60 hover:text-foreground/80",
                 itemClassName,
               )}
+              disabled={disabled}
               key={item.key}
               onClick={() => handlePageChange(item.page)}
               type="button"
@@ -206,7 +214,7 @@ const PaginationContent = ({
         })}
       </div>
       <button
-        aria-label="Next page"
+        aria-label={nextAriaLabel}
         className={cn(
           "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:text-muted-foreground/40",
           iconButtonClassName,
@@ -222,10 +230,13 @@ const PaginationContent = ({
 };
 
 const Pagination = ({
+  ariaLabel,
   className,
   currentPage,
   disabled = false,
+  nextAriaLabel,
   onPageChange,
+  previousAriaLabel,
   size = "responsive",
   totalPages,
   ...props
@@ -236,11 +247,13 @@ const Pagination = ({
 
   if (size === "responsive") {
     return (
-      <nav aria-label="Pagination" className={cn("inline-flex items-start", className)} {...props}>
+      <nav aria-label={ariaLabel} className={cn("inline-flex items-start", className)} {...props}>
         <PaginationContent
           currentPage={currentPage}
           disabled={disabled}
+          nextAriaLabel={nextAriaLabel}
           onPageChange={onPageChange}
+          previousAriaLabel={previousAriaLabel}
           size="small"
           totalPages={totalPages}
           visibilityClassName="inline-flex sm:hidden"
@@ -248,7 +261,9 @@ const Pagination = ({
         <PaginationContent
           currentPage={currentPage}
           disabled={disabled}
+          nextAriaLabel={nextAriaLabel}
           onPageChange={onPageChange}
+          previousAriaLabel={previousAriaLabel}
           size="large"
           totalPages={totalPages}
           visibilityClassName="hidden sm:inline-flex"
@@ -258,11 +273,13 @@ const Pagination = ({
   }
 
   return (
-    <nav aria-label="Pagination" className={cn("inline-flex items-start", className)} {...props}>
+    <nav aria-label={ariaLabel} className={cn("inline-flex items-start", className)} {...props}>
       <PaginationContent
         currentPage={currentPage}
         disabled={disabled}
+        nextAriaLabel={nextAriaLabel}
         onPageChange={onPageChange}
+        previousAriaLabel={previousAriaLabel}
         size={size}
         totalPages={totalPages}
         visibilityClassName="inline-flex"

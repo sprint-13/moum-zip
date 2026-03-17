@@ -4,11 +4,9 @@ import type { ComponentPropsWithoutRef } from "react";
 type EmptySize = "large" | "small";
 
 interface EmptyProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
-  label?: string;
+  label: string;
   size?: EmptySize;
 }
-
-const EMPTY_DEFAULT_LABEL = "아직 만든 모임이 없어요";
 
 const EmptyIllustration = () => {
   return (
@@ -88,7 +86,7 @@ const emptyStyles = {
   }
 >;
 
-const Empty = ({ className, label = EMPTY_DEFAULT_LABEL, size = "large", ...props }: EmptyProps) => {
+const Empty = ({ className, label, size = "large", ...props }: EmptyProps) => {
   const { containerClassName, textClassName } = emptyStyles[size];
 
   return (

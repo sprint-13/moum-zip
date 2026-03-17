@@ -1,6 +1,6 @@
-﻿import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
-import { DeadlineTag, DeadlineTagSmall, Tag, TimeTag, TimeTagSmall } from "@ui/components";
+import { Tag } from "@ui/components";
 
 const meta = {
   title: "Components/Tags",
@@ -26,14 +26,20 @@ export const Playground: Story = {};
 export const AllVariants: Story = {
   render: () => {
     return (
-      <div className="flex max-w-69 flex-col gap-4 rounded-2xl bg-[#3b3b3b] p-4">
+      <div className="flex max-w-69 flex-col gap-4 rounded-2xl bg-foreground p-4">
         <div className="flex items-center gap-2">
-          <DeadlineTag />
-          <TimeTag />
+          <Tag icon tone="blue">
+            오늘 21시 마감
+          </Tag>
+          <Tag tone="white">17:30</Tag>
         </div>
         <div className="flex items-center gap-2">
-          <DeadlineTagSmall />
-          <TimeTagSmall />
+          <Tag icon size="small" tone="blue">
+            오늘 21시 마감
+          </Tag>
+          <Tag size="small" tone="white">
+            17:30
+          </Tag>
         </div>
       </div>
     );
