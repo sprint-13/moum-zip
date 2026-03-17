@@ -51,6 +51,11 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-green-500: var(--green-500);
+  --color-green-600: var(--green-600);
+  --color-gradient-500-start: var(--gradient-500-start);
+  --color-gradient-500-end: var(--gradient-500-end);
 }
 
 :root {
@@ -97,6 +102,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --gradient-500-start: #17da71;
+  --gradient-500-end: #08ddf0;
+  --green-500: #00bb86;
+  --green-600: #009973;
 
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 }

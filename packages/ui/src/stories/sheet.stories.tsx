@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, ChevronRight, X } from "lucide-react";
-import { Sheet } from "../ui/sheet";
+import { Sheet } from "../components/ui/sheet";
 
 const meta: Meta<typeof Sheet> = {
   title: "Components/Sheet",
