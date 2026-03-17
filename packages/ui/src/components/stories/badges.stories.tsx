@@ -1,14 +1,7 @@
-﻿import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
-import {
-  Badge,
-  CompletedBadge,
-  CompletedGradientBadge,
-  ConfirmedBadge,
-  ScheduledBadge,
-  StatusLabel,
-  WaitingBadge,
-} from "@ui/components";
+import { Badge } from "@ui/components";
+import { Clock3 } from "@ui/icons";
 
 const meta = {
   title: "Components/Badges",
@@ -18,7 +11,9 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    children: "이용 예정",
+    container: "default",
+    icon: false,
+    label: "이용 예정",
     variant: "scheduled",
   },
 } satisfies Meta<typeof Badge>;
@@ -33,22 +28,22 @@ export const AllVariants: Story = {
   render: () => {
     return (
       <div className="flex max-w-105 flex-wrap gap-4 rounded-2xl bg-[#3b3b3b] p-4">
-        <ScheduledBadge />
-        <WaitingBadge />
-        <CompletedBadge />
-        <ConfirmedBadge />
-        <CompletedGradientBadge />
+        <Badge label="이용 예정" variant="scheduled" />
+        <Badge label="개설 대기" variant="waiting" />
+        <Badge label="이용 완료" variant="completed" />
+        <Badge icon label="개설 확정" variant="confirmed" />
+        <Badge label="이용 완료" variant="completedGradient" />
       </div>
     );
   },
 };
 
-export const StatusLabels: Story = {
+export const Containerless: Story = {
   render: () => {
     return (
       <div className="flex flex-col gap-4 rounded-2xl bg-[#3b3b3b] p-4">
-        <StatusLabel size="large" />
-        <StatusLabel size="small" />
+        <Badge container="none" icon label="개설 확정" variant="confirmed" />
+        <Badge icon={<Clock3 className="size-4" strokeWidth={1.75} />} label="이용 예정" variant="waiting" />
       </div>
     );
   },
