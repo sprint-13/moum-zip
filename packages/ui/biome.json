@@ -1,6 +1,9 @@
 {
   "root": false,
   "extends": "//",
+  "formatter": {
+    "enabled": true
+  },
   "linter": {
     "rules": {
       "nursery": {
@@ -16,7 +19,7 @@
     }
   },
   "files": {
-    "includes": ["!src/components/shadcn"]
+    "includes": ["**", "!src/components/shadcn"]
   },
   "css": {
     "parser": {
