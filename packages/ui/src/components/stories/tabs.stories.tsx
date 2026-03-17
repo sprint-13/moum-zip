@@ -6,8 +6,8 @@ const meta = {
   parameters: {
     layout: "fullscreen",
     backgrounds: {
-      default: "dark",
-      values: [{ name: "dark", value: "#000000" }],
+      default: "foreground",
+      values: [{ name: "foreground", value: "var(--color-foreground)" }],
     },
   },
   tags: ["autodocs"],
@@ -22,20 +22,20 @@ export const AllCases: Story = {
     return (
       <div className="flex w-full flex-col gap-16 p-8">
         <div className="w-full">
-          <Tabs defaultTab="my-groups" size="large" className="w-full">
+          <Tabs className="w-full" defaultTab="my-groups" size="large">
             <Tabs.List>
               <Tabs.Trigger value="my-groups">나의 모임</Tabs.Trigger>
               <Tabs.Trigger value="created-groups">내가 만든 모임</Tabs.Trigger>
               <Tabs.Trigger value="liked-groups">찜한 모임</Tabs.Trigger>
             </Tabs.List>
 
-            <Tabs.Content value="my-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="my-groups">
               large / my-groups
             </Tabs.Content>
-            <Tabs.Content value="created-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="created-groups">
               large / created-groups
             </Tabs.Content>
-            <Tabs.Content value="liked-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="liked-groups">
               large / liked-groups
             </Tabs.Content>
           </Tabs>
@@ -49,13 +49,13 @@ export const AllCases: Story = {
               <Tabs.Trigger value="liked-groups">찜한 모임</Tabs.Trigger>
             </Tabs.List>
 
-            <Tabs.Content value="my-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="my-groups">
               small / my-groups
             </Tabs.Content>
-            <Tabs.Content value="created-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="created-groups">
               small / created-groups
             </Tabs.Content>
-            <Tabs.Content value="liked-groups" className="pt-6 text-white">
+            <Tabs.Content className="pt-6 text-background" value="liked-groups">
               small / liked-groups
             </Tabs.Content>
           </Tabs>
