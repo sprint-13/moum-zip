@@ -57,27 +57,25 @@ export const Large: Story = {
 export const AllCases: Story = {
   render: () => {
     return (
-      <>
-        <div className="flex flex-col gap-8 p-8">
-          <div className="flex items-end gap-8">
-            <UnderlineTabButton variant="default" size="large">
-              나의 모임
-            </UnderlineTabButton>
-            <UnderlineTabButton variant="default" size="small">
-              나의 모임
-            </UnderlineTabButton>
-          </div>
-
-          <div className="flex items-end gap-8">
-            <UnderlineTabButton variant="active" size="large">
-              나의 모임
-            </UnderlineTabButton>
-            <UnderlineTabButton variant="active" size="small">
-              나의 모임
-            </UnderlineTabButton>
-          </div>
+      <div className="flex flex-col gap-8 p-8">
+        <div className="flex items-end gap-8">
+          <UnderlineTabButton variant="default" size="large">
+            나의 모임
+          </UnderlineTabButton>
+          <UnderlineTabButton variant="default" size="small">
+            나의 모임
+          </UnderlineTabButton>
         </div>
-      </>
+
+        <div className="flex items-end gap-8">
+          <UnderlineTabButton variant="active" size="large">
+            나의 모임
+          </UnderlineTabButton>
+          <UnderlineTabButton variant="active" size="small">
+            나의 모임
+          </UnderlineTabButton>
+        </div>
+      </div>
     );
   },
 };
