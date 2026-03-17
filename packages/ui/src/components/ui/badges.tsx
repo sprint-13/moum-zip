@@ -14,7 +14,7 @@ const badgeVariants = cva(
         completed: "font-medium text-muted-foreground",
         completedGradient: "font-medium text-muted-foreground",
         confirmed: "font-medium text-primary",
-        scheduled: "font-semibold tracking-[-0.02em] text-accent",
+        scheduled: "font-semibold text-accent tracking-[-0.02em]",
         waiting: "font-medium text-muted-foreground",
       },
     },

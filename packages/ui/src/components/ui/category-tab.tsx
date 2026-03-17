@@ -47,7 +47,7 @@ const CategoryTab = ({ className, illustration, label, selected = false, type, .
         <span aria-hidden="true" className="inline-flex size-20 shrink-0 items-center justify-center overflow-hidden">
           {illustration}
         </span>
-        <span className="whitespace-nowrap font-medium text-[0.875rem] leading-5 tracking-[-0.02em] text-foreground/80">
+        <span className="whitespace-nowrap font-medium text-[0.875rem] text-foreground/80 leading-5 tracking-[-0.02em]">
           {label}
         </span>
       </span>

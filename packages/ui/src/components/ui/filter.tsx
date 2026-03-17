@@ -55,7 +55,7 @@ const Filter = ({
     <button
       data-selected={selected}
       className={cn(
-        "inline-flex items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring data-[selected=true]:text-foreground/70 [&_svg]:shrink-0 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[selected=true]:text-foreground/70 [&_svg]:shrink-0",
         rootClass,
         className,
       )}
@@ -64,7 +64,7 @@ const Filter = ({
       {...props}
     >
       {resolvedLeftIcon ? <span className={leftIconClass}>{resolvedLeftIcon}</span> : null}
-      <span className={cn("font-medium whitespace-nowrap", textClass)}>{label}</span>
+      <span className={cn("whitespace-nowrap font-medium", textClass)}>{label}</span>
       {resolvedRightIcon ? <span className={rightIconClass}>{resolvedRightIcon}</span> : null}
     </button>
   );

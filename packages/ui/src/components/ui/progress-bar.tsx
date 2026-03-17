@@ -80,7 +80,7 @@ const ProgressBar = ({ className, maxValue, style, value, width, ...props }: Pro
       aria-valuemin={0}
       aria-valuenow={resolvedValue}
       aria-valuetext={`${resolvedValue}/${resolvedMaxValue}`}
-      className={cn("flex min-w-32 w-full items-center", className)}
+      className={cn("flex w-full min-w-32 items-center", className)}
       role="progressbar"
       style={progressBarStyle}
       {...props}
@@ -120,10 +120,10 @@ const LabeledProgressBar = ({
         />
       </div>
       <p
-        className="shrink-0 text-right text-sm leading-5 font-medium tabular-nums whitespace-nowrap text-muted-foreground"
+        className="shrink-0 whitespace-nowrap text-right font-medium text-muted-foreground text-sm tabular-nums leading-5"
         style={{ width: valueLabelWidth }}
       >
-        <span className="font-semibold tracking-[-0.03em] text-primary">{resolvedValue}</span>
+        <span className="font-semibold text-primary tracking-[-0.03em]">{resolvedValue}</span>
         <span>/{resolvedMaxValue}</span>
       </p>
     </div>

@@ -9,7 +9,7 @@ interface CategoryTabIllustrationProps {
 
 const CategoryTabIllustration = ({ icon: Icon }: CategoryTabIllustrationProps) => {
   return (
-    <span className="inline-flex size-20 items-center justify-center rounded-full ">
+    <span className="inline-flex size-20 items-center justify-center rounded-full">
       <Icon className="size-10 text-primary" strokeWidth={1.75} />
     </span>
   );

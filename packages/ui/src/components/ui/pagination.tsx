@@ -163,7 +163,7 @@ const PaginationContent = ({
       <button
         aria-label={previousAriaLabel}
         className={cn(
-          "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:text-muted-foreground/40",
+          "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:text-muted-foreground/40",
           iconButtonClassName,
         )}
         disabled={isPreviousDisabled}
@@ -216,7 +216,7 @@ const PaginationContent = ({
       <button
         aria-label={nextAriaLabel}
         className={cn(
-          "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/60 hover:text-foreground disabled:pointer-events-none disabled:text-muted-foreground/40",
+          "inline-flex shrink-0 items-center justify-center rounded-lg text-foreground/70 transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:text-muted-foreground/40",
           iconButtonClassName,
         )}
         disabled={isNextDisabled}

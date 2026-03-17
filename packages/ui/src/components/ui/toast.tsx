@@ -44,11 +44,11 @@ const toastVariants = cva(
   [
     "inline-flex w-fit max-w-[calc(100vw-2rem)] items-center justify-center overflow-hidden",
     "bg-black/80 text-primary-foreground",
-    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+    "data-[state=closed]:animate-out data-[state=open]:animate-in",
     "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
     "data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2",
-    "data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)] data-[swipe=cancel]:translate-y-0",
-    "data-[swipe=end]:animate-out data-[swipe=end]:slide-out-to-top-2",
+    "data-[swipe=cancel]:translate-y-0 data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)]",
+    "data-[swipe=end]:slide-out-to-top-2 data-[swipe=end]:animate-out",
   ],
   {
     variants: {

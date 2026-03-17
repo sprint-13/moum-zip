@@ -2,7 +2,7 @@ import { cn } from "@ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef } from "react";
 
-const tagVariants = cva("inline-flex self-start items-center justify-center whitespace-nowrap border", {
+const tagVariants = cva("inline-flex items-center justify-center self-start whitespace-nowrap border", {
   variants: {
     tone: {
       blue: "border-transparent bg-secondary/20 text-secondary",
@@ -17,22 +17,22 @@ const tagVariants = cva("inline-flex self-start items-center justify-center whit
     {
       tone: "blue",
       size: "large",
-      className: "gap-1 rounded-[0.5rem] pl-[0.25rem] pr-[0.5rem]",
+      className: "gap-1 rounded-[0.5rem] pr-[0.5rem] pl-[0.25rem]",
     },
     {
       tone: "blue",
       size: "small",
-      className: "gap-1 rounded-[0.375rem] pl-[0.25rem] pr-[0.5rem]",
+      className: "gap-1 rounded-[0.375rem] pr-[0.5rem] pl-[0.25rem]",
     },
     {
       tone: "white",
       size: "large",
-      className: "gap-1 rounded-[0.5rem] pl-[0.25rem] pr-[0.5rem]",
+      className: "gap-1 rounded-[0.5rem] pr-[0.5rem] pl-[0.25rem]",
     },
     {
       tone: "white",
       size: "small",
-      className: "gap-1 rounded-[0.375rem] pl-[0.25rem] pr-[0.5rem]",
+      className: "gap-1 rounded-[0.375rem] pr-[0.5rem] pl-[0.25rem]",
     },
   ],
   defaultVariants: {

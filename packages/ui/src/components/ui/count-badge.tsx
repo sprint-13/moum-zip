@@ -35,7 +35,7 @@ const CountBadge = ({ className, count, size = "large", ...props }: CountBadgePr
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center justify-center overflow-hidden whitespace-nowrap bg-primary text-primary-foreground ",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden whitespace-nowrap bg-primary text-primary-foreground",
         rootClassName,
         className,
       )}

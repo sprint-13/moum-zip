@@ -42,7 +42,7 @@ export const PrimitiveVariants: Story = {
         <ProgressBar maxValue={20} value={12} width="12rem" />
         <ProgressBar className="w-full" maxValue={20} value={19} />
         <div className="flex items-center gap-3">
-          <span className="shrink-0 text-sm text-background">Participation</span>
+          <span className="shrink-0 text-background text-sm">Participation</span>
           <div className="min-w-0 flex-1">
             <ProgressBar maxValue={20} value={12} />
           </div>
