@@ -1,7 +1,7 @@
 "use client";
 import * as Shadcn from "@ui/components/shadcn/dropdown-menu";
 import { cn } from "@ui/lib/utils";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactElement } from "react";
 
 type DropdownProps = ComponentProps<typeof Shadcn.DropdownMenu>;
 
@@ -10,7 +10,7 @@ const DropdownBase = ({ children, ...props }: DropdownProps) => {
 };
 
 interface DropdownTriggerProps extends Omit<ComponentProps<typeof Shadcn.DropdownMenuTrigger>, "children"> {
-  children: React.ReactElement;
+  children: ReactElement;
 }
 
 const DropdownTrigger = ({ children, ...props }: DropdownTriggerProps) => {
@@ -21,7 +21,7 @@ const DropdownTrigger = ({ children, ...props }: DropdownTriggerProps) => {
   );
 };
 
-type DropdownContentProps = React.ComponentProps<typeof Shadcn.DropdownMenuContent>;
+type DropdownContentProps = ComponentProps<typeof Shadcn.DropdownMenuContent>;
 
 const DropdownContent = ({ children, className, ...props }: DropdownContentProps) => {
   return (
@@ -31,7 +31,7 @@ const DropdownContent = ({ children, className, ...props }: DropdownContentProps
   );
 };
 
-type DropdownItemProps = React.ComponentProps<typeof Shadcn.DropdownMenuItem>;
+type DropdownItemProps = ComponentProps<typeof Shadcn.DropdownMenuItem>;
 
 const DropdownItem = ({ children, className, ...props }: DropdownItemProps) => {
   return (

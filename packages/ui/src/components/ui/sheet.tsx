@@ -55,7 +55,7 @@ const SheetList = ({ className, ...props }: SheetListProps) => (
 type SheetItemProps = HTMLAttributes<HTMLLIElement>;
 
 const SheetItem = ({ className, children, ...props }: SheetItemProps) => (
-  <li className={cn(className)} {...props}>
+  <li className={className} {...props}>
     {children}
   </li>
 );
