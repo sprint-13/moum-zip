@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ButtonHTMLAttributes } from "react";
@@ -5,8 +6,8 @@ import type { ButtonHTMLAttributes } from "react";
 const underlineTabButtonVariants = cva(
   [
     "relative inline-flex w-fit items-center justify-center",
-    "font-semibold leading-none text-center transition-colors",
-    'after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:content-[""] after:transition-colors',
+    "text-center font-semibold leading-none transition-colors",
+    'after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:transition-colors after:content-[""]',
   ].join(" "),
   {
     variants: {
