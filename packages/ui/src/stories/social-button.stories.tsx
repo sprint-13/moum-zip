@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { SocialButton } from "../ui/social-button";
+import { SocialButton } from "../components/ui/social-button";
 
 const meta: Meta<typeof SocialButton> = {
   title: "UI/SocialButton",

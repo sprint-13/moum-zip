@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { UnderlineTabButton } from "../ui/tabs/underline-tab-button";
+import { UnderlineTabButton } from "../components/ui/tabs/underline-tab-button";
 
 const meta = {
   title: "components/underline-tab-button",

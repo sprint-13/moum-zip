@@ -44,6 +44,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-green-500: var(--green-500);
+  --color-green-600: var(--green-600);
 }
 
 :root {
@@ -83,6 +86,7 @@
   --gradient-500-start: #17da71;
   --gradient-500-end: #08ddf0;
   --green-500: #00bb86;
+  --green-600: #009973;
 
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 }
@@ -134,12 +138,4 @@
 
 @utility bg-background-gradient {
   background: var(--background-gradient);
-}
-
-@utility no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
