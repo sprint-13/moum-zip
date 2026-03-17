@@ -3,7 +3,17 @@
   "extends": "//",
 
   "files": {
-    "includes": ["**/*.{ts,tsx}", "!**/*.d.ts", "!dist", "!node_modules", "!**/*.js"]
+    "includes": [
+      "**/*.{ts,tsx}",
+      "!**/*.d.ts",
+      "!dist",
+      "!node_modules",
+      "!**/*.js",
+      "!**/.next",
+      "!**/.storybook",
+      "!**/.turbo",
+      "!**/.vscode"
+    ]
   },
 
   "formatter": {
@@ -37,7 +47,15 @@
       },
 
       "nursery": {
-        "noFloatingPromises": "error"
+        "noFloatingPromises": "error",
+        "useSortedClasses": {
+          "level": "error",
+          "fix": "safe",
+          "options": {
+            "attributes": ["classList"],
+            "functions": ["clsx", "cva", "cn"]
+          }
+        }
       }
     }
   },

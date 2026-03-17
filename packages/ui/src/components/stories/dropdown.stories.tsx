@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Button } from "@ui/components/ui/button";
+import { Button } from "@ui/components/shadcn/button";
 import { Dropdown } from "@ui/components/ui/dropdown";
 import { EllipsisIcon, ListFilterIcon } from "lucide-react";
 

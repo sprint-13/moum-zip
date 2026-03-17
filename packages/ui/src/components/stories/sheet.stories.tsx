@@ -52,8 +52,8 @@ const AlarmCard = ({ title }: { title: string }) => {
       <div className="flex items-center gap-2">
         <div className="size-10 rounded-md bg-muted" />
         <div>
-          <p className="text-sm font-medium">모임 확정</p>
-          <p className="text-sm text-muted-foreground">{title}</p>
+          <p className="font-medium text-sm">모임 확정</p>
+          <p className="text-muted-foreground text-sm">{title}</p>
         </div>
       </div>
       <div></div>
@@ -65,7 +65,7 @@ export const NotificationWithItems: Story = {
   render: () => (
     <Sheet>
       <Sheet.Trigger asChild>
-        <button type="button" className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted">
+        <button type="button" className="rounded-md border border-border px-4 py-2 font-medium text-sm hover:bg-muted">
           알림 열기
         </button>
       </Sheet.Trigger>
@@ -95,7 +95,7 @@ export const NotificationEmpty: Story = {
   render: () => (
     <Sheet>
       <Sheet.Trigger asChild>
-        <button type="button" className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted">
+        <button type="button" className="rounded-md border border-border px-4 py-2 font-medium text-sm hover:bg-muted">
           알림 열기 (빈 상태)
         </button>
       </Sheet.Trigger>
@@ -133,7 +133,7 @@ export const MenuLoggedIn: Story = {
   render: () => (
     <Sheet>
       <Sheet.Trigger asChild>
-        <button type="button" className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted">
+        <button type="button" className="rounded-md border border-border px-4 py-2 font-medium text-sm hover:bg-muted">
           메뉴 열기 (로그인)
         </button>
       </Sheet.Trigger>
@@ -164,7 +164,7 @@ export const MenuGuest: Story = {
   render: () => (
     <Sheet>
       <Sheet.Trigger asChild>
-        <button type="button" className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted">
+        <button type="button" className="rounded-md border border-border px-4 py-2 font-medium text-sm hover:bg-muted">
           메뉴 열기 (비로그인)
         </button>
       </Sheet.Trigger>
@@ -187,7 +187,7 @@ export const MenuGuest: Story = {
         <Sheet.Footer>
           <button
             type="button"
-            className="w-full text-right text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="w-full text-right text-muted-foreground text-sm transition-colors hover:text-foreground"
           >
             로그인
           </button>
