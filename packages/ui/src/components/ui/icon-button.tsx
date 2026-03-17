@@ -1,22 +1,23 @@
 import { cn } from "@ui/lib/utils";
 import { cva } from "class-variance-authority";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type IconButtonVariant = "send" | "edit" | "delete";
 export type IconButtonSize = "icon-sm" | "icon-md" | "icon-lg";
 
 const iconButtonVariants = cva(
-  "inline-flex items-center justify-center transition-colors disabled:pointer-events-none rounded-full",
+  "inline-flex items-center justify-center rounded-full transition-colors disabled:pointer-events-none",
   {
     variants: {
       variant: {
-        send: "bg-white border border-slate-200",
-        edit: "bg-white border border-slate-200 text-gray-600",
+        send: "border border-slate-200 bg-white",
+        edit: "border border-slate-200 bg-white text-gray-600",
         delete: "bg-black/80 text-white",
       },
       size: {
-        "icon-sm": "w-[18px] h-[18px]",
-        "icon-md": "w-10 h-10",
-        "icon-lg": "w-12 h-12",
+        "icon-sm": "h-[18px] w-[18px]",
+        "icon-md": "h-10 w-10",
+        "icon-lg": "h-12 w-12",
       },
     },
     defaultVariants: {
@@ -26,10 +27,11 @@ const iconButtonVariants = cva(
   },
 );
 
-export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  // 👈 React. 제거
   variant?: IconButtonVariant;
   size?: IconButtonSize;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 export function IconButton({ variant = "send", size = "icon-md", className, icon, ...props }: IconButtonProps) {

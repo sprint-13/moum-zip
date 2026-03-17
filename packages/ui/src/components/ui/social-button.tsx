@@ -1,14 +1,15 @@
 import { cn } from "@ui/lib/utils";
 import { cva } from "class-variance-authority";
+import type { ButtonHTMLAttributes } from "react";
 import { GoogleIcon } from "../../icons/google-icon";
 import { KakaoIcon } from "../../icons/kakao-icon";
 
 const socialButtonVariants = cva(
-  "flex items-center justify-center gap-3 min-w-[222px] h-12 px-6 rounded-xl font-semibold text-[#333333] text-base whitespace-nowrap",
+  "flex h-12 min-w-[222px] items-center justify-center gap-3 whitespace-nowrap rounded-xl px-6 font-semibold text-[#333333] text-base",
   {
     variants: {
       provider: {
-        google: "bg-white border",
+        google: "border bg-white",
         kakao: "bg-[#FEE500]",
       },
     },
@@ -22,7 +23,8 @@ const providerConfig = {
 
 type Provider = keyof typeof providerConfig;
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// ButtonHTMLAttribute 확장
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   provider: Provider;
 }
 

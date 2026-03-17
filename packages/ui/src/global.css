@@ -54,6 +54,8 @@
 
   --color-green-500: var(--green-500);
   --color-green-600: var(--green-600);
+  --color-gradient-500-start: var(--gradient-500-start);
+  --color-gradient-500-end: var(--gradient-500-end);
 }
 
 :root {

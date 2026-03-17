@@ -46,7 +46,7 @@ export const AllCases: Story = {
           icon={(size) => <Heart size={size} fill="url(#icon-gradient)" stroke="url(#icon-gradient)" />}
         />
       </div>
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex flex-wrap items-center gap-4">
         <Button variant="primary" size="large">
           참여하기
         </Button>
@@ -59,7 +59,7 @@ export const AllCases: Story = {
       </div>
       <div className="flex items-center gap-4">
         <CreateButton variant="full">모임 만들기</CreateButton>
-        <CreateButton variant="icon" />
+        <CreateButton variant="icon" aria-label="모임 만들기" />
       </div>
       <div className="flex items-center gap-4">
         <SocialButton provider="google" />

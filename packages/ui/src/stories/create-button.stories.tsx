@@ -15,5 +15,5 @@ export const Full: Story = {
 };
 
 export const IconOnly: Story = {
-  render: () => <CreateButton variant="icon" />,
+  render: () => <CreateButton variant="icon" aria-label="모임 만들기" />,
 };

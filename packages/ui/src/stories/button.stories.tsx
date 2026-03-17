@@ -32,6 +32,15 @@ export const Disabled: Story = {
   ),
 };
 
+// Secondary/Tertiary variant 추가
+export const Secondary: Story = {
+  render: () => <Button variant="secondary">회원가입</Button>,
+};
+
+export const Tertiary: Story = {
+  render: () => <Button variant="tertiary">자세히 보기</Button>,
+};
+
 export const SendIcon: Story = {
   render: () => <IconButton variant="send" size="icon-lg" icon={<ByeIcon />} aria-label="전송" />,
 };

@@ -2,14 +2,14 @@
 
 import { cn } from "@ui/lib/utils";
 import { cva } from "class-variance-authority";
-import { useEffect } from "react";
+import { type ButtonHTMLAttributes, useEffect } from "react";
 
-const utilityButtonVariants = cva("rounded-full flex items-center justify-center border border-slate-200 bg-white/90", {
+const utilityButtonVariants = cva("flex items-center justify-center rounded-full border border-slate-200 bg-white/90", {
   variants: {
     size: {
-      sm: "w-10 h-10",
-      md: "w-12 h-12",
-      lg: "w-[60px] h-[60px]",
+      sm: "h-10 w-10",
+      md: "h-12 w-12",
+      lg: "h-[60px] w-[60px]",
     },
     active: {
       true: "",
@@ -23,7 +23,7 @@ const utilityButtonVariants = cva("rounded-full flex items-center justify-center
 });
 
 // ButtonHTMLAttributes 확장
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
   active?: boolean;
   // cloneElement → Render Props 방식으로 변경

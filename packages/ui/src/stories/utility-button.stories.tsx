@@ -11,6 +11,8 @@ export default meta;
 
 type Story = StoryObj<typeof UtilityButton>;
 
+const GradientHeart = (size: number) => <Heart size={size} fill="url(#icon-gradient)" stroke="url(#icon-gradient)" />;
+
 export const Small: Story = {
   render: () => <UtilityButton size="sm" aria-label="좋아요" icon={(size) => <Heart size={size} />} />,
 };
@@ -24,34 +26,13 @@ export const Large: Story = {
 };
 
 export const ActiveSmall: Story = {
-  render: () => (
-    <UtilityButton
-      size="sm"
-      active
-      aria-label="좋아요 취소"
-      icon={(size) => <Heart size={size} fill="url(#icon-gradient)" stroke="url(#icon-gradient)" />}
-    />
-  ),
+  render: () => <UtilityButton size="sm" active aria-label="좋아요 취소" icon={GradientHeart} />,
 };
 
 export const ActiveMedium: Story = {
-  render: () => (
-    <UtilityButton
-      size="md"
-      active
-      aria-label="좋아요 취소"
-      icon={(size) => <Heart size={size} fill="url(#icon-gradient)" stroke="url(#icon-gradient)" />}
-    />
-  ),
+  render: () => <UtilityButton size="md" active aria-label="좋아요 취소" icon={GradientHeart} />,
 };
 
 export const ActiveLarge: Story = {
-  render: () => (
-    <UtilityButton
-      size="lg"
-      active
-      aria-label="좋아요 취소"
-      icon={(size) => <Heart size={size} fill="url(#icon-gradient)" stroke="url(#icon-gradient)" />}
-    />
-  ),
+  render: () => <UtilityButton size="lg" active aria-label="좋아요 취소" icon={GradientHeart} />,
 };
