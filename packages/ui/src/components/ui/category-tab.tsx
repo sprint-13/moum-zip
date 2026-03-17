@@ -26,7 +26,7 @@ const categoryTabStyles = {
 
 const CategoryTab = ({ className, illustration, label, selected = false, type, ...props }: CategoryTabProps) => {
   const { contentClassName, rootClassName } = selected ? categoryTabStyles.selected : categoryTabStyles.default;
-  const resolvedAriaPressed = props.role === "tab" ? undefined : (props["aria-pressed"] ?? selected);
+  const resolvedAriaPressed = props["aria-pressed"];
   const resolvedAriaSelectedProps =
     props.role === "tab" ? { "aria-selected": props["aria-selected"] ?? selected } : undefined;
 

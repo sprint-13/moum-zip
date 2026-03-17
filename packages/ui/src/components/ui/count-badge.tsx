@@ -26,7 +26,7 @@ const countBadgeStyles = {
 >;
 
 const CountBadge = ({ className, count, size = "large", ...props }: CountBadgeProps) => {
-  if (!count || count <= 0) {
+  if (!count || count < 0) {
     return null;
   }
 

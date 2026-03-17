@@ -1,19 +1,25 @@
 import { cn } from "@ui/lib/utils";
 import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 
-interface ProgressBarProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
-  maxValue: number;
-  value: number;
-  width?: CSSProperties["width"];
-}
+type ProgressBarAccessibleName =
+  | { "aria-label": string; "aria-labelledby"?: never }
+  | { "aria-label"?: never; "aria-labelledby": string };
 
-interface LabeledProgressBarProps extends Pick<ProgressBarProps, "maxValue" | "value" | "width"> {
-  "aria-label"?: string;
-  "aria-labelledby"?: string;
+type ProgressBarProps = Omit<ComponentPropsWithoutRef<"div">, "children"> &
+  ProgressBarAccessibleName & {
+    maxValue: number;
+    value: number;
+    width?: CSSProperties["width"];
+  };
+
+type LabeledProgressBarProps = Pick<
+  ProgressBarProps,
+  "aria-label" | "aria-labelledby" | "maxValue" | "value" | "width"
+> & {
   className?: string;
   icon?: ReactNode;
   style?: CSSProperties;
-}
+};
 
 const clampProgressValue = (value: number, maxValue: number) => {
   if (maxValue <= 0) {
@@ -93,30 +99,37 @@ const ProgressBar = ({ className, maxValue, style, value, width, ...props }: Pro
 };
 
 const LabeledProgressBar = ({
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledby,
   className,
   icon = <ProgressPersonIcon />,
   maxValue,
   style,
   value,
   width,
+  ...accessibleNameProps
 }: LabeledProgressBarProps) => {
   const { resolvedMaxValue, resolvedValue } = getProgressMetrics(value, maxValue);
   const valueLabelWidth = getValueLabelWidth(resolvedMaxValue);
   const isTrackWidthControlled = width !== undefined;
+  let progressBarAccessibleNameProps: ProgressBarAccessibleName;
+
+  if (accessibleNameProps["aria-label"] !== undefined) {
+    progressBarAccessibleNameProps = { "aria-label": accessibleNameProps["aria-label"] };
+  } else if (accessibleNameProps["aria-labelledby"] !== undefined) {
+    progressBarAccessibleNameProps = { "aria-labelledby": accessibleNameProps["aria-labelledby"] };
+  } else {
+    throw new Error("ProgressBar requires an accessible name.");
+  }
 
   return (
     <div className={cn("flex items-center gap-2", !isTrackWidthControlled && "w-full", className)} style={style}>
       <div className={cn("flex min-w-0 items-center gap-1.25", !isTrackWidthControlled && "flex-1")}>
         {icon}
         <ProgressBar
-          aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledby}
           className={cn("min-w-0", !isTrackWidthControlled && "flex-1")}
           maxValue={resolvedMaxValue}
           value={resolvedValue}
           width={width}
+          {...progressBarAccessibleNameProps}
         />
       </div>
       <p

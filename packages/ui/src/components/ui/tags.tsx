@@ -2,44 +2,25 @@ import { cn } from "@ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef } from "react";
 
-const tagVariants = cva("inline-flex items-center justify-center self-start whitespace-nowrap border", {
-  variants: {
-    tone: {
-      blue: "border-transparent bg-secondary/20 text-secondary",
-      white: "border-border bg-background text-muted-foreground",
+const tagVariants = cva(
+  "inline-flex items-center justify-center gap-1 self-start whitespace-nowrap border pr-[0.5rem] pl-[0.25rem]",
+  {
+    variants: {
+      tone: {
+        blue: "border-transparent bg-secondary/20 text-secondary",
+        white: "border-border bg-background text-muted-foreground",
+      },
+      size: {
+        large: "rounded-[0.5rem]",
+        small: "rounded-[0.375rem]",
+      },
     },
-    size: {
-      large: "",
-      small: "",
-    },
-  },
-  compoundVariants: [
-    {
+    defaultVariants: {
       tone: "blue",
       size: "large",
-      className: "gap-1 rounded-[0.5rem] pr-[0.5rem] pl-[0.25rem]",
     },
-    {
-      tone: "blue",
-      size: "small",
-      className: "gap-1 rounded-[0.375rem] pr-[0.5rem] pl-[0.25rem]",
-    },
-    {
-      tone: "white",
-      size: "large",
-      className: "gap-1 rounded-[0.5rem] pr-[0.5rem] pl-[0.25rem]",
-    },
-    {
-      tone: "white",
-      size: "small",
-      className: "gap-1 rounded-[0.375rem] pr-[0.5rem] pl-[0.25rem]",
-    },
-  ],
-  defaultVariants: {
-    tone: "blue",
-    size: "large",
   },
-});
+);
 
 const tagTextVariants = cva("whitespace-nowrap", {
   variants: {
@@ -119,12 +100,12 @@ const AlarmIcon = ({ size = "large" }: AlarmIconProps) => {
 };
 
 const Tag = ({ className, tone = "blue", size = "large", icon = false, children, ...props }: TagProps) => {
-  const alarmIconSize = size ?? "large";
+  const resolvedSize = size ?? "large";
 
   return (
-    <span className={cn(tagVariants({ tone, size }), className)} {...props}>
-      {icon ? <AlarmIcon size={alarmIconSize} /> : null}
-      <span className={tagTextVariants({ tone, size })}>{children}</span>
+    <span className={cn(tagVariants({ tone, size: resolvedSize }), className)} {...props}>
+      {icon ? <AlarmIcon size={resolvedSize} /> : null}
+      <span className={tagTextVariants({ tone, size: resolvedSize })}>{children}</span>
     </span>
   );
 };
