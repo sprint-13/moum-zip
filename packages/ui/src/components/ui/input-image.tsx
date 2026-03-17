@@ -1,3 +1,4 @@
+"use client";
 import { ImagePlus, X } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 
@@ -40,19 +41,19 @@ const FileInput = ({
   return (
     <div className={cn("flex flex-wrap gap-4", className)}>
       <button
-        className="flex min-h-[147px] min-w-[147px] max-h-[147px] max-w-[147px] flex-col items-center justify-center gap-2 rounded-[16px] border border-input bg-background text-muted-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-60 max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-h-[114px] max-md:max-w-[114px]"
+        className="flex max-h-[147px] min-h-[147px] min-w-[147px] max-w-[147px] flex-col items-center justify-center gap-2 rounded-[16px] border border-input bg-background text-muted-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-60 max-md:max-h-[114px] max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-w-[114px]"
         disabled={disabled}
         type="button"
         onClick={handleUploadClick}
       >
         <ImagePlus className="size-8" strokeWidth={1.5} />
-        <span className="text-base leading-[1.2] font-medium">{helperText}</span>
+        <span className="font-medium text-base leading-[1.2]">{helperText}</span>
       </button>
       {previewItems.map(({ id, imageUrl }, previewIndex) => (
         <div
           key={id}
           className={cn(
-            "relative min-h-[147px] min-w-[147px] max-h-[147px] max-w-[147px] overflow-hidden rounded-[16px] border border-input bg-background max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-h-[114px] max-md:max-w-[114px]",
+            "relative max-h-[147px] min-h-[147px] min-w-[147px] max-w-[147px] overflow-hidden rounded-[16px] border border-input bg-background max-md:max-h-[114px] max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-w-[114px]",
             previewClassName,
           )}
         >

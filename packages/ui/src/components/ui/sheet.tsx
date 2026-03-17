@@ -1,9 +1,15 @@
+"use client";
+import * as Shadcn from "@ui/components/shadcn/sheet";
 import { cn } from "@ui/lib/utils";
-import * as Shadcn from "../shadcn/sheet";
+import type { ComponentProps, HTMLAttributes } from "react";
 
-const SheetRoot = (props: React.ComponentProps<typeof Shadcn.Sheet>) => <Shadcn.Sheet {...props} />;
+type SheetRootProps = ComponentProps<typeof Shadcn.Sheet>;
 
-const SheetTrigger = (props: React.ComponentProps<typeof Shadcn.SheetTrigger>) => <Shadcn.SheetTrigger {...props} />;
+const SheetRoot = (props: SheetRootProps) => <Shadcn.Sheet {...props} />;
+
+type SheetTriggerProps = ComponentProps<typeof Shadcn.SheetTrigger>;
+
+const SheetTrigger = (props: SheetTriggerProps) => <Shadcn.SheetTrigger {...props} />;
 
 const sideMap = {
   left: "rounded-r-xl",
@@ -12,12 +18,9 @@ const sideMap = {
   bottom: "rounded-t-xl",
 };
 
-const SheetContent = ({
-  className,
-  side = "right",
-  showCloseButton = false,
-  ...props
-}: React.ComponentProps<typeof Shadcn.SheetContent>) => {
+type SheetContentProps = ComponentProps<typeof Shadcn.SheetContent>;
+
+const SheetContent = ({ className, side = "right", showCloseButton = false, ...props }: SheetContentProps) => {
   const rounded = sideMap[side];
   return (
     <Shadcn.SheetContent
@@ -29,29 +32,37 @@ const SheetContent = ({
   );
 };
 
-const SheetHeader = ({ children, className, ...props }: React.ComponentProps<typeof Shadcn.SheetHeader>) => (
+type SheetHeaderProps = ComponentProps<typeof Shadcn.SheetHeader>;
+
+const SheetHeader = ({ children, className, ...props }: SheetHeaderProps) => (
   <Shadcn.SheetHeader className={cn("flex-row items-center gap-2", className)} {...props}>
     {children}
   </Shadcn.SheetHeader>
 );
 
-const SheetTitle = ({ className, ...props }: React.ComponentProps<typeof Shadcn.SheetTitle>) => (
+type SheetTitleProps = ComponentProps<typeof Shadcn.SheetTitle>;
+
+const SheetTitle = ({ className, ...props }: SheetTitleProps) => (
   <Shadcn.SheetTitle className={cn("font-semibold text-base text-foreground", className)} {...props} />
 );
 
-const SheetList = ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
+type SheetListProps = HTMLAttributes<HTMLUListElement>;
+
+const SheetList = ({ className, ...props }: SheetListProps) => (
   <ul className={cn("no-scrollbar flex flex-1 flex-col gap-1 overflow-y-auto", className)} {...props} />
 );
 
-const SheetItem = ({ className, children, ...props }: React.HTMLAttributes<HTMLLIElement>) => {
-  return (
-    <li className={cn(className)} {...props}>
-      {children}
-    </li>
-  );
-};
+type SheetItemProps = HTMLAttributes<HTMLLIElement>;
 
-const SheetFooter = ({ children, className, ...props }: React.ComponentProps<typeof Shadcn.SheetFooter>) => (
+const SheetItem = ({ className, children, ...props }: SheetItemProps) => (
+  <li className={cn(className)} {...props}>
+    {children}
+  </li>
+);
+
+type SheetFooterProps = ComponentProps<typeof Shadcn.SheetFooter>;
+
+const SheetFooter = ({ children, className, ...props }: SheetFooterProps) => (
   <Shadcn.SheetFooter className={cn("p-4", className)} {...props}>
     {children}
   </Shadcn.SheetFooter>
