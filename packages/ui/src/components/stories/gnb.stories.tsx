@@ -51,7 +51,7 @@ export const Basic: Story = {
           </Gnb.List>
 
           <Gnb.List>
-            <Gnb.Item className="px-4 text-sm text-gray-400">아이콘</Gnb.Item>
+            <Gnb.Item className="px-4 text-gray-400 text-sm">아이콘</Gnb.Item>
             <Gnb.Item>
               <Gnb.Link href="/notifications" onClick={handleLinkClick}>
                 알림
