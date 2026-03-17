@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@ui/lib/utils";
 import type { ComponentProps } from "react";
 import { useId } from "react";
@@ -27,7 +28,7 @@ const InputTextArea = ({
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <label htmlFor={textAreaId} className="text-sm leading-[1.2] font-semibold text-foreground">
+      <label htmlFor={textAreaId} className="font-semibold text-foreground text-sm leading-[1.2]">
         {label}
         {required ? <span className="ml-1 text-primary">*</span> : null}
       </label>
@@ -37,7 +38,7 @@ const InputTextArea = ({
         aria-invalid={isDestructive || undefined}
         disabled={disabled}
         className={cn(
-          "min-h-[120px] w-full max-w-[456px] resize-none rounded-[16px] border border-input bg-background px-4 py-4 text-base leading-[1.2] font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-ring disabled:opacity-60 max-md:max-w-[311px]",
+          "min-h-[120px] w-full max-w-[456px] resize-none rounded-[16px] border border-input bg-background px-4 py-4 font-medium text-base text-foreground leading-[1.2] outline-none placeholder:text-muted-foreground focus:border-ring disabled:opacity-60 max-md:max-w-[311px]",
           isDestructive ? "border-destructive focus:border-destructive" : "",
           className,
         )}
@@ -47,7 +48,7 @@ const InputTextArea = ({
         <p
           id={messageId}
           className={cn(
-            "text-sm leading-[1.2] font-medium",
+            "font-medium text-sm leading-[1.2]",
             isDestructive ? "text-destructive" : "text-muted-foreground",
           )}
         >

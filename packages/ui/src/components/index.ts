@@ -1,5 +1,4 @@
 export * from "./ui/badges";
-export * from "./ui/button";
 export * from "./ui/category-tab";
 export * from "./ui/count-badge";
 export * from "./ui/empty";
