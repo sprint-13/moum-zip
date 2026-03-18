@@ -1,4 +1,4 @@
-import { SpaceSearchPage } from "@/pages/space-search";
+import { SpaceSearchPage } from "@/_pages/space-search";
 
 export default function SpacePage() {
   return <SpaceSearchPage />;
