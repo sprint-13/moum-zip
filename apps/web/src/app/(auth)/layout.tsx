@@ -1,5 +1,3 @@
-"use client";
-
 import { Gnb } from "@ui/components";
 import type { ReactNode } from "react";
 

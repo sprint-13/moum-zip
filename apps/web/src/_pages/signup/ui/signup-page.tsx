@@ -1,5 +1,5 @@
-import { SignupForm } from "@/features/auth/ui/signup-form";
-import { AuthCard } from "@/shared/ui/auth-card";
+import { SignupForm } from "@/features/auth";
+import { AuthCard } from "@/shared/ui";
 
 export const SignupPage = () => {
   return (
