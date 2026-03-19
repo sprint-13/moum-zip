@@ -1,6 +1,6 @@
 import { Empty } from "@ui/components";
 import type { MoimCardMockData } from "../mock-data";
-import MoimCard from "./moin-card";
+import MoimCard from "./moim-card";
 
 interface MoimCardListProps {
   moims: MoimCardMockData[];
