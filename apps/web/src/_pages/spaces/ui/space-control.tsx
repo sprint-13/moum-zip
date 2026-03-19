@@ -34,6 +34,7 @@ export const SpaceControl = ({
           type="button"
           onClick={() => onTabChange("archived")}
           data-active={activeTab === "archived"}
+          aria-pressed={activeTab === "archived"}
           className={`flex-1 rounded-xl px-8 py-2.5 font-bold text-sm transition-all data-[active=true]:bg-white data-[active=false]:text-slate-500 data-[active=true]:text-primary data-[active=true]:shadow-md data-[active=false]:hover:text-slate-700 md:flex-none`}
         >
           아카이브 <span className="ml-1 font-medium opacity-50">{archivedSpacesNumber}</span>
@@ -45,6 +46,7 @@ export const SpaceControl = ({
           <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-[#00bd7e]" />
           <input
             type="text"
+            aria-label="스페이스 이름 검색"
             placeholder="스페이스 이름 검색"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}

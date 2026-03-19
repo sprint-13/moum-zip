@@ -10,10 +10,7 @@ interface SpaceInfoCardProps {
 
 export const SpaceInfoGridCard = ({ space }: SpaceInfoCardProps) => {
   return (
-    <div
-      key={space.id}
-      className="group mb-6 flex w-full cursor-pointer flex-col gap-6 overflow-hidden rounded-lg border border-slate-100 bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#00bd7e]/10"
-    >
+    <div className="group mb-6 flex w-full cursor-pointer flex-col gap-6 overflow-hidden rounded-lg border border-slate-100 bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#00bd7e]/10">
       <SpaceInfoCardHeader space={space} />
 
       {space.thumbnailUrl ? <SpaceInfoCardThumbnail thumbnailUrl={space.thumbnailUrl} name={space.name} /> : null}
