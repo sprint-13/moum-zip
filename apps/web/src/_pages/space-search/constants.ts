@@ -1,27 +1,15 @@
-import type { SpaceSearchCardItem, SpaceSearchCategory, SpaceSearchFilter, SpaceSearchNavItem } from "./types";
+import type {
+  SpaceSearchCardItem,
+  SpaceSearchCategory,
+  SpaceSearchFilter,
+  SpaceSearchNavItem,
+  SpaceSearchQueryState,
+} from "./types";
 
 export const SPACE_SEARCH_ASSETS = {
   avatarSrc: "https://www.figma.com/api/mcp/asset/2fa5da1e-de47-4dba-b984-bfa9a7a230fe",
   logoSrc: "https://www.figma.com/api/mcp/asset/85126cc5-1131-4fc3-a9fb-0880f53d25e7",
   notificationBellIconSrc: "https://www.figma.com/api/mcp/asset/359782de-d351-4d9c-a4ed-20c79c62332e",
-} as const;
-
-export const SPACE_SEARCH_HERO_BANNER_ASSETS = {
-  mb: {
-    height: 192,
-    src: "/images/space-search/hero/banner-mb.svg",
-    width: 375,
-  },
-  pc: {
-    height: 244,
-    src: "/images/space-search/hero/banner-pc.svg",
-    width: 1280,
-  },
-  tb: {
-    height: 244,
-    src: "/images/space-search/hero/banner-tb.svg",
-    width: 696,
-  },
 } as const;
 
 export const SPACE_SEARCH_HERO_CONTENT = {
@@ -50,7 +38,7 @@ export const SPACE_SEARCH_NAV_ITEMS: SpaceSearchNavItem[] = [
 ];
 
 export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
-  { id: "all", isActive: true, label: "전체" },
+  { id: "all", label: "전체" },
   { id: "hobby", label: "취미/여가" },
   { id: "study", label: "스터디" },
   { id: "business", label: "비즈니스" },
@@ -62,10 +50,10 @@ export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
 export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
   { id: "date", label: "날짜 전체" },
   { id: "district", label: "지역 전체" },
-  { id: "deadline", isSelected: true, label: "마감 임박" },
+  { id: "deadline", label: "마감 임박" },
 ];
 
-export const SPACE_SEARCH_ITEMS: SpaceSearchCardItem[] = [
+export const SPACE_SEARCH_MOCK_ITEMS: SpaceSearchCardItem[] = [
   {
     category: "운동/건강",
     currentParticipants: 4,
@@ -165,7 +153,7 @@ export const SPACE_SEARCH_ITEMS: SpaceSearchCardItem[] = [
   },
 ];
 
-export const SPACE_SEARCH_PAGINATION = {
-  currentPage: 1,
-  totalPages: 6,
-} as const;
+export const SPACE_SEARCH_INITIAL_QUERY_STATE: SpaceSearchQueryState = {
+  categoryId: "all",
+  page: 1,
+};

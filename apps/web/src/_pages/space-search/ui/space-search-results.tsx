@@ -1,14 +1,15 @@
 import { Empty, Pagination } from "@ui/components";
 
-import { SPACE_SEARCH_PAGINATION } from "../constants";
-import type { SpaceSearchCardItem } from "../types";
+import type { SpaceSearchCardItem, SpaceSearchPagination } from "../types";
 import { SpaceCard } from "./space-card";
 
 interface SpaceSearchResultsProps {
   items: SpaceSearchCardItem[];
+  onPageChange?: (page: number) => void;
+  pagination: SpaceSearchPagination;
 }
 
-export const SpaceSearchResults = ({ items }: SpaceSearchResultsProps) => {
+export const SpaceSearchResults = ({ items, onPageChange, pagination }: SpaceSearchResultsProps) => {
   if (items.length === 0) {
     return (
       <section className="rounded-[2rem] bg-background-basic px-6 py-16">
@@ -30,10 +31,11 @@ export const SpaceSearchResults = ({ items }: SpaceSearchResultsProps) => {
       <div className="flex justify-center pt-2">
         <Pagination
           ariaLabel="스페이스 목록 페이지네이션"
-          currentPage={SPACE_SEARCH_PAGINATION.currentPage}
+          currentPage={pagination.currentPage}
           nextAriaLabel="다음 페이지"
+          onPageChange={onPageChange}
           previousAriaLabel="이전 페이지"
-          totalPages={SPACE_SEARCH_PAGINATION.totalPages}
+          totalPages={pagination.totalPages}
         />
       </div>
     </section>

@@ -6,17 +6,28 @@ export interface SpaceSearchNavItem {
   notificationCount?: number;
 }
 
+export type SpaceSearchCategoryId = string;
+export type SpaceSearchFilterId = "date" | "district" | "deadline";
+
 export interface SpaceSearchCategory {
-  id: string;
-  isActive?: boolean;
+  id: SpaceSearchCategoryId;
   label: string;
 }
 
 export interface SpaceSearchFilter {
   hasLeftIcon?: boolean;
-  id: string;
-  isSelected?: boolean;
+  id: SpaceSearchFilterId;
   label: string;
+}
+
+export interface SpaceSearchQueryState {
+  categoryId: SpaceSearchCategoryId;
+  page: number;
+}
+
+export interface SpaceSearchPagination {
+  currentPage: number;
+  totalPages: number;
 }
 
 export interface SpaceSearchMetaChip {
@@ -41,4 +52,9 @@ export interface SpaceSearchCardItem {
   metaChips: SpaceSearchMetaChip[];
   status?: SpaceSearchStatus;
   title: string;
+}
+
+export interface SpaceSearchResultPage {
+  items: SpaceSearchCardItem[];
+  pagination: SpaceSearchPagination;
 }

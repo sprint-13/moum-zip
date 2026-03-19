@@ -1,18 +1,12 @@
-"use client";
-
 import { CountBadge, Gnb } from "@ui/components";
 import Image from "next/image";
 import Link from "next/link";
 
 import { SPACE_SEARCH_ASSETS, SPACE_SEARCH_NAV_ITEMS } from "../constants";
 
-interface SpaceSearchHeaderProps {
-  pageSurfaceClassName: string;
-}
-
-export const SpaceSearchHeader = ({ pageSurfaceClassName }: SpaceSearchHeaderProps) => {
+export const SpaceSearchHeader = () => {
   return (
-    <header className={pageSurfaceClassName}>
+    <header className="bg-background-basic">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-4">
           <Link className="inline-flex shrink-0 items-center p-2" href="/space">

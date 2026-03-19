@@ -1,28 +1,62 @@
 "use client";
 
 import { CreateButton } from "@ui/components";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS, SPACE_SEARCH_ITEMS } from "../constants";
+import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../constants";
+import { buildSpaceSearchHref, getSpaceSearchResultPage, parseSpaceSearchQueryState } from "../search-params";
+import type { SpaceSearchQueryState } from "../types";
 import { SpaceSearchHeader } from "./space-search-header";
 import { SpaceSearchHero } from "./space-search-hero";
 import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
-// Use fallback tokens until design tokens are finalized.
-const pageSurfaceClassName = "bg-background-basic";
-
 export const SpaceSearchPage = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryState = parseSpaceSearchQueryState(searchParams);
+  const resultPage = getSpaceSearchResultPage(queryState);
+
+  const navigateWithQueryState = (nextQueryState: SpaceSearchQueryState) => {
+    router.replace(buildSpaceSearchHref(pathname, nextQueryState));
+  };
+
+  const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {
+    navigateWithQueryState({
+      ...queryState,
+      categoryId,
+      page: 1,
+    });
+  };
+
+  const handlePageChange = (page: number) => {
+    navigateWithQueryState({
+      ...queryState,
+      page,
+    });
+  };
+
   return (
-    <div className={`min-h-screen ${pageSurfaceClassName}`}>
-      <SpaceSearchHeader pageSurfaceClassName={pageSurfaceClassName} />
+    <div className="min-h-screen bg-background-basic">
+      <SpaceSearchHeader />
 
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-6.75">
         <SpaceSearchHero />
         <div className="px-4 sm:px-0">
-          <SpaceSearchToolbar categories={SPACE_SEARCH_CATEGORIES} filters={SPACE_SEARCH_FILTERS} />
+          <SpaceSearchToolbar
+            categories={SPACE_SEARCH_CATEGORIES}
+            filters={SPACE_SEARCH_FILTERS}
+            onCategoryChange={handleCategoryChange}
+            selectedCategoryId={queryState.categoryId}
+          />
         </div>
         <div className="px-4 sm:px-0">
-          <SpaceSearchResults items={SPACE_SEARCH_ITEMS} />
+          <SpaceSearchResults
+            items={resultPage.items}
+            onPageChange={handlePageChange}
+            pagination={resultPage.pagination}
+          />
         </div>
       </main>
 

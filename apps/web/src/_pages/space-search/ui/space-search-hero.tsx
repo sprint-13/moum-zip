@@ -1,21 +1,20 @@
-import { SPACE_SEARCH_HERO_BANNER_ASSETS, SPACE_SEARCH_HERO_CONTENT } from "../constants";
+import HeroBannerMb from "../assets/hero/banner-mb.svg";
+import HeroBannerPc from "../assets/hero/banner-pc.svg";
+import HeroBannerTb from "../assets/hero/banner-tb.svg";
+import { SPACE_SEARCH_HERO_CONTENT } from "../constants";
 
 export const SpaceSearchHero = () => {
   return (
     <section className="relative bg-accent sm:overflow-hidden sm:rounded-[2rem]">
-      <picture className={`block aspect-375/192 w-full bg-muted sm:aspect-696/244 lg:aspect-1280/244`}>
-        <source media="(min-width: 1024px)" srcSet={SPACE_SEARCH_HERO_BANNER_ASSETS.pc.src} />
-        <source media="(min-width: 640px)" srcSet={SPACE_SEARCH_HERO_BANNER_ASSETS.tb.src} />
-        <img
-          alt=""
-          className="block h-full w-full object-cover"
-          decoding="async"
-          fetchPriority="high"
-          height={SPACE_SEARCH_HERO_BANNER_ASSETS.mb.height}
-          src={SPACE_SEARCH_HERO_BANNER_ASSETS.mb.src}
-          width={SPACE_SEARCH_HERO_BANNER_ASSETS.mb.width}
-        />
-      </picture>
+      <div className="block aspect-375/192 w-full bg-muted sm:hidden">
+        <HeroBannerMb aria-hidden="true" className="h-full w-full" focusable="false" />
+      </div>
+      <div className="hidden aspect-696/244 w-full bg-muted sm:block lg:hidden">
+        <HeroBannerTb aria-hidden="true" className="h-full w-full" focusable="false" />
+      </div>
+      <div className="hidden aspect-1280/244 w-full bg-muted lg:block">
+        <HeroBannerPc aria-hidden="true" className="h-full w-full" focusable="false" />
+      </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center">
         <div className="w-full px-4 py-8 sm:px-10 sm:py-10 lg:px-14">
