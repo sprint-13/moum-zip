@@ -13,7 +13,7 @@ export const SpaceSearchHeader = () => {
         <div className="flex min-w-0 items-center gap-2 sm:gap-4">
           <Link className="inline-flex shrink-0 items-center p-2" href="/">
             <Image
-              alt="Logo"
+              alt="로고"
               className="w-23.75"
               height={23}
               src={SPACE_SEARCH_ASSETS.logoSrc}
@@ -56,7 +56,7 @@ export const SpaceSearchHeader = () => {
             <span className="absolute top-1.75 right-2.25 size-2 rounded-full bg-primary" />
           </button>
 
-          <button aria-label="Profile" className="inline-flex size-13.5 items-center justify-center" type="button">
+          <button aria-label="프로필" className="inline-flex size-13.5 items-center justify-center" type="button">
             <span className="inline-flex size-11 items-center justify-center overflow-hidden rounded-full border border-border bg-background">
               <Image
                 alt=""
