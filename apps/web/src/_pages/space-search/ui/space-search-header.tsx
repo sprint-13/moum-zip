@@ -9,7 +9,7 @@ export const SpaceSearchHeader = () => {
     <header className="bg-background-basic">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-          <Link className="inline-flex shrink-0 items-center p-2" href="/space">
+          <Link className="inline-flex shrink-0 items-center p-2" href="/">
             <Image
               alt="Logo"
               className="w-23.75"

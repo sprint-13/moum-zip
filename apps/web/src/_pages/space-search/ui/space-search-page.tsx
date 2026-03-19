@@ -21,7 +21,7 @@ export const SpaceSearchPage = ({ searchParams }: SpaceSearchPageProps) => {
   const resultPage = getSpaceSearchResultPage(queryState);
 
   const navigateWithQueryState = (nextQueryState: SpaceSearchQueryState) => {
-    router.replace(buildSpaceSearchHref("/space", nextQueryState));
+    router.replace(buildSpaceSearchHref("/search", nextQueryState));
   };
 
   const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {

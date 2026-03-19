@@ -19,7 +19,7 @@ export const SPACE_SEARCH_HERO_CONTENT = {
 
 export const SPACE_SEARCH_NAV_ITEMS: SpaceSearchNavItem[] = [
   {
-    href: "/space",
+    href: "/search",
     id: "space-search",
     isActive: true,
     label: "스페이스 찾기",
