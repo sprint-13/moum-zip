@@ -1,7 +1,7 @@
 "use client";
 import { useDeferredValue, useState } from "react";
 
-import type { SpaceInfo } from "@/entities/space/model/types";
+import type { SpaceInfo } from "@/entities/space";
 import { SpaceControl } from "./space-control";
 import { SpaceInfoGridCard } from "./space-info-grid-card";
 

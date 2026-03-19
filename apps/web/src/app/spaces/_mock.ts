@@ -1,4 +1,4 @@
-import type { SpaceInfo } from "@/entities/space/model/types";
+import type { SpaceInfo } from "@/entities/space";
 
 export const MOCK_SPACE: SpaceInfo[] = [
   {

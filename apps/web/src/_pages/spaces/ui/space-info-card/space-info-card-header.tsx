@@ -1,6 +1,6 @@
 import { Badge } from "@moum-zip/ui/components";
 import { MoreVertical } from "@moum-zip/ui/icons";
-import type { SpaceInfo } from "@/entities/space/model/types";
+import type { SpaceInfo } from "@/entities/space";
 
 export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
   return (
