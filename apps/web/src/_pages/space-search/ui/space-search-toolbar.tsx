@@ -12,6 +12,10 @@ interface SpaceSearchToolbarProps {
 
 type FilterIconProps = Pick<ComponentProps<typeof Filter>, "leftIcon" | "rightIcon">;
 
+/**
+ * - undefined: Filter 기본 아이콘 사용
+ * - null: 해당 위치 아이콘 숨김
+ */
 const getFilterIconProps = ({ hasLeftIcon, id }: Pick<SpaceSearchFilter, "hasLeftIcon" | "id">): FilterIconProps => {
   if (id === "deadline") {
     return {

@@ -97,7 +97,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
               </Tag>
             </div>
             <LabeledProgressBar
-              aria-label={`${title} participants`}
+              aria-label={`${title} 참여 현황`}
               className="mb-3.5 w-full max-w-64.5 sm:mb-0"
               maxValue={maxParticipants}
               value={currentParticipants}

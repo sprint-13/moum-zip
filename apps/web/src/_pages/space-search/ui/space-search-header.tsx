@@ -5,6 +5,8 @@ import Link from "next/link";
 import { SPACE_SEARCH_ASSETS, SPACE_SEARCH_NAV_ITEMS } from "../constants";
 
 export const SpaceSearchHeader = () => {
+  const hasUnreadNotifications = true;
+
   return (
     <header className="bg-background-basic">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
@@ -38,7 +40,7 @@ export const SpaceSearchHeader = () => {
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-6">
           <button
-            aria-label="Notifications"
+            aria-label={hasUnreadNotifications ? "새 알림 있음" : "알림"}
             className="relative inline-flex size-10 items-center justify-center rounded-full"
             type="button"
           >

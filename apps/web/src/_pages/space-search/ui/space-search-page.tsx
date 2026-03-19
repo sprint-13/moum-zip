@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateButton } from "@ui/components";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../constants";
 import { buildSpaceSearchHref, getSpaceSearchResultPage, parseSpaceSearchQueryState } from "../search-params";
@@ -16,12 +16,13 @@ interface SpaceSearchPageProps {
 }
 
 export const SpaceSearchPage = ({ searchParams }: SpaceSearchPageProps) => {
+  const pathname = usePathname();
   const router = useRouter();
   const queryState = parseSpaceSearchQueryState(searchParams);
   const resultPage = getSpaceSearchResultPage(queryState);
 
   const navigateWithQueryState = (nextQueryState: SpaceSearchQueryState) => {
-    router.replace(buildSpaceSearchHref("/search", nextQueryState));
+    router.replace(buildSpaceSearchHref(pathname, nextQueryState));
   };
 
   const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {
@@ -63,7 +64,7 @@ export const SpaceSearchPage = ({ searchParams }: SpaceSearchPageProps) => {
       </main>
 
       <div className="fixed right-4 bottom-6 z-20 sm:right-6 sm:bottom-8 xl:right-0 2xl:right-6">
-        <CreateButton aria-label="Create space" className="sm:hidden" variant="icon" />
+        <CreateButton aria-label="스페이스 만들기" className="sm:hidden" variant="icon" />
         <CreateButton className="hidden sm:inline-flex">스페이스 만들기</CreateButton>
       </div>
     </div>

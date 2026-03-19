@@ -17,7 +17,7 @@ export const SpaceCardLikeButton = ({ isLiked = false }: SpaceCardLikeButtonProp
   return (
     <UtilityButton
       active={isLiked}
-      aria-label={isLiked ? "Remove favorite" : "Add favorite"}
+      aria-label={isLiked ? "좋아요 취소" : "좋아요 추가"}
       className="shrink-0"
       icon={isLiked ? ActiveHeartIcon : DefaultHeartIcon}
     />

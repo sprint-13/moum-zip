@@ -6,7 +6,7 @@ export interface SpaceSearchNavItem {
   notificationCount?: number;
 }
 
-export type SpaceSearchCategoryId = string;
+export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "business" | "health" | "family" | "etc";
 export type SpaceSearchFilterId = "date" | "district" | "deadline";
 
 export interface SpaceSearchCategory {

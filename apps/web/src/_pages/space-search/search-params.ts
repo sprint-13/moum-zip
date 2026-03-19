@@ -9,6 +9,7 @@ type SearchParamSource = SearchParamRecord | { get(name: string): string | null 
 const categoryLabelById = new Map<SpaceSearchCategoryId, string>(
   SPACE_SEARCH_CATEGORIES.map(({ id, label }) => [id, label]),
 );
+const categoryIds = new Set<SpaceSearchCategoryId>(SPACE_SEARCH_CATEGORIES.map(({ id }) => id));
 
 const isSearchParamGetter = (value: SearchParamSource): value is { get(name: string): string | null } => {
   return typeof value === "object" && value !== null && "get" in value && typeof value.get === "function";
@@ -46,13 +47,17 @@ const parsePositiveInteger = (value: string | null, fallback: number) => {
   return parsed;
 };
 
+const isSpaceSearchCategoryId = (value: string): value is SpaceSearchCategoryId => {
+  return categoryIds.has(value as SpaceSearchCategoryId);
+};
+
 export const parseSpaceSearchQueryState = (searchParams: SearchParamSource): SpaceSearchQueryState => {
   const categoryId = getSearchParamValue(searchParams, "category");
   const page = parsePositiveInteger(getSearchParamValue(searchParams, "page"), SPACE_SEARCH_INITIAL_QUERY_STATE.page);
 
   return {
     categoryId:
-      categoryId && categoryLabelById.has(categoryId) ? categoryId : SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId,
+      categoryId && isSpaceSearchCategoryId(categoryId) ? categoryId : SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId,
     page,
   };
 };
