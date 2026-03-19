@@ -17,3 +17,9 @@ out
 .husky/_
 *storybook.log
 storybook-static
+
+.docs
+.cursor
+.claude
+CLAUDE.md
+*.pen
