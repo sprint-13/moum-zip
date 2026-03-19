@@ -1,0 +1,13 @@
+export { default as bgDoubleOval } from "./bg-double-oval.png";
+export { default as bgEllipse } from "./bg-ellipse.png";
+export { default as bgStar } from "./bg-star.png";
+export { default as categoryBusiness } from "./category-business.png";
+export { default as categoryEtc } from "./category-etc.png";
+export { default as categoryFamily } from "./category-family.png";
+export { default as categoryHealth } from "./category-health.png";
+export { default as categoryHobby } from "./category-hobby.png";
+export { default as categoryStudy } from "./category-study.png";
+export { default as heroImage } from "./hero.png";
+export { default as spaceLg } from "./space-lg.png";
+export { default as spaceMd } from "./space-md.png";
+export { default as spaceSm } from "./space-sm.png";
