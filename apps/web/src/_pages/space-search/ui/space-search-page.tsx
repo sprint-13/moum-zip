@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateButton } from "@ui/components";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../constants";
 import { buildSpaceSearchHref, getSpaceSearchResultPage, parseSpaceSearchQueryState } from "../search-params";
@@ -11,15 +11,17 @@ import { SpaceSearchHero } from "./space-search-hero";
 import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
-export const SpaceSearchPage = () => {
-  const pathname = usePathname();
+interface SpaceSearchPageProps {
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+export const SpaceSearchPage = ({ searchParams }: SpaceSearchPageProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const queryState = parseSpaceSearchQueryState(searchParams);
   const resultPage = getSpaceSearchResultPage(queryState);
 
   const navigateWithQueryState = (nextQueryState: SpaceSearchQueryState) => {
-    router.replace(buildSpaceSearchHref(pathname, nextQueryState));
+    router.replace(buildSpaceSearchHref("/space", nextQueryState));
   };
 
   const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {
