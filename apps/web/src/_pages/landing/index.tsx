@@ -21,7 +21,7 @@ export const LandingPage = () => {
               <span className="block">혼자보다 함께,</span>
               <span className="block">모음.zip에서 시작해보세요</span>
             </h2>
-            <p className="text-slate-600 md:text-xl">
+            <p className="text-neutral-500 md:text-xl">
               <span className="block">작은 한 걸음도 혼자가 아니면 가벼워집니다.</span>
               <span className="block">당신의 첫 모임, 모음.zip이 도와드릴게요.</span>
             </p>
@@ -49,10 +49,10 @@ export const LandingPage = () => {
       <section className="px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]">
         <div className="flex flex-col items-center justify-center gap-1 lg:gap-2">
           <p className="pb-2 font-semibold text-green-600 text-sm md:text-xl lg:pb-4">모임 찾기</p>
-          <h3 className="font-bold text-slate-800 text-xl leading-[30px] tracking-tight md:text-[40px] md:leading-[56px]">
+          <h3 className="font-bold text-foreground text-xl leading-[30px] tracking-tight md:text-[40px] md:leading-[56px]">
             다양한 분야의 모임을 만나보세요
           </h3>
-          <p className="font-medium text-slate-600 md:text-xl md:leading-[30px]">
+          <p className="font-medium text-muted-foreground md:text-xl md:leading-[30px]">
             취향에 따라서 원하는 모임을 골라보세요.
           </p>
         </div>
@@ -63,15 +63,15 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      <section className="overflow-hidden bg-muted px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]">
+      <section className="overflow-hidden bg-gray-100 px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]">
         <div className="mx-auto flex w-full max-w-[1280px] flex-col md:gap-[94px] lg:flex-row lg:justify-between lg:gap-0">
           <div className="flex flex-col justify-center gap-1 text-center lg:shrink-0 lg:gap-2 lg:text-left">
             <p className="pb-2 font-semibold text-green-600 text-sm md:text-xl lg:pb-4">스페이스</p>
-            <h3 className="font-bold text-slate-800 text-xl leading-[30px] tracking-tight md:text-[40px] md:leading-[56px]">
+            <h3 className="font-bold text-gray-950 text-xl leading-[30px] tracking-tight md:text-[40px] md:leading-[56px]">
               <span className="block">모임 사람들과</span>
               <span className="block">자유롭게 이야기를 나눠보세요</span>
             </h3>
-            <p className="font-medium text-slate-600 md:text-xl md:leading-[30px]">
+            <p className="font-medium text-neutral-500 md:text-xl md:leading-[30px]">
               <span className="block">일상 속 궁금증, 경험, 생각들을 자유롭게 나누세요.</span>
               <span className="block">웃고 공감하며 함께 즐거움을 나누는 공간입니다.</span>
             </p>
@@ -110,7 +110,7 @@ export const LandingPage = () => {
               height={136}
               className="absolute top-[-70%] left-[-20%] md:top-[-40%] md:left-[-16%] md:h-[200px] md:w-[200px]"
             />
-            <span className="relative block">혼자 시작하기 어려웠던 일들,</span>
+            <span className="relative block text-gray-950">혼자 시작하기 어려웠던 일들,</span>
             <span className="relative mt-2 block text-green-600">모음.zip에서 함께 해요</span>
           </h2>
           <Button size="medium" className="min-w-0 max-w-[140px] md:hidden">
