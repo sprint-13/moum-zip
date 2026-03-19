@@ -1,0 +1,159 @@
+"use client";
+import { Eye, EyeOff } from "@moum-zip/ui/icons";
+import { Button, InputField, SocialButton } from "@ui/components";
+import { cn } from "@ui/lib/utils";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+
+interface SignupFormValues {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+export const SignupForm = () => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    mode: "onSubmit",
+  });
+
+  const handlePasswordToggle = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
+
+  const handlePasswordConfirmToggle = () => {
+    setIsPasswordConfirmVisible((prev) => !prev);
+  };
+
+  const onSubmit = (data: SignupFormValues) => {
+    // TODO: 회원가입 API 연결
+  };
+
+  return (
+    <div className="flex w-full flex-col">
+      <h1 className="text-center font-semibold text-base text-foreground md:text-2xl">회원가입</h1>
+      <form className="flex flex-col gap-6 pt-10" onSubmit={handleSubmit(onSubmit)}>
+        <InputField
+          label="이름"
+          placeholder="이름을 입력해주세요"
+          required
+          className="bg-input-background font-normal text-sm shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-base"
+          isDestructive={!!errors.name}
+          message={errors.name?.message}
+          {...register("name", {
+            required: "이름은 필수 입력 항목입니다.",
+          })}
+        />
+        <InputField
+          label="아이디"
+          placeholder="이메일을 입력해주세요"
+          required
+          className="bg-input-background font-normal text-sm shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-base"
+          isDestructive={!!errors.email}
+          message={errors.email?.message}
+          {...register("email", {
+            required: "이메일을 입력해주세요.",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "이메일 형식이 아닙니다.",
+            },
+          })}
+        />
+        <div className="flex flex-col gap-2">
+          <label htmlFor="password" className="font-semibold text-foreground text-sm leading-[1.2]">
+            비밀번호 <span className="ml-1 text-primary">*</span>
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={isPasswordVisible ? "text" : "password"}
+              placeholder="비밀번호를 입력해주세요"
+              className={cn(
+                "min-h-12 w-full max-w-[456px] rounded-md border bg-input-background px-3 font-normal text-foreground text-sm placeholder:text-slate-500 focus-visible:outline-none max-md:max-w-[311px] md:text-base [&::-ms-reveal]:hidden",
+                errors.password ? "border-destructive" : "border-input focus-visible:border-ring",
+              )}
+              {...register("password", {
+                required: "비밀번호를 입력해주세요.",
+                minLength: {
+                  value: 8,
+                  message: "8자 이상 입력해주세요.",
+                },
+              })}
+            />
+            <button
+              type="button"
+              onClick={handlePasswordToggle}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            >
+              {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="font-medium text-destructive text-sm leading-[1.2]">{errors.password.message}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="passwordConfirm" className="font-semibold text-foreground text-sm leading-[1.2]">
+            비밀번호 확인 <span className="ml-1 text-primary">*</span>
+          </label>
+          <div className="relative">
+            <input
+              id="passwordConfirm"
+              type={isPasswordConfirmVisible ? "text" : "password"}
+              placeholder="비밀번호를 한 번 더 입력해주세요"
+              className={cn(
+                "min-h-12 w-full max-w-[456px] rounded-md border bg-input-background px-3 font-normal text-foreground text-sm placeholder:text-slate-500 focus-visible:outline-none max-md:max-w-[311px] md:text-base [&::-ms-reveal]:hidden",
+                errors.passwordConfirm ? "border-destructive" : "border-input focus-visible:border-ring",
+              )}
+              {...register("passwordConfirm", {
+                required: "비밀번호를 다시 입력해주세요.",
+                validate: (value) => value === watch("password") || "비밀번호가 일치하지 않습니다.",
+              })}
+            />
+            <button
+              type="button"
+              onClick={handlePasswordConfirmToggle}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            >
+              {isPasswordConfirmVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          {errors.passwordConfirm && (
+            <p className="font-medium text-destructive text-sm leading-[1.2]">{errors.passwordConfirm.message}</p>
+          )}
+        </div>
+        <Button
+          variant="tertiary"
+          type="submit"
+          className="mt-2 bg-slate-100 text-base text-muted-foreground hover:bg-slate-200 md:text-xl"
+        >
+          회원가입
+        </Button>
+      </form>
+      <div className="relative my-8 flex items-center gap-3">
+        <div className="flex-1 border-border border-t" />
+        <span className="text-muted-foreground text-sm">SNS 계정으로 회원가입</span>
+        <div className="flex-1 border-border border-t" />
+      </div>
+      <div className="flex flex-col items-center gap-3 md:flex-row md:justify-center">
+        <SocialButton provider="google" className="w-full md:w-[222px]" />
+        <SocialButton provider="kakao" className="w-full md:w-[222px]" />
+      </div>
+      <p className="mt-8 text-center text-foreground text-sm md:text-[15px]">
+        이미 회원이신가요?{" "}
+        <Link href="/login" className="font-semibold text-green-600 underline">
+          로그인
+        </Link>
+      </p>
+    </div>
+  );
+};
