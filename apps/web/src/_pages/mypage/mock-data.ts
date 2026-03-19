@@ -136,6 +136,7 @@ export const mypageMoimMockData: Record<MypageTabKey, MoimCardMockData[]> = {
 export const createdMoimMockData: Record<"ongoing" | "ended", MoimCardMockData[]> = {
   ongoing: mypageMoimMockData.created,
   ended: [
+    /*
     {
       id: "created-ended-1",
       title: "지난 모임 Title",
@@ -149,5 +150,6 @@ export const createdMoimMockData: Record<"ongoing" | "ended", MoimCardMockData[]
       actionVariant: "primary",
       primaryBadge: { label: "진행 완료", variant: "completed" },
     },
+    */
   ],
 };

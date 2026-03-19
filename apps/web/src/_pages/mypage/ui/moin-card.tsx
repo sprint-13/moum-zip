@@ -19,18 +19,23 @@ const imageToneClassName: Record<MoimImageTone, string> = {
 
 const metaLabelClassName = "text-muted-foreground";
 
-function HeartButton({ liked }: { liked: boolean }) {
-  const [isLiked, setIsLiked] = useState(liked);
+interface HeartButtonProps {
+  isLiked: boolean;
+  onToggle: () => void;
+  className?: string;
+}
 
+function HeartButton({ isLiked, onToggle, className }: HeartButtonProps) {
   return (
     <button
       type="button"
       aria-label={isLiked ? "찜한 모임 해제" : "모임 찜하기"}
       aria-pressed={isLiked}
-      onClick={() => setIsLiked((prev) => !prev)}
+      onClick={onToggle}
       className={cn(
         "flex size-12 items-center justify-center rounded-full border transition-colors",
         isLiked ? "border-primary/20 text-primary" : "border-border text-muted-foreground",
+        className,
       )}
     >
       <Heart
@@ -42,14 +47,14 @@ function HeartButton({ liked }: { liked: boolean }) {
   );
 }
 
-function MoimPreview({ imageTone }: { imageTone: MoimImageTone }) {
+interface MoimPreviewProps {
+  imageTone: MoimImageTone;
+  className?: string;
+}
+
+function MoimPreview({ imageTone, className }: MoimPreviewProps) {
   return (
-    <div
-      className={cn(
-        "relative aspect-square w-full overflow-hidden rounded-3xl xl:size-[11.75rem]",
-        imageToneClassName[imageTone],
-      )}
-    >
+    <div className={cn("relative w-full overflow-hidden", imageToneClassName[imageTone], className)}>
       <div className="absolute inset-0 bg-linear-to-br from-white/40 via-white/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-black/6" />
     </div>
@@ -57,13 +62,21 @@ function MoimPreview({ imageTone }: { imageTone: MoimImageTone }) {
 }
 
 export default function MoimCard({ moim }: MoimCardProps) {
+  const [isLiked, setIsLiked] = useState(moim.liked);
+
   return (
-    <article className="flex w-full flex-col gap-5 rounded-3xl bg-card p-4 shadow-sm sm:p-5 lg:flex-row lg:items-center lg:gap-6 lg:p-6 xl:h-[14.75rem] xl:w-[59.875rem] xl:px-6 xl:py-6">
-      <div className="w-full max-w-full xl:w-[11.75rem] xl:min-w-[11.75rem]">
-        <MoimPreview imageTone={moim.imageTone} />
+    <article className="flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-sm xl:h-[14.75rem] xl:w-[59.875rem]">
+      <div className="relative w-full md:w-[11.75rem] md:min-w-[11.75rem]">
+        <MoimPreview
+          imageTone={moim.imageTone}
+          className="aspect-[343/156] rounded-t-3xl md:aspect-square md:size-[11.75rem] md:rounded-3xl"
+        />
+        <div className="absolute top-4 right-4 md:hidden">
+          <HeartButton isLiked={isLiked} onToggle={() => setIsLiked((prev) => !prev)} className="bg-white shadow-sm" />
+        </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-5">
+      <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 md:p-0">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge>
           {moim.secondaryBadge ? (
@@ -94,10 +107,19 @@ export default function MoimCard({ moim }: MoimCardProps) {
             </p>
           </div>
         </div>
+
+        <Button
+          type="button"
+          variant={moim.actionVariant === "primary" ? "primary" : "secondary"}
+          size="small"
+          className="mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden"
+        >
+          {moim.actionLabel}
+        </Button>
       </div>
 
-      <div className="flex items-center justify-between gap-4 xl:ml-auto xl:w-[11rem] xl:flex-col xl:items-end xl:self-stretch">
-        <HeartButton liked={moim.liked} />
+      <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
+        <HeartButton isLiked={isLiked} onToggle={() => setIsLiked((prev) => !prev)} className="bg-card" />
 
         <Button
           type="button"
