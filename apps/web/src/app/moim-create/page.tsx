@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { icoTitle } from "@/_pages/space-create/assets";
-import { SpaceCreateForm } from "@/features/space-create";
+import { icoTitle } from "@/_pages/moim-create";
+import { MoimCreateForm } from "@/features/moim-create";
 
 // 임시 gnb 컴포넌트
 const PlaceholderGnb = () => <div className="h-[var(--gnb-height)]" />;
@@ -22,7 +22,7 @@ export default function Page() {
             </div>
           </header>
 
-          <SpaceCreateForm />
+          <MoimCreateForm />
         </div>
       </section>
     </>

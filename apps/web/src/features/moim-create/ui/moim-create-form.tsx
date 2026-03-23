@@ -4,13 +4,12 @@ import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/c
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
 import { Controller } from "react-hook-form";
-import { DatePicker, TimePicker } from "@/_pages/space-create";
-import { icoProject, icoStudy } from "@/_pages/space-create/assets";
-import { useSpaceCreateForm } from "@/features/space-create/model/use-space-create-form";
-import { ThemeColorSelect } from "@/features/space-create/ui/theme-color-select";
+import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
+import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
+import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 
-export const SpaceCreateForm = () => {
-  const { form, onSubmit } = useSpaceCreateForm();
+export const MoimCreateForm = () => {
+  const { form, onSubmit } = useMoimCreateForm();
   const {
     control,
     register,

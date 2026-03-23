@@ -1,2 +1,2 @@
-export { SpaceCreateForm } from "./ui/space-create-form";
+export { MoimCreateForm } from "./ui/moim-create-form";
 export { ThemeColorSelect } from "./ui/theme-color-select";

@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { type SpaceCreateFormInput, type SpaceCreateFormValues, spaceCreateSchema } from "./schema";
+import { type MoimCreateFormValues, moimCreateSchema } from "@/features/moim-create/model/schema";
 
-export const useSpaceCreateForm = () => {
-  const form = useForm<SpaceCreateFormInput, unknown, SpaceCreateFormValues>({
-    resolver: zodResolver(spaceCreateSchema),
+export const useMoimCreateForm = () => {
+  const form = useForm<MoimCreateFormValues>({
+    resolver: zodResolver(moimCreateSchema),
     defaultValues: {
       type: undefined,
       name: "",
@@ -20,7 +20,7 @@ export const useSpaceCreateForm = () => {
     },
   });
 
-  const onSubmit = (_data: SpaceCreateFormValues) => {
+  const onSubmit = (_data: MoimCreateFormValues) => {
     // TODO: API 연결
   };
 
