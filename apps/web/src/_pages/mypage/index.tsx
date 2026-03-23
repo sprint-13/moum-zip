@@ -8,6 +8,7 @@ import MoimCardList from "./ui/moim-card-list";
 import ProfileSection from "./ui/profile-section";
 
 type CreatedFilterKey = "ongoing" | "ended";
+type MoimTabKey = Exclude<MypageTabKey, "created">;
 
 const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
   { key: "ongoing", label: "진행 중" },
@@ -17,7 +18,7 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
 interface MypagePageProps {
   profile: ProfileMockData;
   tabs: Array<{ key: MypageTabKey; label: string }>;
-  moims: Record<MypageTabKey, MoimCardMockData[]>;
+  moims: Record<MoimTabKey, MoimCardMockData[]>;
   createdMoims: Record<CreatedFilterKey, MoimCardMockData[]>;
 }
 

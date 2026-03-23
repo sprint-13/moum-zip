@@ -64,6 +64,13 @@ function MoimPreview({ imageTone, className }: MoimPreviewProps) {
 
 export default function MoimCard({ moim }: MoimCardProps) {
   const [isLiked, setIsLiked] = useState(moim.liked);
+  const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
+
+  const renderActionButton = (className?: string) => (
+    <Button type="button" variant={actionVariant} size="small" className={className}>
+      {moim.actionLabel}
+    </Button>
+  );
 
   return (
     <article className="flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-sm xl:h-[14.75rem] xl:w-[59.875rem]">
@@ -109,27 +116,13 @@ export default function MoimCard({ moim }: MoimCardProps) {
           </div>
         </div>
 
-        <Button
-          type="button"
-          variant={moim.actionVariant === "primary" ? "primary" : "secondary"}
-          size="small"
-          className="mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden"
-        >
-          {moim.actionLabel}
-        </Button>
+        {renderActionButton("mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden")}
       </div>
 
       <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
         <HeartButton isLiked={isLiked} onToggle={() => setIsLiked((prev) => !prev)} className="bg-card" />
 
-        <Button
-          type="button"
-          variant={moim.actionVariant === "primary" ? "primary" : "secondary"}
-          size="small"
-          className="h-12 min-w-[9.75rem] text-base"
-        >
-          {moim.actionLabel}
-        </Button>
+        {renderActionButton("h-12 min-w-[9.75rem] text-base")}
       </div>
     </article>
   );
