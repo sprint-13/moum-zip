@@ -2,8 +2,8 @@
 
 import { Sheet } from "@moum-zip/ui/components";
 import { PanelLeft } from "@moum-zip/ui/icons";
-import { cn } from "@ui/lib/utils";
 import { createContext, type HTMLAttributes, type ReactNode, useContext, useEffect, useState } from "react";
+import { cn } from "@/shared/lib/cn";
 
 // ------------------------------------------------------------------ constants
 

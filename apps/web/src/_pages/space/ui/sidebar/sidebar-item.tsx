@@ -1,7 +1,7 @@
 import { ChevronRight } from "@moum-zip/ui/icons";
-import { cn } from "@ui/lib/utils";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/cn";
 
 interface SidebarItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   active?: boolean;

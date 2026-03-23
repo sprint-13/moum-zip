@@ -1,5 +1,5 @@
-import { cn } from "@ui/lib/utils"; // TODO: shared로 빼기
 import type React from "react";
+import { cn } from "@/shared/lib/cn";
 
 type SpaceBodyProps = React.HTMLAttributes<HTMLElement>;
 
