@@ -20,7 +20,7 @@ export const NavigationMenu = () => {
         <Gnb viewport={false}>
           <Gnb.List>
             <Gnb.Item className="shrink-0">
-              <Link href="/" className="inline-flex items-center pl-4">
+              <Link href="/" aria-label="홈으로 이동" className="inline-flex items-center pl-4">
                 {logo}
               </Link>
             </Gnb.Item>
@@ -41,7 +41,7 @@ export const NavigationMenu = () => {
       </div>
 
       <div className="flex w-full items-center justify-between px-4 py-2 md:hidden">
-        <Link href="/" className="inline-flex shrink-0 items-center overflow-visible">
+        <Link href="/" aria-label="홈으로 이동" className="inline-flex shrink-0 items-center overflow-visible">
           {logo}
         </Link>
 
