@@ -15,7 +15,13 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
 
   return (
     <>
-      <section className="min-h-24 rounded-3xl border border-[#99F1D1] bg-[linear-gradient(180deg,#E9FBF1_0%,#E9FCFC_100%)] px-4 py-4 shadow-sm md:min-h-[10.125rem] md:px-6 md:py-6 xl:sticky xl:top-10 xl:h-[17.75rem] xl:w-[17.625rem] xl:px-8 xl:py-10">
+      <section
+        className="min-h-24 rounded-3xl border px-4 py-4 shadow-sm md:min-h-[10.125rem] md:px-6 md:py-6 xl:sticky xl:top-10 xl:h-[17.75rem] xl:w-[17.625rem] xl:px-8 xl:py-10"
+        style={{
+          borderColor: "var(--color-green-200)",
+          background: "linear-gradient(180deg, var(--color-accent) 0%, var(--color-background) 100%)",
+        }}
+      >
         <div className="flex items-center gap-4 md:gap-6 xl:h-full xl:flex-col xl:items-center xl:gap-0 xl:text-center">
           <ProfileAvatar
             className="size-12 shrink-0 md:size-[6.125rem] xl:size-[7.125rem]"
@@ -34,7 +40,13 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
               <Pencil size={18} className="text-muted-foreground" aria-hidden="true" />
             </button>
 
-            <p className="rounded-full bg-[linear-gradient(180deg,#DEF8EA_0%,#D9F6F4_100%)] px-5 py-2 text-[0.875rem] text-muted-foreground leading-5 xl:mt-auto">
+            <p
+              className="rounded-full px-5 py-2 text-[0.875rem] text-muted-foreground leading-5 xl:mt-auto"
+              style={{
+                background:
+                  "linear-gradient(180deg, var(--color-accent) 0%, color-mix(in srgb, var(--color-accent) 65%, var(--color-background)) 100%)",
+              }}
+            >
               {profile.email}
             </p>
           </div>

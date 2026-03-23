@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, CheckCircleIcon } from "@ui/components";
+import { Badge, Button, CheckCircleIcon, UtilityButton } from "@ui/components";
 import { Heart } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
@@ -27,23 +27,24 @@ interface HeartButtonProps {
 
 function HeartButton({ isLiked, onToggle, className }: HeartButtonProps) {
   return (
-    <button
-      type="button"
+    <UtilityButton
+      active={isLiked}
       aria-label={isLiked ? "찜한 모임 해제" : "모임 찜하기"}
       aria-pressed={isLiked}
       onClick={onToggle}
-      className={cn(
-        "flex size-12 items-center justify-center rounded-full border transition-colors",
-        isLiked ? "border-primary/20 text-primary" : "border-border text-muted-foreground",
-        className,
+      icon={(size) => (
+        <Heart
+          size={size}
+          strokeWidth={1.8}
+          style={{
+            fill: isLiked ? "url(#icon-gradient)" : "none",
+            stroke: isLiked ? "url(#icon-gradient)" : "currentColor",
+          }}
+          aria-hidden="true"
+        />
       )}
-    >
-      <Heart
-        className={cn("size-6", isLiked ? "fill-current stroke-current" : "fill-none stroke-current")}
-        strokeWidth={1.8}
-        aria-hidden="true"
-      />
-    </button>
+      className={className}
+    />
   );
 }
 

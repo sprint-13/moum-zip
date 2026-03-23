@@ -4,7 +4,7 @@ import { Button } from "@ui/components";
 import { Input } from "@ui/components/shadcn/input";
 import { Pencil } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { ProfileMockData } from "../mock-data";
 import ProfileAvatar from "./profile-avatar";
 
@@ -17,6 +17,32 @@ interface ProfileEditModalProps {
 export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
   const nameInputId = useId();
   const emailInputId = useId();
+  const titleId = useId();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusedElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      previousFocusedElementRef.current?.focus();
+      previousFocusedElementRef.current = null;
+      return;
+    }
+
+    previousFocusedElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   return (
     <div
@@ -26,10 +52,18 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
       )}
       aria-hidden={!isOpen}
     >
-      <div className="flex w-full max-w-[34rem] flex-col rounded-3xl bg-card px-6 py-6 shadow-xl md:px-12 md:py-12">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="flex w-full max-w-[34rem] flex-col rounded-3xl bg-card px-6 py-6 shadow-xl md:px-12 md:py-12"
+      >
         <div className="flex items-start justify-between gap-4">
-          <h2 className="font-bold text-foreground text-xl leading-tight md:text-2xl">프로필 수정하기</h2>
+          <h2 id={titleId} className="font-bold text-foreground text-xl leading-tight md:text-2xl">
+            프로필 수정하기
+          </h2>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             className="flex size-7 items-center justify-center rounded-full text-foreground/70 md:size-8"
@@ -43,7 +77,11 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
 
         <div className="mt-6 flex flex-col items-center md:mt-8">
           <div className="relative aspect-[116/119] w-full max-w-[6.5rem] md:max-w-[7.25rem]">
-            <ProfileAvatar className="w-[calc(100%-0.125rem)]" />
+            <ProfileAvatar
+              className="h-[calc(100%-0.125rem)] w-[calc(100%-0.125rem)]"
+              src={profile.imageUrl}
+              alt={`${profile.name} 프로필 이미지`}
+            />
             <button
               type="button"
               className="absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm md:size-9"
