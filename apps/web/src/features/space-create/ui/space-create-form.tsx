@@ -4,11 +4,10 @@ import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/c
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
 import { Controller } from "react-hook-form";
+import { DatePicker, TimePicker } from "@/_pages/space-create";
 import { icoProject, icoStudy } from "@/_pages/space-create/assets";
-import { DatePicker } from "@/_pages/space-create/ui/date-picker";
-import { ThemeColorSelect } from "@/_pages/space-create/ui/theme-color-select";
-import { TimePicker } from "@/_pages/space-create/ui/time-picker";
 import { useSpaceCreateForm } from "@/features/space-create/model/use-space-create-form";
+import { ThemeColorSelect } from "@/features/space-create/ui/theme-color-select";
 
 export const SpaceCreateForm = () => {
   const { form, onSubmit } = useSpaceCreateForm();
