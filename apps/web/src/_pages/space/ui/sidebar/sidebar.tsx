@@ -1,21 +1,18 @@
 "use client";
 
-import { Sheet } from "@moum-zip/ui/components";
 import { PanelLeft } from "@moum-zip/ui/icons";
-import { createContext, type HTMLAttributes, type ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, type HTMLAttributes, type ReactNode, useContext, useState } from "react";
 import { cn } from "@/shared/lib/cn";
 
 // ------------------------------------------------------------------ constants
 
 const SIDEBAR_WIDTH = "260px";
-const MOBILE_BREAKPOINT = 1024; // lg
 
 // ------------------------------------------------------------------ context
 
 type SidebarContextValue = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  isMobile: boolean;
 };
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -35,22 +32,9 @@ type SidebarProviderProps = {
 
 function SidebarProvider({ children, defaultOpen = true }: SidebarProviderProps) {
   const [open, setOpen] = useState(defaultOpen);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
-    const onChange = (e: MediaQueryListEvent) => {
-      setIsMobile(e.matches);
-      // 모바일 전환 시 사이드바 닫기
-      if (e.matches) setOpen(false);
-    };
-    setIsMobile(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
 
   return (
-    <SidebarContext value={{ open, setOpen, isMobile }}>
+    <SidebarContext value={{ open, setOpen }}>
       <div style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties} className="flex min-h-svh w-full">
         {children}
       </div>
@@ -63,24 +47,12 @@ function SidebarProvider({ children, defaultOpen = true }: SidebarProviderProps)
 type SidebarPanelProps = HTMLAttributes<HTMLElement>;
 
 function SidebarPanel({ children, className }: SidebarPanelProps) {
-  const { open, setOpen, isMobile } = useSidebar();
+  const { open } = useSidebar();
 
-  // 모바일: Sheet로 오버레이
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={setOpen}>
-        <Sheet.Content side="left" className="w-(--sidebar-width) p-0">
-          <nav className="flex h-full flex-col">{children}</nav>
-        </Sheet.Content>
-      </Sheet>
-    );
-  }
-
-  // 데스크톱: 고정 사이드바
   return (
     <aside
       className={cn(
-        "hidden h-svh flex-col border-r bg-sidebar py-4 transition-[width] duration-200 lg:flex",
+        "hidden h-svh flex-col border-r bg-sidebar py-4 transition-[width] duration-200 md:flex",
         open ? "w-(--sidebar-width) px-4" : "w-14 px-2",
         className,
       )}
