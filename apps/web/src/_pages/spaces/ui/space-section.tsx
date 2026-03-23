@@ -29,6 +29,11 @@ export const SpaceSection = ({ spaces, className }: SpaceSectionProps) => {
   const displaySpaces = activeTab === "ongoing" ? visibleOngoingSpaces : visibleArchivedSpaces;
   const isEmpty = (activeTab === "ongoing" ? ongoingSpaces : archivedSpaces).length === 0;
   const isSearchEmpty = displaySpaces.length === 0 && normalizedQuery.length > 0;
+  const emptyMessage = isSearchEmpty
+    ? "검색 결과가 없어요"
+    : activeTab === "ongoing"
+      ? "참여 중인 스페이스가 없어요"
+      : "아카이브된 스페이스가 없어요";
 
   return (
     <section className={className}>
@@ -44,8 +49,7 @@ export const SpaceSection = ({ spaces, className }: SpaceSectionProps) => {
         {displaySpaces.map((space) => (
           <SpaceInfoGridCard key={space.id} space={space} />
         ))}
-        {isEmpty && <NoSpaceCard message="참여 중인 스페이스가 없어요" />}
-        {isSearchEmpty && <NoSpaceCard message="검색 결과가 없어요" />}
+        {emptyMessage ? <NoSpaceCard message={emptyMessage} /> : null}
       </div>
     </section>
   );
