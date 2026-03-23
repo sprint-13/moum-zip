@@ -21,15 +21,22 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousFocusedElementRef = useRef<HTMLElement | null>(null);
+  const previousBodyOverflowRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
+      if (previousBodyOverflowRef.current !== null) {
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        previousBodyOverflowRef.current = null;
+      }
       previousFocusedElementRef.current?.focus();
       previousFocusedElementRef.current = null;
       return;
     }
 
     previousFocusedElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    previousBodyOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -51,7 +58,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
         dialogElement.querySelectorAll<HTMLElement>(
           'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ),
-      ).filter((element) => !element.hasAttribute("disabled") && !element.getAttribute("aria-hidden"));
+      ).filter((element) => !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true");
 
       if (focusableElements.length === 0) {
         event.preventDefault();
@@ -73,6 +80,10 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      if (previousBodyOverflowRef.current !== null) {
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        previousBodyOverflowRef.current = null;
+      }
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
