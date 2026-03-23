@@ -19,7 +19,7 @@ export function MobileHeader({ navItems }: MobileHeaderProps) {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-4 md:hidden">
       <div className="flex items-center gap-3">
-        <span className="font-semibold text-base text-foreground">{current?.label}</span>
+        <span className="font-semibold text-base text-foreground">{current?.label ?? "대시보드"}</span>
       </div>
       <div className="flex items-center gap-1">
         {Actions && <Actions />}

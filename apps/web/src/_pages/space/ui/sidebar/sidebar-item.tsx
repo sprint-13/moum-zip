@@ -19,7 +19,7 @@ export function SidebarItem({ icon, active, label, href, ...props }: SidebarItem
 
   const left = (
     <span className="flex min-w-0 items-center gap-2">
-      {icon ? <span className="\ shrink-0 text-foreground [&>svg]:size-4">{icon}</span> : null}
+      {icon ? <span className="shrink-0 text-foreground [&>svg]:size-4">{icon}</span> : null}
       <span className="truncate">{label}</span>
     </span>
   );
