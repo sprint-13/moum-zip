@@ -15,7 +15,7 @@ interface SelectBoxTriggerProps extends ComponentProps<typeof Shadcn.SelectTrigg
 
 const SelectBoxTrigger = ({ placeholder, icon, className, ...props }: SelectBoxTriggerProps) => (
   <Shadcn.SelectTrigger
-    className={cn("group min-h-11 rounded-xl py-2 text-base sm:min-h-12 sm:p-3 [&>svg]:hidden", className)}
+    className={cn("group min-h-11 w-full rounded-xl py-2 text-base sm:min-h-12 sm:p-3 [&>svg]:hidden", className)}
     {...props}
   >
     <Shadcn.SelectValue placeholder={placeholder} />
