@@ -2,16 +2,17 @@
 
 import { UtilityButton } from "@ui/components";
 
-import HeartActiveIcon from "../assets/heart-active.svg";
-import HeartDefaultIcon from "../assets/heart-default.svg";
+import HeartIcon from "../assets/heart-default.svg";
 
 interface SpaceCardLikeButtonProps {
   isLiked?: boolean;
 }
 
-const DefaultHeartIcon = (size: number) => <HeartDefaultIcon aria-hidden="true" height={size} width={size} />;
+const DefaultHeartIcon = (size: number) => <HeartIcon aria-hidden="true" fill="#DDDDDD" height={size} width={size} />;
 
-const ActiveHeartIcon = (size: number) => <HeartActiveIcon aria-hidden="true" height={size} width={size} />;
+const ActiveHeartIcon = (size: number) => (
+  <HeartIcon aria-hidden="true" fill="url(#icon-gradient)" height={size} width={size} />
+);
 
 export const SpaceCardLikeButton = ({ isLiked = false }: SpaceCardLikeButtonProps) => {
   return (

@@ -12,7 +12,7 @@ interface SpaceSearchResultsProps {
 export const SpaceSearchResults = ({ items, onPageChange, pagination }: SpaceSearchResultsProps) => {
   if (items.length === 0) {
     return (
-      <section className="rounded-[2rem] bg-background-basic px-6 py-16">
+      <section className="rounded-[2rem] bg-background-secondary px-6 py-16">
         <div className="flex justify-center">
           <Empty label={"조건에 맞는 스페이스가 없어요.\n다른 조건으로 다시 찾아보세요"} />
         </div>

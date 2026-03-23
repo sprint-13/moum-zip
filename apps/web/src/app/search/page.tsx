@@ -18,7 +18,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
 
   return (
-    <div className="min-h-screen bg-background-basic">
+    <div className="min-h-screen bg-background-secondary">
       <SpaceSearchHeader />
 
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-6.75">
