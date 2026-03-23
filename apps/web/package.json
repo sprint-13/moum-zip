@@ -13,6 +13,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@moum-zip/api": "workspace:*",
     "@moum-zip/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
@@ -20,7 +21,9 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "react-hook-form": "^7.72.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
