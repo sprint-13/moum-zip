@@ -13,10 +13,18 @@ export default function Page() {
       <section className="bg-muted p-4 md:p-6 md:py-[48px]">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-5 md:gap-[48px]">
           <header className="flex items-center gap-3 md:gap-[26px]">
-            <Image src={icoTitle} alt="" width={102} height={82} className="h-[56px] w-[70px]" />
-            <div className="gap-4">
-              <h2 className="font-semibold text-foreground text-lg md:text-[32px]">모임 만들기</h2>
-              <p className="font-medium text-base text-muted-foreground md:text-xl">
+            <Image
+              src={icoTitle}
+              alt=""
+              width={102}
+              height={82}
+              className="h-[56px] w-[70px] md:h-[82px] md:w-[102px]"
+            />
+            <div className="flex flex-col md:gap-4">
+              <h2 className="font-semibold text-foreground text-lg leading-[28px] md:text-[32px] md:leading-[36px]">
+                모임 만들기
+              </h2>
+              <p className="font-medium text-base text-muted-foreground md:text-xl md:leading-[30px]">
                 새로운 모임 정보를 입력해주세요 🏠
               </p>
             </div>
