@@ -1,8 +1,8 @@
 "use client";
 
-import { ProfileIcon } from "@ui/icons/profile-icon";
 import { cn } from "@ui/lib/utils";
 import Image from "next/image";
+import { ProfileIcon } from "@/_pages/mypage/ui/profile-icon";
 
 interface ProfileAvatarProps {
   className?: string;
