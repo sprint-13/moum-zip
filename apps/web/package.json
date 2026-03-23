@@ -21,9 +21,9 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6",
     "react-hook-form": "^7.72.0",
-    "zod": "^4.3.6"
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
