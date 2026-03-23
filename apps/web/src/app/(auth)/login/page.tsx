@@ -1,5 +1,10 @@
-import { LoginPage } from "@/_pages/login";
+import { LoginForm } from "@/features/auth";
+import { AuthCard } from "@/shared/ui";
 
 export default function Page() {
-  return <LoginPage />;
+  return (
+    <AuthCard>
+      <LoginForm />
+    </AuthCard>
+  );
 }
