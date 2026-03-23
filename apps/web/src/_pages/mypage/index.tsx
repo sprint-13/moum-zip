@@ -3,7 +3,7 @@
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-import { createdMoimMockData, mypageMoimMockData, mypageTabs, profileMockData } from "./mock-data";
+import type { MoimCardMockData, MypageTabKey, ProfileMockData } from "./mock-data";
 import MoimCardList from "./ui/moim-card-list";
 import ProfileSection from "./ui/profile-section";
 
@@ -14,7 +14,14 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
   { key: "ended", label: "진행 종료" },
 ];
 
-export default function MypagePage() {
+interface MypagePageProps {
+  profile: ProfileMockData;
+  tabs: Array<{ key: MypageTabKey; label: string }>;
+  moims: Record<MypageTabKey, MoimCardMockData[]>;
+  createdMoims: Record<CreatedFilterKey, MoimCardMockData[]>;
+}
+
+export default function MypagePage({ profile, tabs, moims, createdMoims }: MypagePageProps) {
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
 
   return (
@@ -24,13 +31,13 @@ export default function MypagePage() {
           <div className="space-y-8 xl:pt-4">
             <h1 className="font-bold text-[2rem] text-foreground leading-none tracking-[-0.03em]">마이페이지</h1>
             <div className="xl:pt-4">
-              <ProfileSection profile={profileMockData} />
+              <ProfileSection profile={profile} />
             </div>
           </div>
 
           <Tabs defaultTab="joined" size="large" className="w-full min-w-0">
             <Tabs.List className="no-scrollbar w-full min-w-0 overflow-x-auto">
-              {mypageTabs.map((tab) => (
+              {tabs.map((tab) => (
                 <Tabs.Trigger
                   key={tab.key}
                   value={tab.key}
@@ -43,7 +50,7 @@ export default function MypagePage() {
 
             <div className="pt-8">
               <Tabs.Content value="joined">
-                <MoimCardList moims={mypageMoimMockData.joined} emptyLabel="아직 신청한 모임이 없어요" />
+                <MoimCardList moims={moims.joined} emptyLabel="아직 신청한 모임이 없어요" />
               </Tabs.Content>
 
               <Tabs.Content value="created">
@@ -70,7 +77,7 @@ export default function MypagePage() {
                   </div>
 
                   <MoimCardList
-                    moims={createdMoimMockData[createdFilter]}
+                    moims={createdMoims[createdFilter]}
                     emptyLabel={
                       createdFilter === "ongoing" ? "아직 진행 중인 모임이 없어요" : "아직 진행 종료된 모임이 없어요"
                     }
@@ -79,7 +86,7 @@ export default function MypagePage() {
               </Tabs.Content>
 
               <Tabs.Content value="liked">
-                <MoimCardList moims={mypageMoimMockData.liked} emptyLabel="아직 찜한 모임이 없어요" />
+                <MoimCardList moims={moims.liked} emptyLabel="아직 찜한 모임이 없어요" />
               </Tabs.Content>
             </div>
           </Tabs>
