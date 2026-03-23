@@ -13,7 +13,7 @@ export const SidebarHeader = ({ icon, title, description }: SidebarHeaderProps) 
   const { open, setOpen } = useSidebar();
 
   const iconEl = (
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-muted text-foreground [&>svg]:size-4">
+    <div className="size-8 shrink-0 items-center justify-center rounded-[10px] bg-muted text-foreground md:flex [&>svg]:size-4">
       {icon}
     </div>
   );
@@ -27,7 +27,7 @@ export const SidebarHeader = ({ icon, title, description }: SidebarHeaderProps) 
   }
 
   return (
-    <div className="flex items-center justify-between rounded-md p-2">
+    <div className="hidden items-center justify-between rounded-md p-2 md:flex">
       <div className="flex items-center gap-2">
         {iconEl}
         <div className="flex flex-col justify-center">

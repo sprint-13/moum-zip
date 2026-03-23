@@ -3,7 +3,7 @@ import { Pencil, UserRoundPlus } from "@moum-zip/ui/icons";
 
 export const SpaceHeader = () => {
   return (
-    <div className="mt-6 flex items-center justify-between">
+    <div className="mt-6 hidden items-center justify-between md:flex">
       <div>
         <h1 className="font-bold text-2xl" aria-label="space-top-bar-title">
           Study Group Management

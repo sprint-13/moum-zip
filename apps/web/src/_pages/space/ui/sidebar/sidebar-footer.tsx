@@ -40,7 +40,7 @@ export const SidebarFooter = ({ name, email, avatarUrl }: SidebarFooterProps) =>
   }
 
   return (
-    <div className="flex items-center justify-between rounded-md bg-muted/30 p-2">
+    <div className="hidden items-center justify-between rounded-md bg-muted/30 p-2 md:flex">
       <div className="flex items-center gap-2">
         {avatar}
         <div className="flex flex-col">
