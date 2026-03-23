@@ -26,7 +26,7 @@ export const LoginForm = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
-  const onSubmit = (data: LoginFormValues) => {
+  const onSubmit = (_data: LoginFormValues) => {
     // TODO: 로그인 API 연결
   };
 

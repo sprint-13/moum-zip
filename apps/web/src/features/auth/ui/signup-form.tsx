@@ -34,7 +34,7 @@ export const SignupForm = () => {
     setIsPasswordConfirmVisible((prev) => !prev);
   };
 
-  const onSubmit = (data: SignupFormValues) => {
+  const onSubmit = (_data: SignupFormValues) => {
     // TODO: 회원가입 API 연결
   };
 
