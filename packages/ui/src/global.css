@@ -54,10 +54,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --color-slate-100: var(--slate-100);
+  --color-slate-500: var(--slate-500);
   --color-green-500: var(--green-500);
   --color-green-600: var(--green-600);
   --color-gradient-500-start: var(--gradient-500-start);
   --color-gradient-500-end: var(--gradient-500-end);
+  --color-background-secondary: #f6f7f9;
+  --color-input-background: var(--input-background);
+  --color-border-subtle: var(--border-subtle);
 
   /* layout tokens */
   --gnb-height: var(--layout-gnb-height);
@@ -91,6 +96,7 @@
   --destructive: oklch(0.577 0.245 27.325);
 
   --border: #d9d9d9;
+  --border-subtle: #dddddd;
   --input: #d9d9d9;
   --ring: #00bd7e;
 
@@ -109,12 +115,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  --slate-100: #edeff1;
+  --slate-500: #a4a4a4;
   --gradient-500-start: #17da71;
   --gradient-500-end: #08ddf0;
   --green-500: #00bb86;
   --green-600: #009973;
 
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --input-background: #f9fafb;
 
   /* 모바일 기본 gnb 높이 */
   --layout-gnb-height: 48px;
@@ -170,6 +179,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  /* input 에러 상태일 때 outline 제거 */
+  input[aria-invalid="true"] {
+    outline: none;
+    box-shadow: none;
   }
 
   html {

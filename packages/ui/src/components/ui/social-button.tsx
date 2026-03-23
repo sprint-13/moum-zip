@@ -9,7 +9,7 @@ const socialButtonVariants = cva(
   {
     variants: {
       provider: {
-        google: "border bg-white",
+        google: "border border-border-subtle bg-white", // google 테두리 색상 수정
         kakao: "bg-[#FEE500]",
       },
     },
