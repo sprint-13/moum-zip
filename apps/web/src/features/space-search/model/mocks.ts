@@ -3,6 +3,7 @@ import type { SpaceCardItem } from "./types";
 export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   {
     category: "운동/건강",
+    categoryId: "health",
     currentParticipants: 4,
     deadlineLabel: "오늘 21시 마감",
     district: "강남구",
@@ -18,6 +19,7 @@ export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   },
   {
     category: "취미/여가",
+    categoryId: "hobby",
     currentParticipants: 19,
     deadlineLabel: "오늘 21시 마감",
     district: "중구",
@@ -37,6 +39,7 @@ export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   },
   {
     category: "취미/여가",
+    categoryId: "hobby",
     currentParticipants: 12,
     deadlineLabel: "오늘 21시 마감",
     district: "용산구",
@@ -55,6 +58,7 @@ export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   },
   {
     category: "스터디",
+    categoryId: "study",
     currentParticipants: 4,
     deadlineLabel: "2일 후 마감",
     district: "동작구",
@@ -70,6 +74,7 @@ export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   },
   {
     category: "운동/건강",
+    categoryId: "health",
     currentParticipants: 12,
     deadlineLabel: "오늘 21시 마감",
     district: "중구",
@@ -85,6 +90,7 @@ export const SPACE_SEARCH_MOCK_ITEMS: SpaceCardItem[] = [
   },
   {
     category: "기타",
+    categoryId: "etc",
     currentParticipants: 12,
     deadlineLabel: "오늘 21시 마감",
     district: "마포구",

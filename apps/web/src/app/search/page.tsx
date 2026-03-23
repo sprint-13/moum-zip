@@ -21,7 +21,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
     <div className="min-h-screen bg-background-secondary">
       <SpaceSearchHeader />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-6.75">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-[1.6875rem]">
         <SpaceSearchHero />
         <div className="px-4 sm:px-0">
           <SpaceSearchToolbarSection queryState={queryState} />

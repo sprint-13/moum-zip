@@ -7,9 +7,6 @@ const SPACE_SEARCH_ITEMS_PER_PAGE = 4;
 type SearchParamRecord = Record<string, string | string[] | undefined>;
 type SearchParamSource = SearchParamRecord | { get(name: string): string | null } | undefined;
 
-const categoryLabelById = new Map<SpaceSearchCategoryId, string>(
-  SPACE_SEARCH_CATEGORIES.map(({ id, label }) => [id, label]),
-);
 const categoryIds = new Set<SpaceSearchCategoryId>(SPACE_SEARCH_CATEGORIES.map(({ id }) => id));
 
 const isSearchParamGetter = (value: SearchParamSource): value is { get(name: string): string | null } => {
@@ -80,15 +77,11 @@ export const buildSpaceSearchHref = (pathname: string, queryState: SpaceSearchQu
 };
 
 export const getSpaceSearchResultPage = (queryState: SpaceSearchQueryState): SpaceSearchResultPage => {
-  // TODO: API 연동 시 mock 필터링 대신 서버 응답을 매핑 예정
+  // TODO: API 연동 시 mock 필터링 대신 서버 응답을 매핑할 예정
   let filteredItems = [...SPACE_SEARCH_MOCK_ITEMS];
 
   if (queryState.categoryId !== SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId) {
-    const selectedCategoryLabel = categoryLabelById.get(queryState.categoryId);
-
-    if (selectedCategoryLabel) {
-      filteredItems = filteredItems.filter(({ category }) => category === selectedCategoryLabel);
-    }
+    filteredItems = filteredItems.filter(({ categoryId }) => categoryId === queryState.categoryId);
   }
 
   const totalPages = filteredItems.length === 0 ? 0 : Math.ceil(filteredItems.length / SPACE_SEARCH_ITEMS_PER_PAGE);

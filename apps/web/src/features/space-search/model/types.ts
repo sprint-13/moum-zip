@@ -33,6 +33,7 @@ export interface SpaceCardStatus {
 
 export interface SpaceCardItem {
   category: string;
+  categoryId: Exclude<SpaceSearchCategoryId, "all">;
   currentParticipants: number;
   deadlineLabel: string;
   district: string;

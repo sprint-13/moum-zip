@@ -67,12 +67,12 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h2 className="truncate font-semibold text-[1.25rem] text-foreground leading-normal tracking-[-0.04em]">
+              <h2 className="truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em]">
                 {title}
               </h2>
               {status ? <SpaceCardStatus label={status.label} /> : null}
             </div>
-            <p className="mt-1.5 inline-flex items-center gap-1 font-medium text-[0.875rem] text-muted-foreground leading-5 tracking-[-0.02em]">
+            <p className="mt-1.5 inline-flex items-center gap-1 font-medium text-muted-foreground text-sm leading-5 tracking-[-0.02em]">
               <LocationPinIcon aria-hidden="true" className="size-4 shrink-0" />
               <span>{district}</span>
               <span aria-hidden="true">|</span>

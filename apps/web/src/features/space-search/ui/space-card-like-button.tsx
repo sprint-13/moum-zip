@@ -8,7 +8,9 @@ interface SpaceCardLikeButtonProps {
   isLiked?: boolean;
 }
 
-const DefaultHeartIcon = (size: number) => <HeartIcon aria-hidden="true" fill="#DDDDDD" height={size} width={size} />;
+const DefaultHeartIcon = (size: number) => (
+  <HeartIcon aria-hidden="true" className="text-border" height={size} width={size} />
+);
 
 const ActiveHeartIcon = (size: number) => (
   <HeartIcon aria-hidden="true" fill="url(#icon-gradient)" height={size} width={size} />
