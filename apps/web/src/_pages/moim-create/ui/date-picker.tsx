@@ -3,6 +3,7 @@
 import { Calendar } from "@ui/components/shadcn/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/popover";
 import { CalendarIcon } from "@ui/icons";
+import { formatDate, parseDateString } from "@/_pages/moim-create/lib/date-time";
 
 interface DatePickerProps {
   value?: string;
@@ -10,21 +11,7 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, onChange }: DatePickerProps) => {
-  const parseDate = (value?: string) => {
-    if (!value) return undefined;
-    const [year, month, day] = value.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  const selected = parseDate(value);
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
+  const selected = parseDateString(value);
   const handleSelect = (date: Date | undefined) => {
     if (!date) return;
     onChange?.(formatDate(date));

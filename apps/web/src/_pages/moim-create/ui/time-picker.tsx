@@ -2,6 +2,7 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/popover";
 import { ClockIcon } from "@ui/icons";
+import { formatTime, parseTimeString } from "@/_pages/moim-create/lib/date-time";
 import { cn } from "@/shared/lib/cn";
 
 interface TimePickerProps {
@@ -13,14 +14,14 @@ const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
 
 export const TimePicker = ({ value, onChange }: TimePickerProps) => {
-  const [hour, minute] = value ? value.split(":") : ["00", "00"];
+  const { hour, minute } = parseTimeString(value);
 
   const handleHourSelect = (h: string) => {
-    onChange?.(`${h}:${minute}`);
+    onChange?.(formatTime(h, minute));
   };
 
   const handleMinuteSelect = (m: string) => {
-    onChange?.(`${hour}:${m}`);
+    onChange?.(formatTime(hour, m));
   };
 
   return (
