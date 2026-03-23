@@ -1,11 +1,3 @@
-export interface SpaceSearchNavItem {
-  href: string;
-  id: string;
-  isActive?: boolean;
-  label: string;
-  notificationCount?: number;
-}
-
 export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "business" | "health" | "family" | "etc";
 export type SpaceSearchFilterId = "date" | "district" | "deadline";
 
@@ -30,16 +22,16 @@ export interface SpaceSearchPagination {
   totalPages: number;
 }
 
-export interface SpaceSearchMetaChip {
+export interface SpaceCardMetaChip {
   id: string;
   label: string;
 }
 
-export interface SpaceSearchStatus {
+export interface SpaceCardStatus {
   label: string;
 }
 
-export interface SpaceSearchCardItem {
+export interface SpaceCardItem {
   category: string;
   currentParticipants: number;
   deadlineLabel: string;
@@ -49,12 +41,12 @@ export interface SpaceSearchCardItem {
   imageSrc: string;
   isLiked?: boolean;
   maxParticipants: number;
-  metaChips: SpaceSearchMetaChip[];
-  status?: SpaceSearchStatus;
+  metaChips: SpaceCardMetaChip[];
+  status?: SpaceCardStatus;
   title: string;
 }
 
 export interface SpaceSearchResultPage {
-  items: SpaceSearchCardItem[];
+  items: SpaceCardItem[];
   pagination: SpaceSearchPagination;
 }

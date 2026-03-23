@@ -1,10 +1,10 @@
 import { Empty, Pagination } from "@ui/components";
 
-import type { SpaceSearchCardItem, SpaceSearchPagination } from "../types";
+import type { SpaceCardItem, SpaceSearchPagination } from "../model/types";
 import { SpaceCard } from "./space-card";
 
 interface SpaceSearchResultsProps {
-  items: SpaceSearchCardItem[];
+  items: SpaceCardItem[];
   onPageChange?: (page: number) => void;
   pagination: SpaceSearchPagination;
 }
@@ -14,7 +14,7 @@ export const SpaceSearchResults = ({ items, onPageChange, pagination }: SpaceSea
     return (
       <section className="rounded-[2rem] bg-background-basic px-6 py-16">
         <div className="flex justify-center">
-          <Empty label={"조건에 맞는 스페이스가 없어요.\n다른 조건으로 다시 찾아보세요."} />
+          <Empty label={"조건에 맞는 스페이스가 없어요.\n다른 조건으로 다시 찾아보세요"} />
         </div>
       </section>
     );
@@ -30,7 +30,7 @@ export const SpaceSearchResults = ({ items, onPageChange, pagination }: SpaceSea
 
       <div className="flex justify-center pt-2">
         <Pagination
-          ariaLabel="스페이스 목록 페이지네이션"
+          ariaLabel="스페이스 목록 페이지"
           currentPage={pagination.currentPage}
           nextAriaLabel="다음 페이지"
           onPageChange={onPageChange}

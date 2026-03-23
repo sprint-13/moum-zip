@@ -1,4 +1,5 @@
-import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_INITIAL_QUERY_STATE, SPACE_SEARCH_MOCK_ITEMS } from "./constants";
+import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { SPACE_SEARCH_MOCK_ITEMS } from "./mocks";
 import type { SpaceSearchCategoryId, SpaceSearchQueryState, SpaceSearchResultPage } from "./types";
 
 const SPACE_SEARCH_ITEMS_PER_PAGE = 4;

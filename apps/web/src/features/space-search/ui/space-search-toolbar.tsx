@@ -1,7 +1,7 @@
 import { Filter, TabButton } from "@ui/components";
 import type { ComponentProps } from "react";
 
-import type { SpaceSearchCategory, SpaceSearchFilter, SpaceSearchQueryState } from "../types";
+import type { SpaceSearchCategory, SpaceSearchFilter, SpaceSearchQueryState } from "../model/types";
 
 interface SpaceSearchToolbarProps {
   categories: SpaceSearchCategory[];

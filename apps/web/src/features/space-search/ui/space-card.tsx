@@ -1,17 +1,18 @@
 import { Button, CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
-import { cn } from "@ui/lib/utils";
 import Image from "next/image";
 
+import { cn } from "@/shared/lib/cn";
+
 import LocationPinIcon from "../assets/location-pin.svg";
-import type { SpaceSearchCardItem, SpaceSearchMetaChip } from "../types";
+import type { SpaceCardItem, SpaceCardMetaChip } from "../model/types";
 import { SpaceCardLikeButton } from "./space-card-like-button";
 
 interface SpaceCardProps {
-  item: SpaceSearchCardItem;
+  item: SpaceCardItem;
 }
 
 interface MetaChipProps {
-  chip: SpaceSearchMetaChip;
+  chip: SpaceCardMetaChip;
 }
 
 const MetaChip = ({ chip }: MetaChipProps) => {
