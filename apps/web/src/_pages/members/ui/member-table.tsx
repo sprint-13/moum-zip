@@ -1,0 +1,64 @@
+"use client";
+
+import { SlidersHorizontal } from "@moum-zip/ui/icons";
+import { useDeferredValue, useState } from "react";
+import { MemberRow } from "./member-row";
+import type { Member } from "./types";
+
+export function MemberTable({ members }: { members: Member[] }) {
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  const filtered = members.filter(
+    (m) =>
+      deferredQuery.length === 0 ||
+      m.name.toLowerCase().includes(deferredQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(deferredQuery.toLowerCase()),
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Search Row */}
+      <div className="flex items-center gap-3">
+        <input
+          type="text"
+          placeholder="Search members..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+        />
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-foreground text-sm transition-colors hover:bg-muted"
+        >
+          <SlidersHorizontal className="size-4" />
+          Filter
+        </button>
+      </div>
+
+      {/* Table Card */}
+      <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-[#fafafa]">
+        {/* Card Header */}
+        <div className="flex items-center justify-between border-[#e5e5e5] border-b px-5 py-4">
+          <span className="font-semibold text-base text-foreground">All Members</span>
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground text-xs">
+            {members.length} members
+          </span>
+        </div>
+
+        {/* Table Header */}
+        <div className="flex border-[#e5e5e5] border-b bg-[#f5f5f5]">
+          <div className="w-[220px] shrink-0 p-3 font-medium text-muted-foreground text-xs">Member</div>
+          <div className="flex-1 p-3 font-medium text-muted-foreground text-xs">Role</div>
+          <div className="w-[120px] shrink-0 p-3 font-medium text-muted-foreground text-xs">Status</div>
+          <div className="w-20 shrink-0 p-3 text-center font-medium text-muted-foreground text-xs">Actions</div>
+        </div>
+
+        {/* Rows */}
+        {filtered.map((member) => (
+          <MemberRow key={member.id} member={member} />
+        ))}
+      </div>
+    </div>
+  );
+}
