@@ -71,7 +71,7 @@ export const SignupForm = () => {
           placeholder="비밀번호를 다시 입력해주세요"
           registration={register("passwordConfirm", {
             required: "비밀번호 확인을 입력해주세요.",
-            validate: (value) => value === getValues("password") || "비밀번호가 일치하지 않습니다.",
+            validate: (value: string) => value === getValues("password") || "비밀번호가 일치하지 않습니다.",
           })}
           error={errors.passwordConfirm}
         />
