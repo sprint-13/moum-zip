@@ -1,10 +1,8 @@
 "use client";
-import { Eye, EyeOff } from "@moum-zip/ui/icons";
 import { Button, InputField, SocialButton } from "@ui/components";
-import { cn } from "@ui/lib/utils";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { PasswordInput } from "./password-input";
 
 interface LoginFormValues {
   email: string;
@@ -12,8 +10,6 @@ interface LoginFormValues {
 }
 
 export const LoginForm = () => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -21,10 +17,6 @@ export const LoginForm = () => {
   } = useForm<LoginFormValues>({
     mode: "onSubmit",
   });
-
-  const handlePasswordToggle = () => {
-    setIsPasswordVisible((prev) => !prev);
-  };
 
   const onSubmit = (_data: LoginFormValues) => {
     // TODO: 로그인 API 연결
@@ -49,39 +41,16 @@ export const LoginForm = () => {
             },
           })}
         />
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="font-semibold text-foreground text-sm leading-[1.2]">
-            비밀번호 <span className="ml-1 text-primary">*</span>
-          </label>
-          <div className="relative">
-            <input
-              id="password"
-              type={isPasswordVisible ? "text" : "password"}
-              placeholder="비밀번호를 입력해주세요"
-              className={cn(
-                "min-h-12 w-full max-w-[456px] rounded-md border bg-input-background px-3 font-normal text-foreground text-sm placeholder:text-slate-500 focus-visible:outline-none max-md:max-w-[311px] md:text-base [&::-ms-reveal]:hidden",
-                errors.password ? "border-destructive" : "border-input focus-visible:border-ring",
-              )}
-              {...register("password", {
-                required: "비밀번호를 입력해주세요.",
-                minLength: {
-                  value: 8,
-                  message: "8자 이상 입력해주세요.",
-                },
-              })}
-            />
-            <button
-              type="button"
-              onClick={handlePasswordToggle}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
-            >
-              {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="font-medium text-destructive text-sm leading-[1.2]">{errors.password.message}</p>
-          )}
-        </div>
+        <PasswordInput
+          id="password"
+          label="비밀번호"
+          placeholder="비밀번호를 입력해주세요"
+          registration={register("password", {
+            required: "비밀번호를 입력해주세요.",
+            minLength: { value: 8, message: "8자 이상 입력해주세요." },
+          })}
+          error={errors.password}
+        />
         <Button
           variant="tertiary"
           type="submit"
