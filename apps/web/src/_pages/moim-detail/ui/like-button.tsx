@@ -24,7 +24,6 @@ export const LikeButton = ({ isLiked = false, size = "md", className, onClick }:
 
   return (
     <UtilityButton
-      type="button"
       size={size}
       active={isLiked}
       aria-label={isLiked ? "좋아요 취소" : "좋아요 추가"}
