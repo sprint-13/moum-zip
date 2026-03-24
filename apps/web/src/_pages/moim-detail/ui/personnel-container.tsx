@@ -48,7 +48,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                 <span className="font-bold text-primary">{currentCount}</span>명 참여
               </p>
 
-              <div className="flex min-w-0 items-center" aria-label={`참여자 ${currentCount}명`}>
+              <div className="flex min-w-0 items-center">
                 {visibleParticipants.map((participant, index) => (
                   <div
                     key={participant.id}

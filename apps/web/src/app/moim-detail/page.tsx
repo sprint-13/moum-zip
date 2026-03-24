@@ -73,20 +73,20 @@ export default function MoimDetailPage() {
     setIsParticipating(nextParticipating);
   };
 
-  const handleShare = (id: number | string) => {
-    console.log("공유", id);
+  const handleShare = (_id: number | string) => {
+    // TODO: 공유 기능 연결
   };
 
-  const handleEdit = (id: number | string) => {
-    console.log("수정", id);
+  const handleEdit = (_id: number | string) => {
+    // TODO: 수정 기능 연결
   };
 
-  const handleDelete = (id: number | string) => {
-    console.log("삭제", id);
+  const handleDelete = (_id: number | string) => {
+    // TODO: 삭제 기능 연결
   };
 
   const handleLoginAction = () => {
-    console.log("로그인 페이지로 이동");
+    // TODO: 로그인 페이지 이동 로직 연결
   };
 
   const handleToggleRecommendedLike = (id: number) => {
