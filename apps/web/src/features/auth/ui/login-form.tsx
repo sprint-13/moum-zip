@@ -1,7 +1,10 @@
 "use client";
+
 import { Button, InputField, SocialButton } from "@ui/components";
 import Link from "next/link";
+import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
+import { loginAction } from "@/_pages/auth/actions";
 import { PasswordInput } from "./password-input";
 
 interface LoginFormValues {
@@ -9,7 +12,17 @@ interface LoginFormValues {
   password: string;
 }
 
+// 에러 메시지 한국어 변환
+const ERROR_MESSAGES = {
+  INVALID_CREDENTIALS: "이메일 또는 비밀번호가 올바르지 않아요.",
+  INVALID_TOKEN: "인증 중 오류가 발생했어요. 다시 시도해주세요.",
+  SERVER_ERROR: "서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.",
+} as const;
+
 export const LoginForm = () => {
+  // 서버 액션 상태 관리
+  const [state, formAction, isPending] = useActionState(loginAction, null);
+
   const {
     register,
     handleSubmit,
@@ -18,14 +31,20 @@ export const LoginForm = () => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (_data: LoginFormValues) => {
-    // TODO: 로그인 API 연결
-  };
+  // react-hook-form 유효성 검사 통과 후 → 서버 액션 호출
+  const onSubmit = handleSubmit((data) => {
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    startTransition(() => {
+      formAction(formData);
+    });
+  });
 
   return (
     <div className="flex w-full flex-col">
       <h1 className="text-center font-semibold text-base text-foreground md:text-2xl">로그인</h1>
-      <form className="flex flex-col gap-6 pt-10" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col gap-6 pt-10" onSubmit={onSubmit}>
         <InputField
           label="아이디"
           placeholder="이메일을 입력해주세요"
@@ -51,12 +70,17 @@ export const LoginForm = () => {
           })}
           error={errors.password}
         />
+
+        {/* 서버에서 온 에러 메시지 표시 */}
+        {state && !state.ok && <p className="text-red-500 text-sm">{ERROR_MESSAGES[state.error]}</p>}
+
         <Button
           variant="tertiary"
           type="submit"
+          disabled={isPending}
           className="mt-2 bg-slate-100 text-base text-muted-foreground hover:bg-slate-200 md:text-xl"
         >
-          로그인
+          {isPending ? "로그인 중..." : "로그인"}
         </Button>
       </form>
       <div className="relative my-8 flex items-center gap-3">
