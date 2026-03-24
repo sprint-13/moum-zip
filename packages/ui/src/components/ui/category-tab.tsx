@@ -34,7 +34,7 @@ const CategoryTab = ({ className, illustration, label, selected = false, type, .
     <button
       aria-pressed={resolvedAriaPressed}
       className={cn(
-        "inline-flex size-34 shrink-0 items-center justify-center overflow-hidden rounded-2xl border px-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex aspect-square w-full max-w-[136px] items-center justify-center overflow-hidden rounded-2xl border px-1 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
         rootClassName,
         className,
       )}
@@ -44,7 +44,10 @@ const CategoryTab = ({ className, illustration, label, selected = false, type, .
       {...props}
     >
       <span className={cn("inline-flex flex-col items-center justify-center", contentClassName)}>
-        <span aria-hidden="true" className="inline-flex size-20 shrink-0 items-center justify-center overflow-hidden">
+        <span
+          aria-hidden="true"
+          className="inline-flex aspect-square w-3/5 shrink-0 items-center justify-center overflow-hidden"
+        >
           {illustration}
         </span>
         <span className="whitespace-nowrap font-medium text-[0.875rem] text-foreground/80 leading-5 tracking-[-0.02em]">
