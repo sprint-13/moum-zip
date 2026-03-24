@@ -121,11 +121,7 @@
   --green-500: #00bb86;
   --green-600: #009973;
 
-  --background-gradient: linear-gradient(
-    90deg,
-    var(--color-primary) 0%,
-    var(--color-secondary) 100%
-  );
+  --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   --input-background: #f9fafb;
 
   /* 모바일 기본 gnb 높이 */
@@ -176,11 +172,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  --background-gradient: linear-gradient(
-    90deg,
-    var(--color-primary) 0%,
-    var(--color-secondary) 100%
-  );
+  --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 }
 
 @layer base {
