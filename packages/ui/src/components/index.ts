@@ -3,6 +3,7 @@ export * from "./ui/button";
 export * from "./ui/category-tab";
 export * from "./ui/count-badge";
 export * from "./ui/create-button";
+export * from "./ui/dropdown";
 export * from "./ui/empty";
 export * from "./ui/filter";
 export * from "./ui/gnb";

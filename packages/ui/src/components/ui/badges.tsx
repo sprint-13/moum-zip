@@ -55,12 +55,14 @@ const badgeVariants = cva(
 
 interface BadgeProps extends ComponentPropsWithoutRef<"span">, VariantProps<typeof badgeVariants> {}
 
-const CheckCircleIcon = () => {
+interface CheckCircleIconProps extends ComponentPropsWithoutRef<"span"> {}
+
+const CheckCircleIcon = ({ className, ...props }: CheckCircleIconProps) => {
   const gradientId = useId();
 
   return (
-    <span aria-hidden="true" className="size-6 shrink-0">
-      <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <span aria-hidden="true" className={cn("size-6 shrink-0", className)} {...props}>
+      <svg aria-hidden="true" className="size-full" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="9" fill={`url(#${gradientId})`} />
         <path
           d="M8.5 11.8245L11.0087 14.3333L15.342 10"

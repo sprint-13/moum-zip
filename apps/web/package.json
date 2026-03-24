@@ -10,17 +10,26 @@
     "format": "biome format --write",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate --out ./drizzle",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@moum-zip/api": "workspace:*",
     "@moum-zip/ui": "workspace:*",
+    "@neondatabase/serverless": "^1.0.2",
     "@tanstack/react-query": "^5.90.21",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.1",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.5.0"
+    "react-hook-form": "^7.72.0",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
@@ -32,6 +41,8 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.4",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.3.1",
+    "drizzle-kit": "^0.31.10",
     "jsdom": "^28.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
