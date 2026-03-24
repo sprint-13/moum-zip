@@ -7,11 +7,18 @@ import Thumbnail from "@/_pages/moim-detail/assets/img/thumbnail.png";
 import LocationIcon from "@/_pages/moim-detail/assets/svg/location.svg";
 
 const meetingDetail = {
+  id: 1,
+  title: "작은 독서 습관 만들기",
   description:
     "작은 독서 습관을 만들기 위해서 같이 열심히 해보실 사람을 구합니다~\n궁금한 점 있으시면 https://open.kakao.com/abcdefg12345 참여해서 질문주세요~",
+  deadlineLabel: "오늘 21시 마감",
+  dateLabel: "1월 7일",
+  timeLabel: "17:30",
+  category: "오프라인 · 스터디",
+  isLiked: false,
 };
 
-const personnelData = {
+const initialPersonnelData = {
   currentCount: 16,
   maxCount: 20,
   statusLabel: "개설확정",
@@ -54,9 +61,35 @@ const initialRecommendedMeetings = [
 ];
 
 export default function MoimDetailPage() {
+  const [meetingInfo, setMeetingInfo] = useState(meetingDetail);
   const [recommendedMeetings, setRecommendedMeetings] = useState(initialRecommendedMeetings);
+  const [isParticipating, setIsParticipating] = useState(false);
 
-  const handleToggleLike = (id: number) => {
+  const handleToggleMeetingLike = (id: number | string) => {
+    setMeetingInfo((prev) => (prev.id === id ? { ...prev, isLiked: !prev.isLiked } : prev));
+  };
+
+  const handleParticipateToggle = (_id: number | string, nextParticipating: boolean) => {
+    setIsParticipating(nextParticipating);
+  };
+
+  const handleShare = (id: number | string) => {
+    console.log("공유", id);
+  };
+
+  const handleEdit = (id: number | string) => {
+    console.log("수정", id);
+  };
+
+  const handleDelete = (id: number | string) => {
+    console.log("삭제", id);
+  };
+
+  const handleLoginAction = () => {
+    console.log("로그인 페이지로 이동");
+  };
+
+  const handleToggleRecommendedLike = (id: number) => {
     setRecommendedMeetings((prev) =>
       prev.map((meeting) => (meeting.id === id ? { ...meeting, liked: !meeting.liked } : meeting)),
     );
@@ -64,26 +97,46 @@ export default function MoimDetailPage() {
 
   return (
     <div className="min-h-screen bg-background-secondary">
-      <main className="mx-auto flex w-full max-w-328 flex-col gap-19.5 px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,630px)_1fr]">
-          <div className="relative aspect-343/241 w-full overflow-hidden rounded-[32px] md:aspect-333/332 xl:aspect-630/443">
+      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
+        <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="relative h-full min-h-[190px] w-full overflow-hidden rounded-[20px] md:min-h-[260px] md:rounded-[32px] xl:min-h-[443px]">
             <Image
               src={Thumbnail}
               alt="모임 대표 이미지"
               fill
               priority
               className="object-cover"
-              sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 630px"
+              sizes="(max-width: 1279px) 100vw, 630px"
             />
           </div>
 
-          <div className="flex w-full flex-col gap-5">
-            <InformationContainer viewType="manager" isLoggedIn={false} initialParticipating={false} />
-            <PersonnelContainer data={personnelData} />
+          <div className="flex h-full w-full flex-col gap-5">
+            <InformationContainer
+              data={{
+                id: meetingInfo.id,
+                deadlineLabel: meetingInfo.deadlineLabel,
+                dateLabel: meetingInfo.dateLabel,
+                timeLabel: meetingInfo.timeLabel,
+                title: meetingInfo.title,
+                category: meetingInfo.category,
+                isLiked: meetingInfo.isLiked,
+              }}
+              viewType="manager"
+              isLoggedIn={false}
+              isParticipating={isParticipating}
+              onToggleLike={handleToggleMeetingLike}
+              onParticipateToggle={handleParticipateToggle}
+              onShare={handleShare}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onLoginAction={handleLoginAction}
+            />
+
+            <PersonnelContainer data={initialPersonnelData} />
           </div>
         </section>
 
-        <DescriptionSection description={meetingDetail.description} />
+        <DescriptionSection description={meetingInfo.description} />
 
         <section className="flex flex-col gap-5">
           <h2 className="font-semibold text-2xl text-black leading-[1.4]">이런 모임은 어때요?</h2>
@@ -104,7 +157,7 @@ export default function MoimDetailPage() {
                 locationIcon={<LocationIcon />}
                 locationText={meeting.locationText}
                 isLiked={meeting.liked}
-                onLikeClick={() => handleToggleLike(meeting.id)}
+                onLikeClick={() => handleToggleRecommendedLike(meeting.id)}
               />
             ))}
           </div>
