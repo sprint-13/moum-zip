@@ -57,7 +57,6 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                       index !== 0 && "-ml-2.5",
                       "max-sm:size-6.5 max-sm:text-sm",
                     )}
-                    aria-label={participant.name}
                     title={participant.name}
                   >
                     {participant.avatarText}
