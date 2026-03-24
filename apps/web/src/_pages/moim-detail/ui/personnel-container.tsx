@@ -3,61 +3,59 @@
 import { Badge, CheckCircleIcon, ProgressBar } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 
-const mockPersonnel = {
-  currentCount: 16,
-  minCount: 5,
-  maxCount: 20,
-  statusLabel: "개설확정",
-  participants: [
-    { id: 1, name: "김어진", avatarText: "김" },
-    { id: 2, name: "권혁진", avatarText: "권" },
-    { id: 3, name: "박혜빈", avatarText: "박" },
-    { id: 4, name: "이해솔", avatarText: "이" },
-    { id: 5, name: "최병찬", avatarText: "최" },
-    { id: 6, name: "홍재영", avatarText: "홍" },
-  ],
-  extraCount: 12,
-};
+interface Participant {
+  id: number | string;
+  name: string;
+  avatarText: string;
+}
+
+interface PersonnelData {
+  currentCount: number;
+  maxCount: number;
+  statusLabel: string;
+  participants: Participant[];
+  extraCount?: number;
+}
 
 interface PersonnelContainerProps {
+  data: PersonnelData;
   className?: string;
 }
 
-export function PersonnelContainer({ className }: PersonnelContainerProps) {
-  const { currentCount, minCount, maxCount, statusLabel, participants, extraCount } = mockPersonnel;
+export function PersonnelContainer({ data, className }: PersonnelContainerProps) {
+  const { currentCount, maxCount, statusLabel, participants, extraCount = 0 } = data;
 
   const visibleParticipants = participants.slice(0, 4);
-  const hiddenCount = participants.length - visibleParticipants.length + extraCount;
+  const hiddenCount = Math.max(participants.length - visibleParticipants.length + extraCount, 0);
 
   return (
     <section className={cn("w-full", className)}>
       <div
         className={cn(
-          "flex w-full max-w-[630px] flex-col items-start",
-          "rounded-[28px] border border-[#BEEDE7]",
-          "bg-[linear-gradient(90deg,#DEF8EA_0%,#D9F6F4_100%)]",
-          "px-[40px] pt-[28px] pb-[34px]",
-          "gap-[10px]",
-          "max-sm:max-w-[343px]",
-          "max-sm:px-[24px] max-sm:pt-[20px] max-sm:pb-[22px]",
-          "max-sm:gap-[8px]",
+          "mx-auto flex w-full max-w-157.5 flex-col items-start gap-2.5",
+          "rounded-[28px] border border-[var(--color-personnel-border)]",
+          "bg-personnel-gradient",
+          "px-10 pt-7 pb-8.5",
+          "max-sm:gap-2",
+          "max-sm:rounded-[20px]",
+          "max-sm:px-6 max-sm:pt-5 max-sm:pb-5.5",
         )}
       >
-        <div className="flex w-full flex-col gap-[16px] max-sm:gap-[12px]">
-          <div className="flex w-full items-start justify-between gap-[12px]">
-            <div className="flex min-w-0 items-center gap-[12px]">
+        <div className="flex w-full flex-col gap-4 max-sm:gap-3">
+          <div className="flex w-full items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <p className="shrink-0 font-medium text-gray-900 text-lg leading-[1.4] tracking-[-0.02em] max-sm:text-sm">
                 <span className="font-bold text-primary">{currentCount}</span>명 참여
               </p>
 
-              <div className="flex items-center" aria-label={`참여자 ${currentCount}명`}>
+              <div className="flex min-w-0 items-center" aria-label={`참여자 ${currentCount}명`}>
                 {visibleParticipants.map((participant, index) => (
                   <div
                     key={participant.id}
                     className={cn(
-                      "flex size-[29px] items-center justify-center overflow-hidden rounded-full border-[1px] border-white bg-emerald-100 font-semibold text-base text-emerald-700 leading-none",
-                      index !== 0 && "-ml-[10px]",
-                      "max-sm:size-[26px]",
+                      "flex size-7.25 items-center justify-center overflow-hidden rounded-full border border-white bg-emerald-100 font-semibold text-base text-emerald-700 leading-none",
+                      index !== 0 && "-ml-2.5",
+                      "max-sm:size-6.5 max-sm:text-sm",
                     )}
                     aria-label={participant.name}
                     title={participant.name}
@@ -67,7 +65,7 @@ export function PersonnelContainer({ className }: PersonnelContainerProps) {
                 ))}
 
                 {hiddenCount > 0 && (
-                  <div className="-ml-2.5 flex size-7.25 items-center justify-center rounded-full border border-white bg-white font-semibold text-slate-700 text-sm leading-none">
+                  <div className="-ml-2.5 flex size-7.25 items-center justify-center rounded-full border border-white bg-white font-semibold text-slate-700 text-sm leading-none max-sm:size-6.5 max-sm:text-[12px]">
                     +{hiddenCount}
                   </div>
                 )}
@@ -81,9 +79,8 @@ export function PersonnelContainer({ className }: PersonnelContainerProps) {
           </div>
 
           <div className="flex w-full flex-col items-start gap-2">
-            <div className="flex w-full items-center justify-between">
-              <span className="font-medium text-slate-600 text-sm leading-[1.4] max-sm:text-xs">최소 {minCount}명</span>
-              <span className="font-medium text-slate-600 text-sm leading-[1.4] max-sm:text-xs">최대 {maxCount}명</span>
+            <div className="flex w-full justify-end">
+              <span className="font-medium text-gray-500 text-sm leading-[1.4] max-sm:text-xs">최대 {maxCount}명</span>
             </div>
 
             <ProgressBar

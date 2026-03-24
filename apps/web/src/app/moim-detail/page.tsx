@@ -11,6 +11,21 @@ const meetingDetail = {
     "작은 독서 습관을 만들기 위해서 같이 열심히 해보실 사람을 구합니다~\n궁금한 점 있으시면 https://open.kakao.com/abcdefg12345 참여해서 질문주세요~",
 };
 
+const personnelData = {
+  currentCount: 16,
+  maxCount: 20,
+  statusLabel: "개설확정",
+  participants: [
+    { id: 1, name: "김어진", avatarText: "김" },
+    { id: 2, name: "권혁진", avatarText: "권" },
+    { id: 3, name: "박혜빈", avatarText: "박" },
+    { id: 4, name: "이해솔", avatarText: "이" },
+    { id: 5, name: "최병찬", avatarText: "최" },
+    { id: 6, name: "홍재영", avatarText: "홍" },
+  ],
+  extraCount: 12,
+};
+
 const initialRecommendedMeetings = [
   {
     id: 1,
@@ -64,7 +79,7 @@ export default function MoimDetailPage() {
 
           <div className="flex w-full flex-col gap-5">
             <InformationContainer viewType="manager" isLoggedIn={false} initialParticipating={false} />
-            <PersonnelContainer />
+            <PersonnelContainer data={personnelData} />
           </div>
         </section>
 
