@@ -160,7 +160,6 @@ export function InformationContainer({
 
                     <Dropdown.Item
                       onSelect={(e) => {
-                        e.preventDefault();
                         setIsDeleteModalOpen(true);
                       }}
                     >

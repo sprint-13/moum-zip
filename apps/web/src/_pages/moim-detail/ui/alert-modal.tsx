@@ -109,7 +109,7 @@ const AlertModalContent = ({
                 "border border-gray-200 bg-white",
                 "font-semibold text-slate-600 text-xl",
                 "outline-none transition-colors hover:bg-gray-50",
-                "focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+                "focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
                 "max-sm:h-10 max-sm:text-sm",
                 cancelClassName,
               )}
