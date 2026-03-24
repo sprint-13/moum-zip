@@ -19,6 +19,9 @@ const iconSizeMap = {
 };
 
 export const LikeButton = ({ isLiked = false, size = "md", className, onClick }: LikeButtonProps) => {
+  const iconSize = iconSizeMap[size];
+  const Icon = isLiked ? HeartActiveIcon : HeartDefaultIcon;
+
   return (
     <UtilityButton
       type="button"
@@ -27,19 +30,18 @@ export const LikeButton = ({ isLiked = false, size = "md", className, onClick }:
       aria-label={isLiked ? "좋아요 취소" : "좋아요 추가"}
       className={className}
       onClick={onClick}
-      icon={() => {
-        const iconSize = iconSizeMap[size];
-
-        return (
-          <span className="inline-flex items-center justify-center" style={{ width: iconSize, height: iconSize }}>
-            {isLiked ? (
-              <HeartActiveIcon aria-hidden="true" className="size-full" />
-            ) : (
-              <HeartDefaultIcon aria-hidden="true" className="size-full" />
-            )}
-          </span>
-        );
-      }}
+      icon={() => (
+        <span
+          className="inline-flex shrink-0 items-center justify-center leading-none"
+          style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+        >
+          <Icon
+            aria-hidden="true"
+            className="block shrink-0"
+            style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+          />
+        </span>
+      )}
     />
   );
 };

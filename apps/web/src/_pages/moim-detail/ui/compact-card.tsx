@@ -31,7 +31,7 @@ export function CompactCard({
   return (
     <article
       className={cn(
-        "flex min-w-0 max-w-75.5 flex-col items-start gap-4 max-sm:inline-flex max-sm:w-full max-sm:gap-1.5",
+        "flex min-w-0 max-w-[30.2rem] flex-col items-start gap-4 max-sm:inline-flex max-sm:w-full max-sm:gap-1.5",
         className,
       )}
     >
