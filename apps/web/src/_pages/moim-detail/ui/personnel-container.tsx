@@ -67,7 +67,7 @@ export function PersonnelContainer({ className }: PersonnelContainerProps) {
                 ))}
 
                 {hiddenCount > 0 && (
-                  <div className="-ml-[10px] flex size-[29px] items-center justify-center rounded-full border-[1px] border-white bg-white font-semibold text-slate-700 text-sm leading-none">
+                  <div className="-ml-2.5 flex size-7.25 items-center justify-center rounded-full border border-white bg-white font-semibold text-slate-700 text-sm leading-none">
                     +{hiddenCount}
                   </div>
                 )}
@@ -75,7 +75,7 @@ export function PersonnelContainer({ className }: PersonnelContainerProps) {
             </div>
 
             <Badge variant="confirmed" container="none">
-              <CheckCircleIcon className="size-[24px] max-sm:size-[18px]" />
+              <CheckCircleIcon className="size-6 max-sm:size-4.5" />
               <span className="font-semibold text-base max-sm:font-medium max-sm:text-xs">{statusLabel}</span>
             </Badge>
           </div>

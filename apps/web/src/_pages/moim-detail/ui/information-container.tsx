@@ -110,10 +110,10 @@ export function InformationContainer({
                 key={item.id}
                 className={cn(
                   "flex w-full max-w-[630px] flex-col rounded-[40px] bg-white",
-                  "gap-[10px] px-[40px] pt-[32px] pb-[32px]",
+                  "gap-2.5 px-10 pt-8 pb-8",
                   "min-h-[282px]",
                   "max-sm:min-h-[238px] max-sm:max-w-[343px] max-sm:rounded-[20px]",
-                  "max-sm:px-[24px] max-sm:pt-[20px] max-sm:pb-[24px]",
+                  "max-sm:px-6 max-sm:pt-5 max-sm:pb-6",
                 )}
               >
                 <div className="flex flex-col gap-6 max-sm:gap-4">

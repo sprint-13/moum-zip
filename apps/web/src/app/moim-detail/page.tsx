@@ -2,9 +2,14 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { CompactCard, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
+import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import Thumbnail from "@/_pages/moim-detail/assets/img/thumbnail.png";
 import LocationIcon from "@/_pages/moim-detail/assets/svg/location.svg";
+
+const meetingDetail = {
+  description:
+    "작은 독서 습관을 만들기 위해서 같이 열심히 해보실 사람을 구합니다~\n궁금한 점 있으시면 https://open.kakao.com/abcdefg12345 참여해서 질문주세요~",
+};
 
 const initialRecommendedMeetings = [
   {
@@ -44,9 +49,9 @@ export default function MoimDetailPage() {
 
   return (
     <div className="min-h-screen bg-background-secondary">
-      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
+      <main className="mx-auto flex w-full max-w-328 flex-col gap-19.5 px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
         <section className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,630px)_1fr]">
-          <div className="relative aspect-[343/241] w-full overflow-hidden rounded-[32px] md:aspect-[333/332] xl:aspect-[630/443]">
+          <div className="relative aspect-343/241 w-full overflow-hidden rounded-[32px] md:aspect-333/332 xl:aspect-630/443">
             <Image
               src={Thumbnail}
               alt="모임 대표 이미지"
@@ -63,15 +68,7 @@ export default function MoimDetailPage() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-5">
-          <h2 className="font-semibold text-2xl text-black leading-[1.4]">모임 설명</h2>
-
-          <div className="rounded-[32px] bg-white px-6 py-6 font-normal text-base text-gray-700 leading-7 md:px-12 md:text-lg">
-            작은 독서 습관을 만들기 위해서 같이 열심히 해보실 사람을 구합니다~
-            <br />
-            궁금한 점 있으시면 https://open.kakao.com/abcdefg12345 참여해서 질문주세요~
-          </div>
-        </section>
+        <DescriptionSection description={meetingDetail.description} />
 
         <section className="flex flex-col gap-5">
           <h2 className="font-semibold text-2xl text-black leading-[1.4]">이런 모임은 어때요?</h2>
