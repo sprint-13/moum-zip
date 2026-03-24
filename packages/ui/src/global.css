@@ -27,6 +27,9 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-personnel-border: var(--personnel-border);
+  --color-personnel-gradient-start: var(--personnel-gradient-start);
+  --color-personnel-gradient-end: var(--personnel-gradient-end);
 
   /* chart color tokens */
   --color-chart-1: var(--chart-1);
@@ -123,6 +126,10 @@
 
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   --input-background: #f9fafb;
+
+  --personnel-border: #beede7;
+  --personnel-gradient-start: #def8ea;
+  --personnel-gradient-end: #d9f6f4;
 
   /* 모바일 기본 gnb 높이 */
   --layout-gnb-height: 48px;
@@ -299,4 +306,12 @@
   :root {
     --layout-gnb-height: 88px;
   }
+}
+
+@utility bg-personnel-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--color-personnel-gradient-start) 0%,
+    var(--color-personnel-gradient-end) 100%
+  );
 }
