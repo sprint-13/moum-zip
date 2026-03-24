@@ -125,6 +125,7 @@
   --green-600: #009973;
 
   --background-gradient: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  --input-background: #f9fafb;
 
   --input-background: #f9fafb;
   --personnel-border: #beede7;
