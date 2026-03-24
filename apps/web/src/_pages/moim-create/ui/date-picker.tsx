@@ -29,7 +29,7 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
           <span className="text-sm leading-[22px]">{value || "YYYY-MM-DD"}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent className="w-auto">
         <Calendar mode="single" selected={selected} onSelect={handleSelect} />
       </PopoverContent>
     </Popover>
