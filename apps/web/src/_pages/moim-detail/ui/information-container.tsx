@@ -4,23 +4,13 @@ import { MoreHorizontal } from "@moum-zip/ui/icons";
 import { Button, Dropdown, Tag } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-
 import CrownIcon from "../assets/svg/crown.svg";
 import LocationIcon from "../assets/svg/location.svg";
+import type { InformationData } from "../model/types";
 import { AlertModal } from "./alert-modal";
 import { LikeButton } from "./like-button";
 
 type ViewType = "member" | "manager";
-
-interface InformationData {
-  id: number | string;
-  deadlineLabel: string;
-  dateLabel: string;
-  timeLabel: string;
-  title: string;
-  category: string;
-  isLiked: boolean;
-}
 
 interface InformationContainerProps {
   data: InformationData;
@@ -28,11 +18,11 @@ interface InformationContainerProps {
   viewType?: ViewType;
   isLoggedIn?: boolean;
   isParticipating?: boolean;
-  onToggleLike?: (id: number | string) => void;
-  onParticipateToggle?: (id: number | string, nextParticipating: boolean) => void;
-  onShare?: (id: number | string) => void;
-  onEdit?: (id: number | string) => void;
-  onDelete?: (id: number | string) => void;
+  onToggleLike?: (meetingId: number) => void;
+  onParticipateToggle?: (meetingId: number, nextParticipating: boolean) => void;
+  onShare?: (meetingId: number) => void;
+  onEdit?: (meetingId: number) => void;
+  onDelete?: (meetingId: number) => void;
   onLoginAction?: () => void;
 }
 
@@ -93,10 +83,12 @@ export function InformationContainer({
         size: "small" as const,
       },
     },
-  ];
+  ].filter((item) => item.label);
 
   const handleMainButtonClick = () => {
-    if (isManager) return;
+    if (isManager) {
+      return;
+    }
 
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
@@ -159,7 +151,7 @@ export function InformationContainer({
                     <Dropdown.Item onSelect={() => onEdit?.(data.id)}>수정하기</Dropdown.Item>
 
                     <Dropdown.Item
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setIsDeleteModalOpen(true);
                       }}
                     >
