@@ -1,17 +1,34 @@
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("@/entities/gathering", () => ({
+  gatheringQueries: {
+    findSpacesByMeetingIds: vi.fn(),
+  },
+}));
+
 import { getSearchResults } from "./get-search-results";
 
+const createMeetingsListResponse = (
+  data: unknown[],
+  overrides?: { hasMore?: boolean; nextCursor?: string | null },
+) => ({
+  data: {
+    data,
+    hasMore: overrides?.hasMore ?? false,
+    nextCursor: overrides?.nextCursor ?? null,
+  },
+});
+
 describe("getSearchResults", () => {
-  it("maps external meetings with internal space enrichment", async () => {
+  it("외부 모임 목록을 내부 스페이스 정보와 함께 매핑한다", async () => {
     const mockMeetingsApi = {
-      getList: vi.fn().mockResolvedValue({
-        data: [
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
           {
             id: 24,
             teamId: "team-1",
             name: "Study Group",
-            type: "study",
+            type: "스터디",
             region: "Seongdong-gu",
             address: null,
             latitude: null,
@@ -34,10 +51,8 @@ describe("getSearchResults", () => {
               image: null,
             },
           },
-        ],
-        hasMore: false,
-        nextCursor: null,
-      }),
+        ]),
+      ),
     };
     const mockQueries = {
       findSpacesByMeetingIds: vi.fn().mockResolvedValue([
@@ -85,15 +100,15 @@ describe("getSearchResults", () => {
     expect(result.nextCursor).toBeNull();
   });
 
-  it("falls back when internal spaces are empty", async () => {
+  it("내부 스페이스 정보가 없으면 기본값으로 대체한다", async () => {
     const mockMeetingsApi = {
-      getList: vi.fn().mockResolvedValue({
-        data: [
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
           {
             id: 2,
             teamId: "team-1",
             name: "Project Group",
-            type: "project",
+            type: "프로젝트",
             region: "Gangnam-gu",
             address: "Teheran-ro",
             latitude: 37.5,
@@ -116,10 +131,8 @@ describe("getSearchResults", () => {
               image: null,
             },
           },
-        ],
-        hasMore: false,
-        nextCursor: null,
-      }),
+        ]),
+      ),
     };
     const mockQueries = {
       findSpacesByMeetingIds: vi.fn().mockResolvedValue([]),
@@ -138,15 +151,15 @@ describe("getSearchResults", () => {
     });
   });
 
-  it("continues even if internal space lookup fails", async () => {
+  it("내부 스페이스 조회에 실패해도 결과를 반환한다", async () => {
     const mockMeetingsApi = {
-      getList: vi.fn().mockResolvedValue({
-        data: [
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
           {
             id: 3,
             teamId: "team-1",
             name: "Study Group",
-            type: "study",
+            type: "스터디",
             region: "Mapo-gu",
             address: null,
             latitude: null,
@@ -169,10 +182,8 @@ describe("getSearchResults", () => {
               image: null,
             },
           },
-        ],
-        hasMore: false,
-        nextCursor: null,
-      }),
+        ]),
+      ),
     };
     const mockQueries = {
       findSpacesByMeetingIds: vi.fn().mockRejectedValue(new Error("SPACE_LOOKUP_FAILED")),
