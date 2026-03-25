@@ -40,9 +40,11 @@ export const SpaceSidebar = ({ children }: { children: ReactNode }) => {
       {/* 메인 콘텐츠 영역 */}
       <SidebarInset>
         {/* 모바일 전용: 상단 헤더 + 탭 네비게이션 */}
-        <MobileHeader navItems={NAV_ITEMS} />
-        <MobileTabBar navItems={NAV_ITEMS} />
-        {children}
+        <div className="flex min-h-svh flex-1 flex-col overflow-hidden">
+          <MobileHeader navItems={NAV_ITEMS} />
+          <MobileTabBar navItems={NAV_ITEMS} />
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
