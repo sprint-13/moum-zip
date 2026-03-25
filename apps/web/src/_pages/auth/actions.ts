@@ -31,9 +31,12 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
   // 성공하면 쿠키 저장
   const cookieStore = await cookies();
 
+  // isValid()에서 이미 만료 토큰을 걸러내지만
+  // 0이 falsy라 || 쓰면 만료된 토큰도 15분 쿠키로 저장될 수 있어서
+  const expiresIn = TokenService.getExpiresIn(result.data.accessToken);
   cookieStore.set(ACCESS_TOKEN_COOKIE, result.data.accessToken, {
     ...COOKIE_OPTIONS,
-    maxAge: TokenService.getExpiresIn(result.data.accessToken) || ACCESS_TOKEN_MAX_AGE,
+    maxAge: expiresIn > 0 ? expiresIn : ACCESS_TOKEN_MAX_AGE, // > 0으로 명시적으로 한 번 더 체크
   });
 
   cookieStore.set(REFRESH_TOKEN_COOKIE, result.data.refreshToken, {

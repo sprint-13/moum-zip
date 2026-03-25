@@ -10,13 +10,15 @@ import {
   Users,
 } from "@moum-zip/api/index";
 import { cookies } from "next/headers";
+import { TokenService } from "@/entities/auth/model/token-service";
+import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
 const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
 
 /**
  * 인증이 필요한 API 호출 시 사용
- * 쿠키에서 accessToken을 자동으로 읽어 Authorization 헤더에 주입합니다
+ * 쿠키에서 accessToken을 자동으로 읽어 Authorization 헤더에 주입
  * 서버 컴포넌트 / 서버 액션 전용
  *
  * @example
@@ -25,7 +27,7 @@ const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
  */
 export async function getAuthenticatedApi() {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
 
   const securityWorker = () => (accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {});
 
@@ -216,7 +218,12 @@ export async function getAuthenticatedApi() {
  * @example
  * if (!(await isAuthenticated())) redirect("/login")
  */
+
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
-  return !!cookieStore.get("access_token")?.value;
+
+  // 쿠키 존재 여부로만 판단하면 만료된 토큰도 통과할 수 있어서
+  // TokenService.isValid()로 실제 만료 여부까지 검증
+  const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+  return !!token && TokenService.isValid(token);
 }
