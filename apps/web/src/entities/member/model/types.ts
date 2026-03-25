@@ -21,6 +21,11 @@ export interface RolePermissions {
   resource: { upload: boolean; delete: boolean };
   member: { invite: boolean; kick: boolean; changeRole: boolean };
 }
+export const ROLE_LABEL: Record<MemberRole, string> = {
+  manager: "Manager",
+  moderator: "Moderator",
+  member: "Member",
+};
 
 export const ROLE_PERMISSIONS: Record<MemberRole, RolePermissions> = {
   manager: {
