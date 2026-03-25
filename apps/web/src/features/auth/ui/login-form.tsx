@@ -2,6 +2,7 @@
 import { Button, InputField, SocialButton } from "@ui/components";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
 interface LoginFormValues {
@@ -70,7 +71,7 @@ export const LoginForm = () => {
       </div>
       <p className="mt-8 text-center text-foreground text-sm md:text-[15px]">
         모음.zip이 처음이신가요?{" "}
-        <Link href="/signup" className="font-semibold text-green-600 underline">
+        <Link href={ROUTES.signup} className="font-semibold text-green-600 underline">
           회원가입
         </Link>
       </p>
