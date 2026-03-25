@@ -1,3 +1,4 @@
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { date, integer, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
 
 export const spaces = pgTable("spaces", {
@@ -21,8 +22,16 @@ export const spaceMembers = pgTable("space_members", {
   userId: integer("user_id").notNull(),
   role: text("role", { enum: ["manager", "moderator", "member"] }).notNull(),
   nickname: text("nickname").notNull(),
-  joinedAt: timestamp("joined_at").defaultNow(),
+  avatarUrl: text("avatar_url"),
+  email: text("email").notNull(),
+  joinedAt: timestamp("joined_at", { withTimezone: true, mode: "string" }).defaultNow(),
 });
+
+// 1. 조회용 (Select) 타입: 실제 DB에서 가져온 데이터의 모양
+export type Member = InferSelectModel<typeof spaceMembers>;
+
+// 2. 삽입용 (Insert) 타입: 데이터를 넣을 때 쓰는 모양 (id, joinedAt 등 기본값이 있는 필드는 선택사항이 됨)
+export type NewMember = InferInsertModel<typeof spaceMembers>;
 
 export const spacePosts = pgTable("space_posts", {
   id: text("id").primaryKey(),
