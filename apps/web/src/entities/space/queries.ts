@@ -5,10 +5,10 @@ import { spaces } from "@/shared/db/scheme";
 // SPACE 테이블 기반 타입 자동 추출
 // Space: DB 조회 결과 타입 / SpaceInsert: DB 저장 시 타입
 export type Space = InferSelectModel<typeof spaces>;
-export type SpaceInsert = InferInsertModel<typeof spaces>;
+export type NewSpace = InferInsertModel<typeof spaces>;
 
 // 모임 생성 시 SPACE 테이블에 저장 (MEETING 생성 후 meetingId 연결)
-export async function insertSpace(data: SpaceInsert) {
+export async function insertSpace(data: NewSpace) {
   const [result] = await db.insert(spaces).values(data).returning();
   return result;
 }
