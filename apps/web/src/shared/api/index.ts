@@ -11,7 +11,7 @@ import {
 } from "@moum-zip/api/index";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
-const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
+const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
 
 const core = {
   auth: new Auth({ baseUrl }),
@@ -63,6 +63,15 @@ export const api = {
     ) => core.meetings.meetingsList(teamId, query, params),
     getDetail: (meetingId: Parameters<typeof core.meetings.meetingsDetail>[1]) =>
       core.meetings.meetingsDetail(teamId, meetingId),
+
+    participants: {
+      getList: (
+        meetingId: Parameters<typeof core.meetings.participantsList>[1],
+        query?: Parameters<typeof core.meetings.participantsList>[2],
+        params?: Parameters<typeof core.meetings.participantsList>[3],
+      ) => core.meetings.participantsList(teamId, meetingId, query, params),
+    },
+
     getReviewsList: (
       meetingId: Parameters<typeof core.reviews.reviewsList2>[1],
       query?: Parameters<typeof core.reviews.reviewsList2>[2],

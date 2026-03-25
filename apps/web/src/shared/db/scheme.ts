@@ -1,5 +1,48 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { date, integer, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import { date, doublePrecision, integer, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+
+export const meetings = pgTable("meetings", {
+  id: integer("id").primaryKey(),
+  teamId: text("team_id").notNull(),
+  name: text("name").notNull(),
+  type: text("type").notNull(),
+  region: text("region").notNull(),
+  address: text("address"),
+  latitude: doublePrecision("latitude"),
+  longitude: doublePrecision("longitude"),
+  dateTime: timestamp("date_time"),
+  registrationEnd: timestamp("registration_end"),
+  capacity: integer("capacity").notNull(),
+  participantCount: integer("participant_count").notNull(),
+  image: text("image"),
+  description: text("description"),
+  canceledAt: timestamp("canceled_at"),
+  confirmedAt: timestamp("confirmed_at"),
+  hostId: integer("host_id").notNull(),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
+});
+
+export const participants = pgTable("participants", {
+  id: integer("id").primaryKey(),
+  teamId: text("team_id").notNull(),
+  meetingId: integer("meeting_id")
+    .notNull()
+    .references(() => meetings.id),
+  userId: integer("user_id").notNull(),
+  joinedAt: timestamp("joined_at"),
+});
+
+export const favorites = pgTable("favorites", {
+  id: integer("id").primaryKey(),
+  teamId: text("team_id").notNull(),
+  meetingId: integer("meeting_id")
+    .notNull()
+    .references(() => meetings.id),
+  userId: integer("user_id").notNull(),
+  createdAt: timestamp("created_at"),
+});
 
 export const spaces = pgTable("spaces", {
   id: text("id").primaryKey(),
@@ -24,7 +67,10 @@ export const spaceMembers = pgTable("space_members", {
   nickname: text("nickname").notNull(),
   avatarUrl: text("avatar_url"),
   email: text("email").notNull(),
-  joinedAt: timestamp("joined_at", { withTimezone: true, mode: "string" }).defaultNow(),
+  joinedAt: timestamp("joined_at", {
+    withTimezone: true,
+    mode: "string",
+  }).defaultNow(),
 });
 
 // 1. 조회용 (Select) 타입: 실제 DB에서 가져온 데이터의 모양
