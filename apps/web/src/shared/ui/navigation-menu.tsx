@@ -4,12 +4,7 @@ import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
-
-const ROUTES = [
-  { label: "모임 찾기", href: "/search" },
-  { label: "찜한 모임", href: "/favorites" },
-  { label: "스페이스", href: "/space" },
-];
+import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
 
 const logo = <Logo className="block h-8 w-auto" aria-hidden preserveAspectRatio="xMidYMid meet" />;
 
@@ -20,12 +15,12 @@ export const NavigationMenu = () => {
         <Gnb viewport={false}>
           <Gnb.List>
             <Gnb.Item className="shrink-0">
-              <Link href="/" aria-label="홈으로 이동" className="inline-flex items-center pl-4">
+              <Link href={ROUTES.home} aria-label="홈으로 이동" className="inline-flex items-center pl-4">
                 {logo}
               </Link>
             </Gnb.Item>
             <Gnb.Item>
-              {ROUTES.map((route) => (
+              {NAVIGATION_ROUTES.map((route) => (
                 <Gnb.Link key={route.href} asChild>
                   <Link href={route.href}>{route.label}</Link>
                 </Gnb.Link>
@@ -34,14 +29,18 @@ export const NavigationMenu = () => {
           </Gnb.List>
           <Gnb.List>
             <Gnb.Link asChild>
-              <Link href="/auth">로그인</Link>
+              <Link href={ROUTES.login}>로그인</Link>
             </Gnb.Link>
           </Gnb.List>
         </Gnb>
       </div>
 
       <div className="flex w-full items-center justify-between px-4 py-2 md:hidden">
-        <Link href="/" aria-label="홈으로 이동" className="inline-flex shrink-0 items-center overflow-visible">
+        <Link
+          href={ROUTES.home}
+          aria-label="홈으로 이동"
+          className="inline-flex shrink-0 items-center overflow-visible"
+        >
           {logo}
         </Link>
 
@@ -56,7 +55,7 @@ export const NavigationMenu = () => {
               <Sheet.Title>메뉴</Sheet.Title>
             </Sheet.Header>
             <Sheet.List>
-              {ROUTES.map((route) => (
+              {NAVIGATION_ROUTES.map((route) => (
                 <Sheet.Item key={route.href}>
                   <Sheet.Close asChild>
                     <Link href={route.href} className="block rounded-md p-3 font-medium text-sm">
@@ -68,7 +67,7 @@ export const NavigationMenu = () => {
             </Sheet.List>
             <Sheet.Footer>
               <Sheet.Close asChild>
-                <Link href="/auth">로그인</Link>
+                <Link href={ROUTES.login}>로그인</Link>
               </Sheet.Close>
             </Sheet.Footer>
           </Sheet.Content>

@@ -4,7 +4,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"], // ^: 의존하는 패키지들 의미, 패키지들의 빌드가 먼저 끝나야 함
-      "outputs": [".next/**", "!.next/cache/**"] // 해당 폴더 캐싱
+      "outputs": [".next/**", "!.next/cache/**"], // 해당 폴더 캐싱
+      "passThroughEnv": ["DATABASE_URL"]
     },
     "lint": {
       "dependsOn": ["^lint"]
