@@ -1,5 +1,4 @@
-import type { Member } from "@/entities/member";
-import { ROLE_LABEL } from "@/entities/member";
+import { type Member, ROLE_LABEL } from "@/entities/member";
 
 export function OnlineNowCard({ members }: { members: Member[] }) {
   return (
