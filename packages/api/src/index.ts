@@ -8,3 +8,4 @@ export * from "./Notifications";
 export * from "./Posts";
 export * from "./Reviews";
 export * from "./Users";
+export * from "./data-contracts";
