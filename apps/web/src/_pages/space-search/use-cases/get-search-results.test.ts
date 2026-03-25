@@ -67,7 +67,7 @@ describe("getSearchResults", () => {
 
     expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
       cursor: undefined,
-      size: 12,
+      size: 6,
       type: undefined,
     });
     expect(mockQueries.findSpacesByMeetingIds).toHaveBeenCalledWith([24]);
@@ -137,7 +137,7 @@ describe("getSearchResults", () => {
 
     expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
       cursor: undefined,
-      size: 12,
+      size: 6,
       type: "프로젝트",
     });
     expect(result.items[0]).toMatchObject({
