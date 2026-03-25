@@ -19,5 +19,5 @@ export const parseTimeString = (value: string | undefined): { hour: string; minu
 };
 
 export const formatTime = (hour: string, minute: string): string => {
-  return `${hour} : ${minute}`;
+  return `${hour}:${minute}`;
 };
