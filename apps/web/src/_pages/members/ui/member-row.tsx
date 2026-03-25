@@ -47,6 +47,7 @@ export function MemberRow({ member }: { member: Member }) {
       <div className="flex w-20 shrink-0 items-center justify-center p-3">
         <button
           type="button"
+          aria-label={`${member.nickname} 멤버 액션 열기`}
           className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <MoreHorizontal className="size-4" />

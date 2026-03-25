@@ -1,6 +1,5 @@
 "use client";
 
-import { SlidersHorizontal } from "@moum-zip/ui/icons";
 import { useDeferredValue, useState } from "react";
 import type { Member } from "@/entities/member";
 import { MemberRow } from "./member-row";
@@ -20,20 +19,17 @@ export function MemberTable({ members }: { members: Member[] }) {
     <div className="flex flex-col gap-4">
       {/* Search Row */}
       <div className="flex items-center gap-3">
+        <label htmlFor="member-search" className="sr-only">
+          멤버 검색
+        </label>
         <input
+          id="member-search"
           type="text"
           placeholder="Search members..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
         />
-        <button
-          type="button"
-          className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-foreground text-sm transition-colors hover:bg-muted"
-        >
-          <SlidersHorizontal className="size-4" />
-          Filter
-        </button>
       </div>
 
       {/* Table Card */}
