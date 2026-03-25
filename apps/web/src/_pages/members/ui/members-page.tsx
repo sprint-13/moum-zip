@@ -1,9 +1,9 @@
 import { Mail, UserPlus } from "@moum-zip/ui/icons";
+import type { Member } from "@/entities/member";
 import { MemberTable } from "./member-table";
 import { OnlineNowCard } from "./online-now-card";
 import { QuickActionsCard } from "./quick-actions-card";
 import { RolesOverviewCard } from "./roles-overview-card";
-import type { Member } from "./types";
 
 export function MembersPage({ members }: { members: Member[] }) {
   return (

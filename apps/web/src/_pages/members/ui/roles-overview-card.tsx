@@ -1,9 +1,9 @@
 import { Shield, ShieldCheck, User } from "@moum-zip/ui/icons";
 import type { ReactNode } from "react";
-import type { Member, MemberRole } from "./types";
+import type { Member, MemberRole } from "@/entities/member";
 
 const ROLE_CONFIG: { role: MemberRole; label: string; icon: ReactNode }[] = [
-  { role: "admin", label: "Admin", icon: <Shield className="size-4" /> },
+  { role: "manager", label: "Manager", icon: <Shield className="size-4" /> },
   { role: "moderator", label: "Moderator", icon: <ShieldCheck className="size-4" /> },
   { role: "member", label: "Member", icon: <User className="size-4" /> },
 ];
@@ -11,7 +11,7 @@ const ROLE_CONFIG: { role: MemberRole; label: string; icon: ReactNode }[] = [
 export function RolesOverviewCard({ members }: { members: Member[] }) {
   const counts = members.reduce<Record<MemberRole, number>>(
     (acc, m) => ({ ...acc, [m.role]: (acc[m.role] ?? 0) + 1 }),
-    { admin: 0, moderator: 0, member: 0 },
+    { manager: 0, moderator: 0, member: 0 },
   );
 
   return (

@@ -2,8 +2,8 @@
 
 import { SlidersHorizontal } from "@moum-zip/ui/icons";
 import { useDeferredValue, useState } from "react";
+import type { Member } from "@/entities/member";
 import { MemberRow } from "./member-row";
-import type { Member } from "./types";
 
 export function MemberTable({ members }: { members: Member[] }) {
   const [query, setQuery] = useState("");
@@ -12,7 +12,7 @@ export function MemberTable({ members }: { members: Member[] }) {
   const filtered = members.filter(
     (m) =>
       deferredQuery.length === 0 ||
-      m.name.toLowerCase().includes(deferredQuery.toLowerCase()) ||
+      m.nickname.toLowerCase().includes(deferredQuery.toLowerCase()) ||
       m.email.toLowerCase().includes(deferredQuery.toLowerCase()),
   );
 

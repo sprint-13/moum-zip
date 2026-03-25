@@ -1,9 +1,9 @@
 import { MoreHorizontal } from "@moum-zip/ui/icons";
+import type { Member, MemberRole } from "@/entities/member";
 import { cn } from "@/shared/lib/cn";
-import type { Member, MemberRole } from "./types";
 
 const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
-  admin: { label: "Admin", className: "bg-foreground text-background" },
+  manager: { label: "Manager", className: "bg-foreground text-background" },
   moderator: { label: "Moderator", className: "bg-muted text-foreground border border-border" },
   member: { label: "Member", className: "bg-muted/50 text-muted-foreground border border-border" },
 };
@@ -24,10 +24,10 @@ export function MemberRow({ member }: { member: Member }) {
       {/* Member */}
       <div className="flex w-[220px] shrink-0 items-center gap-2.5 p-3">
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground">
-          <span className="font-semibold text-background text-xs">{getInitials(member.name)}</span>
+          <span className="font-semibold text-background text-xs">{getInitials(member.nickname)}</span>
         </div>
         <div className="flex flex-col gap-px">
-          <span className="font-medium text-foreground text-sm">{member.name}</span>
+          <span className="font-medium text-foreground text-sm">{member.nickname}</span>
           <span className="text-muted-foreground text-xs">{member.email}</span>
         </div>
       </div>
@@ -39,8 +39,8 @@ export function MemberRow({ member }: { member: Member }) {
 
       {/* Status */}
       <div className="flex w-[120px] shrink-0 items-center gap-1.5 p-3">
-        <span className={cn("size-2 rounded-full", member.status === "online" ? "bg-green-500" : "bg-neutral-400")} />
-        <span className="text-foreground text-sm">{member.status === "online" ? "Online" : "Offline"}</span>
+        {/* <span className={cn("size-2 rounded-full", member === "online" ? "bg-green-500" : "bg-neutral-400")} />
+        <span className="text-foreground text-sm">{member === "online" ? "Online" : "Offline"}</span> */}
       </div>
 
       {/* Actions */}
