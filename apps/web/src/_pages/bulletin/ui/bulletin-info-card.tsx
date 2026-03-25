@@ -1,4 +1,4 @@
-import { SpaceCard } from "@/features/space/ui/space-card";
+import { SpaceCard } from "@/features/space";
 
 export const BulletinInfoCard = () => {
   return (

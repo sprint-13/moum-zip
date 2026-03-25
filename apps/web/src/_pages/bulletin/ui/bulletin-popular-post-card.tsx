@@ -1,13 +1,15 @@
+import { SpaceCard } from "@/features/space";
+
 export const BulletinPopularPostCard = () => {
   return (
-    <section className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+    <SpaceCard>
       <h2 className="mb-4 font-bold text-[18px] text-neutral-900">인기 게시글</h2>
       <div className="flex flex-col gap-5">
         <PopularPost rank={1} title="4주차 자료 업로드 완료" likes={24} />
         <PopularPost rank={2} title="Exam Sprint Checklist" likes={31} />
         <PopularPost rank={3} title="Transformer Reading Notes" likes={17} />
       </div>
-    </section>
+    </SpaceCard>
   );
 };
 
