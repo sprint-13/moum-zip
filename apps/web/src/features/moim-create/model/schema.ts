@@ -4,6 +4,8 @@ import { z } from "zod";
 const spaceFunctionSchema = z.enum(["bulletin", "schedule", "members"]);
 export type SpaceFunction = z.infer<typeof spaceFunctionSchema>;
 
+const toDateTime = (date: string, time: string) => new Date(`${date}T${time}`);
+
 export const moimCreateSchema = z
   .object({
     type: z.enum(["study", "project"], { error: "모임 종류를 선택해주세요." }),
@@ -19,13 +21,26 @@ export const moimCreateSchema = z
     themeColor: z.string().min(1, "테마 색상을 선택해주세요."),
     options: spaceFunctionSchema.array().optional(),
   })
-  .refine((data) => new Date(`${data.date}T${data.time}`) > new Date(), {
-    message: "모임 일시는 현재 시각 이후여야 합니다.",
-    path: ["date"],
-  })
-  .refine((data) => new Date(`${data.deadlineDate}T${data.deadlineTime}`) < new Date(`${data.date}T${data.time}`), {
-    message: "모집 마감일은 모임 일시 이전이어야 합니다.",
-    path: ["deadlineDate"],
+  .superRefine((data, ctx) => {
+    const now = new Date();
+    const moimDateTime = toDateTime(data.date, data.time);
+    const deadlineDateTime = toDateTime(data.deadlineDate, data.deadlineTime);
+
+    if (!Number.isNaN(moimDateTime.getTime()) && moimDateTime <= now) {
+      ctx.addIssue({
+        code: "custom",
+        message: "모임 일시는 현재 시각 이후여야 합니다.",
+        path: ["date"],
+      });
+    }
+
+    if (!Number.isNaN(deadlineDateTime.getTime()) && deadlineDateTime <= now) {
+      ctx.addIssue({
+        code: "custom",
+        message: "모집 마감 일시는 현재 시각 이후여야 합니다.",
+        path: ["deadlineDate"],
+      });
+    }
   });
 
 // moimCreateSchema 기반 타입 자동 추출 - schema와 type을 단일 소스로 관리

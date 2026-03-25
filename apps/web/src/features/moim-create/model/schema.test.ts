@@ -34,13 +34,14 @@ describe("moimCreateSchema", () => {
     expect(result.error?.issues[0].message).toBe("모임 일시는 현재 시각 이후여야 합니다.");
   });
 
-  it("마감일이 모임 일시 이후이면 실패", () => {
+  it("모집 마감 일시가 현재 시각 이전이면 실패", () => {
     const result = moimCreateSchema.safeParse({
       ...baseInput,
-      deadlineTime: "14:30", // 모임 시간 14:00 보다 이후
+      deadlineDate: "2020-02-20",
+      deadlineTime: "00:00",
     });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].message).toBe("모집 마감일은 모임 일시 이전이어야 합니다.");
+    expect(result.error?.issues[0].message).toBe("모집 마감 일시는 현재 시각 이후여야 합니다.");
   });
 
   it("capacity가 0이면 실패", () => {
