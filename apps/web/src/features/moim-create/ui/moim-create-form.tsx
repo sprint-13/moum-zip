@@ -9,16 +9,16 @@ import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 
 export const MoimCreateForm = () => {
-  const { form, onSubmit } = useMoimCreateForm();
+  const { form, onSubmit, state, isPending } = useMoimCreateForm();
   const {
     control,
     register,
-    handleSubmit,
+
     formState: { errors },
   } = form;
 
   return (
-    <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={onSubmit}>
       {/* 모임 */}
       <h3 className="font-semibold text-foreground text-xl md:text-2xl">모임</h3>
       <div className="flex flex-col justify-between md:flex-row md:gap-[56px]">
@@ -115,7 +115,9 @@ export const MoimCreateForm = () => {
                 </p>
                 <FileInput
                   onUploadClick={() => {
-                    // TODO: 파일 선택 로직
+                    field.onChange(
+                      "https://mblogthumb-phinf.pstatic.net/MjAyMjEwMjRfMTcw/MDAxNjY2NTQxNTAyMjE4.9uNxvgbMgHopY4EJqfCOwQiUbqEKWfbT7nE_QsdUcHgg.QliuYZbmrW_QBO0yl6fotLA7jgmjHq0486UGbvNxPpUg.JPEG.gogoa25/IMG_7088.JPG?type=w800",
+                    );
                   }}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
                   onPreviewRemove={() => field.onChange("")}
@@ -214,6 +216,9 @@ export const MoimCreateForm = () => {
         <div className="flex-1" />
       </div>
 
+      {/*  서버 에러 메시지 */}
+      {state && !state.ok && <p className="font-medium text-destructive text-sm">{state.error}</p>}
+
       {/* 버튼 */}
       <div className="flex gap-4 pt-[80px] md:justify-end">
         <Button variant="tertiary" size="medium" className="min-w-0 flex-1 md:max-w-[216px]">
@@ -221,7 +226,7 @@ export const MoimCreateForm = () => {
         </Button>
 
         <Button type="submit" variant="primary" size="medium" className="min-w-0 flex-1 md:w-auto md:max-w-[216px]">
-          모임 만들기
+          {isPending ? "생성 중" : "모임 만들기"}
         </Button>
       </div>
     </form>
