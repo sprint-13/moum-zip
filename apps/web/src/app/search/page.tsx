@@ -1,7 +1,9 @@
 import { CreateButton } from "@ui/components";
 
 import { SpaceSearchHeader, SpaceSearchHero } from "@/_pages/space-search";
+import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
 import {
+  normalizeSearchCategoryId,
   parseSpaceSearchQueryState,
   SpaceSearchResultsSection,
   SpaceSearchToolbarSection,
@@ -16,6 +18,9 @@ interface SpacePageProps {
 export default async function SpacePage({ searchParams }: SpacePageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
+  const initialResults = await getSearchResults({
+    categoryId: normalizeSearchCategoryId(queryState.categoryId),
+  });
 
   return (
     <div className="min-h-screen bg-background-secondary">
@@ -27,7 +32,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
           <SpaceSearchToolbarSection queryState={queryState} />
         </div>
         <div className="px-4 sm:px-0">
-          <SpaceSearchResultsSection queryState={queryState} />
+          <SpaceSearchResultsSection initialResults={initialResults} queryState={queryState} />
         </div>
       </main>
 

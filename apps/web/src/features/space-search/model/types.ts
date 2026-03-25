@@ -1,4 +1,4 @@
-export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "business" | "health" | "family" | "etc";
+export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "project" | "business" | "health" | "family" | "etc";
 export type SpaceSearchFilterId = "date" | "district" | "deadline";
 
 export interface SpaceSearchCategory {
@@ -14,12 +14,6 @@ export interface SpaceSearchFilter {
 
 export interface SpaceSearchQueryState {
   categoryId: SpaceSearchCategoryId;
-  page: number;
-}
-
-export interface SpaceSearchPagination {
-  currentPage: number;
-  totalPages: number;
 }
 
 export interface SpaceCardMetaChip {
@@ -45,9 +39,4 @@ export interface SpaceCardItem {
   metaChips: SpaceCardMetaChip[];
   status?: SpaceCardStatus;
   title: string;
-}
-
-export interface SpaceSearchResultPage {
-  items: SpaceCardItem[];
-  pagination: SpaceSearchPagination;
 }

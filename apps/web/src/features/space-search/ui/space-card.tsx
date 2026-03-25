@@ -93,7 +93,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
                   <MetaChip chip={chip} key={chip.id} />
                 ))}
               </div>
-              <Tag className="shrink-0" icon>
+              <Tag size="small" className="shrink-0" icon>
                 {deadlineLabel}
               </Tag>
             </div>

@@ -1,15 +1,24 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
+import type { SearchResultsResponse } from "@/entities/gathering";
+
+import { useGetSearchResults } from "../apis/use-get-search-results";
 import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../model/constants";
-import { buildSpaceSearchHref, getSpaceSearchResultPage } from "../model/search-params";
+import { mapSearchResultItemToSpaceCardItem } from "../model/result-mappers";
+import { buildSpaceSearchHref, normalizeSearchCategoryId } from "../model/search-params";
 import type { SpaceSearchQueryState } from "../model/types";
 import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
 interface SpaceSearchSectionProps {
   queryState: SpaceSearchQueryState;
+}
+
+interface SpaceSearchResultsSectionProps extends SpaceSearchSectionProps {
+  initialResults: SearchResultsResponse;
 }
 
 const useSpaceSearchNavigation = () => {
@@ -28,7 +37,6 @@ export const SpaceSearchToolbarSection = ({ queryState }: SpaceSearchSectionProp
     navigateWithQueryState({
       ...queryState,
       categoryId,
-      page: 1,
     });
   };
 
@@ -42,18 +50,50 @@ export const SpaceSearchToolbarSection = ({ queryState }: SpaceSearchSectionProp
   );
 };
 
-export const SpaceSearchResultsSection = ({ queryState }: SpaceSearchSectionProps) => {
-  const navigateWithQueryState = useSpaceSearchNavigation();
-  const resultPage = getSpaceSearchResultPage(queryState);
-
-  const handlePageChange = (page: number) => {
-    navigateWithQueryState({
-      ...queryState,
-      page,
-    });
-  };
-
+export const SpaceSearchResultsSection = ({ initialResults, queryState }: SpaceSearchResultsSectionProps) => {
   return (
-    <SpaceSearchResults items={resultPage.items} onPageChange={handlePageChange} pagination={resultPage.pagination} />
+    <InfiniteSpaceSearchResults
+      initialResults={initialResults}
+      key={normalizeSearchCategoryId(queryState.categoryId)}
+      queryState={queryState}
+    />
   );
+};
+
+const InfiniteSpaceSearchResults = ({ initialResults, queryState }: SpaceSearchResultsSectionProps) => {
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetSearchResults({
+    categoryId: normalizeSearchCategoryId(queryState.categoryId),
+    initialResults,
+  });
+  const items = data.pages.flatMap((page) => page.items).map(mapSearchResultItemToSpaceCardItem);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (!target || !hasNextPage || isFetchingNextPage) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        void fetchNextPage();
+      },
+      { rootMargin: "200px 0px" },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  return <SpaceSearchResults hasMore={Boolean(hasNextPage)} items={items} loadMoreRef={loadMoreRef} />;
 };

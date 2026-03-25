@@ -2,12 +2,8 @@ import type { SpaceSearchCategory, SpaceSearchFilter, SpaceSearchQueryState } fr
 
 export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
   { id: "all", label: "전체" },
-  { id: "hobby", label: "취미/여가" },
   { id: "study", label: "스터디" },
-  { id: "business", label: "비즈니스" },
-  { id: "health", label: "운동/건강" },
-  { id: "family", label: "가족/육아" },
-  { id: "etc", label: "기타" },
+  { id: "project", label: "프로젝트" },
 ];
 
 export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
@@ -18,5 +14,4 @@ export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
 
 export const SPACE_SEARCH_INITIAL_QUERY_STATE: SpaceSearchQueryState = {
   categoryId: "all",
-  page: 1,
 };
