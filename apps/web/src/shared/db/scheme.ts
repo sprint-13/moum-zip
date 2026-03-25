@@ -80,8 +80,13 @@ export const spacePosts = pgTable("space_posts", {
     .notNull()
     .references(() => spaces.id),
   postId: integer("post_id").notNull(),
+  category: text("category", { enum: ["notice", "discussion", "question", "material"] }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export type SpacePost = InferSelectModel<typeof spacePosts>;
+
+export type NewSpacePost = InferInsertModel<typeof spacePosts>;
 
 export const schedules = pgTable("schedules", {
   id: text("id").primaryKey(),
