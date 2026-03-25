@@ -1,11 +1,5 @@
-import type { Member, MemberRole } from "@/entities/member";
-
-// TODO: ROLE 수정 필요
-const ROLE_LABEL: Record<MemberRole, string> = {
-  manager: "Manager",
-  moderator: "Moderator",
-  member: "Member",
-};
+import type { Member } from "@/entities/member";
+import { ROLE_LABEL } from "@/entities/member";
 
 export function OnlineNowCard({ members }: { members: Member[] }) {
   return (
