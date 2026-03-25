@@ -1,6 +1,7 @@
 import { CreateButton } from "@ui/components";
 
 import { SpaceSearchHeader, SpaceSearchHero } from "@/_pages/space-search";
+import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
 import {
   normalizeSearchCategoryId,
@@ -18,9 +19,12 @@ interface SpacePageProps {
 export default async function SpacePage({ searchParams }: SpacePageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
-  const initialResults = await getSearchResults({
-    categoryId: normalizeSearchCategoryId(queryState.categoryId),
-  });
+  const [categories, initialResults] = await Promise.all([
+    getSearchCategories(),
+    getSearchResults({
+      categoryId: normalizeSearchCategoryId(queryState.categoryId),
+    }),
+  ]);
 
   return (
     <div className="min-h-screen bg-background-secondary">
@@ -29,7 +33,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-[1.6875rem]">
         <SpaceSearchHero />
         <div className="px-4 sm:px-0">
-          <SpaceSearchToolbarSection queryState={queryState} />
+          <SpaceSearchToolbarSection categories={categories} queryState={queryState} />
         </div>
         <div className="px-4 sm:px-0">
           <SpaceSearchResultsSection initialResults={initialResults} queryState={queryState} />

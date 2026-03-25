@@ -6,15 +6,19 @@ import { useEffect, useRef } from "react";
 import type { SearchResultsResponse } from "@/entities/gathering";
 
 import { useGetSearchResults } from "../apis/use-get-search-results";
-import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../model/constants";
+import { SPACE_SEARCH_FILTERS } from "../model/constants";
 import { mapSearchResultItemToSpaceCardItem } from "../model/result-mappers";
 import { buildSpaceSearchHref, normalizeSearchCategoryId } from "../model/search-params";
-import type { SpaceSearchQueryState } from "../model/types";
+import type { SpaceSearchCategory, SpaceSearchQueryState } from "../model/types";
 import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
 interface SpaceSearchSectionProps {
   queryState: SpaceSearchQueryState;
+}
+
+interface SpaceSearchToolbarSectionProps extends SpaceSearchSectionProps {
+  categories: SpaceSearchCategory[];
 }
 
 interface SpaceSearchResultsSectionProps extends SpaceSearchSectionProps {
@@ -30,7 +34,7 @@ const useSpaceSearchNavigation = () => {
   };
 };
 
-export const SpaceSearchToolbarSection = ({ queryState }: SpaceSearchSectionProps) => {
+export const SpaceSearchToolbarSection = ({ categories, queryState }: SpaceSearchToolbarSectionProps) => {
   const navigateWithQueryState = useSpaceSearchNavigation();
 
   const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {
@@ -42,7 +46,7 @@ export const SpaceSearchToolbarSection = ({ queryState }: SpaceSearchSectionProp
 
   return (
     <SpaceSearchToolbar
-      categories={SPACE_SEARCH_CATEGORIES}
+      categories={categories}
       filters={SPACE_SEARCH_FILTERS}
       onCategoryChange={handleCategoryChange}
       selectedCategoryId={queryState.categoryId}

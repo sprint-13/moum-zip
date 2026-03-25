@@ -2,7 +2,9 @@ import type { InferSelectModel } from "drizzle-orm";
 
 import type { spaces } from "@/shared/db/scheme";
 
-export type GatheringCategory = "study" | "project";
+import type { GatheringCategoryId } from "./category-contract";
+
+export type GatheringCategory = GatheringCategoryId;
 export type GatheringLocation = "online" | "offline";
 
 export type SpaceRow = InferSelectModel<typeof spaces>;

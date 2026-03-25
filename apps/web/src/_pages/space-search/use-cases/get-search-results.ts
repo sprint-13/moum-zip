@@ -6,10 +6,10 @@ import type {
   SearchResultItem,
   SearchResultsResponse,
 } from "@/entities/gathering";
-import { gatheringQueries } from "@/entities/gathering";
+import { gatheringQueries, getGatheringCategoryRequestType, normalizeGatheringCategory } from "@/entities/gathering";
 import { api } from "@/shared/api";
 
-const DEFAULT_SEARCH_SIZE = 12;
+const DEFAULT_SEARCH_SIZE = 6;
 
 interface GetSearchResultsInput {
   categoryId?: "all" | GatheringCategory;
@@ -23,9 +23,7 @@ interface GetSearchResultsDeps {
 }
 
 const normalizeMeetingType = (type: string): GatheringCategory => {
-  const normalizedType = type.trim().toLowerCase();
-
-  return normalizedType === "스터디" ? "study" : "project";
+  return normalizeGatheringCategory(type) ?? "project";
 };
 
 const inferLocation = (meeting: MeetingWithHost): GatheringLocation => {
@@ -82,7 +80,7 @@ export const getSearchResults = async (
   const response = await meetingsApi.getList({
     cursor: cursor ?? undefined,
     size,
-    type: categoryId === "all" ? undefined : categoryId,
+    type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
   });
   const searchResults = response.data as MeetingsListData;
 

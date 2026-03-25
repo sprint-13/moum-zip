@@ -1,11 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@/entities/gathering", () => ({
-  gatheringQueries: {
-    findSpacesByMeetingIds: vi.fn(),
-  },
-}));
-
 import { getSearchResults } from "./get-search-results";
 
 const createMeetingsListResponse = (
@@ -20,7 +14,7 @@ const createMeetingsListResponse = (
 });
 
 describe("getSearchResults", () => {
-  it("외부 모임 목록을 내부 스페이스 정보와 함께 매핑한다", async () => {
+  it("외부 meetings 응답에 내부 spaces 보조 정보를 합성한다", async () => {
     const mockMeetingsApi = {
       getList: vi.fn().mockResolvedValue(
         createMeetingsListResponse([
@@ -96,11 +90,9 @@ describe("getSearchResults", () => {
         type: "study",
       },
     ]);
-    expect(result.hasMore).toBe(false);
-    expect(result.nextCursor).toBeNull();
   });
 
-  it("내부 스페이스 정보가 없으면 기본값으로 대체한다", async () => {
+  it("카테고리 선택 시 외부 API params에 한글 type 값을 보낸다", async () => {
     const mockMeetingsApi = {
       getList: vi.fn().mockResolvedValue(
         createMeetingsListResponse([
@@ -143,7 +135,11 @@ describe("getSearchResults", () => {
       { meetingsApi: mockMeetingsApi, queries: mockQueries },
     );
 
-    expect(result.items).toHaveLength(1);
+    expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
+      cursor: undefined,
+      size: 12,
+      type: "프로젝트",
+    });
     expect(result.items[0]).toMatchObject({
       location: "offline",
       slug: "",
@@ -151,7 +147,7 @@ describe("getSearchResults", () => {
     });
   });
 
-  it("내부 스페이스 조회에 실패해도 결과를 반환한다", async () => {
+  it("내부 spaces 조회가 비어 있어도 fallback으로 결과를 반환한다", async () => {
     const mockMeetingsApi = {
       getList: vi.fn().mockResolvedValue(
         createMeetingsListResponse([
@@ -194,6 +190,7 @@ describe("getSearchResults", () => {
     expect(result.items[0]).toMatchObject({
       location: "online",
       slug: "",
+      type: "study",
     });
   });
 });

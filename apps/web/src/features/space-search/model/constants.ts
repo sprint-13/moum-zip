@@ -1,9 +1,13 @@
+import { GATHERING_CATEGORY_SPECS, getGatheringCategoryLabel } from "@/entities/gathering";
+
 import type { SpaceSearchCategory, SpaceSearchFilter, SpaceSearchQueryState } from "./types";
 
 export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
   { id: "all", label: "전체" },
-  { id: "study", label: "스터디" },
-  { id: "project", label: "프로젝트" },
+  ...GATHERING_CATEGORY_SPECS.map(({ id }) => ({
+    id,
+    label: getGatheringCategoryLabel(id),
+  })),
 ];
 
 export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
