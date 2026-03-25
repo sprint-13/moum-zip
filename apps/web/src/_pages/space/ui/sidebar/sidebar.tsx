@@ -66,8 +66,8 @@ function SidebarPanel({ children, className }: SidebarPanelProps) {
 
 type SidebarInsetProps = HTMLAttributes<HTMLElement>;
 
-function SidebarInset({ children, className }: SidebarInsetProps) {
-  return <main className={cn("flex min-h-svh flex-1 flex-col overflow-hidden", className)}>{children}</main>;
+function SidebarInset({ children }: SidebarInsetProps) {
+  return <>{children}</>;
 }
 
 // ------------------------------------------------------------------ Trigger
