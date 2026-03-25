@@ -4,10 +4,10 @@ import { Badge, Button, CheckCircleIcon, UtilityButton } from "@ui/components";
 import { Heart } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-import type { MoimCardMockData, MoimImageTone } from "../mock-data";
+import type { MoimImageTone, MypageMoimCard } from "../model/types";
 
 interface MoimCardProps {
-  moim: MoimCardMockData;
+  moim: MypageMoimCard;
 }
 
 const imageToneClassName: Record<MoimImageTone, string> = {

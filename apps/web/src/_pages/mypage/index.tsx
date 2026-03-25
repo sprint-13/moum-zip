@@ -3,11 +3,10 @@
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-import type { MoimCardMockData, MypageTabKey, ProfileMockData } from "./mock-data";
+import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "./model/types";
 import MoimCardList from "./ui/moim-card-list";
 import ProfileSection from "./ui/profile-section";
 
-type CreatedFilterKey = "ongoing" | "ended";
 type MoimTabKey = Exclude<MypageTabKey, "created">;
 
 const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
@@ -16,10 +15,10 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
 ];
 
 interface MypagePageProps {
-  profile: ProfileMockData;
+  profile: MypageProfile;
   tabs: Array<{ key: MypageTabKey; label: string }>;
-  moims: Record<MoimTabKey, MoimCardMockData[]>;
-  createdMoims: Record<CreatedFilterKey, MoimCardMockData[]>;
+  moims: Record<MoimTabKey, MypageMoimCard[]>;
+  createdMoims: Record<CreatedFilterKey, MypageMoimCard[]>;
 }
 
 export default function MypagePage({ profile, tabs, moims, createdMoims }: MypagePageProps) {

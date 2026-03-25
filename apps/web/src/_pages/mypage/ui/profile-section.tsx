@@ -2,12 +2,12 @@
 
 import { Pencil } from "@ui/icons";
 import { useState } from "react";
-import type { ProfileMockData } from "../mock-data";
+import type { MypageProfile } from "../model/types";
 import ProfileAvatar from "./profile-avatar";
 import ProfileEditModal from "./profile-edit-modal";
 
 interface ProfileSectionProps {
-  profile: ProfileMockData;
+  profile: MypageProfile;
 }
 
 export default function ProfileSection({ profile }: ProfileSectionProps) {

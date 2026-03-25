@@ -1,9 +1,9 @@
 import { Empty } from "@ui/components";
-import type { MoimCardMockData } from "../mock-data";
+import type { MypageMoimCard } from "../model/types";
 import MoimCard from "./moim-card";
 
 interface MoimCardListProps {
-  moims: MoimCardMockData[];
+  moims: MypageMoimCard[];
   emptyLabel?: string;
 }
 

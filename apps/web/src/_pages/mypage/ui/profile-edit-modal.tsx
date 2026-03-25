@@ -5,13 +5,13 @@ import { Input } from "@ui/components/shadcn/input";
 import { Pencil } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import { useEffect, useId, useRef } from "react";
-import type { ProfileMockData } from "../mock-data";
+import type { MypageProfile } from "../model/types";
 import ProfileAvatar from "./profile-avatar";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: ProfileMockData;
+  profile: MypageProfile;
 }
 
 export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
