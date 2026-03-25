@@ -12,7 +12,7 @@ import {
 import { cookies } from "next/headers";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
-const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
+const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
 
 /**
  * 인증이 필요한 API 호출 시 사용
