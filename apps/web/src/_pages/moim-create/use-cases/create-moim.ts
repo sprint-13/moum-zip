@@ -4,7 +4,7 @@ import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 export async function createMoim(formData: MoimCreateFormValues, accessToken: string) {
   const meetingPayload = {
     name: formData.name,
-    type: formData.type,
+    type: formData.type === "study" ? "스터디" : "프로젝트",
     capacity: formData.capacity,
     description: formData.description,
     image: formData.image,
