@@ -26,6 +26,16 @@ const ActiveHeartIcon = (size: number) => (
 
 type SearchResultsInfiniteData = InfiniteData<SearchResultsResponse, string | null>;
 
+const isRedirectError = (error: unknown): error is { digest: string } => {
+  if (typeof error !== "object" || error === null || !("digest" in error)) {
+    return false;
+  }
+
+  const { digest } = error as { digest?: unknown };
+
+  return typeof digest === "string" && digest.startsWith("NEXT_REDIRECT");
+};
+
 const updateLikedStateInSearchResults = (
   cachedData: SearchResultsInfiniteData | undefined,
   meetingId: string,
@@ -81,7 +91,16 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
         } else {
           await deleteSearchFavoriteAction(parsedMeetingId);
         }
-      } catch {
+      } catch (error) {
+        if (isRedirectError(error)) {
+          setOptimisticIsLiked(previousIsLiked);
+          previousSearchResults.forEach(([queryKey, cachedData]) => {
+            queryClient.setQueryData(queryKey, cachedData);
+          });
+
+          throw error;
+        }
+
         setOptimisticIsLiked(previousIsLiked);
         previousSearchResults.forEach(([queryKey, cachedData]) => {
           queryClient.setQueryData(queryKey, cachedData);
