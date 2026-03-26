@@ -132,6 +132,7 @@ export const MoimCreateForm = () => {
                   onUploadClick={() => handleImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
                   onPreviewRemove={() => field.onChange("")}
+                  showUploadButton={!field.value}
                 />
                 {fieldState.error && (
                   <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
