@@ -17,7 +17,6 @@ export const getJoinedSpaceInfos = async (
       location: dbSpace.location || "online",
       themeColor: dbSpace.themeColor || "#000000",
       status: dbSpace.status || "ongoing",
-      modules: dbSpace.modules || [],
       image: apiSpace.image,
       type: apiSpace.type === "study" ? "study" : "project",
       startDate: apiSpace.dateTime,
