@@ -8,7 +8,7 @@ import {
   parseSpaceSearchQueryState,
   SpaceSearchContentSection,
 } from "@/features/space-search";
-import { getAuthenticatedApi } from "@/shared/api/auth-client";
+import { getSearchMeetingsApi } from "@/features/space-search/apis/get-search-meetings-api";
 
 type SpaceSearchParams = Record<string, string | string[] | undefined>;
 
@@ -20,11 +20,11 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
-  const authedApi = await getAuthenticatedApi();
+  const meetingsApi = await getSearchMeetingsApi();
   console.log("[search] source page", normalizedQueryState);
   const [categories, initialResults] = await Promise.all([
     getSearchCategories(),
-    getSearchResults(normalizedQueryState, { meetingsApi: authedApi.meetings }),
+    getSearchResults(normalizedQueryState, { meetingsApi }),
   ]);
 
   return (

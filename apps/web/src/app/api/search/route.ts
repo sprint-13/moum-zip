@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
+import { getSearchMeetingsApi } from "@/features/space-search/apis/get-search-meetings-api";
 import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
-import { getAuthenticatedApi } from "@/shared/api/auth-client";
 
 const parsePositiveInteger = (value: string | null) => {
   if (!value) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const queryState = normalizeSearchQueryState(parseSpaceSearchQueryState(searchParams));
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
-  const authedApi = await getAuthenticatedApi();
+  const meetingsApi = await getSearchMeetingsApi();
   console.log("[search] source route", { ...queryState, cursor, size });
 
   const results = await getSearchResults(
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       cursor,
       size,
     },
-    { meetingsApi: authedApi.meetings },
+    { meetingsApi },
   );
 
   return NextResponse.json(results);
