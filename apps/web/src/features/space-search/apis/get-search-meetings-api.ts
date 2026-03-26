@@ -3,10 +3,16 @@ import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
 
 export const getSearchMeetingsApi = async () => {
   if (!(await isAuthenticated())) {
-    return api.meetings;
+    return {
+      isAuthenticatedRequest: false,
+      meetingsApi: api.meetings,
+    };
   }
 
   const authedApi = await getAuthenticatedApi();
 
-  return authedApi.meetings;
+  return {
+    isAuthenticatedRequest: true,
+    meetingsApi: authedApi.meetings,
+  };
 };

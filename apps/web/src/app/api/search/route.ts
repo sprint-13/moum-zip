@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const queryState = normalizeSearchQueryState(parseSpaceSearchQueryState(searchParams));
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
-  const meetingsApi = await getSearchMeetingsApi();
+  const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
   console.log("[search] source route", { ...queryState, cursor, size });
 
   const results = await getSearchResults(
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       cursor,
       size,
     },
-    { meetingsApi },
+    { isAuthenticatedRequest, meetingsApi },
   );
 
   return NextResponse.json(results);

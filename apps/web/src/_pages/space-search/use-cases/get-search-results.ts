@@ -24,12 +24,13 @@ interface GetSearchResultsInput {
 }
 
 interface GetSearchResultsDeps {
+  isAuthenticatedRequest?: boolean;
   meetingsApi?: Pick<typeof api.meetings, "getList">;
 }
 
 type SearchMeetingWithUserState = MeetingWithHost & {
   isCompleted?: boolean;
-  isFavorited?: boolean;
+  isFavorited?: boolean | null;
   isJoined?: boolean;
 };
 
@@ -98,7 +99,7 @@ const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem
     description: meeting.description,
     id: String(meeting.id),
     image: meeting.image,
-    isLiked: Boolean(meeting.isFavorited),
+    isLiked: meeting.isFavorited ?? false,
     location: normalizeMeetingLocation(meeting.region) ?? "online",
     participantCount: meeting.participantCount,
     region: meeting.region,
@@ -117,6 +118,20 @@ const matchesLocation = (item: SearchResultItem, locationId: GetSearchResultsInp
   return item.location === locationId;
 };
 
+const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAuthenticatedRequest: boolean) => {
+  if (!isAuthenticatedRequest) {
+    return;
+  }
+
+  const meetingIds = meetings.filter((meeting) => meeting.isFavorited == null).map((meeting) => meeting.id);
+
+  if (meetingIds.length === 0) {
+    return;
+  }
+
+  console.warn("[search] authenticated meetings response is missing isFavorited", { meetingIds });
+};
+
 export const getSearchResults = async (
   {
     categoryId = "all",
@@ -126,7 +141,7 @@ export const getSearchResults = async (
     locationId = "all",
     size = DEFAULT_SEARCH_SIZE,
   }: GetSearchResultsInput = {},
-  { meetingsApi = api.meetings }: GetSearchResultsDeps = {},
+  { isAuthenticatedRequest = false, meetingsApi = api.meetings }: GetSearchResultsDeps = {},
 ): Promise<SearchResultsResponse> => {
   const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
   const response = await meetingsApi.getList(
@@ -142,17 +157,12 @@ export const getSearchResults = async (
   );
   const searchResults = response.data as MeetingsListData;
   const meetings = searchResults.data as SearchMeetingWithUserState[];
-  console.log(
-    "[search] meetings favorite state",
-    JSON.stringify(meetings.map(({ id, isFavorited }) => ({ id, isFavorited }))),
-  );
+  warnMissingFavoritedField(meetings, isAuthenticatedRequest);
 
   const items = meetings
     .map((meeting) => mapMeetingToItem(meeting))
     .filter((item) => (categoryId === "all" ? true : item.type === categoryId))
     .filter((item) => matchesLocation(item, locationId));
-
-  console.log("[search] mapped like state", JSON.stringify(items.map(({ id, isLiked }) => ({ id, isLiked }))));
 
   return {
     hasMore: searchResults.hasMore,

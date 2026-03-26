@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { getSearchResults } from "./get-search-results";
 
@@ -11,6 +11,10 @@ const createMeetingsListResponse = (
     hasMore: overrides?.hasMore ?? false,
     nextCursor: overrides?.nextCursor ?? null,
   },
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("getSearchResults", () => {
@@ -52,14 +56,17 @@ describe("getSearchResults", () => {
 
     const result = await getSearchResults({}, { meetingsApi: mockMeetingsApi });
 
-    expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
-      cursor: undefined,
-      region: undefined,
-      size: 6,
-      sortBy: undefined,
-      sortOrder: undefined,
-      type: undefined,
-    });
+    expect(mockMeetingsApi.getList).toHaveBeenCalledWith(
+      {
+        cursor: undefined,
+        region: undefined,
+        size: 6,
+        sortBy: undefined,
+        sortOrder: undefined,
+        type: undefined,
+      },
+      { cache: "no-store" },
+    );
     expect(result.items).toEqual([
       {
         address: null,
@@ -118,14 +125,17 @@ describe("getSearchResults", () => {
 
     const result = await getSearchResults({ categoryId: "project" }, { meetingsApi: mockMeetingsApi });
 
-    expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
-      cursor: undefined,
-      region: undefined,
-      size: 6,
-      sortBy: undefined,
-      sortOrder: undefined,
-      type: "프로젝트",
-    });
+    expect(mockMeetingsApi.getList).toHaveBeenCalledWith(
+      {
+        cursor: undefined,
+        region: undefined,
+        size: 6,
+        sortBy: undefined,
+        sortOrder: undefined,
+        type: "프로젝트",
+      },
+      { cache: "no-store" },
+    );
     expect(result.items[0]).toMatchObject({
       location: "offline",
       slug: "",
@@ -140,14 +150,17 @@ describe("getSearchResults", () => {
 
     await getSearchResults({ dateSortId: "latest" }, { meetingsApi: mockMeetingsApi });
 
-    expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
-      cursor: undefined,
-      region: undefined,
-      size: 6,
-      sortBy: "dateTime",
-      sortOrder: "desc",
-      type: undefined,
-    });
+    expect(mockMeetingsApi.getList).toHaveBeenCalledWith(
+      {
+        cursor: undefined,
+        region: undefined,
+        size: 6,
+        sortBy: "dateTime",
+        sortOrder: "desc",
+        type: undefined,
+      },
+      { cache: "no-store" },
+    );
   });
 
   it("filters location using meetings region values", async () => {
@@ -214,18 +227,149 @@ describe("getSearchResults", () => {
 
     const result = await getSearchResults({ locationId: "offline" }, { meetingsApi: mockMeetingsApi });
 
-    expect(mockMeetingsApi.getList).toHaveBeenCalledWith({
-      cursor: undefined,
-      region: "offline",
-      size: 6,
-      sortBy: undefined,
-      sortOrder: undefined,
-      type: undefined,
-    });
+    expect(mockMeetingsApi.getList).toHaveBeenCalledWith(
+      {
+        cursor: undefined,
+        region: "offline",
+        size: 6,
+        sortBy: undefined,
+        sortOrder: undefined,
+        type: undefined,
+      },
+      { cache: "no-store" },
+    );
     expect(result.items).toHaveLength(1);
     expect(result.items[0]).toMatchObject({
       id: "2",
       location: "offline",
     });
+  });
+
+  it("인증 요청인데 isFavorited가 없으면 경고를 남긴다", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const mockMeetingsApi = {
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
+          {
+            id: 866,
+            teamId: "team-1",
+            name: "Project Group",
+            type: "프로젝트",
+            region: "online",
+            address: null,
+            latitude: null,
+            longitude: null,
+            dateTime: null,
+            registrationEnd: null,
+            capacity: 10,
+            participantCount: 4,
+            image: null,
+            description: null,
+            canceledAt: null,
+            confirmedAt: null,
+            hostId: 1,
+            createdBy: 1,
+            createdAt: null,
+            updatedAt: null,
+            host: {
+              id: 1,
+              image: null,
+              name: "Host",
+            },
+          },
+        ]),
+      ),
+    };
+
+    await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
+
+    expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      meetingIds: [866],
+    });
+  });
+
+  it("인증 요청인데 isFavorited가 null이어도 경고를 남긴다", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const mockMeetingsApi = {
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
+          {
+            id: 867,
+            teamId: "team-1",
+            name: "Project Group",
+            type: "프로젝트",
+            region: "online",
+            address: null,
+            latitude: null,
+            longitude: null,
+            dateTime: null,
+            registrationEnd: null,
+            capacity: 10,
+            participantCount: 4,
+            image: null,
+            description: null,
+            canceledAt: null,
+            confirmedAt: null,
+            hostId: 1,
+            createdBy: 1,
+            createdAt: null,
+            isFavorited: null,
+            updatedAt: null,
+            host: {
+              id: 1,
+              image: null,
+              name: "Host",
+            },
+          },
+        ]),
+      ),
+    };
+
+    await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
+
+    expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      meetingIds: [867],
+    });
+  });
+
+  it("비로그인 공개 조회에서는 isFavorited가 없어도 경고를 남기지 않는다", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const mockMeetingsApi = {
+      getList: vi.fn().mockResolvedValue(
+        createMeetingsListResponse([
+          {
+            id: 866,
+            teamId: "team-1",
+            name: "Project Group",
+            type: "프로젝트",
+            region: "online",
+            address: null,
+            latitude: null,
+            longitude: null,
+            dateTime: null,
+            registrationEnd: null,
+            capacity: 10,
+            participantCount: 4,
+            image: null,
+            description: null,
+            canceledAt: null,
+            confirmedAt: null,
+            hostId: 1,
+            createdBy: 1,
+            createdAt: null,
+            updatedAt: null,
+            host: {
+              id: 1,
+              image: null,
+              name: "Host",
+            },
+          },
+        ]),
+      ),
+    };
+
+    await getSearchResults({}, { isAuthenticatedRequest: false, meetingsApi: mockMeetingsApi });
+
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });

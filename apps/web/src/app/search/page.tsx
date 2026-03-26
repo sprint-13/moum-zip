@@ -20,11 +20,11 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
-  const meetingsApi = await getSearchMeetingsApi();
+  const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
   console.log("[search] source page", normalizedQueryState);
   const [categories, initialResults] = await Promise.all([
     getSearchCategories(),
-    getSearchResults(normalizedQueryState, { meetingsApi }),
+    getSearchResults(normalizedQueryState, { isAuthenticatedRequest, meetingsApi }),
   ]);
 
   return (
