@@ -1,6 +1,6 @@
-import type { SearchResultsCategoryId } from "./search-params";
+import type { SearchResultsQueryState } from "./search-params";
 
 export const spaceSearchQueryKeys = {
   all: ["search-results"] as const,
-  list: (categoryId: SearchResultsCategoryId) => [...spaceSearchQueryKeys.all, categoryId] as const,
+  list: (queryState: SearchResultsQueryState) => [...spaceSearchQueryKeys.all, queryState] as const,
 };

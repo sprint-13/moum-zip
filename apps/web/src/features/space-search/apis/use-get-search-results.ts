@@ -6,16 +6,22 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import type { SearchResultsResponse } from "@/entities/gathering";
 
 import { spaceSearchQueryKeys } from "../model/query-keys";
-import type { SearchResultsCategoryId } from "../model/search-params";
+import type { SearchResultsQueryState } from "../model/search-params";
 import { getSearchResults } from "./get-search-results";
 
 interface UseGetSearchResultsProps {
-  categoryId: SearchResultsCategoryId;
-  initialResults: SearchResultsResponse;
+  initialResults?: SearchResultsResponse;
+  queryState: SearchResultsQueryState;
 }
 
-export const useGetSearchResults = ({ categoryId, initialResults }: UseGetSearchResultsProps) => {
+export const useGetSearchResults = ({ initialResults, queryState }: UseGetSearchResultsProps) => {
   const initialPageParam: string | null = null;
+  const initialData = initialResults
+    ? {
+        pageParams: [initialPageParam],
+        pages: [initialResults],
+      }
+    : undefined;
 
   return useInfiniteQuery<
     SearchResultsResponse,
@@ -24,17 +30,15 @@ export const useGetSearchResults = ({ categoryId, initialResults }: UseGetSearch
     ReturnType<typeof spaceSearchQueryKeys.list>,
     string | null
   >({
-    queryKey: spaceSearchQueryKeys.list(categoryId),
+    queryKey: spaceSearchQueryKeys.list(queryState),
     queryFn: ({ pageParam }) =>
       getSearchResults({
-        categoryId,
+        ...queryState,
         cursor: pageParam,
       }),
-    initialData: {
-      pageParams: [initialPageParam],
-      pages: [initialResults],
-    },
+    initialData,
     initialPageParam,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    placeholderData: (previousData) => previousData,
   });
 };

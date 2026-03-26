@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
-
-const isCategoryId = (value: string | null): value is "all" | "study" | "project" => {
-  return value === "all" || value === "study" || value === "project";
-};
+import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
 
 const parsePositiveInteger = (value: string | null) => {
   if (!value) {
@@ -18,12 +15,12 @@ const parsePositiveInteger = (value: string | null) => {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const categoryId = searchParams.get("category");
+  const queryState = normalizeSearchQueryState(parseSpaceSearchQueryState(searchParams));
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
 
   const results = await getSearchResults({
-    categoryId: isCategoryId(categoryId) ? categoryId : "all",
+    ...queryState,
     cursor,
     size,
   });

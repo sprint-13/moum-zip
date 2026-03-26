@@ -1,19 +1,30 @@
 export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "project" | "business" | "health" | "family" | "etc";
-export type SpaceSearchFilterId = "date" | "district" | "deadline";
+export type SpaceSearchFilterId = "date" | "location" | "deadline";
+export type SpaceSearchDateSortId = "default" | "latest" | "oldest";
+export type SpaceSearchLocationId = "all" | "online" | "offline";
+export type SpaceSearchDeadlineSortId = "default" | "fast" | "slow";
 
 export interface SpaceSearchCategory {
   id: SpaceSearchCategoryId;
   label: string;
 }
 
+export interface SpaceSearchFilterOption {
+  id: string;
+  label: string;
+}
+
 export interface SpaceSearchFilter {
-  hasLeftIcon?: boolean;
   id: SpaceSearchFilterId;
   label: string;
+  options: SpaceSearchFilterOption[];
 }
 
 export interface SpaceSearchQueryState {
   categoryId: SpaceSearchCategoryId;
+  dateSortId: SpaceSearchDateSortId;
+  deadlineSortId: SpaceSearchDeadlineSortId;
+  locationId: SpaceSearchLocationId;
 }
 
 export interface SpaceCardMetaChip {
