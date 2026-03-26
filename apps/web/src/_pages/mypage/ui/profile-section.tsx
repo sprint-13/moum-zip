@@ -53,7 +53,9 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
         </div>
       </section>
 
-      <ProfileEditModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} profile={profile} />
+      {isModalOpen ? (
+        <ProfileEditModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} profile={profile} />
+      ) : null}
     </>
   );
 }
