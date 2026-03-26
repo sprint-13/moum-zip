@@ -5,6 +5,7 @@ const spaceFunctionSchema = z.enum(["bulletin", "schedule", "members"]);
 export type SpaceFunction = z.infer<typeof spaceFunctionSchema>;
 
 const toDateTime = (date: string, time: string) => new Date(`${date}T${time}`);
+const isValidDate = (date: Date) => !Number.isNaN(date.getTime());
 
 export const moimCreateSchema = z
   .object({
@@ -25,21 +26,16 @@ export const moimCreateSchema = z
     const now = new Date();
     const moimDateTime = toDateTime(data.date, data.time);
     const deadlineDateTime = toDateTime(data.deadlineDate, data.deadlineTime);
-
-    if (!Number.isNaN(moimDateTime.getTime()) && moimDateTime <= now) {
-      ctx.addIssue({
-        code: "custom",
-        message: "모임 일시는 현재 시각 이후여야 합니다.",
-        path: ["date"],
-      });
+    if (isValidDate(moimDateTime) && moimDateTime <= now) {
+      ctx.addIssue({ code: "custom", message: "모임 일시는 현재 시각 이후여야 합니다.", path: ["date"] });
     }
 
-    if (!Number.isNaN(deadlineDateTime.getTime()) && deadlineDateTime <= now) {
-      ctx.addIssue({
-        code: "custom",
-        message: "모집 마감 일시는 현재 시각 이후여야 합니다.",
-        path: ["deadlineDate"],
-      });
+    if (isValidDate(deadlineDateTime) && deadlineDateTime <= now) {
+      ctx.addIssue({ code: "custom", message: "모집 마감 일시는 현재 시각 이후여야 합니다.", path: ["deadlineDate"] });
+    }
+
+    if (isValidDate(moimDateTime) && isValidDate(deadlineDateTime) && deadlineDateTime >= moimDateTime) {
+      ctx.addIssue({ code: "custom", message: "모집 마감일은 모임 일시 이전이어야 합니다.", path: ["deadlineDate"] });
     }
   });
 
