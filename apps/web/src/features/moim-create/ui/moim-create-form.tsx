@@ -5,8 +5,23 @@ import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
 import { Controller } from "react-hook-form";
 import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
+import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
 import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
+
+// 파일 선택 후 S3 업로드 → publicUrl 반환
+const handleImageUpload = async (onChange: (url: string) => void) => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/jpeg,image/png,image/webp,image/gif";
+  input.onchange = async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const publicUrl = await uploadImage(file);
+    onChange(publicUrl);
+  };
+  input.click();
+};
 
 export const MoimCreateForm = () => {
   const { form, onSubmit, state, isPending } = useMoimCreateForm();
@@ -114,11 +129,7 @@ export const MoimCreateForm = () => {
                   이미지<span className="pl-1 text-primary">*</span>
                 </p>
                 <FileInput
-                  onUploadClick={() => {
-                    field.onChange(
-                      "https://mblogthumb-phinf.pstatic.net/MjAyMjEwMjRfMTcw/MDAxNjY2NTQxNTAyMjE4.9uNxvgbMgHopY4EJqfCOwQiUbqEKWfbT7nE_QsdUcHgg.QliuYZbmrW_QBO0yl6fotLA7jgmjHq0486UGbvNxPpUg.JPEG.gogoa25/IMG_7088.JPG?type=w800",
-                    );
-                  }}
+                  onUploadClick={() => handleImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
                   onPreviewRemove={() => field.onChange("")}
                 />
