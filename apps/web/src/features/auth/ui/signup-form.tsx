@@ -1,7 +1,10 @@
 "use client";
+
 import { Button, InputField, SocialButton } from "@ui/components";
 import Link from "next/link";
+import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
+import { signupAction } from "@/_pages/auth/actions";
 import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
@@ -12,7 +15,16 @@ interface SignupFormValues {
   passwordConfirm: string;
 }
 
+// 에러 메시지 한국어 변환
+const ERROR_MESSAGES = {
+  EMAIL_ALREADY_EXISTS: "이미 사용 중인 이메일이에요.",
+  SERVER_ERROR: "서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.",
+} as const;
+
 export const SignupForm = () => {
+  // 서버 액션 상태 관리
+  const [state, formAction, isPending] = useActionState(signupAction, null);
+
   const {
     register,
     handleSubmit,
@@ -22,14 +34,21 @@ export const SignupForm = () => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (_data: SignupFormValues) => {
-    // TODO: 회원가입 API 연결
-  };
+  // react-hook-form 유효성 검사 통과 후 → 서버 액션 호출
+  const onSubmit = handleSubmit((data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    startTransition(() => {
+      formAction(formData);
+    });
+  });
 
   return (
     <div className="flex w-full flex-col">
       <h1 className="text-center font-semibold text-base text-foreground md:text-2xl">회원가입</h1>
-      <form className="flex flex-col gap-6 pt-10" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col gap-6 pt-10" onSubmit={onSubmit}>
         <InputField
           label="이름"
           placeholder="이름을 입력해주세요"
@@ -77,12 +96,16 @@ export const SignupForm = () => {
           error={errors.passwordConfirm}
         />
 
+        {/* 서버에서 온 에러 메시지 표시 */}
+        {state && !state.ok && <p className="text-red-500 text-sm">{ERROR_MESSAGES[state.error]}</p>}
+
         <Button
           variant="tertiary"
           type="submit"
+          disabled={isPending}
           className="mt-2 bg-slate-100 text-base text-muted-foreground hover:bg-slate-200 md:text-xl"
         >
-          회원가입
+          {isPending ? "가입 중..." : "회원가입"}
         </Button>
       </form>
       <div className="relative my-8 flex items-center gap-3">

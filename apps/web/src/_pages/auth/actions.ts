@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
+import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
@@ -11,6 +12,7 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "@/shared/lib/cookies";
 import { login } from "./use-cases/login";
+import { signup } from "./use-cases/signup";
 
 export type LoginActionState = {
   ok: false;
@@ -45,5 +47,23 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
   });
 
   // 대시보드로 이동
-  redirect("/");
+  redirect(ROUTES.home);
+}
+
+export type SignupActionState = {
+  ok: false;
+  error: "EMAIL_ALREADY_EXISTS" | "SERVER_ERROR";
+} | null;
+
+export async function signupAction(_: SignupActionState, formData: FormData): Promise<SignupActionState> {
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  const result = await signup({ name, email, password });
+
+  if (!result.ok) return result;
+
+  // 로그인 페이지로 이동
+  redirect(ROUTES.login);
 }

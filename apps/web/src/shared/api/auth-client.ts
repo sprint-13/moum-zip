@@ -27,9 +27,18 @@ const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
  */
 export async function getAuthenticatedApi() {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
 
-  const securityWorker = () => (accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {});
+  // rawToken으로 유효성 검증 후 accessToken에 할당
+  const rawToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+  const accessToken = rawToken && TokenService.isValid(rawToken) ? rawToken : undefined;
+
+  if (!accessToken) {
+    // 토큰이 없다면 에러 throw
+    throw new Error("인증이 필요합니다. 로그인 후 이용해주세요.");
+  }
+
+  // 요청 보낼 때 securityWorker 호출해서 헤더 가져옴
+  const securityWorker = () => ({ headers: { Authorization: `Bearer ${accessToken}` } });
 
   const core = {
     auth: new Auth({ baseUrl, securityWorker }),
