@@ -14,9 +14,9 @@ export const getJoinedSpaceInfos = async (
     return {
       spaceId: dbSpace.id, // 또는 적절한 Fallback
       name: apiSpace.name,
-      location: dbSpace.location || "online",
-      themeColor: dbSpace.themeColor || "#000000",
-      status: dbSpace.status || "ongoing",
+      location: dbSpace.location,
+      themeColor: dbSpace.themeColor,
+      status: dbSpace.status,
       image: apiSpace.image,
       type: apiSpace.type === "study" ? "study" : "project",
       startDate: apiSpace.dateTime,
