@@ -3,9 +3,10 @@
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { parseMoimFormData } from "@/_pages/moim-create/lib/parse-moim-form-data";
 import { createMoim } from "@/_pages/moim-create/use-cases/create-moim";
-import { moimCreateSchema } from "@/features/moim-create/model/schema";
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { isAuthenticated } from "@/shared/api/auth-client";
 import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
 
 export type CreateMoimActionState = {
@@ -19,32 +20,15 @@ export async function createMoimAction(_: CreateMoimActionState, formData: FormD
     redirect("/login");
   }
 
-  // FormData 객체 변환
-  const rawFormData = {
-    type: formData.get("type"),
-    name: formData.get("name"),
-    capacity: Number(formData.get("capacity")),
-    description: formData.get("description"),
-    image: formData.get("image"),
-    location: formData.get("location"),
-    date: formData.get("date"),
-    time: formData.get("time"),
-    deadlineDate: formData.get("deadlineDate"),
-    deadlineTime: formData.get("deadlineTime"),
-    themeColor: formData.get("themeColor"),
-    options: formData.getAll("options"),
-  };
-
-  // Zod 검증
-  const parsed = moimCreateSchema.safeParse(rawFormData);
-  if (!parsed.success) {
-    return {
-      ok: false,
-      error: parsed.error.issues[0]?.message ?? "입력값이 올바르지 않습니다.",
-    };
+  let parsed: MoimCreateFormValues;
+  try {
+    parsed = parseMoimFormData(formData);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "입력값이 올바르지 않습니다." };
   }
 
-  // 쿠키에서 accessToken 가져오기
+  // 쿠키에서 accessToken 직접 추출
+  // TODO: meetings.create 확인 후, createMoim 내부에서 처리하도록 리팩토링 예정
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
 
@@ -54,7 +38,7 @@ export async function createMoimAction(_: CreateMoimActionState, formData: FormD
 
   // use-case 호출 → 성공하면 /spaces/[slug]로 redirect
   try {
-    const { space } = await createMoim(parsed.data, accessToken);
+    const { space } = await createMoim(parsed, accessToken);
     redirect(`/spaces/${space.slug}`);
   } catch (e) {
     if (isRedirectError(e)) throw e;
@@ -62,27 +46,5 @@ export async function createMoimAction(_: CreateMoimActionState, formData: FormD
       ok: false,
       error: e instanceof Error ? e.message : "모임 생성에 실패했습니다.",
     };
-  }
-}
-
-// 이미지 presigned URL 발급
-export async function getImagePresignedUrl(fileName: string, contentType: string) {
-  try {
-    // 쿠키에서 토큰 읽어서 인증된 API 인스턴스 생성
-    const authedApi = await getAuthenticatedApi();
-    // 외부 API에 presigned URL 발급 요청
-    const { data } = await authedApi.images.create({
-      fileName,
-      contentType: contentType as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
-      folder: "meetings",
-    });
-    // presignedUrl, publicUrl 반환
-    return data;
-  } catch (e) {
-    if (e instanceof Response) {
-      const body = await e.json();
-      throw new Error(`이미지 업로드 실패: ${body.message}`);
-    }
-    throw new Error("이미지 업로드에 실패했습니다.");
   }
 }
