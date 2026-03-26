@@ -4,6 +4,8 @@ import { SpaceHeader, SpaceSection } from "@/_pages/spaces";
 import { getSpaceList } from "@/_pages/spaces/use-cases/get-space-list";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
+export const dynamic = "force-dynamic";
+
 const Loading = () => (
   <div className="flex h-48 items-center justify-center">
     <span className="text-gray-500">스페이스 목록을 불러오는 중...</span>
