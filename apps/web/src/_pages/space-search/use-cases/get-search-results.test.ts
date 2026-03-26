@@ -38,6 +38,7 @@ describe("getSearchResults", () => {
             hostId: 1,
             createdBy: 1,
             createdAt: null,
+            isFavorited: true,
             updatedAt: null,
             host: {
               id: 1,
@@ -68,7 +69,7 @@ describe("getSearchResults", () => {
         description: null,
         id: "24",
         image: null,
-        isLiked: false,
+        isLiked: true,
         location: "online",
         participantCount: 4,
         region: "online",

@@ -59,7 +59,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           width={340}
         />
         <div className="absolute top-4 right-4 sm:hidden">
-          <SpaceCardLikeButton isLiked={isLiked} />
+          <SpaceCardLikeButton isLiked={isLiked} meetingId={item.id} />
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           </div>
 
           <div className="hidden sm:block">
-            <SpaceCardLikeButton isLiked={isLiked} />
+            <SpaceCardLikeButton isLiked={isLiked} meetingId={item.id} />
           </div>
         </div>
 

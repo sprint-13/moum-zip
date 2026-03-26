@@ -27,6 +27,12 @@ interface GetSearchResultsDeps {
   meetingsApi?: Pick<typeof api.meetings, "getList">;
 }
 
+type SearchMeetingWithUserState = MeetingWithHost & {
+  isCompleted?: boolean;
+  isFavorited?: boolean;
+  isJoined?: boolean;
+};
+
 const normalizeMeetingType = (type: string): GatheringCategory => {
   return normalizeGatheringCategory(type) ?? "project";
 };
@@ -83,7 +89,7 @@ const resolveSortParams = ({
   return {};
 };
 
-const mapMeetingToItem = (meeting: MeetingWithHost): SearchResultItem => {
+const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem => {
   return {
     address: meeting.address,
     capacity: meeting.capacity,
@@ -92,7 +98,7 @@ const mapMeetingToItem = (meeting: MeetingWithHost): SearchResultItem => {
     description: meeting.description,
     id: String(meeting.id),
     image: meeting.image,
-    isLiked: false,
+    isLiked: Boolean(meeting.isFavorited),
     location: normalizeMeetingLocation(meeting.region) ?? "online",
     participantCount: meeting.participantCount,
     region: meeting.region,
@@ -123,20 +129,30 @@ export const getSearchResults = async (
   { meetingsApi = api.meetings }: GetSearchResultsDeps = {},
 ): Promise<SearchResultsResponse> => {
   const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
-  const response = await meetingsApi.getList({
-    cursor: cursor ?? undefined,
-    region: locationId === "all" ? undefined : locationId,
-    size,
-    sortBy,
-    sortOrder,
-    type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
-  });
+  const response = await meetingsApi.getList(
+    {
+      cursor: cursor ?? undefined,
+      region: locationId === "all" ? undefined : locationId,
+      size,
+      sortBy,
+      sortOrder,
+      type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
+    },
+    { cache: "no-store" },
+  );
   const searchResults = response.data as MeetingsListData;
+  const meetings = searchResults.data as SearchMeetingWithUserState[];
+  console.log(
+    "[search] meetings favorite state",
+    JSON.stringify(meetings.map(({ id, isFavorited }) => ({ id, isFavorited }))),
+  );
 
-  const items = searchResults.data
+  const items = meetings
     .map((meeting) => mapMeetingToItem(meeting))
     .filter((item) => (categoryId === "all" ? true : item.type === categoryId))
     .filter((item) => matchesLocation(item, locationId));
+
+  console.log("[search] mapped like state", JSON.stringify(items.map(({ id, isLiked }) => ({ id, isLiked }))));
 
   return {
     hasMore: searchResults.hasMore,
