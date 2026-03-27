@@ -1,16 +1,16 @@
-import { api } from "@/shared/api";
+import type { api } from "@/shared/api";
 
 interface DeleteSearchFavoriteInput {
   meetingId: number;
 }
 
 interface DeleteSearchFavoriteDeps {
-  favoritesApi?: Pick<typeof api.favorites, "delete">;
+  favoritesApi: Pick<typeof api.favorites, "delete">;
 }
 
 export const deleteSearchFavorite = async (
   { meetingId }: DeleteSearchFavoriteInput,
-  { favoritesApi = api.favorites }: DeleteSearchFavoriteDeps = {},
+  { favoritesApi }: DeleteSearchFavoriteDeps,
 ) => {
   await favoritesApi.delete(meetingId);
 
