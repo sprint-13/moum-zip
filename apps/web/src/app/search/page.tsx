@@ -1,6 +1,5 @@
 import type { InfiniteData } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { CreateButton } from "@ui/components";
 
 import { SpaceSearchHeader, SpaceSearchHero } from "@/_pages/space-search";
 import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
@@ -13,6 +12,7 @@ import {
   SpaceSearchContentSection,
 } from "@/features/space-search";
 import { spaceSearchQueryKeys } from "@/features/space-search/model/query-keys";
+import { SpaceSearchCreateButton } from "@/features/space-search/ui/space-search-create-button";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
 type SpaceSearchParams = Record<string, string | string[] | undefined>;
@@ -64,8 +64,8 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
       </main>
 
       <div className="fixed right-4 bottom-6 z-20 sm:right-6 sm:bottom-8 xl:right-0 2xl:right-6">
-        <CreateButton aria-label="스페이스 만들기" className="sm:hidden" variant="icon" />
-        <CreateButton className="hidden sm:inline-flex">스페이스 만들기</CreateButton>
+        <SpaceSearchCreateButton aria-label="스페이스 만들기" className="sm:hidden" variant="icon" />
+        <SpaceSearchCreateButton className="hidden sm:inline-flex">스페이스 만들기</SpaceSearchCreateButton>
       </div>
     </div>
   );

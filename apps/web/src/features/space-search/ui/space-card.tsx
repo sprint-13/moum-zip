@@ -1,10 +1,11 @@
-import { Button, CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
+import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
 
 import { cn } from "@/shared/lib/cn";
 
 import LocationPinIcon from "../assets/location-pin.svg";
 import type { SpaceCardItem, SpaceCardMetaChip } from "../model/types";
+import { SpaceCardJoinButton } from "./space-card-join-button";
 import { SpaceCardLikeButton } from "./space-card-like-button";
 
 interface SpaceCardProps {
@@ -105,7 +106,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
             />
           </div>
 
-          <Button
+          <SpaceCardJoinButton
             className={cn(
               "h-12 min-w-26 shrink-0 rounded-xl border-[1.5px] px-6 font-semibold text-base leading-6 tracking-[-0.02em]",
               "w-auto",
@@ -114,7 +115,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
             variant="secondary"
           >
             참여하기
-          </Button>
+          </SpaceCardJoinButton>
         </div>
       </div>
     </article>
