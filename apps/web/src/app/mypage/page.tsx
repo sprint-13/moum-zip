@@ -22,14 +22,18 @@ export default async function Page() {
   try {
     const authedApi = await getAuthenticatedApi();
 
-    const [{ data: user }, { data: joinedMeetings }] = await Promise.all([
+    const [{ data: user }, { data: joinedMeetings }, { data: favoritesList }] = await Promise.all([
       authedApi.user.getUser(),
       getMyJoinedMeetings(),
+      authedApi.favorites.getList({ size: 100 }),
     ]);
 
     const profile = mapProfile(user);
+    const favoriteMeetingIds = new Set(favoritesList.data.map((favorite) => favorite.meetingId));
     const moims: Record<"joined" | "liked", MypageMoimCard[]> = {
-      joined: joinedMeetings.data.map(mapJoinedMeeting),
+      joined: joinedMeetings.data.map((meeting, index) =>
+        mapJoinedMeeting(meeting, index, favoriteMeetingIds.has(meeting.id)),
+      ),
       liked: [],
     };
     const createdMoims: Record<"ongoing" | "ended", MypageMoimCard[]> = {

@@ -30,7 +30,7 @@ export function mapProfile(user: User): MypageProfile {
   };
 }
 
-export function mapJoinedMeeting(meeting: UserMeeting, index: number): MypageMoimCard {
+export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
@@ -40,7 +40,7 @@ export function mapJoinedMeeting(meeting: UserMeeting, index: number): MypageMoi
     location: meeting.region,
     date,
     time,
-    liked: false,
+    liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
     actionVariant: isCompleted ? "secondary" : "primary",
@@ -51,7 +51,7 @@ export function mapJoinedMeeting(meeting: UserMeeting, index: number): MypageMoi
   };
 }
 
-export function mapCreatedMeeting(meeting: UserMeeting, index: number): MypageMoimCard {
+export function mapCreatedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
@@ -61,7 +61,7 @@ export function mapCreatedMeeting(meeting: UserMeeting, index: number): MypageMo
     location: meeting.region,
     date,
     time,
-    liked: false,
+    liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
     actionVariant: isCompleted ? "secondary" : "primary",

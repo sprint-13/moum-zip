@@ -1,4 +1,4 @@
-import type { FavoriteList, UserMeetingsResponse } from "@moum-zip/api";
+import type { FavoriteList, FavoriteWithMeeting, UserMeetingsResponse } from "@moum-zip/api";
 
 export type MyMeetingsQuery = {
   type: "joined" | "created";
@@ -51,6 +51,38 @@ export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<Fa
 
   if (!response.ok) {
     throw new Error("MY_FAVORITES_REQUEST_FAILED");
+  }
+
+  return response.json();
+}
+
+export async function createFavorite(meetingId: number): Promise<FavoriteWithMeeting> {
+  const response = await fetch("/api/mypage/favorites", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ meetingId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("CREATE_FAVORITE_REQUEST_FAILED");
+  }
+
+  return response.json();
+}
+
+export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
+  const response = await fetch("/api/mypage/favorites", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ meetingId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("DELETE_FAVORITE_REQUEST_FAILED");
   }
 
   return response.json();

@@ -36,3 +36,45 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "찜 목록을 불러오지 못했습니다." }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
+  }
+
+  try {
+    const { meetingId } = (await request.json()) as { meetingId?: number };
+
+    if (typeof meetingId !== "number") {
+      return NextResponse.json({ message: "잘못된 모임 정보입니다." }, { status: 400 });
+    }
+
+    const authedApi = await getAuthenticatedApi();
+    const { data } = await authedApi.favorites.create(meetingId);
+
+    return NextResponse.json(data, { status: 201 });
+  } catch {
+    return NextResponse.json({ message: "찜 추가에 실패했습니다." }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
+  }
+
+  try {
+    const { meetingId } = (await request.json()) as { meetingId?: number };
+
+    if (typeof meetingId !== "number") {
+      return NextResponse.json({ message: "잘못된 모임 정보입니다." }, { status: 400 });
+    }
+
+    const authedApi = await getAuthenticatedApi();
+    await authedApi.favorites.delete(meetingId);
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ message: "찜 해제에 실패했습니다." }, { status: 500 });
+  }
+}

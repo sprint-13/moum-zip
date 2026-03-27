@@ -184,7 +184,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
         message: "프로필 이미지를 업로드했어요.",
         size: "small",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
         size: "small",
@@ -296,7 +296,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
               취소
             </Button>
             <Button type="submit" size="small" className="h-12 w-full text-sm md:h-15 md:text-base" disabled={isBusy}>
-              {isUploadingImage ? "업로드 중..." : isPending ? "수정 중..." : "수정하기"}
+              수정하기
             </Button>
           </div>
         </form>
