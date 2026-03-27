@@ -25,16 +25,30 @@ export async function GET(request: Request) {
   const queryState = normalizeSearchQueryState(parseSpaceSearchQueryState(searchParams));
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
-  const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
+  let isAuthenticatedRequest = false;
 
-  const results = await getSearchResults(
-    {
-      ...queryState,
-      cursor,
-      size,
-    },
-    { isAuthenticatedRequest, meetingsApi },
-  );
+  try {
+    const searchMeetingsApi = await getSearchMeetingsApi();
+    isAuthenticatedRequest = searchMeetingsApi.isAuthenticatedRequest;
 
-  return NextResponse.json(results);
+    const results = await getSearchResults(
+      {
+        ...queryState,
+        cursor,
+        size,
+      },
+      { isAuthenticatedRequest, meetingsApi: searchMeetingsApi.meetingsApi },
+    );
+
+    return NextResponse.json(results);
+  } catch (error) {
+    console.error("[search] failed to get search results", {
+      error,
+      isAuthenticatedRequest,
+      categoryId: queryState.categoryId,
+      locationId: queryState.locationId,
+    });
+
+    return NextResponse.json({ message: "FAILED_TO_GET_SEARCH_RESULTS" }, { status: 502 });
+  }
 }
