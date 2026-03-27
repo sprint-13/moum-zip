@@ -1,8 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
+import { fetchMyFavorites, fetchMyMeetings } from "./api";
+import { mapCreatedMeeting, mapFavoriteMeeting } from "./model/mappers";
 import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "./model/types";
 import MoimCardList from "./ui/moim-card-list";
 import ProfileSection from "./ui/profile-section";
@@ -22,7 +25,39 @@ interface MypagePageProps {
 }
 
 export default function MypagePage({ profile, tabs, moims, createdMoims }: MypagePageProps) {
+  const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
+  const isCreatedOngoing = createdFilter === "ongoing";
+
+  const { data: createdMeetings = createdMoims[createdFilter] } = useQuery({
+    queryKey: ["mypage", "meetings", "created", createdFilter],
+    queryFn: async () => {
+      const response = await fetchMyMeetings({
+        type: "created",
+        completed: isCreatedOngoing ? "false" : "true",
+        sortBy: "dateTime",
+        sortOrder: isCreatedOngoing ? "asc" : "desc",
+        size: 10,
+      });
+
+      return response.data.map(mapCreatedMeeting);
+    },
+    enabled: selectedTab === "created",
+  });
+
+  const { data: likedMeetings = moims.liked } = useQuery({
+    queryKey: ["mypage", "favorites"],
+    queryFn: async () => {
+      const response = await fetchMyFavorites({
+        sortBy: "createdAt",
+        sortOrder: "desc",
+        size: 10,
+      });
+
+      return response.data.map(mapFavoriteMeeting);
+    },
+    enabled: selectedTab === "liked",
+  });
 
   return (
     <main className="no-scrollbar h-dvh overflow-y-auto bg-background px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
@@ -35,7 +70,12 @@ export default function MypagePage({ profile, tabs, moims, createdMoims }: Mypag
             </div>
           </div>
 
-          <Tabs defaultTab="joined" size="large" className="w-full min-w-0">
+          <Tabs
+            defaultTab="joined"
+            size="large"
+            className="w-full min-w-0"
+            onTabChange={(tab) => setSelectedTab(tab as MypageTabKey)}
+          >
             <Tabs.List className="no-scrollbar w-full min-w-0 overflow-x-auto">
               {tabs.map((tab) => (
                 <Tabs.Trigger
@@ -77,7 +117,7 @@ export default function MypagePage({ profile, tabs, moims, createdMoims }: Mypag
                   </div>
 
                   <MoimCardList
-                    moims={createdMoims[createdFilter]}
+                    moims={createdMeetings}
                     emptyLabel={
                       createdFilter === "ongoing" ? "아직 진행 중인 모임이 없어요" : "아직 진행 종료된 모임이 없어요"
                     }
@@ -86,7 +126,7 @@ export default function MypagePage({ profile, tabs, moims, createdMoims }: Mypag
               </Tabs.Content>
 
               <Tabs.Content value="liked">
-                <MoimCardList moims={moims.liked} emptyLabel="아직 찜한 모임이 없어요" />
+                <MoimCardList moims={likedMeetings} emptyLabel="아직 찜한 모임이 없어요" />
               </Tabs.Content>
             </div>
           </Tabs>
