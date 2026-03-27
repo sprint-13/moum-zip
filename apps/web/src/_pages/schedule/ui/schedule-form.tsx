@@ -5,6 +5,12 @@ import type { ScheduleWithStatus } from "@/entities/schedule";
 import { toDatetimeLocalKST } from "@/shared/lib/date";
 import { createScheduleAction, updateScheduleAction } from "../actions";
 
+interface ScheduleFormProps {
+  slug: string;
+  editTarget?: ScheduleWithStatus;
+  onClose: () => void;
+}
+
 // TODO: react-hook-form 및 zod로 교체하기
 export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
   const formRef = useRef<HTMLFormElement>(null);

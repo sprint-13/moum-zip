@@ -94,7 +94,7 @@ export function ScheduleList({ slug, upcoming, expired }: ScheduleListProps) {
         </div>
       )}
 
-      {showForm && <ScheduleForm slug={slug} editTarget={editTarget} onClose={closeForm} />}
+      {showForm && <ScheduleForm slug={slug} editTarget={editTarget ?? undefined} onClose={closeForm} />}
     </div>
   );
 }
