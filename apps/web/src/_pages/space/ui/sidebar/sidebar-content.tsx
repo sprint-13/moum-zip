@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, usePathname, useSelectedLayoutSegments } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useSidebar } from "./sidebar";
 import { SidebarItem } from "./sidebar-item";

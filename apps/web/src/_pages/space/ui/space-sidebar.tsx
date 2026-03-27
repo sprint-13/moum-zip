@@ -1,4 +1,4 @@
-import { Calendar, FolderOpen, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
+import { Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
 import type { ComponentType, ReactNode } from "react";
 import type { SpaceContext } from "@/features/space/lib/get-space-context";
 import { MobileHeader } from "./sidebar/mobile-header";
