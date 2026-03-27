@@ -20,7 +20,6 @@ export async function GET(request: Request) {
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
   const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
-  console.log("[search] source route", { ...queryState, cursor, size });
 
   const results = await getSearchResults(
     {

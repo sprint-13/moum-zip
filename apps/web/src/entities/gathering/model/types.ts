@@ -1,13 +1,7 @@
-import type { InferSelectModel } from "drizzle-orm";
-
-import type { spaces } from "@/shared/db/scheme";
-
 import type { GatheringCategoryId } from "./category-contract";
 
 export type GatheringCategory = GatheringCategoryId;
 export type GatheringLocation = "online" | "offline";
-
-export type SpaceRow = InferSelectModel<typeof spaces>;
 
 export interface SearchResultItem {
   address: string | null;
