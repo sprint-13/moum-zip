@@ -45,7 +45,9 @@ export const getSearchResults = async ({
   const response = await fetch(queryString ? `/api/search?${queryString}` : "/api/search");
 
   if (!response.ok) {
-    throw new Error("FAILED_TO_GET_SEARCH_RESULTS");
+    const errorBody = await response.text();
+
+    throw new Error(`FAILED_TO_GET_SEARCH_RESULTS: ${response.status} ${errorBody}`);
   }
 
   return response.json();
