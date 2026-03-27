@@ -17,7 +17,7 @@ export interface SpaceSearchFilterOption {
 export interface SpaceSearchFilter {
   id: SpaceSearchFilterId;
   label: string;
-  options: SpaceSearchFilterOption[];
+  options: [SpaceSearchFilterOption, ...SpaceSearchFilterOption[]];
 }
 
 export interface SpaceSearchQueryState {
