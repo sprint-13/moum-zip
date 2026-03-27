@@ -60,13 +60,50 @@ export async function getAuthenticatedApi() {
         query?: Parameters<typeof core.meetings.joinedList>[1],
         params?: Parameters<typeof core.meetings.joinedList>[2],
       ) => core.meetings.joinedList(teamId, query, params),
-      getCreated: () => core.meetings.getMeetings(teamId),
+
+      getCreated: (
+        query?: Parameters<typeof core.meetings.getMeetings>[1],
+        params?: Parameters<typeof core.meetings.getMeetings>[2],
+      ) => core.meetings.getMeetings(teamId, query, params),
+
       getList: (
         query?: Parameters<typeof core.meetings.meetingsList>[1],
         params?: Parameters<typeof core.meetings.meetingsList>[2],
       ) => core.meetings.meetingsList(teamId, query, params),
-      getDetail: (meetingId: Parameters<typeof core.meetings.meetingsDetail>[1]) =>
-        core.meetings.meetingsDetail(teamId, meetingId),
+
+      getDetail: (
+        meetingId: Parameters<typeof core.meetings.meetingsDetail>[1],
+        params?: Parameters<typeof core.meetings.meetingsDetail>[2],
+      ) => core.meetings.meetingsDetail(teamId, meetingId, params),
+
+      join: (
+        meetingId: Parameters<typeof core.meetings.joinCreate>[1],
+        params?: Parameters<typeof core.meetings.joinCreate>[2],
+      ) => core.meetings.joinCreate(teamId, meetingId, params),
+
+      cancelJoin: (
+        meetingId: Parameters<typeof core.meetings.joinDelete>[1],
+        params?: Parameters<typeof core.meetings.joinDelete>[2],
+      ) => core.meetings.joinDelete(teamId, meetingId, params),
+
+      delete: (
+        meetingId: Parameters<typeof core.meetings.meetingsDelete>[1],
+        params?: Parameters<typeof core.meetings.meetingsDelete>[2],
+      ) => core.meetings.meetingsDelete(teamId, meetingId, params),
+
+      update: (
+        meetingId: Parameters<typeof core.meetings.meetingsPartialUpdate>[1],
+        data: Parameters<typeof core.meetings.meetingsPartialUpdate>[2],
+        params?: Parameters<typeof core.meetings.meetingsPartialUpdate>[3],
+      ) => core.meetings.meetingsPartialUpdate(teamId, meetingId, data, params),
+
+      participants: {
+        getList: (
+          meetingId: Parameters<typeof core.meetings.participantsList>[1],
+          query?: Parameters<typeof core.meetings.participantsList>[2],
+          params?: Parameters<typeof core.meetings.participantsList>[3],
+        ) => core.meetings.participantsList(teamId, meetingId, query, params),
+      },
     },
     favorites: {
       getList: (
