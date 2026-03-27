@@ -12,9 +12,9 @@ const MOIM_CREATE_DEFAULT_VALUES: Partial<MoimCreateFormValues> = {
   image: "",
   location: "online",
   date: "",
-  time: "",
+  time: "00:00",
   deadlineDate: "",
-  deadlineTime: "",
+  deadlineTime: "00:00",
   themeColor: "primary",
 };
 
