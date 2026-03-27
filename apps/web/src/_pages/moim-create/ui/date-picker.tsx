@@ -3,6 +3,7 @@
 import { Calendar } from "@ui/components/shadcn/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/popover";
 import { CalendarIcon } from "@ui/icons";
+import { useState } from "react";
 import { formatDate, parseDateString } from "@/_pages/moim-create/lib/date-time";
 
 interface DatePickerProps {
@@ -11,14 +12,17 @@ interface DatePickerProps {
 }
 
 export const DatePicker = ({ value, onChange }: DatePickerProps) => {
+  const [open, setOpen] = useState(false);
   const selected = parseDateString(value);
+
   const handleSelect = (date: Date | undefined) => {
     if (!date) return;
     onChange?.(formatDate(date));
+    setOpen(false);
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -30,7 +34,7 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto">
-        <Calendar mode="single" selected={selected} onSelect={handleSelect} />
+        <Calendar mode="single" selected={selected} onSelect={handleSelect} disabled={{ before: new Date() }} />
       </PopoverContent>
     </Popover>
   );
