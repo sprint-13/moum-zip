@@ -17,14 +17,25 @@ export const getSearchCategories = async ({
   try {
     const response = await meetingTypesApi.getList();
     const meetingTypes = response.data as MeetingTypesListData;
-    const categoryIds = new Set(meetingTypes.map(({ name }) => normalizeGatheringCategory(name)).filter(Boolean));
+    const categoryIds = new Set(
+      meetingTypes.flatMap(({ name }) => {
+        if (!name) {
+          return [];
+        }
+
+        const normalizedCategory = normalizeGatheringCategory(name);
+
+        return normalizedCategory ? [normalizedCategory] : [];
+      }),
+    );
     const categories = SEARCH_CATEGORY_ORDER.filter((categoryId) => categoryIds.has(categoryId)).map((categoryId) => ({
       id: categoryId,
       label: getGatheringCategoryLabel(categoryId),
     }));
 
     return [DEFAULT_SEARCH_CATEGORY, ...categories];
-  } catch {
+  } catch (error) {
+    //TODO: 에러처리
     return [DEFAULT_SEARCH_CATEGORY];
   }
 };
