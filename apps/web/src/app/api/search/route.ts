@@ -4,6 +4,8 @@ import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meeti
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
 import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
 
+const MAX_SEARCH_SIZE = 30;
+
 const parsePositiveInteger = (value: string | null) => {
   if (!value) {
     return undefined;
@@ -11,7 +13,11 @@ const parsePositiveInteger = (value: string | null) => {
 
   const parsed = Number.parseInt(value, 10);
 
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return undefined;
+  }
+
+  return Math.min(parsed, MAX_SEARCH_SIZE);
 };
 
 export async function GET(request: Request) {
