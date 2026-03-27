@@ -1,7 +1,24 @@
 export type MeetingCategory = "온라인 · 스터디" | "온라인 · 프로젝트" | "오프라인 · 스터디" | "오프라인 · 프로젝트";
 
+export type MeetingRegion = "online" | "offline";
+export type MeetingType = "study" | "project";
+
+export type ViewerRole = "guest" | "member" | "manager";
+
+export type MeetingStatus = "recruiting" | "confirmed" | "full" | "canceled";
+
+export interface MeetingActionState {
+  canFavorite: boolean;
+  canJoin: boolean;
+  canCancelJoin: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+  requiresAuth: boolean;
+}
+
 export interface InformationData {
   id: number;
+  teamId: string;
   title: string;
   category: MeetingCategory;
   deadlineLabel: string;
@@ -9,6 +26,12 @@ export interface InformationData {
   timeLabel: string;
   isLiked: boolean;
   image: string | null;
+  hostId: number;
+  viewerRole: ViewerRole;
+  isJoined: boolean;
+  status: MeetingStatus;
+  statusLabel: string;
+  actionState: MeetingActionState;
 }
 
 export interface ParticipantData {
@@ -27,6 +50,7 @@ export interface PersonnelData {
 
 export interface RecommendedMeetingData {
   id: number;
+  teamId: string;
   title: string;
   locationText: MeetingCategory;
   deadlineLabel: string;
@@ -41,4 +65,15 @@ export interface MoimDetailViewData {
   description: string;
   personnel: PersonnelData;
   recommendedMeetings: RecommendedMeetingData[];
+}
+
+export interface MeetingFormData {
+  title: string;
+  location: MeetingRegion;
+  category: MeetingType;
+  dateTime: string;
+  registrationEnd: string;
+  capacity: number;
+  image: string | null;
+  description: string;
 }

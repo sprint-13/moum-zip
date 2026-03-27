@@ -1,5 +1,17 @@
 import type { api } from "@/shared/api";
-import type { InformationData, MeetingCategory, ParticipantData, PersonnelData, RecommendedMeetingData } from "./types";
+import type {
+  InformationData,
+  MeetingActionState,
+  MeetingCategory,
+  MeetingFormData,
+  MeetingRegion,
+  MeetingStatus,
+  MeetingType,
+  ParticipantData,
+  PersonnelData,
+  RecommendedMeetingData,
+  ViewerRole,
+} from "./types";
 
 type MeetingDetailResponse = Awaited<ReturnType<typeof api.meetings.getDetail>>["data"];
 
@@ -67,11 +79,10 @@ function formatDeadlineLabel(value: string | null) {
     return "마감 정보 없음";
   }
 
-  const today = new Date();
+  const now = new Date();
+
   const isSameDay =
-    today.getFullYear() === date.getFullYear() &&
-    today.getMonth() === date.getMonth() &&
-    today.getDate() === date.getDate();
+    now.getFullYear() === date.getFullYear() && now.getMonth() === date.getMonth() && now.getDate() === date.getDate();
 
   if (isSameDay) {
     return `오늘 ${formatTime(value)} 마감`;
@@ -80,47 +91,154 @@ function formatDeadlineLabel(value: string | null) {
   return `${formatMonthDay(value)} ${formatTime(value)} 마감`;
 }
 
-function mapMeetingCategory(region: string, type: string): MeetingCategory {
-  const normalizedRegion = region.toLowerCase().includes("online") || region.includes("온라인") ? "온라인" : "오프라인";
+function normalizeRegion(region: string): MeetingRegion {
+  const normalized = region.trim().toLowerCase();
 
-  const normalizedType = type.toLowerCase().includes("project") || type.includes("프로젝트") ? "프로젝트" : "스터디";
+  if (normalized === "online" || normalized === "온라인") {
+    return "online";
+  }
 
-  return `${normalizedRegion} · ${normalizedType}` as MeetingCategory;
+  return "offline";
 }
 
-function getStatusLabel(params: {
+function normalizeType(type: string): MeetingType {
+  const normalized = type.trim().toLowerCase();
+
+  if (normalized === "project" || normalized === "프로젝트") {
+    return "project";
+  }
+
+  return "study";
+}
+
+export function mapMeetingCategory(region: MeetingRegion | string, type: MeetingType | string): MeetingCategory {
+  const normalizedRegion = typeof region === "string" ? normalizeRegion(region) : region;
+  const normalizedType = typeof type === "string" ? normalizeType(type) : type;
+
+  const regionLabel = normalizedRegion === "online" ? "온라인" : "오프라인";
+  const typeLabel = normalizedType === "project" ? "프로젝트" : "스터디";
+
+  return `${regionLabel} · ${typeLabel}` as MeetingCategory;
+}
+
+function getMeetingStatus(params: {
   canceledAt: string | null;
   confirmedAt: string | null;
   participantCount: number;
   capacity: number;
-}) {
+}): MeetingStatus {
   const { canceledAt, confirmedAt, participantCount, capacity } = params;
 
   if (canceledAt) {
-    return "모집취소";
-  }
-
-  if (confirmedAt) {
-    return "개설확정";
+    return "canceled";
   }
 
   if (participantCount >= capacity) {
-    return "모집마감";
+    return "full";
   }
 
-  return "모집중";
+  if (confirmedAt) {
+    return "confirmed";
+  }
+
+  return "recruiting";
 }
 
-export function mapMeetingDetailToInformationData(meeting: MeetingDetailResponse): InformationData {
+function getStatusLabel(status: MeetingStatus) {
+  switch (status) {
+    case "canceled":
+      return "모집취소";
+    case "confirmed":
+      return "개설확정";
+    case "full":
+      return "모집마감";
+    case "recruiting":
+    default:
+      return "모집중";
+  }
+}
+
+function getViewerRole(currentUserId: number | null, hostId: number): ViewerRole {
+  if (!currentUserId) {
+    return "guest";
+  }
+
+  if (currentUserId === hostId) {
+    return "manager";
+  }
+
+  return "member";
+}
+
+export function getIsJoined(participantsResponse: ParticipantsListResponse, currentUserId: number | null) {
+  if (!currentUserId) {
+    return false;
+  }
+
+  return participantsResponse.data.some((participant) => participant.userId === currentUserId);
+}
+
+function getIsLiked<T>(meeting: T) {
+  return (meeting as T & { isFavorited?: boolean | null }).isFavorited ?? false;
+}
+
+function getMeetingActionState(params: {
+  viewerRole: ViewerRole;
+  isJoined: boolean;
+  status: MeetingStatus;
+}): MeetingActionState {
+  const { viewerRole, isJoined, status } = params;
+
+  const isGuest = viewerRole === "guest";
+  const isManager = viewerRole === "manager";
+  const isMember = viewerRole === "member";
+  const canJoinStatus = status === "recruiting" || status === "confirmed";
+
+  return {
+    canFavorite: !isManager,
+    canJoin: isMember && !isJoined && canJoinStatus,
+    canCancelJoin: isMember && isJoined,
+    canEdit: isManager,
+    canDelete: isManager,
+    requiresAuth: isGuest,
+  };
+}
+
+export function mapMeetingDetailToInformationData(params: {
+  meeting: MeetingDetailResponse;
+  currentUserId: number | null;
+  isJoined: boolean;
+}): InformationData {
+  const { meeting, currentUserId, isJoined } = params;
+
+  const viewerRole = getViewerRole(currentUserId, meeting.hostId);
+  const status = getMeetingStatus({
+    canceledAt: meeting.canceledAt,
+    confirmedAt: meeting.confirmedAt,
+    participantCount: meeting.participantCount,
+    capacity: meeting.capacity,
+  });
+
   return {
     id: meeting.id,
+    teamId: meeting.teamId,
     title: meeting.name,
     category: mapMeetingCategory(meeting.region, meeting.type),
     deadlineLabel: formatDeadlineLabel(meeting.registrationEnd),
     dateLabel: formatMonthDay(meeting.dateTime),
     timeLabel: formatTime(meeting.dateTime),
-    isLiked: false,
+    isLiked: getIsLiked(meeting),
     image: meeting.image ?? null,
+    hostId: meeting.hostId,
+    viewerRole,
+    isJoined,
+    status,
+    statusLabel: getStatusLabel(status),
+    actionState: getMeetingActionState({
+      viewerRole,
+      isJoined,
+      status,
+    }),
   };
 }
 
@@ -131,15 +249,17 @@ export function mapMeetingDetailToDescription(meeting: MeetingDetailResponse) {
 export function mapMeetingDetailToPersonnelBaseData(
   meeting: MeetingDetailResponse,
 ): Omit<PersonnelData, "participants" | "extraCount"> {
+  const status = getMeetingStatus({
+    canceledAt: meeting.canceledAt,
+    confirmedAt: meeting.confirmedAt,
+    participantCount: meeting.participantCount,
+    capacity: meeting.capacity,
+  });
+
   return {
     currentParticipants: meeting.participantCount,
     maxParticipants: meeting.capacity,
-    statusLabel: getStatusLabel({
-      canceledAt: meeting.canceledAt,
-      confirmedAt: meeting.confirmedAt,
-      participantCount: meeting.participantCount,
-      capacity: meeting.capacity,
-    }),
+    statusLabel: getStatusLabel(status),
   };
 }
 
@@ -154,12 +274,26 @@ export function mapParticipantsToParticipantData(participantsResponse: Participa
 export function mapMeetingToRecommendedMeetingData(meeting: MeetingListItemResponse): RecommendedMeetingData {
   return {
     id: meeting.id,
+    teamId: meeting.teamId,
     title: meeting.name,
     locationText: mapMeetingCategory(meeting.region, meeting.type),
     deadlineLabel: formatDeadlineLabel(meeting.registrationEnd),
     dateLabel: formatMonthDay(meeting.dateTime),
     timeLabel: formatTime(meeting.dateTime),
     image: meeting.image ?? null,
-    isLiked: false,
+    isLiked: getIsLiked(meeting),
+  };
+}
+
+export function mapMeetingFormDataToRequest(formData: MeetingFormData) {
+  return {
+    name: formData.title,
+    region: formData.location,
+    type: formData.category,
+    dateTime: formData.dateTime,
+    registrationEnd: formData.registrationEnd,
+    capacity: formData.capacity,
+    image: formData.image,
+    description: formData.description,
   };
 }
