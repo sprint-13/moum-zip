@@ -1,7 +1,12 @@
 import { insertSpace } from "@/entities/space";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { getAuthenticatedApi } from "@/shared/api/auth-client";
 
-export async function createMoim(formData: MoimCreateFormValues, accessToken: string) {
+type Deps = {
+  getAuthApi?: () => ReturnType<typeof getAuthenticatedApi>;
+};
+
+export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = getAuthenticatedApi }: Deps = {}) {
   const meetingPayload = {
     name: formData.name,
     type: formData.type === "study" ? "스터디" : "프로젝트",
@@ -14,20 +19,14 @@ export async function createMoim(formData: MoimCreateFormValues, accessToken: st
   };
 
   // meetings API 호출 → MEETING 생성
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${process.env.NEXT_PUBLIC_TEAM_ID}/meetings`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(meetingPayload),
-  });
+  const authedApi = await getAuthApi();
+  const res = await authedApi.meetings.create(meetingPayload);
 
   if (!res.ok) {
     throw new Error("모임 생성에 실패했습니다.");
   }
 
-  const meeting = (await res.json()) as { id: number };
+  const meeting = res.data as { id: number };
 
   // 외부 API 응답 meetingId로 SPACE DB 저장
   const space = await insertSpace({
