@@ -1,4 +1,4 @@
-import { NavigationMenu } from "@/shared/ui/navigation-menu";
+import { NavigationMenu } from "@/shared/ui/navigation-menu-client";
 
 export const SpaceSearchHeader = () => {
   return (

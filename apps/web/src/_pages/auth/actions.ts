@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
+import { apiClient } from "@/shared/api";
 import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
@@ -12,8 +13,11 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "@/shared/lib/cookies";
 import { login } from "./use-cases/login";
+import { logout } from "./use-cases/logout";
+import { refresh } from "./use-cases/refresh";
 import { signup } from "./use-cases/signup";
 
+// 로그인
 export type LoginActionState = {
   ok: false;
   error: "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "SERVER_ERROR";
@@ -46,10 +50,11 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 
-  // 대시보드로 이동
+  // 랜딩 페이지로 이동
   redirect(ROUTES.home);
 }
 
+// 회원가입
 export type SignupActionState = {
   ok: false;
   error: "EMAIL_ALREADY_EXISTS" | "SERVER_ERROR";
@@ -66,4 +71,50 @@ export async function signupAction(_: SignupActionState, formData: FormData): Pr
 
   // 로그인 페이지로 이동
   redirect(ROUTES.login);
+}
+
+// 로그아웃
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+
+  // 백엔드 로그아웃 API 호출 (accessToken 헤더 자동 주입)
+  if (refreshToken) {
+    const client = await apiClient();
+    await logout({ refreshToken }, { authApi: client.auth });
+  }
+
+  // 쿠키 삭제
+  cookieStore.delete(ACCESS_TOKEN_COOKIE);
+  cookieStore.delete(REFRESH_TOKEN_COOKIE);
+
+  redirect(ROUTES.login);
+}
+
+// 토큰 갱신
+export async function refreshAction(): Promise<{ ok: boolean }> {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+
+  if (!refreshToken) return { ok: false };
+
+  const result = await refresh({ refreshToken });
+
+  if (!result.ok) {
+    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    return { ok: false };
+  }
+
+  const expiresIn = TokenService.getExpiresIn(result.data.accessToken);
+  cookieStore.set(ACCESS_TOKEN_COOKIE, result.data.accessToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: expiresIn > 0 ? expiresIn : ACCESS_TOKEN_MAX_AGE,
+  });
+  cookieStore.set(REFRESH_TOKEN_COOKIE, result.data.refreshToken, {
+    ...COOKIE_OPTIONS,
+    maxAge: REFRESH_TOKEN_MAX_AGE,
+  });
+
+  return { ok: true };
 }
