@@ -38,6 +38,7 @@ const normalizeMeetingType = (type: string): GatheringCategory => {
   return normalizeGatheringCategory(type) ?? "project";
 };
 
+// region 값은 online/offline 둘 중 하나로 내려오게 됨
 const normalizeMeetingLocation = (region: string): GatheringLocation | null => {
   const normalizedRegion = region.trim().toLowerCase();
 
