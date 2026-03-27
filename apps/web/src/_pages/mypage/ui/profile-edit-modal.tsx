@@ -4,7 +4,7 @@ import { Button, toast } from "@ui/components";
 import { Input } from "@ui/components/shadcn/input";
 import { Pencil } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
-import { startTransition, useActionState, useEffect, useId, useRef } from "react";
+import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
 import type { MypageProfile } from "../model/types";
 import ProfileAvatar from "./profile-avatar";
@@ -22,13 +22,19 @@ const ERROR_MESSAGES = {
   SERVER_ERROR: "프로필 수정 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.",
 } as const;
 
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
 export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
   const nameInputId = useId();
   const emailInputId = useId();
   const titleId = useId();
   const [state, formAction, isPending] = useActionState(updateProfileAction, null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [previewImageUrl, setPreviewImageUrl] = useState(profile.imageUrl);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const previousFocusedElementRef = useRef<HTMLElement | null>(null);
   const previousBodyOverflowRef = useRef<string | null>(null);
 
@@ -99,6 +105,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
 
   useEffect(() => {
     if (state?.ok) {
+      // 서버 액션 성공 시 토스트를 보여주고 모달을 닫습니다.
       toast({
         message: "프로필을 수정했어요.",
         size: "small",
@@ -112,6 +119,83 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
       formAction(formData);
     });
   };
+
+  const handleSelectImage = () => {
+    imageInputRef.current?.click();
+  };
+
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      toast({
+        message: "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
+        size: "small",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      // 1) 서버에서 presigned URL을 발급받고
+      const response = await fetch("/api/images/presigned", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          folder: "users",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("PRESIGNED_URL_REQUEST_FAILED");
+      }
+
+      const { presignedUrl, publicUrl } = (await response.json()) as {
+        presignedUrl: string;
+        publicUrl: string;
+      };
+
+      // 2) 발급받은 URL로 파일을 직접 업로드한 뒤 publicUrl을 저장 액션에 넘깁니다.
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("IMAGE_UPLOAD_FAILED");
+      }
+
+      setUploadedImageUrl(publicUrl);
+      setPreviewImageUrl(publicUrl);
+      toast({
+        message: "프로필 이미지를 업로드했어요.",
+        size: "small",
+      });
+    } catch (error) {
+      toast({
+        message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+        size: "small",
+      });
+    } finally {
+      setIsUploadingImage(false);
+      event.target.value = "";
+    }
+  };
+
+  const isBusy = isPending || isUploadingImage;
 
   return (
     <div
@@ -150,22 +234,30 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
             <div className="relative aspect-[116/119] w-full max-w-[6.5rem] md:max-w-[7.25rem]">
               <ProfileAvatar
                 className="h-[calc(100%-0.125rem)] w-[calc(100%-0.125rem)]"
-                src={profile.imageUrl}
+                src={previewImageUrl}
                 alt={`${profile.name} 프로필 이미지`}
               />
               <button
                 type="button"
-                disabled
+                onClick={handleSelectImage}
+                disabled={isBusy}
                 className="absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm disabled:cursor-not-allowed disabled:opacity-60 md:size-9"
-                aria-label="프로필 이미지 수정 준비 중"
+                aria-label="프로필 이미지 수정"
               >
                 <Pencil size={14} aria-hidden="true" className="md:size-4" />
               </button>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleImageChange}
+              />
             </div>
           </div>
 
           <div className="mt-8 space-y-4 md:mt-12 md:space-y-5">
-            <input type="hidden" name="image" value="" />
+            <input type="hidden" name="image" value={uploadedImageUrl} />
 
             <label htmlFor={nameInputId} className="block space-y-2">
               <span className="font-semibold text-slate-800 text-sm leading-none">이름</span>
@@ -174,7 +266,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
                 name="name"
                 defaultValue={profile.name}
                 maxLength={20}
-                disabled={isPending}
+                disabled={isBusy}
                 className="h-12 rounded-2xl border-0 bg-gray-50 px-4 font-medium text-base text-slate-800 leading-none shadow-none focus-visible:ring-0 md:h-[3.25rem]"
               />
             </label>
@@ -199,17 +291,12 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
               size="small"
               className="h-12 w-full text-sm md:h-15 md:text-base"
               onClick={onClose}
-              disabled={isPending}
+              disabled={isBusy}
             >
               취소
             </Button>
-            <Button
-              type="submit"
-              size="small"
-              className="h-12 w-full text-sm md:h-15 md:text-base"
-              disabled={isPending}
-            >
-              {isPending ? "수정 중..." : "수정하기"}
+            <Button type="submit" size="small" className="h-12 w-full text-sm md:h-15 md:text-base" disabled={isBusy}>
+              {isUploadingImage ? "업로드 중..." : isPending ? "수정 중..." : "수정하기"}
             </Button>
           </div>
         </form>
