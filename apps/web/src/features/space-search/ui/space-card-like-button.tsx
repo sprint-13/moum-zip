@@ -45,12 +45,39 @@ const updateLikedStateInSearchResults = (
     return cachedData;
   }
 
+  let hasChanged = false;
+
+  const pages = cachedData.pages.map((page) => {
+    let hasChangedInPage = false;
+
+    const items = page.items.map((item) => {
+      if (item.id !== meetingId || item.isLiked === isLiked) {
+        return item;
+      }
+
+      hasChanged = true;
+      hasChangedInPage = true;
+
+      return { ...item, isLiked };
+    });
+
+    if (!hasChangedInPage) {
+      return page;
+    }
+
+    return {
+      ...page,
+      items,
+    };
+  });
+
+  if (!hasChanged) {
+    return cachedData;
+  }
+
   return {
     ...cachedData,
-    pages: cachedData.pages.map((page) => ({
-      ...page,
-      items: page.items.map((item) => (item.id === meetingId ? { ...item, isLiked } : item)),
-    })),
+    pages,
   };
 };
 
