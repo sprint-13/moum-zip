@@ -20,6 +20,7 @@ import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
 interface SpaceSearchSectionProps {
+  isAuthenticated: boolean;
   queryState: SpaceSearchQueryState;
 }
 
@@ -31,7 +32,7 @@ interface SpaceSearchContentSectionProps extends SpaceSearchToolbarSectionProps 
 
 const useSpaceSearchUrlSync = () => {
   const pathname = usePathname();
-  // 카테고리->pushState, 뒤로가기 시 저장. 필터->replaceState, 뒤로가기 시 저장x
+
   return {
     pushQueryState: (nextQueryState: SpaceSearchQueryState) => {
       window.history.pushState({}, "", buildSpaceSearchHref(pathname, nextQueryState));
@@ -42,9 +43,17 @@ const useSpaceSearchUrlSync = () => {
   };
 };
 
-export const SpaceSearchContentSection = ({ categories, queryState }: SpaceSearchContentSectionProps) => {
+export const SpaceSearchContentSection = ({
+  categories,
+  isAuthenticated,
+  queryState,
+}: SpaceSearchContentSectionProps) => {
   const { pushQueryState, replaceQueryState } = useSpaceSearchUrlSync();
   const [activeQueryState, setActiveQueryState] = useState<SpaceSearchQueryState>(queryState);
+
+  useEffect(() => {
+    setActiveQueryState(queryState);
+  }, [queryState]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -117,7 +126,7 @@ export const SpaceSearchContentSection = ({ categories, queryState }: SpaceSearc
         />
       </div>
       <div className="px-4 sm:px-0">
-        <InfiniteSpaceSearchResults queryState={activeQueryState} />
+        <InfiniteSpaceSearchResults isAuthenticated={isAuthenticated} queryState={activeQueryState} />
       </div>
     </>
   );
@@ -138,23 +147,35 @@ const getUniqueSearchItems = (results: SearchResultsResponse[] = []) => {
   );
 };
 
-const InfiniteSpaceSearchResults = ({ queryState }: SpaceSearchSectionProps) => {
+const InfiniteSpaceSearchResults = ({ isAuthenticated, queryState }: SpaceSearchSectionProps) => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const isFetchingNextPageRef = useRef(false);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } = useGetSearchResults({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetchNextPageError,
+    isFetching,
+    isFetchingNextPage,
+    isRefetchError,
+  } = useGetSearchResults({
+    isAuthenticated,
     queryState: normalizedQueryState,
   });
+  const hasQueryError = isError || isRefetchError || isFetchNextPageError;
+  const errorMessage = hasQueryError ? "데이터를 불러오지 못했어요. 다시 시도해 주세요." : undefined;
   const items = getUniqueSearchItems(data?.pages).map(mapSearchResultItemToSpaceCardItem);
 
   useEffect(() => {
-    isFetchingNextPageRef.current = isFetching || isFetchingNextPage;
-  }, [isFetching, isFetchingNextPage]);
+    isFetchingNextPageRef.current = isFetching || isFetchingNextPage || hasQueryError;
+  }, [hasQueryError, isFetching, isFetchingNextPage]);
 
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage || isFetching || isFetchingNextPage) {
+    if (!target || !hasNextPage || hasQueryError || isFetching || isFetchingNextPage) {
       return;
     }
 
@@ -177,7 +198,14 @@ const InfiniteSpaceSearchResults = ({ queryState }: SpaceSearchSectionProps) => 
     return () => {
       observer.disconnect();
     };
-  }, [fetchNextPage, hasNextPage, isFetching, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, hasQueryError, isFetching, isFetchingNextPage]);
 
-  return <SpaceSearchResults hasMore={Boolean(hasNextPage)} items={items} loadMoreRef={loadMoreRef} />;
+  return (
+    <SpaceSearchResults
+      errorMessage={errorMessage}
+      hasMore={Boolean(hasNextPage && !hasQueryError)}
+      items={items}
+      loadMoreRef={loadMoreRef}
+    />
+  );
 };

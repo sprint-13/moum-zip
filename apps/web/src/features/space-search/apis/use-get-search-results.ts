@@ -10,10 +10,11 @@ import type { SearchResultsQueryState } from "../model/search-params";
 import { getSearchResults } from "./get-search-results";
 
 interface UseGetSearchResultsProps {
+  isAuthenticated: boolean;
   queryState: SearchResultsQueryState;
 }
 
-export const useGetSearchResults = ({ queryState }: UseGetSearchResultsProps) => {
+export const useGetSearchResults = ({ isAuthenticated, queryState }: UseGetSearchResultsProps) => {
   const initialPageParam: string | null = null;
 
   return useInfiniteQuery<
@@ -23,7 +24,7 @@ export const useGetSearchResults = ({ queryState }: UseGetSearchResultsProps) =>
     ReturnType<typeof spaceSearchQueryKeys.list>,
     string | null
   >({
-    queryKey: spaceSearchQueryKeys.list(queryState),
+    queryKey: spaceSearchQueryKeys.list(queryState, isAuthenticated),
     queryFn: ({ pageParam }) =>
       getSearchResults({
         ...queryState,

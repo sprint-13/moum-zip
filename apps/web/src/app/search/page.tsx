@@ -38,7 +38,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
       ReturnType<typeof spaceSearchQueryKeys.list>,
       string | null
     >({
-      queryKey: spaceSearchQueryKeys.list(normalizedQueryState),
+      queryKey: spaceSearchQueryKeys.list(normalizedQueryState, isAuthenticatedRequest),
       queryFn: ({ pageParam }) =>
         getSearchResults(
           {
@@ -59,7 +59,11 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-[1.6875rem]">
         <SpaceSearchHero />
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <SpaceSearchContentSection categories={categories} queryState={queryState} />
+          <SpaceSearchContentSection
+            categories={categories}
+            isAuthenticated={isAuthenticatedRequest}
+            queryState={queryState}
+          />
         </HydrationBoundary>
       </main>
 
