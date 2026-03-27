@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { PostItem } from "./post-item";
@@ -9,6 +10,8 @@ interface BulletinTableProps {
 }
 
 export const BulletinTable = ({ posts }: BulletinTableProps) => {
+  const params = useParams<{ "space-slug": string }>();
+  const slug = params["space-slug"];
   const [tab, setTab] = useState<PostCategory | null>(null);
 
   const filteredPosts = tab ? posts.filter((p) => p.category === tab) : posts;
@@ -47,7 +50,7 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
       {/* 포스트 목록 */}
       <div className="flex flex-col gap-2">
         {filteredPosts.slice(0, 4).map((post) => (
-          <PostItem key={post.id} post={post} />
+          <PostItem key={post.id} post={post} slug={slug} />
         ))}
       </div>
     </div>
