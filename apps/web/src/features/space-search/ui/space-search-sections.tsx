@@ -168,20 +168,20 @@ const InfiniteSpaceSearchResults = ({
   const isFetchingNextPageRef = useRef(false);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
   const hasInitialResults = createSpaceSearchStateKey(initialQueryState) === createSpaceSearchStateKey(queryState);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetSearchResults({
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } = useGetSearchResults({
     initialResults: hasInitialResults ? initialResults : undefined,
     queryState: normalizedQueryState,
   });
   const items = getUniqueSearchItems(data?.pages).map(mapSearchResultItemToSpaceCardItem);
 
   useEffect(() => {
-    isFetchingNextPageRef.current = isFetchingNextPage;
-  }, [isFetchingNextPage]);
+    isFetchingNextPageRef.current = isFetching || isFetchingNextPage;
+  }, [isFetching, isFetchingNextPage]);
 
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage || isFetchingNextPage) {
+    if (!target || !hasNextPage || isFetching || isFetchingNextPage) {
       return;
     }
 
@@ -204,7 +204,7 @@ const InfiniteSpaceSearchResults = ({
     return () => {
       observer.disconnect();
     };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetching, isFetchingNextPage]);
 
   return <SpaceSearchResults hasMore={Boolean(hasNextPage)} items={items} loadMoreRef={loadMoreRef} />;
 };

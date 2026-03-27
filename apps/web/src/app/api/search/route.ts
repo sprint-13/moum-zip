@@ -4,7 +4,7 @@ import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meeti
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
 import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
 
-const MAX_SEARCH_SIZE = 30;
+const MAX_SEARCH_SIZE = 12;
 
 const parsePositiveInteger = (value: string | null) => {
   if (!value) {
