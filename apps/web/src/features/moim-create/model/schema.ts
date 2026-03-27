@@ -26,6 +26,7 @@ export const moimCreateSchema = z
     const now = new Date();
     const moimDateTime = toDateTime(data.date, data.time);
     const deadlineDateTime = toDateTime(data.deadlineDate, data.deadlineTime);
+
     if (isValidDate(moimDateTime) && moimDateTime <= now) {
       ctx.addIssue({ code: "custom", message: "모임 일시는 현재 시각 이후여야 합니다.", path: ["date"] });
     }
@@ -35,7 +36,9 @@ export const moimCreateSchema = z
     }
 
     if (isValidDate(moimDateTime) && isValidDate(deadlineDateTime) && deadlineDateTime >= moimDateTime) {
-      ctx.addIssue({ code: "custom", message: "모집 마감일은 모임 일시 이전이어야 합니다.", path: ["deadlineDate"] });
+      const message = "모집 마감 일시는 모임 일시 이전이어야 합니다.";
+      ctx.addIssue({ code: "custom", message, path: ["deadlineDate"] });
+      ctx.addIssue({ code: "custom", message, path: ["deadlineTime"] });
     }
   });
 

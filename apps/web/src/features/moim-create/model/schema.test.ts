@@ -50,7 +50,7 @@ describe("moimCreateSchema", () => {
       deadlineTime: "15:00", // 모임 시간 14:00 보다 이후
     });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].message).toBe("모집 마감일은 모임 일시 이전이어야 합니다.");
+    expect(result.error?.issues[0].message).toBe("모집 마감 일시는 모임 일시 이전이어야 합니다.");
   });
 
   it("capacity가 0이면 실패", () => {
