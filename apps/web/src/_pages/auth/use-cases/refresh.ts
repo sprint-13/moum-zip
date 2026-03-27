@@ -24,8 +24,6 @@ export async function refresh(
 
     return { ok: true, data };
   } catch (err) {
-    console.error("[refresh] 에러:", err);
-
     if (err instanceof Response && err.status === 401) {
       return { ok: false, error: "INVALID_TOKEN" };
     }

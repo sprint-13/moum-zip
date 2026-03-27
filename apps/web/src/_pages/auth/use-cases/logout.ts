@@ -16,7 +16,6 @@ export async function logout(
     await authApi.logout(input);
     return { ok: true };
   } catch (err) {
-    console.error("[logout] 에러:", err);
     return { ok: false, error: "SERVER_ERROR" };
   }
 }

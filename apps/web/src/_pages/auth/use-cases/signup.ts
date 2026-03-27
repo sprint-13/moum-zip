@@ -17,8 +17,6 @@ export async function signup(
     const { data } = await authApi.signup(input);
     return { ok: true, data };
   } catch (err) {
-    console.error("[signup] 에러:", err);
-
     if (err instanceof Response && err.status === 409) {
       return { ok: false, error: "EMAIL_ALREADY_EXISTS" };
     }
