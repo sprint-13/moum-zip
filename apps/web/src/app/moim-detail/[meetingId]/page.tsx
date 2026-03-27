@@ -62,9 +62,13 @@ export default function MoimDetailPage({ params }: PageProps) {
 
         const resolvedCurrentUserId = currentUserResult.ok ? currentUserResult.data.id : null;
 
-        const meetingDetail = meetingDetailResponse.data ?? meetingDetailResponse;
-        const participantsList = participantsResponse.data ?? participantsResponse;
-        const meetingsList = meetingsResponse.data ?? meetingsResponse;
+        const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
+        const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;
+        const meetingsList = "data" in meetingsResponse ? meetingsResponse.data : meetingsResponse;
+
+        if (!meetingDetail || !participantsList || !meetingsList) {
+          throw new Error("API 응답이 예상된 형식이 아닙니다.");
+        }
 
         const isJoined = getIsJoined(participantsList, resolvedCurrentUserId);
 
@@ -189,6 +193,19 @@ export default function MoimDetailPage({ params }: PageProps) {
   const handleShare = async (_id: number) => {
     try {
       const shareUrl = `${window.location.origin}/moim-detail/${numericMeetingId}`;
+
+      if (!navigator.clipboard) {
+        // Clipboard API를 지원하지 않는 경우, textarea를 이용한 폴백 처리
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("모임 링크가 복사되었습니다.");
+        return;
+      }
+
       await navigator.clipboard.writeText(shareUrl);
       alert("모임 링크가 복사되었습니다.");
     } catch (error) {
@@ -357,7 +374,7 @@ export default function MoimDetailPage({ params }: PageProps) {
               return (
                 <div
                   key={meeting.id}
-                  role="button"
+                  role="link"
                   tabIndex={0}
                   className="cursor-pointer"
                   onClick={(event) => {
@@ -370,7 +387,7 @@ export default function MoimDetailPage({ params }: PageProps) {
                     handleMoveToMeetingDetail(meeting.id);
                   }}
                   onKeyDown={(event) => {
-                    if (event.key !== "Enter" && event.key !== " ") {
+                    if (event.key !== "Enter") {
                       return;
                     }
 

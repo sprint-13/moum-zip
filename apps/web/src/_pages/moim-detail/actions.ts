@@ -45,6 +45,15 @@ const getErrorMessage = async (error: unknown) => {
 };
 
 export async function getCurrentUser(): Promise<ActionResult<{ id: number | null }>> {
+  if (!(await isAuthenticated())) {
+    return {
+      ok: true,
+      data: {
+        id: null,
+      },
+    };
+  }
+
   try {
     const api = await getAuthenticatedApi();
     const response = await api.user.getUser();

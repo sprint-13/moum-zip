@@ -15,4 +15,12 @@ describe("deleteMeeting", () => {
       meetingId: 1,
     });
   });
+
+  it("삭제 API 실패 시 에러를 그대로 전파한다", async () => {
+    const mockMeetingsApi = {
+      delete: vi.fn().mockRejectedValue(new Error("삭제 실패")),
+    };
+
+    await expect(deleteMeeting({ meetingId: 1 }, { meetingsApi: mockMeetingsApi })).rejects.toThrow("삭제 실패");
+  });
 });

@@ -36,18 +36,58 @@ type ParticipantsListResponse = {
   hasMore: boolean;
 };
 
+const KST_TIME_ZONE = "Asia/Seoul";
+
+function getDatePartsInKst(value: string | Date) {
+  const date = typeof value === "string" ? new Date(value) : value;
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const formatter = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIME_ZONE,
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+
+  if (!year || !month || !day) {
+    return null;
+  }
+
+  return { year, month, day };
+}
+
+function isSameDayInKst(a: string | Date, b: string | Date) {
+  const aParts = getDatePartsInKst(a);
+  const bParts = getDatePartsInKst(b);
+
+  if (!aParts || !bParts) {
+    return false;
+  }
+
+  return aParts.year === bParts.year && aParts.month === bParts.month && aParts.day === bParts.day;
+}
+
 function formatMonthDay(value: string | null) {
   if (!value) {
     return "-";
   }
 
-  const date = new Date(value);
+  const parts = getDatePartsInKst(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (!parts) {
     return "-";
   }
 
-  return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  return `${parts.month}월 ${parts.day}일`;
 }
 
 function formatTime(value: string | null) {
@@ -62,6 +102,7 @@ function formatTime(value: string | null) {
   }
 
   return date.toLocaleTimeString("ko-KR", {
+    timeZone: KST_TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -79,12 +120,7 @@ function formatDeadlineLabel(value: string | null) {
     return "마감 정보 없음";
   }
 
-  const now = new Date();
-
-  const isSameDay =
-    now.getFullYear() === date.getFullYear() && now.getMonth() === date.getMonth() && now.getDate() === date.getDate();
-
-  if (isSameDay) {
+  if (isSameDayInKst(new Date(), date)) {
     return `오늘 ${formatTime(value)} 마감`;
   }
 
