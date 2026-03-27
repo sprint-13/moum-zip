@@ -4,7 +4,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { parseMoimFormData } from "@/_pages/moim-create/lib/parse-moim-form-data";
-import { createMoim } from "@/_pages/moim-create/use-cases/create-moim";
+import { createMoim } from "@/_pages/moim-create/use-cases/moim-create";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { isAuthenticated } from "@/shared/api/auth-client";
 import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";

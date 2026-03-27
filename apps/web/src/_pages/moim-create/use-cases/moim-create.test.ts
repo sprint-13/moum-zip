@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as spaceQueries from "@/entities/space/queries";
-import { createMoim } from "./create-moim";
+import { createMoim } from "./moim-create";
 
 // shared/db를 빈 객체로 대체해 neon() 실행 차단
 vi.mock("@/shared/db", () => ({
