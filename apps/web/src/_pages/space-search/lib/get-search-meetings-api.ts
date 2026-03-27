@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/shared/api";
 import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
 

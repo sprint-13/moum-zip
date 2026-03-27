@@ -1,6 +1,7 @@
 import { CreateButton } from "@ui/components";
 
 import { SpaceSearchHeader, SpaceSearchHero } from "@/_pages/space-search";
+import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
 import {
@@ -8,7 +9,6 @@ import {
   parseSpaceSearchQueryState,
   SpaceSearchContentSection,
 } from "@/features/space-search";
-import { getSearchMeetingsApi } from "@/features/space-search/apis/get-search-meetings-api";
 
 type SpaceSearchParams = Record<string, string | string[] | undefined>;
 

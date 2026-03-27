@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
-import { getSearchMeetingsApi } from "@/features/space-search/apis/get-search-meetings-api";
 import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
 
 const parsePositiveInteger = (value: string | null) => {
