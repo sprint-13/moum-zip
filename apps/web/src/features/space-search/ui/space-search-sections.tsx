@@ -8,12 +8,7 @@ import type { SearchResultsResponse } from "@/entities/gathering";
 import { useGetSearchResults } from "../apis/use-get-search-results";
 import { SPACE_SEARCH_FILTERS, SPACE_SEARCH_INITIAL_QUERY_STATE } from "../model/constants";
 import { mapSearchResultItemToSpaceCardItem } from "../model/result-mappers";
-import {
-  buildSpaceSearchHref,
-  createSpaceSearchStateKey,
-  normalizeSearchQueryState,
-  parseSpaceSearchQueryState,
-} from "../model/search-params";
+import { buildSpaceSearchHref, normalizeSearchQueryState, parseSpaceSearchQueryState } from "../model/search-params";
 import type {
   SpaceSearchCategory,
   SpaceSearchDateSortId,
@@ -32,11 +27,7 @@ interface SpaceSearchToolbarSectionProps extends SpaceSearchSectionProps {
   categories: SpaceSearchCategory[];
 }
 
-interface SpaceSearchResultsSectionProps extends SpaceSearchSectionProps {
-  initialResults: SearchResultsResponse;
-}
-
-interface SpaceSearchContentSectionProps extends SpaceSearchToolbarSectionProps, SpaceSearchResultsSectionProps {}
+interface SpaceSearchContentSectionProps extends SpaceSearchToolbarSectionProps {}
 
 const useSpaceSearchUrlSync = () => {
   const pathname = usePathname();
@@ -51,11 +42,7 @@ const useSpaceSearchUrlSync = () => {
   };
 };
 
-export const SpaceSearchContentSection = ({
-  categories,
-  initialResults,
-  queryState,
-}: SpaceSearchContentSectionProps) => {
+export const SpaceSearchContentSection = ({ categories, queryState }: SpaceSearchContentSectionProps) => {
   const { pushQueryState, replaceQueryState } = useSpaceSearchUrlSync();
   const [activeQueryState, setActiveQueryState] = useState<SpaceSearchQueryState>(queryState);
 
@@ -130,19 +117,11 @@ export const SpaceSearchContentSection = ({
         />
       </div>
       <div className="px-4 sm:px-0">
-        <InfiniteSpaceSearchResults
-          initialQueryState={queryState}
-          initialResults={initialResults}
-          queryState={activeQueryState}
-        />
+        <InfiniteSpaceSearchResults queryState={activeQueryState} />
       </div>
     </>
   );
 };
-
-interface InfiniteSpaceSearchResultsProps extends SpaceSearchResultsSectionProps {
-  initialQueryState: SpaceSearchQueryState;
-}
 
 const getUniqueSearchItems = (results: SearchResultsResponse[] = []) => {
   const seenItemIds = new Set<string>();
@@ -159,17 +138,11 @@ const getUniqueSearchItems = (results: SearchResultsResponse[] = []) => {
   );
 };
 
-const InfiniteSpaceSearchResults = ({
-  initialResults,
-  initialQueryState,
-  queryState,
-}: InfiniteSpaceSearchResultsProps) => {
+const InfiniteSpaceSearchResults = ({ queryState }: SpaceSearchSectionProps) => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const isFetchingNextPageRef = useRef(false);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
-  const hasInitialResults = createSpaceSearchStateKey(initialQueryState) === createSpaceSearchStateKey(queryState);
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } = useGetSearchResults({
-    initialResults: hasInitialResults ? initialResults : undefined,
     queryState: normalizedQueryState,
   });
   const items = getUniqueSearchItems(data?.pages).map(mapSearchResultItemToSpaceCardItem);

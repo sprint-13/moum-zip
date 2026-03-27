@@ -10,18 +10,11 @@ import type { SearchResultsQueryState } from "../model/search-params";
 import { getSearchResults } from "./get-search-results";
 
 interface UseGetSearchResultsProps {
-  initialResults?: SearchResultsResponse;
   queryState: SearchResultsQueryState;
 }
 
-export const useGetSearchResults = ({ initialResults, queryState }: UseGetSearchResultsProps) => {
+export const useGetSearchResults = ({ queryState }: UseGetSearchResultsProps) => {
   const initialPageParam: string | null = null;
-  const initialData = initialResults
-    ? {
-        pageParams: [initialPageParam],
-        pages: [initialResults],
-      }
-    : undefined;
 
   return useInfiniteQuery<
     SearchResultsResponse,
@@ -36,7 +29,6 @@ export const useGetSearchResults = ({ initialResults, queryState }: UseGetSearch
         ...queryState,
         cursor: pageParam,
       }),
-    initialData,
     initialPageParam,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     placeholderData: (previousData) => previousData,
