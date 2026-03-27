@@ -1,7 +1,7 @@
 import type { JoinedMeetingList } from "@moum-zip/api";
 import type { SpaceDB, SpaceInfo } from "@/entities/spaces";
 
-export const getJoinedSpaceInfos = async (
+export const getJoinedSpaceInfosUseCase = async (
   spacesFromApi: JoinedMeetingList,
   spacesFromDB: SpaceDB[],
 ): Promise<SpaceInfo[]> => {
@@ -12,11 +12,12 @@ export const getJoinedSpaceInfos = async (
     const dbSpace = dbSpaceMap.get(apiSpace.id);
     if (!dbSpace) return [];
     return {
-      spaceId: dbSpace.id, // 또는 적절한 Fallback
+      spaceId: dbSpace.id,
       name: apiSpace.name,
-      location: dbSpace.location,
-      themeColor: dbSpace.themeColor,
+      location: dbSpace.location ?? "online",
+      themeColor: dbSpace.themeColor ?? "#000000",
       status: dbSpace.status,
+      modules: dbSpace.modules,
       image: apiSpace.image,
       type: apiSpace.type === "study" ? "study" : "project",
       startDate: apiSpace.dateTime,
