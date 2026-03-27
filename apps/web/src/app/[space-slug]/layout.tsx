@@ -1,14 +1,22 @@
 import type { ReactNode } from "react";
 import { SpaceSidebar } from "@/_pages/space";
+import { getSpaceInfoRemote } from "@/features/space/use-cases/get-space-info";
 
-// TODO: 스페이스 별 기능을 동적으로 받아와서 컴포넌트를 생성해야함.
-// -> 사이드바 메뉴 동적 생성
-// -> 대시보드 페이지 콘텐츠도 동적 생성
-// => layout에서 스페이스 별 기능을 받아와서 context로 내려주고, 사이드바와 대시보드 페이지에서 context를 사용해서 렌더링하는 방식으로 구현할 수 있을듯.
+// layout에서 인증·스페이스·멤버십 검증을 수행한다.
+// getSpaceBySlug, getSpaceMembership에 React.cache()가 적용되어 있으므로
+// 하위 page.tsx에서 getSpaceContext를 다시 호출해도 DB 쿼리는 요청당 1회만 실행된다.
+export default async function SpaceLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ "space-slug": string }>;
+}) {
+  const slug = (await params)["space-slug"];
+  const space = await getSpaceInfoRemote(slug);
 
-export default function SpaceLayout({ children }: { children: ReactNode }) {
   return (
-    <SpaceSidebar>
+    <SpaceSidebar space={space} membership={membership}>
       <main className="mx-auto w-full max-w-6xl p-6">{children}</main>
     </SpaceSidebar>
   );

@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { SpaceHeader, SpaceSection } from "@/_pages/spaces";
-import { getSpaceList } from "@/_pages/spaces/use-cases/get-space-list";
+import { getSpaceListRemote } from "@/_pages/spaces/use-cases/get-space-list";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export default async function SpacePage() {
 
   await queryClient.prefetchInfiniteQuery({
     queryKey: ["space-list"],
-    queryFn: ({ pageParam }) => getSpaceList(pageParam as string | undefined),
+    queryFn: ({ pageParam }) => getSpaceListRemote(pageParam as string | undefined),
     initialPageParam: undefined,
   });
 
