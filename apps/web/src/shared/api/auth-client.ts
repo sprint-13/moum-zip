@@ -227,3 +227,15 @@ export async function isAuthenticated(): Promise<boolean> {
   const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   return !!token && TokenService.isValid(token);
 }
+
+export async function isAuth(): Promise<{ authenticated: boolean; userId: number | null }> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+
+  if (!token || !TokenService.isValid(token)) {
+    return { authenticated: false, userId: null };
+  }
+
+  const payload = TokenService.decode(token);
+  return { authenticated: true, userId: payload ? Number(payload.sub) : null };
+}
