@@ -8,4 +8,5 @@ export interface SpaceInfo {
   location: string | null; // 위치
   themeColor: string; // 스페이스 고유 컬러 (프론트에서 사용)
   startDate: string | null; // 시작 일자
+  modules: string[]; // 활성화된 모듈 목록
 }
