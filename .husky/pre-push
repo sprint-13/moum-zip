@@ -1,1 +1,1 @@
-pnpm turbo test build lint check-types
+pnpm turbo test lint-staged build check-types
