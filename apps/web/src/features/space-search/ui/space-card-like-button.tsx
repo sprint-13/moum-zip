@@ -72,9 +72,15 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
 
     const previousIsLiked = optimisticIsLiked;
     const nextIsLiked = !previousIsLiked;
-    const previousSearchResults = queryClient.getQueriesData<SearchResultsInfiniteData>({
-      predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
-    });
+    const rollbackLikedState = () => {
+      setOptimisticIsLiked(previousIsLiked);
+      queryClient.setQueriesData<SearchResultsInfiniteData>(
+        {
+          predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
+        },
+        (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, previousIsLiked),
+      );
+    };
 
     setOptimisticIsLiked(nextIsLiked);
     queryClient.setQueriesData<SearchResultsInfiniteData>(
@@ -93,18 +99,12 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
         }
       } catch (error) {
         if (isRedirectError(error)) {
-          setOptimisticIsLiked(previousIsLiked);
-          previousSearchResults.forEach(([queryKey, cachedData]) => {
-            queryClient.setQueryData(queryKey, cachedData);
-          });
+          rollbackLikedState();
 
           throw error;
         }
 
-        setOptimisticIsLiked(previousIsLiked);
-        previousSearchResults.forEach(([queryKey, cachedData]) => {
-          queryClient.setQueryData(queryKey, cachedData);
-        });
+        rollbackLikedState();
       }
     });
   };
