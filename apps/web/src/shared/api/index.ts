@@ -70,7 +70,10 @@ export const api = {
     getDetail: (
       meetingId: Parameters<typeof core.meetings.meetingsDetail>[1],
       params?: Parameters<typeof core.meetings.meetingsDetail>[2],
-    ) => core.meetings.meetingsDetail(teamId, meetingId, params),
+    ) =>
+      params
+        ? core.meetings.meetingsDetail(teamId, meetingId, params)
+        : core.meetings.meetingsDetail(teamId, meetingId),
 
     create: (
       data: Parameters<typeof core.meetings.meetingsCreate>[1],
