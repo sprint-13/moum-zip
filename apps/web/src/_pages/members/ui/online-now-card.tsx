@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { type Member, ROLE_LABEL } from "@/entities/member";
 
 export function OnlineNowCard({ members }: { members: Member[] }) {
@@ -13,9 +14,19 @@ export function OnlineNowCard({ members }: { members: Member[] }) {
       <div className="flex flex-col">
         {members.map((m) => (
           <div key={m.id} className="flex items-center gap-2.5 py-2">
-            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground">
-              <span className="font-semibold text-[10px] text-background">user image</span>
-            </div>
+            {m.avatarUrl ? (
+              <Image
+                src={m.avatarUrl}
+                alt={m.nickname}
+                width={28}
+                height={28}
+                className="shrink-0 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground">
+                <span className="font-semibold text-[10px] text-background">{m.nickname[0]?.toUpperCase()}</span>
+              </div>
+            )}
             <span className="flex-1 font-medium text-foreground text-sm">{m.nickname}</span>
             {m.role !== "member" && (
               <span className="rounded-full bg-foreground px-2 py-0.5 font-medium text-[10px] text-background">

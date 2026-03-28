@@ -3,7 +3,6 @@ import { db } from "@/shared/db";
 import { type NewSpaceDB, spaces } from "@/shared/db/scheme";
 
 // meetingId -> space 조회 -> location, themeColor, status, modules
-
 export const spaceQueries = {
   /** meetingId로 space 조회 */
   findByMeetingId: (meetingId: number) =>
@@ -13,6 +12,7 @@ export const spaceQueries = {
   findByMeetingIds: (meetingIds: number[]) => db.select().from(spaces).where(inArray(spaces.meetingId, meetingIds)),
 };
 
+// TODO: method로 합치기 + 순수 db 접근 코드만 남기기
 // 모임 생성 시 SPACE 테이블에 저장 (MEETING 생성 후 meetingId 연결)
 export async function insertSpace(data: NewSpaceDB) {
   const [result] = await db.insert(spaces).values(data).returning();

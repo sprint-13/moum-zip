@@ -1,4 +1,5 @@
 import { MoreHorizontal } from "@moum-zip/ui/icons";
+import Image from "next/image";
 import type { Member, MemberRole } from "@/entities/member";
 import { cn } from "@/shared/lib/cn";
 
@@ -8,14 +9,6 @@ const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
   member: { label: "Member", className: "bg-muted/50 text-muted-foreground border border-border" },
 };
 
-const getInitials = (name: string) =>
-  name
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
 export function MemberRow({ member }: { member: Member }) {
   const role = ROLE_CONFIG[member.role];
 
@@ -23,9 +16,19 @@ export function MemberRow({ member }: { member: Member }) {
     <div className="flex items-center border-[#e5e5e5] border-b last:border-0">
       {/* Member */}
       <div className="flex w-[220px] shrink-0 items-center gap-2.5 p-3">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground">
-          <span className="font-semibold text-background text-xs">{getInitials(member.nickname)}</span>
-        </div>
+        {member.avatarUrl ? (
+          <Image
+            src={member.avatarUrl}
+            alt={member.nickname}
+            width={32}
+            height={32}
+            className="shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground">
+            <span className="font-semibold text-background text-xs">{member.nickname[0]?.toUpperCase()}</span>
+          </div>
+        )}
         <div className="flex flex-col gap-px">
           <span className="font-medium text-foreground text-sm">{member.nickname}</span>
           <span className="text-muted-foreground text-xs">{member.email}</span>

@@ -1,31 +1,40 @@
-import type { SpacePost } from "@/shared/db/scheme";
-
-interface PostExt {
-  id: number;
-  /** 소속 게시판 ID */
-  title: string;
-  content: string;
-  authorId: number; // Member.id
-  image: string | null;
-  viewCount: number;
-  likeCount: number;
-  createdAt: Date; // ISO 날짜 문자열
-  updatedAt: Date; // ISO 날짜 문자열
-}
-
-export interface CommentExt {
-  id: number;
-  postId: number;
-  authorId: number; // Member.id
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { SpacePost, SpacePostComment } from "@/shared/db/scheme";
 
 export type PostCategory = SpacePost["category"];
 
-export interface Post extends PostExt {
+export interface Author {
+  id: number;
+  name: string;
+  image: string | null;
+}
+
+/** spacePosts 레코드 + spaceMembers 조인으로 완성되는 도메인 타입 */
+export interface Post {
+  id: string;
+  spaceId: string;
+  authorId: number;
+  author: Author;
   category: PostCategory;
+  title: string;
+  content: string;
+  image: string | null;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+
+/** spacePostComments 레코드 + spaceMembers 조인으로 완성되는 도메인 타입 */
+export interface Comment {
+  id: string;
+  postId: string;
+  spaceId: string;
+  authorId: number;
+  author: Author;
+  content: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
 
 export const CATEGORY_LABELS: Record<PostCategory, string> = {
@@ -34,3 +43,5 @@ export const CATEGORY_LABELS: Record<PostCategory, string> = {
   question: "질문",
   material: "자료",
 };
+
+export type { SpacePostComment };

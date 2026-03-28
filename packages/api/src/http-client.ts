@@ -201,7 +201,7 @@ export class HttpClient<SecurityDataType = unknown> {
       const r = response as HttpResponse<T, E>;
       r.data = null as unknown as T;
       r.error = null as unknown as E;
-
+   
       const responseToParse = responseFormat ? response.clone() : response;
       const data = !responseFormat
         ? r

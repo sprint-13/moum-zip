@@ -1,9 +1,9 @@
 import { spaceQueries } from "@/entities/spaces/queries";
 import { getAuthenticatedApi } from "@/shared/api/auth-client";
 import { safe } from "@/shared/lib/safe";
-import { getJoinedSpaceInfos } from "./get-joined-space-infos";
+import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
-export const getSpaceList = async (cursor?: string) => {
+export const getSpaceListRemote = async (cursor?: string) => {
   let authedApi: Awaited<ReturnType<typeof getAuthenticatedApi>>;
   try {
     authedApi = await getAuthenticatedApi(); // TODO: 인증 실패 시 401 응답
@@ -21,9 +21,18 @@ export const getSpaceList = async (cursor?: string) => {
   });
 
   const meetingIds = joinedMeetings.data.data.map((m) => m.id);
+
+  if (meetingIds.length === 0) {
+    return {
+      data: [],
+      nextCursor: joinedMeetings.data.nextCursor,
+      hasMore: joinedMeetings.data.hasMore,
+    };
+  }
+
   const spacesFromDB = await spaceQueries.findByMeetingIds(meetingIds);
 
-  const spaces = await getJoinedSpaceInfos(joinedMeetings.data, spacesFromDB);
+  const spaces = await getJoinedSpaceInfosUseCase(joinedMeetings.data, spacesFromDB);
 
   return {
     data: spaces,

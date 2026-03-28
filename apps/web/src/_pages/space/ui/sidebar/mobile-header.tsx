@@ -12,7 +12,7 @@ export function MobileHeader({ navItems }: MobileHeaderProps) {
   const { "space-slug": spaceSlug } = useParams<{ "space-slug": string }>();
   const pathname = usePathname();
 
-  const current = navItems.find(({ path }) => pathname.startsWith(`/${spaceSlug}${path}`));
+  const current = navItems.find(({ path }) => pathname.startsWith(`/${spaceSlug}/${path}`));
 
   const Actions = current?.Actions;
 
