@@ -152,6 +152,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
       spaceId: "db-id-1",
       name: "테스트 스페이스",
       image: "https://example.com/img.png",
+      slug: "slug-1",
       type: "study",
       startDate: "2026-06-01T09:00:00.000Z",
       capacity: 5,
