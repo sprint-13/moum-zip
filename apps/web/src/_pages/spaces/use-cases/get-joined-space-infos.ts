@@ -13,6 +13,7 @@ export const getJoinedSpaceInfosUseCase = async (
     if (!dbSpace) return [];
     return {
       spaceId: dbSpace.id,
+      slug: dbSpace.slug,
       name: apiSpace.name,
       location: dbSpace.location ?? "online",
       themeColor: dbSpace.themeColor ?? "#000000",
