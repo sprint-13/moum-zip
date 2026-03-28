@@ -1,4 +1,5 @@
 // apps/web/src/shared/ui/navigation-menu.tsx
+"use client";
 import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
