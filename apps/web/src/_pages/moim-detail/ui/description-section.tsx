@@ -4,14 +4,14 @@ import { cn } from "@ui/lib/utils";
 
 interface DescriptionSectionProps {
   title?: string;
-  description: string;
+  description?: string;
   className?: string;
   contentClassName?: string;
 }
 
 export function DescriptionSection({
   title = "모임 설명",
-  description,
+  description = "",
   className,
   contentClassName,
 }: DescriptionSectionProps) {
@@ -25,7 +25,11 @@ export function DescriptionSection({
           contentClassName,
         )}
       >
-        <p className="wrap-break-word whitespace-pre-line">{description}</p>
+        {description ? (
+          <p className="whitespace-pre-line break-words">{description}</p>
+        ) : (
+          <p className="text-gray-400">설명이 없습니다.</p>
+        )}
       </div>
     </section>
   );

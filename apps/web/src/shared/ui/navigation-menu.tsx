@@ -10,7 +10,7 @@ const logo = <Logo className="block h-8 w-auto" aria-hidden preserveAspectRatio=
 export const NavigationMenu = () => {
   return (
     <>
-      <div className="hidden w-full py-5 md:block">
+      <div className="hidden w-full bg-background-secondary py-5 md:block">
         <Gnb viewport={false}>
           <Gnb.List>
             <Gnb.Item className="shrink-0">
@@ -34,7 +34,7 @@ export const NavigationMenu = () => {
         </Gnb>
       </div>
 
-      <div className="flex w-full items-center justify-between px-4 py-2 md:hidden">
+      <div className="flex w-full items-center justify-between bg-background-secondary px-4 py-2 md:hidden">
         <Link
           href={ROUTES.home}
           aria-label="홈으로 이동"

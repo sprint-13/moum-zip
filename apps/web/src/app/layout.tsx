@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { QueryProvider } from "@/shared/providers/query-client-provider";
 import "./globals.css";
 import { Toaster } from "@ui/components";
+import { NavigationMenu } from "@/shared/ui/navigation-menu";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -25,7 +26,8 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${pretendard.className} ${pretendard.variable} antialiased`}>
         <QueryProvider>
-          {children}
+          <NavigationMenu />
+          <main>{children}</main>
           <Toaster />
         </QueryProvider>
       </body>
