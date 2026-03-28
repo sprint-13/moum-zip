@@ -1,25 +1,30 @@
-export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "business" | "health" | "family" | "etc";
-export type SpaceSearchFilterId = "date" | "district" | "deadline";
+export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "project" | "business" | "health" | "family" | "etc";
+export type SpaceSearchFilterId = "date" | "location" | "deadline";
+export type SpaceSearchDateSortId = "default" | "latest" | "oldest";
+export type SpaceSearchLocationId = "all" | "online" | "offline";
+export type SpaceSearchDeadlineSortId = "default" | "fast" | "slow";
 
 export interface SpaceSearchCategory {
   id: SpaceSearchCategoryId;
   label: string;
 }
 
+export interface SpaceSearchFilterOption {
+  id: string;
+  label: string;
+}
+
 export interface SpaceSearchFilter {
-  hasLeftIcon?: boolean;
   id: SpaceSearchFilterId;
   label: string;
+  options: [SpaceSearchFilterOption, ...SpaceSearchFilterOption[]];
 }
 
 export interface SpaceSearchQueryState {
   categoryId: SpaceSearchCategoryId;
-  page: number;
-}
-
-export interface SpaceSearchPagination {
-  currentPage: number;
-  totalPages: number;
+  dateSortId: SpaceSearchDateSortId;
+  deadlineSortId: SpaceSearchDeadlineSortId;
+  locationId: SpaceSearchLocationId;
 }
 
 export interface SpaceCardMetaChip {
@@ -45,9 +50,4 @@ export interface SpaceCardItem {
   metaChips: SpaceCardMetaChip[];
   status?: SpaceCardStatus;
   title: string;
-}
-
-export interface SpaceSearchResultPage {
-  items: SpaceCardItem[];
-  pagination: SpaceSearchPagination;
 }

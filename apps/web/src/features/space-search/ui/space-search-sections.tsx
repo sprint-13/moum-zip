@@ -1,59 +1,211 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_FILTERS } from "../model/constants";
-import { buildSpaceSearchHref, getSpaceSearchResultPage } from "../model/search-params";
-import type { SpaceSearchQueryState } from "../model/types";
+import type { SearchResultsResponse } from "@/entities/gathering";
+
+import { useGetSearchResults } from "../apis/use-get-search-results";
+import { SPACE_SEARCH_FILTERS, SPACE_SEARCH_INITIAL_QUERY_STATE } from "../model/constants";
+import { mapSearchResultItemToSpaceCardItem } from "../model/result-mappers";
+import { buildSpaceSearchHref, normalizeSearchQueryState, parseSpaceSearchQueryState } from "../model/search-params";
+import type {
+  SpaceSearchCategory,
+  SpaceSearchDateSortId,
+  SpaceSearchDeadlineSortId,
+  SpaceSearchLocationId,
+  SpaceSearchQueryState,
+} from "../model/types";
 import { SpaceSearchResults } from "./space-search-results";
 import { SpaceSearchToolbar } from "./space-search-toolbar";
 
 interface SpaceSearchSectionProps {
+  isAuthenticated: boolean;
   queryState: SpaceSearchQueryState;
 }
 
-const useSpaceSearchNavigation = () => {
-  const pathname = usePathname();
-  const router = useRouter();
+interface SpaceSearchToolbarSectionProps extends SpaceSearchSectionProps {
+  categories: SpaceSearchCategory[];
+}
 
-  return (nextQueryState: SpaceSearchQueryState) => {
-    router.replace(buildSpaceSearchHref(pathname, nextQueryState));
+interface SpaceSearchContentSectionProps extends SpaceSearchToolbarSectionProps {}
+
+const useSpaceSearchUrlSync = () => {
+  const pathname = usePathname();
+
+  return {
+    pushQueryState: (nextQueryState: SpaceSearchQueryState) => {
+      window.history.pushState({}, "", buildSpaceSearchHref(pathname, nextQueryState));
+    },
+    replaceQueryState: (nextQueryState: SpaceSearchQueryState) => {
+      window.history.replaceState({}, "", buildSpaceSearchHref(pathname, nextQueryState));
+    },
   };
 };
 
-export const SpaceSearchToolbarSection = ({ queryState }: SpaceSearchSectionProps) => {
-  const navigateWithQueryState = useSpaceSearchNavigation();
+export const SpaceSearchContentSection = ({
+  categories,
+  isAuthenticated,
+  queryState,
+}: SpaceSearchContentSectionProps) => {
+  const { pushQueryState, replaceQueryState } = useSpaceSearchUrlSync();
+  const [activeQueryState, setActiveQueryState] = useState<SpaceSearchQueryState>(queryState);
+
+  useEffect(() => {
+    setActiveQueryState(queryState);
+  }, [queryState]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveQueryState(parseSpaceSearchQueryState(new URLSearchParams(window.location.search)));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   const handleCategoryChange = (categoryId: SpaceSearchQueryState["categoryId"]) => {
-    navigateWithQueryState({
-      ...queryState,
+    const nextQueryState = {
+      ...activeQueryState,
       categoryId,
-      page: 1,
-    });
+    };
+
+    setActiveQueryState(nextQueryState);
+    pushQueryState(nextQueryState);
+  };
+
+  const handleDateSortChange = (dateSortId: SpaceSearchDateSortId) => {
+    const nextQueryState = {
+      ...activeQueryState,
+      dateSortId,
+      deadlineSortId: SPACE_SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+    };
+
+    setActiveQueryState(nextQueryState);
+    replaceQueryState(nextQueryState);
+  };
+
+  const handleLocationChange = (locationId: SpaceSearchLocationId) => {
+    const nextQueryState = {
+      ...activeQueryState,
+      locationId,
+    };
+
+    setActiveQueryState(nextQueryState);
+    replaceQueryState(nextQueryState);
+  };
+
+  const handleDeadlineSortChange = (deadlineSortId: SpaceSearchDeadlineSortId) => {
+    const nextQueryState = {
+      ...activeQueryState,
+      dateSortId: SPACE_SEARCH_INITIAL_QUERY_STATE.dateSortId,
+      deadlineSortId,
+    };
+
+    setActiveQueryState(nextQueryState);
+    replaceQueryState(nextQueryState);
   };
 
   return (
-    <SpaceSearchToolbar
-      categories={SPACE_SEARCH_CATEGORIES}
-      filters={SPACE_SEARCH_FILTERS}
-      onCategoryChange={handleCategoryChange}
-      selectedCategoryId={queryState.categoryId}
-    />
+    <>
+      <div className="px-4 sm:px-0">
+        <SpaceSearchToolbar
+          categories={categories}
+          filters={SPACE_SEARCH_FILTERS}
+          onCategoryChange={handleCategoryChange}
+          onDateSortChange={handleDateSortChange}
+          onDeadlineSortChange={handleDeadlineSortChange}
+          onLocationChange={handleLocationChange}
+          selectedCategoryId={activeQueryState.categoryId}
+          selectedDateSortId={activeQueryState.dateSortId}
+          selectedDeadlineSortId={activeQueryState.deadlineSortId}
+          selectedLocationId={activeQueryState.locationId}
+        />
+      </div>
+      <div className="px-4 sm:px-0">
+        <InfiniteSpaceSearchResults isAuthenticated={isAuthenticated} queryState={activeQueryState} />
+      </div>
+    </>
   );
 };
 
-export const SpaceSearchResultsSection = ({ queryState }: SpaceSearchSectionProps) => {
-  const navigateWithQueryState = useSpaceSearchNavigation();
-  const resultPage = getSpaceSearchResultPage(queryState);
+const getUniqueSearchItems = (results: SearchResultsResponse[] = []) => {
+  const seenItemIds = new Set<string>();
 
-  const handlePageChange = (page: number) => {
-    navigateWithQueryState({
-      ...queryState,
-      page,
-    });
-  };
+  return results.flatMap((page) =>
+    page.items.filter((item) => {
+      if (seenItemIds.has(item.id)) {
+        return false;
+      }
+
+      seenItemIds.add(item.id);
+      return true;
+    }),
+  );
+};
+
+const InfiniteSpaceSearchResults = ({ isAuthenticated, queryState }: SpaceSearchSectionProps) => {
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const isFetchingNextPageRef = useRef(false);
+  const normalizedQueryState = normalizeSearchQueryState(queryState);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetchNextPageError,
+    isFetching,
+    isFetchingNextPage,
+    isRefetchError,
+  } = useGetSearchResults({
+    isAuthenticated,
+    queryState: normalizedQueryState,
+  });
+  const hasQueryError = isError || isRefetchError || isFetchNextPageError;
+  const errorMessage = hasQueryError ? "데이터를 불러오지 못했어요. 다시 시도해 주세요." : undefined;
+  const items = getUniqueSearchItems(data?.pages).map(mapSearchResultItemToSpaceCardItem);
+
+  useEffect(() => {
+    isFetchingNextPageRef.current = isFetching || isFetchingNextPage || hasQueryError;
+  }, [hasQueryError, isFetching, isFetchingNextPage]);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (!target || !hasNextPage || hasQueryError || isFetching || isFetchingNextPage) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (!entry?.isIntersecting || isFetchingNextPageRef.current) {
+          return;
+        }
+
+        isFetchingNextPageRef.current = true;
+        void fetchNextPage();
+      },
+      { rootMargin: "200px 0px" },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchNextPage, hasNextPage, hasQueryError, isFetching, isFetchingNextPage]);
 
   return (
-    <SpaceSearchResults items={resultPage.items} onPageChange={handlePageChange} pagination={resultPage.pagination} />
+    <SpaceSearchResults
+      errorMessage={errorMessage}
+      hasMore={Boolean(hasNextPage && !hasQueryError)}
+      items={items}
+      loadMoreRef={loadMoreRef}
+    />
   );
 };
