@@ -22,7 +22,7 @@ export function PostItem({ post, slug }: PostItemProps) {
   const displayDate = post.updatedAt ?? post.createdAt;
 
   return (
-    <div className={`$ relative`}>
+    <div className={`relative`}>
       <Link
         href={`/${slug}/bulletin/${post.id}`}
         className="group block w-full cursor-pointer rounded-xl border border-primary/20 bg-background p-4 transition-all hover:shadow-xs"

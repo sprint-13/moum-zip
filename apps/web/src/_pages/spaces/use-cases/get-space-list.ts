@@ -21,6 +21,15 @@ export const getSpaceListRemote = async (cursor?: string) => {
   });
 
   const meetingIds = joinedMeetings.data.data.map((m) => m.id);
+
+  if (meetingIds.length === 0) {
+    return {
+      data: [],
+      nextCursor: joinedMeetings.data.nextCursor,
+      hasMore: joinedMeetings.data.hasMore,
+    };
+  }
+
   const spacesFromDB = await spaceQueries.findByMeetingIds(meetingIds);
 
   const spaces = await getJoinedSpaceInfosUseCase(joinedMeetings.data, spacesFromDB);

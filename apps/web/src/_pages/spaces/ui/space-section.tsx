@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import type { SpaceInfo } from "@/entities/spaces";
-import { useSpaceList } from "../hooks/useSpaceList";
+import { useSpaceList } from "../hooks/use-space-list";
 import { NoSpaceCard } from "./no-space-card";
 import { SpaceControl } from "./space-control";
 import { SpaceInfoGridCard } from "./space-info-grid-card";

@@ -27,6 +27,7 @@ export function CommentForm({ slug, postId }: CommentFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <textarea
         ref={ref}
+        ria-label="댓글 내용"
         placeholder="댓글을 입력하세요..."
         rows={3}
         disabled={isPending}

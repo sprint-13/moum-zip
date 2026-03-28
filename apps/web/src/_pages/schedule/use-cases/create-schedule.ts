@@ -28,5 +28,7 @@ export async function createScheduleUseCase(input: CreateScheduleInput): Promise
     endAt: input.endAt,
   });
 
+  if (!schedule) throw new Error("일정 생성에 실패했습니다.");
+
   return { scheduleId: schedule.id };
 }

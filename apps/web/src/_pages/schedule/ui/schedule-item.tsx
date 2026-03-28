@@ -8,7 +8,7 @@ import { deleteScheduleAction } from "../actions";
 interface ScheduleItemProps {
   schedule: ScheduleWithStatus;
   slug: string;
-  onEdit: (schedule: ScheduleWithStatus) => void;
+  onEdit?: (schedule: ScheduleWithStatus) => void;
 }
 
 export function ScheduleItem({ schedule, slug, onEdit }: ScheduleItemProps) {
@@ -28,7 +28,13 @@ export function ScheduleItem({ schedule, slug, onEdit }: ScheduleItemProps) {
 
   function handleDelete() {
     if (!confirm("일정을 삭제하시겠습니까?")) return;
-    startTransition(() => deleteScheduleAction(slug, schedule.id));
+    startTransition(async () => {
+      try {
+        await deleteScheduleAction(slug, schedule.id);
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "일정 삭제에 실패했습니다.");
+      }
+    });
   }
 
   return (
@@ -46,22 +52,26 @@ export function ScheduleItem({ schedule, slug, onEdit }: ScheduleItemProps) {
         </div>
         {!schedule.isExpired && (
           <div className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
-              onClick={() => onEdit(schedule)}
-              disabled={isPending}
-              className="rounded px-2 py-1 text-neutral-400 text-xs transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
-            >
-              수정
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isPending}
-              className="rounded px-2 py-1 text-red-400 text-xs transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-            >
-              삭제
-            </button>
+            {onEdit !== undefined ? (
+              <button
+                type="button"
+                onClick={() => onEdit(schedule)}
+                disabled={isPending}
+                className="rounded px-2 py-1 text-neutral-400 text-xs transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              >
+                수정
+              </button>
+            ) : null}
+            {onEdit === undefined ? (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isPending}
+                className="rounded px-2 py-1 text-red-400 text-xs transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+              >
+                삭제
+              </button>
+            ) : null}
           </div>
         )}
       </div>

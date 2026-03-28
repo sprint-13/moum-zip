@@ -12,8 +12,8 @@ export const getSpaceInfoRemote = async (slug: string): Promise<SpaceInfo> => {
     401: () => {
       redirect("/login");
     },
-    default: () => {
-      throw Error("Failed to verify space access");
+    default: (err) => {
+      throw Error("Failed to verify space access", { cause: err });
     },
   });
 

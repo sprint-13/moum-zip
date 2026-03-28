@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "@moum-zip/ui/icons";
 import { useTransition } from "react";
 import type { AttendanceStatus } from "@/entities/schedule";
 import { formatTodayKST } from "@/shared/lib/date";
@@ -39,40 +40,15 @@ export function AttendanceCard({ slug, attendance, totalMembers }: AttendanceCar
           <span className="text-neutral-400 text-xs">/ {totalMembers}명 출석</span>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 p-3">
-          {/* TODO: lucide icon으로 교체 가능하면 교체하기 */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-6 text-primary"
-            aria-hidden="true"
-          >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
+          <Check size={16} className="text-primary" />
         </div>
       </div>
 
       {attendance.hasCheckedIn ? (
         <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 px-4 py-3">
           {/* TODO: lucid icon으로 교체하기 */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="size-4 text-green-500"
-            aria-hidden="true"
-          >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-          <span className="font-medium text-green-600 text-sm">오늘 출석을 완료했습니다</span>
+          <Check size={16} className="text-primary" />
+          <span className="font-medium text-primary text-sm">오늘 출석을 완료했습니다</span>
         </div>
       ) : (
         <button

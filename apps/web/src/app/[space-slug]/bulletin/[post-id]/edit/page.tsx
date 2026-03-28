@@ -3,6 +3,7 @@ import { PostWriteForm } from "@/_pages/bulletin/ui/post-write-form";
 import { SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
+import { safe } from "@/shared/lib/safe";
 
 export default async function PostEditPage({
   params,
@@ -13,14 +14,8 @@ export default async function PostEditPage({
 
   const { membership } = await getSpaceContext(slug);
 
-  let result: Awaited<ReturnType<typeof getPostDetailUseCase>>;
-  try {
-    result = await getPostDetailUseCase(postId);
-  } catch {
-    notFound();
-  }
+  const { post } = await safe(getPostDetailUseCase(postId));
 
-  const { post } = result;
   const canEdit = membership.userId === post.authorId || membership.role === "manager";
   if (!canEdit) notFound();
 

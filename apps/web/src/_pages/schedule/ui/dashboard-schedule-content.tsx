@@ -20,7 +20,7 @@ export function DashboardScheduleContent({ upcoming, slug }: DashboardScheduleCo
         <ul className="flex flex-col gap-3">
           {items.map((schedule) => (
             <li key={schedule.id}>
-              <ScheduleItem schedule={schedule} slug={slug} onEdit={() => {}} />
+              <ScheduleItem schedule={schedule} slug={slug} />
             </li>
           ))}
         </ul>

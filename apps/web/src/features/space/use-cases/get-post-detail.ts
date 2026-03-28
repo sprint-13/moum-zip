@@ -8,7 +8,6 @@ export interface PostDetailResult {
 
 /**
  * 게시글 단건 + 댓글 목록 조회.
- * 조회 시 viewCount를 1 증가시킨다.
  */
 export async function getPostDetailUseCase(postId: string): Promise<PostDetailResult> {
   const [postRows, commentRows] = await Promise.all([
@@ -18,8 +17,6 @@ export async function getPostDetailUseCase(postId: string): Promise<PostDetailRe
 
   const row = postRows[0];
   if (!row) throw new Error("게시글을 찾을 수 없습니다.");
-
-  await postQueries.incrementViewCount(postId);
 
   const post: Post = { ...row.post, author: row.author };
   const comments: Comment[] = commentRows.map(({ comment, author }) => ({ ...comment, author }));

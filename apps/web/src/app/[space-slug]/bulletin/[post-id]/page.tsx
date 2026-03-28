@@ -1,8 +1,10 @@
-import { notFound } from "next/navigation";
+import { after } from "next/server";
 import { PostDetail } from "@/_pages/bulletin/ui/post-detail";
+import { postQueries } from "@/entities/post/queries";
 import { SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
+import { safe } from "@/shared/lib/safe";
 
 export default async function PostDetailPage({
   params,
@@ -13,14 +15,11 @@ export default async function PostDetailPage({
 
   const { membership } = await getSpaceContext(slug);
 
-  let result: Awaited<ReturnType<typeof getPostDetailUseCase>>;
-  try {
-    result = await getPostDetailUseCase(postId);
-  } catch {
-    notFound();
-  }
+  const { post, comments } = await safe(getPostDetailUseCase(postId));
 
-  const { post, comments } = result;
+  after(async () => {
+    await postQueries.incrementViewCount(postId);
+  });
 
   return (
     <>

@@ -50,7 +50,6 @@ export function DashboardAttendanceCard({ slug, attendance, totalMembers }: Dash
       </div>
       {attendance.hasCheckedIn ? (
         <div className="flex items-center justify-center gap-2 rounded-lg bg-green-50 px-4 py-3">
-          {/* TODO: lucid icon으로 교체하기 */}
           <Check size={16} className="text-primary" />
           <span className="font-medium text-primary text-sm">오늘 출석을 완료했습니다</span>
         </div>

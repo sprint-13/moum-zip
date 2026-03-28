@@ -11,7 +11,7 @@ export interface SpaceContext {
 
 export async function getSpaceContext(slug: string): Promise<SpaceContext> {
   const auth = await isAuth();
-  if (!auth.authenticated || !auth.userId) redirect("/login");
+  if (!auth.authenticated || auth.userId == null) redirect("/login");
 
   const space = await getSpaceInfoRemote(slug);
   if (!space) notFound();

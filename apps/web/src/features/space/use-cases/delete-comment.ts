@@ -17,6 +17,8 @@ export async function deleteCommentUseCase(
 
   assertPermission(comment.authorId, requester);
 
+  if (comment.postId !== postId) throw new Error("유효하지 않은 요청입니다.");
+
   await commentQueries.deleteById(commentId, postId);
   return { commentId };
 }
