@@ -31,7 +31,7 @@ describe("signup", () => {
 
   it("409 에러 시 EMAIL_ALREADY_EXISTS를 반환한다", async () => {
     const mockAuthApi = {
-      signup: vi.fn().mockRejectedValue(new Error("409 Conflict")),
+      signup: vi.fn().mockRejectedValue({ status: 409 }),
     };
 
     const result = await signup(

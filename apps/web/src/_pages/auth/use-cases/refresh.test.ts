@@ -30,7 +30,7 @@ describe("refresh", () => {
 
   it("401 에러 시 INVALID_TOKEN을 반환한다", async () => {
     const mockAuthApi = {
-      refresh: vi.fn().mockRejectedValue(new Error("401 Unauthorized")),
+      refresh: vi.fn().mockRejectedValue({ status: 401 }),
     };
 
     const result = await refresh({ refreshToken: "expired-refresh-token" }, { authApi: mockAuthApi });
