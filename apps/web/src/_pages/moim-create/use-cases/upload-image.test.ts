@@ -30,10 +30,11 @@ describe("uploadImage", () => {
     const result = await uploadImage(file);
 
     expect(mockGetImagePresignedUrl).toHaveBeenCalledWith("test.jpg", "image/jpeg");
-    expect(mockFetch).toHaveBeenCalledWith(
-      "https://s3.example.com/presigned",
-      expect.objectContaining({ method: "PUT" }),
-    );
+    expect(mockFetch).toHaveBeenCalledWith("https://s3.example.com/presigned", {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": "image/jpeg" },
+    });
     expect(result).toBe(MOCK_IMAGE_URL);
   });
 
