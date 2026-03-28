@@ -40,6 +40,10 @@ export default function MoimDetailPage({ params }: PageProps) {
   const [recommendedMeetings, setRecommendedMeetings] = useState<RecommendedMeetingData[]>([]);
   const [isParticipating, setIsParticipating] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [isFavoritePending, setIsFavoritePending] = useState(false);
   const [isJoinPending, setIsJoinPending] = useState(false);
   const [isEnterSpacePending, setIsEnterSpacePending] = useState(false);
@@ -48,10 +52,15 @@ export default function MoimDetailPage({ params }: PageProps) {
 
   useEffect(() => {
     if (Number.isNaN(numericMeetingId)) {
+      setIsLoading(false);
+      setErrorMessage("유효하지 않은 meetingId입니다.");
       return;
     }
 
     const fetchMeetingDetail = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+
       try {
         const [currentUserResult, meetingDetailResponse, participantsResponse, meetingsResponse] = await Promise.all([
           getCurrentUser(),
@@ -124,6 +133,9 @@ export default function MoimDetailPage({ params }: PageProps) {
         );
       } catch (error) {
         console.error("모임 상세 조회 실패:", error);
+        setErrorMessage("모임 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -195,7 +207,6 @@ export default function MoimDetailPage({ params }: PageProps) {
       const shareUrl = `${window.location.origin}/moim-detail/${numericMeetingId}`;
 
       if (!navigator.clipboard) {
-        // Clipboard API를 지원하지 않는 경우, textarea를 이용한 폴백 처리
         const textArea = document.createElement("textarea");
         textArea.value = shareUrl;
         document.body.appendChild(textArea);
@@ -323,8 +334,16 @@ export default function MoimDetailPage({ params }: PageProps) {
     return <div>유효하지 않은 meetingId입니다.</div>;
   }
 
-  if (!informationData || !personnelData) {
+  if (isLoading) {
     return <div>불러오는 중...</div>;
+  }
+
+  if (errorMessage) {
+    return <div>{errorMessage}</div>;
+  }
+
+  if (!informationData || !personnelData) {
+    return <div>모임 정보를 표시할 수 없습니다.</div>;
   }
 
   const viewType = informationData.viewerRole === "manager" ? "manager" : "member";
