@@ -14,14 +14,9 @@ import {
 } from "@/_pages/landing";
 import "@/_pages/landing/landing.css";
 
-// 임시 gnb 컴포넌트
-const PlaceholderGnb = () => <div className="h-[var(--gnb-height)]" />;
-
 export default function Home() {
   return (
     <>
-      {/* TODO: 실제 Gnb 컴포넌트로 교체 예정 */}
-      <PlaceholderGnb />
       <section className="landing-bg-gradient flex min-h-[calc(100vh-var(--gnb-height))] flex-col overflow-hidden px-5 md:px-[56px] xl:p-0">
         <div className="relative mx-auto flex w-full max-w-[1280px] flex-col gap-10 pt-[72px] md:pt-[136px] lg:flex-row lg:gap-0 lg:pt-[138px] xl:pt-[244px]">
           <div className="flex max-w-[580px] flex-col gap-6 md:gap-8 lg:gap-10">
