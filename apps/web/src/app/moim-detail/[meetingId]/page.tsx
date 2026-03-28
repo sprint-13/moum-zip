@@ -51,6 +51,8 @@ export default function MoimDetailPage({ params }: PageProps) {
   const [pendingRecommendedLikeIds, setPendingRecommendedLikeIds] = useState<number[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (Number.isNaN(numericMeetingId)) {
       setIsLoading(false);
       setErrorMessage("유효하지 않은 meetingId입니다.");
@@ -68,6 +70,10 @@ export default function MoimDetailPage({ params }: PageProps) {
           api.meetings.participants.getList(numericMeetingId),
           api.meetings.getList(),
         ]);
+
+        if (cancelled) {
+          return;
+        }
 
         const resolvedCurrentUserId = currentUserResult.ok ? currentUserResult.data.id : null;
 
@@ -132,13 +138,21 @@ export default function MoimDetailPage({ params }: PageProps) {
             .map((meeting) => mapMeetingToRecommendedMeetingData(meeting)),
         );
       } catch (error) {
-        setErrorMessage("모임 정보를 불러오는데 실패했습니다.");
+        if (!cancelled) {
+          setErrorMessage("모임 정보를 불러오는데 실패했습니다.");
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     void fetchMeetingDetail();
+
+    return () => {
+      cancelled = true;
+    };
   }, [numericMeetingId]);
 
   const handleToggleMeetingLike = async () => {
