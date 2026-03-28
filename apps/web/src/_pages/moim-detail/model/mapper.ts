@@ -134,6 +134,10 @@ function normalizeRegion(region: string): MeetingRegion {
     return "online";
   }
 
+  if (normalized === "offline" || normalized === "오프라인") {
+    return "offline";
+  }
+
   return "offline";
 }
 
@@ -182,13 +186,12 @@ function getMeetingStatus(params: {
 
 function getStatusLabel(status: MeetingStatus) {
   switch (status) {
-    case "canceled":
-      return "모집취소";
     case "confirmed":
       return "개설확정";
+    case "canceled":
+      return "모집취소";
     case "full":
       return "모집마감";
-    case "recruiting":
     default:
       return "모집중";
   }
