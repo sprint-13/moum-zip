@@ -1,5 +1,6 @@
 export interface SpaceInfo {
   spaceId: string; // 스페이스 고유 아이디
+  slug: string; // 스페이스 URL 슬러그
   name: string; // 스페이스 이름
   image: string | null;
   status: "archived" | "ongoing"; // 종료 여부

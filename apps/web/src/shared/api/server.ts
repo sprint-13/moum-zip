@@ -33,7 +33,7 @@ import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/shared/lib/cookies"
 // const data = await client.user.getUser();
 // ─────────────────────────────────────────────────────────────
 
-export async function getApiClient() {
+export async function getApi() {
   const cookieStore = await cookies();
 
   return createApiClient(

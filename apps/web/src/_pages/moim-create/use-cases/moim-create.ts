@@ -1,12 +1,12 @@
 import { insertSpace } from "@/entities/spaces/queries";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
-import { getApiClient } from "@/shared/api/server";
+import { getApi } from "@/shared/api/server";
 
 type Deps = {
-  getAuthApi?: () => ReturnType<typeof getApiClient>;
+  getAuthApi?: () => ReturnType<typeof getApi>;
 };
 
-export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = getApiClient }: Deps = {}) {
+export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = getApi }: Deps = {}) {
   const meetingPayload = {
     name: formData.name,
     type: formData.type === "study" ? "스터디" : "프로젝트",

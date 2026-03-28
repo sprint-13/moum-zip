@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getApiClient, isAuth } from "@/shared/api/server";
+import { getApi, isAuth } from "@/shared/api/server";
 import { deleteMeeting } from "./use-cases/delete-meeting";
 import { favoriteMeeting } from "./use-cases/favorite-meeting";
 import { joinMeeting } from "./use-cases/join-meeting";
@@ -57,7 +57,7 @@ export async function getCurrentUser(): Promise<ActionResult<{ id: number | null
   }
 
   try {
-    const api = await getApiClient();
+    const api = await getApi();
     const response = await api.user.getUser();
     const user = response.data ?? response;
 
@@ -88,9 +88,9 @@ export async function favoriteMeetingAction(
   }
 
   try {
-    const authedApi = await getApiClient();
+    const api = await getApi();
 
-    const result = await favoriteMeeting({ meetingId, isLiked }, { favoritesApi: authedApi.favorites });
+    const result = await favoriteMeeting({ meetingId, isLiked }, { favoritesApi: api.favorites });
 
     return {
       ok: true,
@@ -117,9 +117,9 @@ export async function joinMeetingAction(
   }
 
   try {
-    const authedApi = await getApiClient();
+    const api = await getApi();
 
-    const result = await joinMeeting({ meetingId, isJoined }, { meetingsApi: authedApi.meetings });
+    const result = await joinMeeting({ meetingId, isJoined }, { meetingsApi: api.meetings });
 
     return {
       ok: true,
@@ -142,9 +142,9 @@ export async function deleteMeetingAction(meetingId: number): Promise<ActionResu
   }
 
   try {
-    const authedApi = await getApiClient();
+    const api = await getApi();
 
-    const result = await deleteMeeting({ meetingId }, { meetingsApi: authedApi.meetings });
+    const result = await deleteMeeting({ meetingId }, { meetingsApi: api.meetings });
 
     return {
       ok: true,
