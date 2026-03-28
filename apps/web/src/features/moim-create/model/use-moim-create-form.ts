@@ -22,7 +22,13 @@ const MOIM_CREATE_DEFAULT_VALUES: Partial<MoimCreateFormValues> = {
 const objectToFormData = (data: MoimCreateFormValues): FormData => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
-    formData.append(key, String(value ?? ""));
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        formData.append(key, String(item));
+      }
+    } else {
+      formData.append(key, String(value ?? ""));
+    }
   }
   return formData;
 };

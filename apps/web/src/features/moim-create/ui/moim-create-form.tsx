@@ -9,28 +9,37 @@ import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
 import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 
-// 파일 선택 후 S3 업로드 → publicUrl 반환
-const handleImageUpload = async (onChange: (url: string) => void) => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/jpeg,image/png,image/webp,image/gif";
-  input.onchange = async (e) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-    const publicUrl = await uploadImage(file);
-    onChange(publicUrl);
-  };
-  input.click();
-};
-
 export const MoimCreateForm = () => {
   const { form, onSubmit, state, isPending } = useMoimCreateForm();
   const {
     control,
     register,
-
+    setError,
+    clearErrors,
     formState: { errors },
   } = form;
+
+  // 파일 선택 후 S3 업로드 → publicUrl 반환
+  const handleImageUpload = async (onChange: (url: string) => void) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/jpeg,image/png,image/webp,image/gif";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const publicUrl = await uploadImage(file);
+        onChange(publicUrl);
+        clearErrors("image");
+      } catch {
+        setError("image", {
+          type: "manual",
+          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+        });
+      }
+    };
+    input.click();
+  };
 
   return (
     <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={onSubmit}>
@@ -131,7 +140,10 @@ export const MoimCreateForm = () => {
                 <FileInput
                   onUploadClick={() => handleImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
-                  onPreviewRemove={() => field.onChange("")}
+                  onPreviewRemove={() => {
+                    field.onChange("");
+                    clearErrors("image");
+                  }}
                   showUploadButton={!field.value}
                 />
                 {fieldState.error && (
@@ -237,7 +249,13 @@ export const MoimCreateForm = () => {
           취소
         </Button>
 
-        <Button type="submit" variant="primary" size="medium" className="min-w-0 flex-1 md:w-auto md:max-w-[216px]">
+        <Button
+          type="submit"
+          variant="primary"
+          size="medium"
+          className="min-w-0 flex-1 md:w-auto md:max-w-[216px]"
+          disabled={isPending}
+        >
           {isPending ? "생성 중" : "모임 만들기"}
         </Button>
       </div>
