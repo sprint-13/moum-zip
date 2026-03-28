@@ -28,7 +28,8 @@ interface GetSearchResultsDeps {
   meetingsApi?: Pick<typeof api.meetings, "getList">;
 }
 
-type SearchMeetingWithUserState = MeetingWithHost & {
+type SearchMeetingWithUserState = Omit<MeetingWithHost, "region"> & {
+  region: GatheringLocation;
   isCompleted?: boolean;
   isFavorited?: boolean | null;
   isJoined?: boolean;
@@ -36,21 +37,6 @@ type SearchMeetingWithUserState = MeetingWithHost & {
 
 const normalizeMeetingType = (type: string): GatheringCategory => {
   return normalizeGatheringCategory(type) ?? "project";
-};
-
-// region 값은 online/offline 둘 중 하나로 내려오게 됨
-const normalizeMeetingLocation = (region: string): GatheringLocation | null => {
-  const normalizedRegion = region.trim().toLowerCase();
-
-  if (normalizedRegion === "online") {
-    return "online";
-  }
-
-  if (normalizedRegion === "offline") {
-    return "offline";
-  }
-
-  return null;
 };
 
 const resolveSortParams = ({
@@ -101,7 +87,7 @@ const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem
     id: String(meeting.id),
     image: meeting.image,
     isLiked: meeting.isFavorited ?? false,
-    location: normalizeMeetingLocation(meeting.region) ?? "online",
+    location: meeting.region,
     participantCount: meeting.participantCount,
     region: meeting.region,
     registrationEnd: meeting.registrationEnd,
