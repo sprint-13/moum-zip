@@ -1,4 +1,4 @@
-import { insertSpace } from "@/entities/spaces";
+import { insertSpace } from "@/entities/spaces/queries";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { getAuthenticatedApi } from "@/shared/api/auth-client";
 
