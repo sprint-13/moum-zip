@@ -1,5 +1,5 @@
 "use client";
-import { Button, InputField, SocialButton } from "@ui/components";
+import { Button, InputField, SocialButton } from "@moum-zip/ui/components";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { ROUTES } from "@/shared/config/routes";

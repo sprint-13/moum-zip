@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 
 import { QueryProvider } from "@/shared/providers/query-client-provider";
 import "./globals.css";
-import { Toaster } from "@ui/components";
+import { Toaster } from "@moum-zip/ui/components";
 import { NavigationMenu } from "@/shared/ui/navigation-menu";
 
 const pretendard = localFont({
