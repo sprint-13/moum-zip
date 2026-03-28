@@ -1,5 +1,5 @@
 interface TokenPayload {
-  sub: string | number; // 유저 ID
+  sub: string | number; // 유저 ID (숫자 또는 숫자 문자열)
   exp: number; // 만료 시각
   iat: number; // 발급 시각
 }
@@ -9,8 +9,14 @@ function isTokenPayload(value: unknown): value is TokenPayload {
   return (
     typeof value === "object" &&
     value !== null &&
-    // sub가 string 또는 number 둘 다 허용
-    (typeof (value as { sub?: unknown }).sub === "string" || typeof (value as { sub?: unknown }).sub === "number") &&
+    // sub가 숫자이거나 숫자로 변환 가능한 문자열만 허용 (NaN 방지)
+    ((): boolean => {
+      const sub = (value as { sub?: unknown })?.sub;
+      return (
+        (typeof sub === "number" && Number.isFinite(sub)) ||
+        (typeof sub === "string" && sub.trim() !== "" && Number.isFinite(Number(sub)))
+      );
+    })() &&
     typeof (value as { exp?: unknown }).exp === "number" &&
     Number.isFinite((value as { exp?: number }).exp) &&
     typeof (value as { iat?: unknown }).iat === "number" &&

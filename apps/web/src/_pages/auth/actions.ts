@@ -107,8 +107,11 @@ export async function refreshAction(): Promise<{ ok: boolean }> {
   const result = await refresh({ refreshToken }); // 리프레시 토큰 요청
 
   if (!result.ok) {
-    cookieStore.delete(ACCESS_TOKEN_COOKIE);
-    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    if (result.error === "INVALID_TOKEN") {
+      cookieStore.delete(ACCESS_TOKEN_COOKIE);
+      cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    }
+    // SERVER_ERROR는 쿠키 유지, 호출부(withAuth)에서 처리
     return { ok: false };
   }
 
