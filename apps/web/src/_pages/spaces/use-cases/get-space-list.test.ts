@@ -18,10 +18,10 @@ vi.mock("./get-joined-space-infos", () => ({
 }));
 
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getApiClient } from "@/shared/api/server";
+import { getApi } from "@/shared/api/server";
 import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
-const mockGetApiClient = vi.mocked(getApiClient);
+const mockGetApiClient = vi.mocked(getApi);
 const mockFindByMeetingIds = vi.mocked(spaceQueries.findByMeetingIds);
 const mockGetJoinedSpaceInfos = vi.mocked(getJoinedSpaceInfosUseCase);
 
@@ -49,7 +49,7 @@ function setupAuthApi(getJoinedResponse: object = { data: mockJoinedMeetingList 
     meetings: {
       getJoined: mockGetJoined.mockResolvedValue(getJoinedResponse),
     },
-  } as unknown as Awaited<ReturnType<typeof getApiClient>>);
+  } as unknown as Awaited<ReturnType<typeof getApi>>);
 }
 
 describe("getSpaceListRemote", () => {
@@ -118,7 +118,7 @@ describe("getSpaceListRemote", () => {
       meetings: {
         getJoined: mockGetJoined.mockRejectedValue({ status: 401 }),
       },
-    } as unknown as Awaited<ReturnType<typeof getApiClient>>);
+    } as unknown as Awaited<ReturnType<typeof getApi>>);
 
     await expect(getSpaceListRemote()).rejects.toThrow("Unauthorized");
   });
@@ -128,7 +128,7 @@ describe("getSpaceListRemote", () => {
       meetings: {
         getJoined: mockGetJoined.mockRejectedValue({ status: 500 }),
       },
-    } as unknown as Awaited<ReturnType<typeof getApiClient>>);
+    } as unknown as Awaited<ReturnType<typeof getApi>>);
 
     await expect(getSpaceListRemote()).rejects.toThrow("Failed to fetch meetings");
   });

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
-import { getApiClient } from "@/shared/api/server";
+import { getApi } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
@@ -80,8 +80,8 @@ export async function logoutAction() {
   // 백엔드 로그아웃 API 호출 (accessToken 헤더 자동 주입)
   try {
     if (refreshToken) {
-      const client = await getApiClient();
-      await logout({ refreshToken }, { authApi: client.auth });
+      const api = await getApi();
+      await logout({ refreshToken }, { authApi: api.auth });
     }
   } finally {
     // API 실패해도 로컬 로그아웃 항상 보장
