@@ -3,6 +3,7 @@
 import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/components";
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Controller } from "react-hook-form";
 import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
 import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
@@ -10,6 +11,7 @@ import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 
 export const MoimCreateForm = () => {
+  const router = useRouter();
   const { form, onSubmit, state, isPending } = useMoimCreateForm();
   const {
     control,
@@ -245,7 +247,13 @@ export const MoimCreateForm = () => {
 
       {/* 버튼 */}
       <div className="flex gap-4 pt-[80px] md:justify-end">
-        <Button variant="tertiary" size="medium" className="min-w-0 flex-1 md:max-w-[216px]">
+        <Button
+          type="button"
+          variant="tertiary"
+          size="medium"
+          className="min-w-0 flex-1 md:max-w-[216px]"
+          onClick={() => router.back()}
+        >
           취소
         </Button>
 
