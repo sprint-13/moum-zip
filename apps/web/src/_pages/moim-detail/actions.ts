@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getApiClient, isAuth } from "@/shared/api";
+import { getApiClient, isAuth } from "@/shared/api/server";
 import { deleteMeeting } from "./use-cases/delete-meeting";
 import { favoriteMeeting } from "./use-cases/favorite-meeting";
 import { joinMeeting } from "./use-cases/join-meeting";

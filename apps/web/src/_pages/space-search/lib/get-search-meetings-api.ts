@@ -1,6 +1,7 @@
 import "server-only";
 
-import { api, getApiClient } from "@/shared/api";
+import { api } from "@/shared/api";
+import { getApiClient } from "@/shared/api/server";
 
 export const getSearchMeetingsApi = async () => {
   try {

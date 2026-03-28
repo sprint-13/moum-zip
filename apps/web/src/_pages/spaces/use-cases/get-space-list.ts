@@ -1,5 +1,5 @@
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getApiClient } from "@/shared/api";
+import { getApiClient } from "@/shared/api/server";
 import { safe } from "@/shared/lib/safe";
 import { getJoinedSpaceInfos } from "./get-joined-space-infos";
 

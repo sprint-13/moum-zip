@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
-import { getApiClient } from "@/shared/api";
+import { getApiClient } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
