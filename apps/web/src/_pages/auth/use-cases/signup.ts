@@ -1,3 +1,4 @@
+import type { HttpResponse } from "@moum-zip/api";
 import type { User } from "@/entities/auth/model/types";
 import { api } from "@/shared/api";
 
@@ -17,13 +18,12 @@ export async function signup(
     const { data } = await authApi.signup(input);
     return { ok: true, data };
   } catch (err) {
-    if (err instanceof Response && err.status === 409) {
-      return { ok: false, error: "EMAIL_ALREADY_EXISTS" };
-    }
+    // instanceof Response로 먼저 체크
+    // 그 외 에러는 HttpResponse로 캐스팅해서 status 추출
+    const status = err instanceof Response ? err.status : (err as HttpResponse<unknown, unknown>)?.status;
 
-    if (err instanceof Error && err.message.includes("409")) {
-      return { ok: false, error: "EMAIL_ALREADY_EXISTS" };
-    }
+    // 이미 사용 중인 이메일
+    if (status === 409) return { ok: false, error: "EMAIL_ALREADY_EXISTS" };
 
     return { ok: false, error: "SERVER_ERROR" };
   }

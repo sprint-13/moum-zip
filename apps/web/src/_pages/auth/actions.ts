@@ -79,16 +79,17 @@ export async function logoutAction() {
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
   // 백엔드 로그아웃 API 호출 (accessToken 헤더 자동 주입)
-  if (refreshToken) {
-    const client = await apiClient();
-    await logout({ refreshToken }, { authApi: client.auth });
+  try {
+    if (refreshToken) {
+      const client = await apiClient();
+      await logout({ refreshToken }, { authApi: client.auth });
+    }
+  } finally {
+    // API 실패해도 로컬 로그아웃 항상 보장
+    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    redirect(ROUTES.login);
   }
-
-  // 쿠키 삭제
-  cookieStore.delete(ACCESS_TOKEN_COOKIE);
-  cookieStore.delete(REFRESH_TOKEN_COOKIE);
-
-  redirect(ROUTES.login);
 }
 
 // 토큰 갱신
@@ -96,9 +97,14 @@ export async function refreshAction(): Promise<{ ok: boolean }> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  if (!refreshToken) return { ok: false };
+  if (!refreshToken) {
+    // refreshToken 없을 때 쿠키 정리
+    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    return { ok: false };
+  }
 
-  const result = await refresh({ refreshToken });
+  const result = await refresh({ refreshToken }); // 리프레시 토큰 요청
 
   if (!result.ok) {
     cookieStore.delete(ACCESS_TOKEN_COOKIE);
@@ -107,6 +113,13 @@ export async function refreshAction(): Promise<{ ok: boolean }> {
   }
 
   const expiresIn = TokenService.getExpiresIn(result.data.accessToken);
+
+  // 만료된 토큰의 경우
+  if (expiresIn <= 0) {
+    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    return { ok: false };
+  }
   cookieStore.set(ACCESS_TOKEN_COOKIE, result.data.accessToken, {
     ...COOKIE_OPTIONS,
     maxAge: expiresIn > 0 ? expiresIn : ACCESS_TOKEN_MAX_AGE,

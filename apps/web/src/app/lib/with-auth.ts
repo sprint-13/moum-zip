@@ -35,17 +35,22 @@ export async function withAuth<T>(fn: (client: ApiClient) => Promise<T>): Promis
         const newClient = await apiClient();
         try {
           return await fn(newClient);
-        } catch {
-          // 재시도 실패 → 로그인 페이지
-          return redirect(ROUTES.login);
+        } catch (retryError) {
+          // Response 객체인지 먼저 확인 후 status를 꺼냄
+          const retryStatus =
+            retryError instanceof Response ? retryError.status : (retryError as HttpResponse<unknown, unknown>)?.status;
+
+          // 재시도 실패 시 401/403만 로그인으로 redirect
+          if (retryStatus === 401 || retryStatus === 403) return redirect(ROUTES.login);
+          throw retryError;
         }
       }
 
-      // 갱신 실패 → 로그인 페이지
+      // 갱신 실패
       return redirect(ROUTES.login);
     }
 
-    // 권한 없음 → 로그인 페이지
+    // 권한 없음
     if (status === 403) {
       return redirect(ROUTES.login);
     }

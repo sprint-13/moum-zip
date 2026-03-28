@@ -1,3 +1,4 @@
+import type { HttpResponse } from "@moum-zip/api";
 import { TokenService } from "@/entities/auth/model/token-service";
 import type { TokenResponse } from "@/entities/auth/model/types";
 import { api } from "@/shared/api";
@@ -24,13 +25,11 @@ export async function refresh(
 
     return { ok: true, data };
   } catch (err) {
-    if (err instanceof Response && err.status === 401) {
-      return { ok: false, error: "INVALID_TOKEN" };
-    }
+    // instanceof Response로 먼저 체크
+    // 그 외 에러는 HttpResponse로 캐스팅해서 status 추출
+    const status = err instanceof Response ? err.status : (err as HttpResponse<unknown, unknown>)?.status;
 
-    if (err instanceof Error && err.message.includes("401")) {
-      return { ok: false, error: "INVALID_TOKEN" };
-    }
+    if (status === 401) return { ok: false, error: "INVALID_TOKEN" };
 
     return { ok: false, error: "SERVER_ERROR" };
   }
