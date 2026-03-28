@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { login } from "./login";
+import { loginRemote } from "./login";
 
 // 테스트용 토큰 (만료 시각을 미래로 설정, isValid()가 true 반환하도록)
 const FAKE_ACCESS_TOKEN = [
@@ -28,14 +28,14 @@ const MOCK_LOGIN_RESPONSE = {
   },
 };
 
-describe("login", () => {
+describe("loginRemote", () => {
   it("로그인 성공 시 ok: true와 data를 반환한다", async () => {
     // 테스트용 api
     const mockAuthApi = {
       login: vi.fn().mockResolvedValue(MOCK_LOGIN_RESPONSE),
     };
 
-    const result = await login({ email: "test@test.com", password: "password123" }, { authApi: mockAuthApi });
+    const result = await loginRemote({ email: "test@test.com", password: "password123" }, { authApi: mockAuthApi });
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -48,7 +48,7 @@ describe("login", () => {
       login: vi.fn().mockRejectedValue(new Error("401 Unauthorized")),
     };
 
-    const result = await login({ email: "wrong@test.com", password: "wrongpassword" }, { authApi: mockAuthApi });
+    const result = await loginRemote({ email: "wrong@test.com", password: "wrongpassword" }, { authApi: mockAuthApi });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -61,7 +61,7 @@ describe("login", () => {
       login: vi.fn().mockRejectedValue(new Error("Network Error")),
     };
 
-    const result = await login({ email: "test@test.com", password: "password123" }, { authApi: mockAuthApi });
+    const result = await loginRemote({ email: "test@test.com", password: "password123" }, { authApi: mockAuthApi });
 
     expect(result.ok).toBe(false);
     if (!result.ok) {

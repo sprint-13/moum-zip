@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import type { SpaceInfo } from "@/entities/spaces";
-import { useSpaceList } from "../hooks/useSpaceList";
+import { useSpaceList } from "../hooks/use-space-list";
 import { NoSpaceCard } from "./no-space-card";
 import { SpaceControl } from "./space-control";
 import { SpaceInfoGridCard } from "./space-info-grid-card";
@@ -50,15 +50,13 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
   const displaySpaces = activeTab === "ongoing" ? visibleOngoingSpaces : visibleArchivedSpaces;
   const isEmpty = (activeTab === "ongoing" ? ongoingSpaces : archivedSpaces).length === 0;
   const isSearchEmpty = displaySpaces.length === 0 && normalizedQuery.length > 0;
-  const emptyMessage = isSearchEmpty
-    ? "검색 결과가 없어요"
-    : activeTab === "ongoing"
-      ? isEmpty
-        ? "참여 중인 스페이스가 없어요"
-        : null
-      : isEmpty
-        ? "아카이브된 스페이스가 없어요"
-        : null;
+
+  const getEmptyMessage = (): string | null => {
+    if (isSearchEmpty) return "검색 결과가 없어요";
+    if (!isEmpty) return null;
+    return activeTab === "ongoing" ? "참여 중인 스페이스가 없어요" : "아카이브된 스페이스가 없어요";
+  };
+  const emptyMessage = getEmptyMessage();
 
   return (
     <section className={className}>

@@ -1,10 +1,10 @@
 type ErrorHandlers = {
   /** HTTP 상태 코드별 핸들러. redirect/notFound/throw처럼 never를 반환해야 한다. */
-  [status: number]: () => never;
+  [status: number]: (err: unknown) => never;
   /** Promise가 resolve됐지만 null/undefined인 경우 (DB 레코드 없음 등) */
   notFound?: () => never;
-  /** 위 핸들러에 매칭되지 않는 모든 에러 */
-  default?: () => never;
+  /** 위 핸들러에 매칭되지 않는 모든 에러. 발생한 에러 객체를 인자로 받는다. */
+  default?: (err?: unknown) => never;
 };
 
 /**
@@ -27,11 +27,11 @@ export async function safe<T>(promise: Promise<T>, handlers: ErrorHandlers = {})
     const status = (err as any)?.status ?? (err as any)?.response?.status;
 
     if (status !== undefined && handlers[status]) {
-      return handlers[status]();
+      return handlers[status](err);
     }
 
     if (handlers.default) {
-      return handlers.default();
+      return handlers.default(err);
     }
 
     throw err;
@@ -43,7 +43,7 @@ export async function safe<T>(promise: Promise<T>, handlers: ErrorHandlers = {})
       return handlers.notFound();
     }
     if (handlers.default) {
-      return handlers.default();
+      return handlers.default(new Error("Received null/undefined result"));
     }
     throw new Error("[safe] null/undefined 결과를 받았지만 notFound 핸들러가 없습니다.");
   }

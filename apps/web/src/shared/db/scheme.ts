@@ -44,14 +44,50 @@ export const spacePosts = pgTable("space_posts", {
   spaceId: text("space_id")
     .notNull()
     .references(() => spaces.id),
-  postId: integer("post_id").notNull(),
+  authorId: integer("author_id").notNull(),
   category: text("category", { enum: ["notice", "discussion", "question", "material"] }).notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  image: text("image"),
+  viewCount: integer("view_count").notNull().default(0),
+  likeCount: integer("like_count").notNull().default(0),
+  commentCount: integer("comment_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type SpacePost = InferSelectModel<typeof spacePosts>;
-
 export type NewSpacePost = InferInsertModel<typeof spacePosts>;
+
+export const spacePostComments = pgTable("space_post_comments", {
+  id: text("id").primaryKey(),
+  postId: text("post_id")
+    .notNull()
+    .references(() => spacePosts.id, { onDelete: "cascade" }),
+  spaceId: text("space_id")
+    .notNull()
+    .references(() => spaces.id),
+  authorId: integer("author_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SpacePostComment = InferSelectModel<typeof spacePostComments>;
+export type NewSpacePostComment = InferInsertModel<typeof spacePostComments>;
+
+export const spacePostLikes = pgTable(
+  "space_post_likes",
+  {
+    id: text("id").primaryKey(),
+    postId: text("post_id")
+      .notNull()
+      .references(() => spacePosts.id, { onDelete: "cascade" }),
+    userId: integer("user_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => [unique().on(table.postId, table.userId)],
+);
 
 export const schedules = pgTable("schedules", {
   id: text("id").primaryKey(),
@@ -65,6 +101,9 @@ export const schedules = pgTable("schedules", {
   endAt: timestamp("end_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export type Schedule = InferSelectModel<typeof schedules>;
+export type NewSchedule = InferInsertModel<typeof schedules>;
 
 export const files = pgTable("files", {
   id: text("id").primaryKey(),
@@ -91,3 +130,6 @@ export const attendances = pgTable(
   },
   (table) => [unique().on(table.spaceId, table.userId, table.date)],
 );
+
+export type Attendance = InferSelectModel<typeof attendances>;
+export type NewAttendance = InferInsertModel<typeof attendances>;

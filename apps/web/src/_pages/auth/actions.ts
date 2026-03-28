@@ -12,7 +12,7 @@ import {
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/shared/lib/cookies";
-import { login } from "./use-cases/login";
+import { loginRemote } from "./use-cases/login";
 import { logout } from "./use-cases/logout";
 import { signup } from "./use-cases/signup";
 
@@ -28,7 +28,7 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
   const password = formData.get("password") as string;
 
   // use-case 호출
-  const result = await login({ email, password });
+  const result = await loginRemote({ email, password });
 
   // 실패하면 에러 반환
   if (!result.ok) return result;

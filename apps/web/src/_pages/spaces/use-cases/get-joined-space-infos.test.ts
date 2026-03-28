@@ -1,7 +1,7 @@
 import type { JoinedMeetingList } from "@moum-zip/api/data-contracts";
 import { describe, expect, it } from "vitest";
 import type { SpaceDB } from "@/entities/spaces";
-import { getJoinedSpaceInfos } from "./get-joined-space-infos";
+import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
 function makeApiSpace(
   id: number,
@@ -62,12 +62,12 @@ function makeApiList(
   };
 }
 
-describe("getJoinedSpaceInfos", () => {
+describe("getJoinedSpaceInfosUseCase", () => {
   it("API와 DB 데이터를 meetingId 기준으로 결합하여 반환한다", async () => {
     const apiList = makeApiList([makeApiSpace(1), makeApiSpace(2)]);
     const dbSpaces = [makeDbSpace(1), makeDbSpace(2)];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result).toHaveLength(2);
     expect(result[0].spaceId).toBe("space-1");
@@ -79,7 +79,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([makeApiSpace(1), makeApiSpace(2)]);
     const dbSpaces = [makeDbSpace(1)]; // meetingId 2는 없음
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result).toHaveLength(1);
     expect(result[0].spaceId).toBe("space-1");
@@ -89,7 +89,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result).toHaveLength(0);
   });
@@ -98,7 +98,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([makeApiSpace(1, { type: "study" })]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result[0].type).toBe("study");
   });
@@ -107,7 +107,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([makeApiSpace(1, { type: "offline" })]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result[0].type).toBe("project");
   });
@@ -116,7 +116,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([makeApiSpace(1)]);
     const dbSpaces = [makeDbSpace(1, { location: undefined })];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result[0].location).toBe("online");
   });
@@ -125,7 +125,7 @@ describe("getJoinedSpaceInfos", () => {
     const apiList = makeApiList([makeApiSpace(1)]);
     const dbSpaces = [makeDbSpace(1, { themeColor: undefined })];
 
-    const result = await getJoinedSpaceInfos(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
 
     expect(result[0].themeColor).toBe("#000000");
   });
@@ -146,7 +146,7 @@ describe("getJoinedSpaceInfos", () => {
       modules: ["bulletin", "calendar"],
     });
 
-    const result = await getJoinedSpaceInfos(makeApiList([apiSpace]), [dbSpace]);
+    const result = await getJoinedSpaceInfosUseCase(makeApiList([apiSpace]), [dbSpace]);
 
     expect(result[0]).toEqual({
       spaceId: "db-id-1",

@@ -1,5 +1,4 @@
 import { type LucideIcon, Shield, ShieldCheck, User } from "@moum-zip/ui/icons";
-import type { ReactNode } from "react";
 import type { Member, MemberRole } from "@/entities/member";
 
 const ROLE_CONFIG: { role: MemberRole; label: string; Icon: LucideIcon }[] = [

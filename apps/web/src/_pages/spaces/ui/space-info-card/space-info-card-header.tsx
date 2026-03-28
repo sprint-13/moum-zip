@@ -11,7 +11,7 @@ export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
 
       <div className="flex flex-wrap gap-2">
         <Badge variant="completedGradient" container="default" className="px-2 py-0 text-muted-foreground">
-          {space.type}
+          {space.type === "project" ? "프로젝트" : "스터디"}
         </Badge>
         <Badge
           variant="completedGradient"
