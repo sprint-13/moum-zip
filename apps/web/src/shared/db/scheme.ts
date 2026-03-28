@@ -14,6 +14,9 @@ export const spaces = pgTable("spaces", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export type SpaceDB = InferSelectModel<typeof spaces>;
+export type NewSpaceDB = InferInsertModel<typeof spaces>;
+
 export const spaceMembers = pgTable("space_members", {
   id: text("id").primaryKey(),
   spaceId: text("space_id")
@@ -24,7 +27,10 @@ export const spaceMembers = pgTable("space_members", {
   nickname: text("nickname").notNull(),
   avatarUrl: text("avatar_url"),
   email: text("email").notNull(),
-  joinedAt: timestamp("joined_at", { withTimezone: true, mode: "string" }).defaultNow(),
+  joinedAt: timestamp("joined_at", {
+    withTimezone: true,
+    mode: "string",
+  }).defaultNow(),
 });
 
 // 1. 조회용 (Select) 타입: 실제 DB에서 가져온 데이터의 모양

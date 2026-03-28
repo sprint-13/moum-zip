@@ -1,25 +1,46 @@
 "use client";
-import { useDeferredValue, useState } from "react";
 
-import type { SpaceInfo } from "@/entities/space";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
+import type { SpaceInfo } from "@/entities/spaces";
+import { useSpaceList } from "../hooks/useSpaceList";
 import { NoSpaceCard } from "./no-space-card";
 import { SpaceControl } from "./space-control";
 import { SpaceInfoGridCard } from "./space-info-grid-card";
 
 interface SpaceSectionProps {
-  spaces: SpaceInfo[];
   className?: string;
 }
 
-export const SpaceSection = ({ spaces, className }: SpaceSectionProps) => {
+export const SpaceSection = ({ className }: SpaceSectionProps) => {
   const [activeTab, setActiveTab] = useState<"ongoing" | "archived">("ongoing");
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useSpaceList();
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "100px" },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const spaces = data.pages.flatMap((page) => page.data);
   const ongoingSpaces = spaces.filter((space) => space.status === "ongoing");
   const archivedSpaces = spaces.filter((space) => space.status === "archived");
 
   const normalizedQuery = deferredQuery.trim().toLowerCase();
-
   const filterByQuery = (space: SpaceInfo) =>
     normalizedQuery.length === 0 || space.name.toLowerCase().includes(normalizedQuery);
 
@@ -32,8 +53,12 @@ export const SpaceSection = ({ spaces, className }: SpaceSectionProps) => {
   const emptyMessage = isSearchEmpty
     ? "검색 결과가 없어요"
     : activeTab === "ongoing"
-      ? "참여 중인 스페이스가 없어요"
-      : "아카이브된 스페이스가 없어요";
+      ? isEmpty
+        ? "참여 중인 스페이스가 없어요"
+        : null
+      : isEmpty
+        ? "아카이브된 스페이스가 없어요"
+        : null;
 
   return (
     <section className={className}>
@@ -45,12 +70,14 @@ export const SpaceSection = ({ spaces, className }: SpaceSectionProps) => {
         query={query}
         onQueryChange={setQuery}
       />
-      <div className={`columns-1 gap-6 md:columns-2 lg:columns-3`}>
+      <div className="columns-1 gap-6 md:columns-2 lg:columns-3">
         {displaySpaces.map((space) => (
-          <SpaceInfoGridCard key={space.id} space={space} />
+          <SpaceInfoGridCard key={space.spaceId} space={space} />
         ))}
         {emptyMessage ? <NoSpaceCard message={emptyMessage} /> : null}
       </div>
+      <div ref={sentinelRef} className="h-1" />
+      {isFetchingNextPage && <div className="py-6 text-center text-muted-foreground text-sm">불러오는 중...</div>}
     </section>
   );
 };

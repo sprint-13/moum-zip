@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
-import { apiClient } from "@/shared/api";
+import { getApiClient } from "@/shared/api";
 import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
@@ -14,7 +14,6 @@ import {
 } from "@/shared/lib/cookies";
 import { login } from "./use-cases/login";
 import { logout } from "./use-cases/logout";
-import { refresh } from "./use-cases/refresh";
 import { signup } from "./use-cases/signup";
 
 // 로그인
@@ -81,7 +80,7 @@ export async function logoutAction() {
   // 백엔드 로그아웃 API 호출 (accessToken 헤더 자동 주입)
   try {
     if (refreshToken) {
-      const client = await apiClient();
+      const client = await getApiClient();
       await logout({ refreshToken }, { authApi: client.auth });
     }
   } finally {
@@ -90,47 +89,4 @@ export async function logoutAction() {
     cookieStore.delete(REFRESH_TOKEN_COOKIE);
     redirect(ROUTES.login);
   }
-}
-
-// 토큰 갱신
-export async function refreshAction(): Promise<{ ok: boolean }> {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
-
-  if (!refreshToken) {
-    // refreshToken 없을 때 쿠키 정리
-    cookieStore.delete(ACCESS_TOKEN_COOKIE);
-    cookieStore.delete(REFRESH_TOKEN_COOKIE);
-    return { ok: false };
-  }
-
-  const result = await refresh({ refreshToken }); // 리프레시 토큰 요청
-
-  if (!result.ok) {
-    if (result.error === "INVALID_TOKEN") {
-      cookieStore.delete(ACCESS_TOKEN_COOKIE);
-      cookieStore.delete(REFRESH_TOKEN_COOKIE);
-    }
-    // SERVER_ERROR는 쿠키 유지, 호출부(withAuth)에서 처리
-    return { ok: false };
-  }
-
-  const expiresIn = TokenService.getExpiresIn(result.data.accessToken);
-
-  // 만료된 토큰의 경우
-  if (expiresIn <= 0) {
-    cookieStore.delete(ACCESS_TOKEN_COOKIE);
-    cookieStore.delete(REFRESH_TOKEN_COOKIE);
-    return { ok: false };
-  }
-  cookieStore.set(ACCESS_TOKEN_COOKIE, result.data.accessToken, {
-    ...COOKIE_OPTIONS,
-    maxAge: expiresIn > 0 ? expiresIn : ACCESS_TOKEN_MAX_AGE,
-  });
-  cookieStore.set(REFRESH_TOKEN_COOKIE, result.data.refreshToken, {
-    ...COOKIE_OPTIONS,
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
-
-  return { ok: true };
 }
