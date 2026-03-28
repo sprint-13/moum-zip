@@ -3,7 +3,7 @@ import { getSpaceList } from "./get-space-list";
 
 const mockGetJoined = vi.fn();
 
-vi.mock("@/shared/api", () => ({
+vi.mock("@/shared/api/server", () => ({
   getApiClient: vi.fn(),
 }));
 
