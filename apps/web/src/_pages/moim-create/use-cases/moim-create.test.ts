@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as spaceQueries from "@/entities/space/queries";
+import * as spaceQueries from "@/entities/spaces/queries";
 import type { getAuthenticatedApi } from "@/shared/api/auth-client";
 import { createMoim } from "./moim-create";
 
 // shared/db를 빈 객체로 대체해 neon() 실행 차단
 vi.mock("@/shared/db", () => ({ db: {} }));
-vi.mock("@/entities/space/queries");
+vi.mock("@/entities/spaces/queries");
 
 const mockInsertSpace = vi.mocked(spaceQueries.insertSpace);
 const mockCreate = vi.fn();
