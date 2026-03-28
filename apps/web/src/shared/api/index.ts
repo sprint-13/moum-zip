@@ -65,7 +65,6 @@ function createAuthFetch(
     const response = await fetch(input, { ...init, headers });
 
     if (response.status !== 401) return response;
-    console.log("[Auth] 401 감지 → refresh 시도");
 
     const refreshToken = getRefreshToken();
 
@@ -81,14 +80,12 @@ function createAuthFetch(
     });
 
     if (!refreshResponse.ok) {
-      console.log("[Auth] refresh 실패 → onAuthFailed 호출");
       onAuthFailed();
       return new Response(null, { status: 401 });
     }
 
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshResponse.json();
 
-    console.log("[Auth] refresh 성공 → 재시도");
     onTokenRefreshed({ accessToken: newAccessToken, refreshToken: newRefreshToken });
 
     const retryHeaders = new Headers(init?.headers);
