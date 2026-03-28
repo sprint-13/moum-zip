@@ -132,7 +132,6 @@ export default function MoimDetailPage({ params }: PageProps) {
             .map((meeting) => mapMeetingToRecommendedMeetingData(meeting)),
         );
       } catch (error) {
-        console.error("모임 상세 조회 실패:", error);
         setErrorMessage("모임 정보를 불러오는데 실패했습니다.");
       } finally {
         setIsLoading(false);
@@ -166,7 +165,6 @@ export default function MoimDetailPage({ params }: PageProps) {
           : prev,
       );
     } catch (error) {
-      console.error("좋아요 토글 실패:", error);
       alert("좋아요 처리 중 오류가 발생했습니다.");
     } finally {
       setIsFavoritePending(false);
@@ -194,7 +192,6 @@ export default function MoimDetailPage({ params }: PageProps) {
 
       setIsParticipating(result.data.isJoined);
     } catch (error) {
-      console.error("참여 토글 실패:", error);
       setIsParticipating(previousIsJoined);
       alert("참여 처리 중 오류가 발생했습니다.");
     } finally {
@@ -220,7 +217,6 @@ export default function MoimDetailPage({ params }: PageProps) {
       await navigator.clipboard.writeText(shareUrl);
       alert("모임 링크가 복사되었습니다.");
     } catch (error) {
-      console.error("링크 복사 실패:", error);
       alert("링크 복사에 실패했습니다.");
     }
   };
@@ -242,7 +238,6 @@ export default function MoimDetailPage({ params }: PageProps) {
 
       router.push(`/${result.data.slug}`);
     } catch (error) {
-      console.error("스페이스 입장 실패:", error);
       alert("스페이스 입장 중 오류가 발생했습니다.");
     } finally {
       setIsEnterSpacePending(false);
@@ -271,7 +266,6 @@ export default function MoimDetailPage({ params }: PageProps) {
       alert("모임이 삭제되었습니다.");
       router.replace(ROUTES.search);
     } catch (error) {
-      console.error("모임 삭제 실패:", error);
       alert("모임 삭제 중 오류가 발생했습니다.");
     } finally {
       setIsDeletePending(false);
@@ -323,7 +317,6 @@ export default function MoimDetailPage({ params }: PageProps) {
         ),
       );
     } catch (error) {
-      console.error("추천 모임 좋아요 토글 실패:", error);
       alert("좋아요 처리 중 오류가 발생했습니다.");
     } finally {
       setPendingRecommendedLikeIds((prev) => prev.filter((id) => id !== meetingId));
