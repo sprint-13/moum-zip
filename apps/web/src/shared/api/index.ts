@@ -156,6 +156,14 @@ function buildApiShape(core: {
         core.meetings.joinDelete(teamId, meetingId, params),
       delete: (meetingId: number, params?: Parameters<typeof core.meetings.meetingsDelete>[2]) =>
         core.meetings.meetingsDelete(teamId, meetingId, params),
+
+      // getList 추가가
+      participants: {
+        getList: (
+          meetingId: Parameters<typeof core.meetings.participantsList>[1],
+          params?: Parameters<typeof core.meetings.participantsList>[2],
+        ) => core.meetings.participantsList(teamId, meetingId, params),
+      },
     },
     favorites: {
       getList: (
