@@ -114,6 +114,10 @@ export const api = {
       query?: Parameters<typeof core.reviews.reviewsList2>[2],
       params?: Parameters<typeof core.reviews.reviewsList2>[3],
     ) => core.reviews.reviewsList2(teamId, meetingId, query, params),
+    create: (
+      data: Parameters<typeof core.meetings.meetingsCreate>[1],
+      params?: Parameters<typeof core.meetings.meetingsCreate>[2],
+    ) => core.meetings.meetingsCreate(teamId, data, params),
   },
 
   favorites: {

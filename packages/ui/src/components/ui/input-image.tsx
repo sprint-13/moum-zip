@@ -15,6 +15,7 @@ interface FileInputProps {
   previewItems?: FileInputPreviewItem[];
   onPreviewRemove?: (previewId: string) => void;
   onUploadClick?: () => void;
+  showUploadButton?: boolean;
 }
 
 const FileInput = ({
@@ -25,12 +26,10 @@ const FileInput = ({
   previewItems = [],
   onPreviewRemove,
   onUploadClick,
+  showUploadButton = true,
 }: FileInputProps) => {
   const handleUploadClick = () => {
-    if (disabled) {
-      return;
-    }
-
+    if (disabled) return;
     onUploadClick?.();
   };
 
@@ -40,15 +39,18 @@ const FileInput = ({
 
   return (
     <div className={cn("flex flex-wrap gap-4", className)}>
-      <button
-        className="flex max-h-[147px] min-h-[147px] min-w-[147px] max-w-[147px] flex-col items-center justify-center gap-2 rounded-[16px] border border-input bg-background text-muted-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-60 max-md:max-h-[114px] max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-w-[114px]"
-        disabled={disabled}
-        type="button"
-        onClick={handleUploadClick}
-      >
-        <ImagePlus className="size-8" strokeWidth={1.5} />
-        <span className="font-medium text-base leading-[1.2]">{helperText}</span>
-      </button>
+      {showUploadButton && (
+        <button
+          className="flex max-h-[147px] min-h-[147px] min-w-[147px] max-w-[147px] flex-col items-center justify-center gap-2 rounded-[16px] border border-input bg-background text-muted-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-60 max-md:max-h-[114px] max-md:min-h-[114px] max-md:min-w-[114px] max-md:max-w-[114px]"
+          disabled={disabled}
+          type="button"
+          onClick={handleUploadClick}
+        >
+          <ImagePlus className="size-8" strokeWidth={1.5} />
+          <span className="font-medium text-base leading-[1.2]">{helperText}</span>
+        </button>
+      )}
+
       {previewItems.map(({ id, imageUrl }, previewIndex) => (
         <div
           key={id}

@@ -3,22 +3,48 @@
 import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/components";
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Controller } from "react-hook-form";
 import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
+import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
 import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 
 export const MoimCreateForm = () => {
-  const { form, onSubmit } = useMoimCreateForm();
+  const router = useRouter();
+  const { form, onSubmit, state, isPending } = useMoimCreateForm();
   const {
     control,
     register,
-    handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors },
   } = form;
 
+  // 파일 선택 후 S3 업로드 → publicUrl 반환
+  const handleImageUpload = async (onChange: (url: string) => void) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/jpeg,image/png,image/webp,image/gif";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const publicUrl = await uploadImage(file);
+        onChange(publicUrl);
+        clearErrors("image");
+      } catch {
+        setError("image", {
+          type: "manual",
+          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+        });
+      }
+    };
+    input.click();
+  };
+
   return (
-    <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={onSubmit}>
       {/* 모임 */}
       <h3 className="font-semibold text-foreground text-xl md:text-2xl">모임</h3>
       <div className="flex flex-col justify-between md:flex-row md:gap-[56px]">
@@ -114,11 +140,13 @@ export const MoimCreateForm = () => {
                   이미지<span className="pl-1 text-primary">*</span>
                 </p>
                 <FileInput
-                  onUploadClick={() => {
-                    // TODO: 파일 선택 로직
-                  }}
+                  onUploadClick={() => handleImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
-                  onPreviewRemove={() => field.onChange("")}
+                  onPreviewRemove={() => {
+                    field.onChange("");
+                    clearErrors("image");
+                  }}
+                  showUploadButton={!field.value}
                 />
                 {fieldState.error && (
                   <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
@@ -214,14 +242,29 @@ export const MoimCreateForm = () => {
         <div className="flex-1" />
       </div>
 
+      {/*  서버 에러 메시지 */}
+      {state && !state.ok && <p className="font-medium text-destructive text-sm">{state.error}</p>}
+
       {/* 버튼 */}
       <div className="flex gap-4 pt-[80px] md:justify-end">
-        <Button variant="tertiary" size="medium" className="min-w-0 flex-1 md:max-w-[216px]">
+        <Button
+          type="button"
+          variant="tertiary"
+          size="medium"
+          className="min-w-0 flex-1 md:max-w-[216px]"
+          onClick={() => router.back()}
+        >
           취소
         </Button>
 
-        <Button type="submit" variant="primary" size="medium" className="min-w-0 flex-1 md:w-auto md:max-w-[216px]">
-          모임 만들기
+        <Button
+          type="submit"
+          variant="primary"
+          size="medium"
+          className="min-w-0 flex-1 md:w-auto md:max-w-[216px]"
+          disabled={isPending}
+        >
+          {isPending ? "생성 중" : "모임 만들기"}
         </Button>
       </div>
     </form>

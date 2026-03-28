@@ -1,29 +1,7 @@
 "use client";
 
-import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-      },
-    },
-  });
-}
-
-let browserQueryClient: QueryClient | undefined;
-
-function getQueryClient() {
-  if (isServer) {
-    // 서버에서는 클라이언트마다 항상 새로운 QueryClient를 생성합니다.
-    return makeQueryClient();
-  } else {
-    // 브라우저에서는 QueryClient를 한 번만 생성하여 재사용합니다.
-    if (!browserQueryClient) browserQueryClient = makeQueryClient();
-    return browserQueryClient;
-  }
-}
+import { QueryClientProvider } from "@tanstack/react-query";
+import { getQueryClient } from "@/shared/lib/get-query-client";
 
 interface QueryProvidersProps {
   children: React.ReactNode;

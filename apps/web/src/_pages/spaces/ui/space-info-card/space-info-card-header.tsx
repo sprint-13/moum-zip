@@ -1,6 +1,6 @@
 import { Badge } from "@moum-zip/ui/components";
-import { MoreVertical } from "@moum-zip/ui/icons";
-import type { SpaceInfo } from "@/entities/space";
+// import { MoreVertical } from "@moum-zip/ui/icons";
+import type { SpaceInfo } from "@/entities/spaces";
 
 export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
   return (
@@ -11,7 +11,7 @@ export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
 
       <div className="flex flex-wrap gap-2">
         <Badge variant="completedGradient" container="default" className="px-2 py-0 text-muted-foreground">
-          {space.category}
+          {space.type}
         </Badge>
         <Badge
           variant="completedGradient"

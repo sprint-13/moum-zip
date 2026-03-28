@@ -14,6 +14,9 @@ export const spaces = pgTable("spaces", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export type SpaceDB = InferSelectModel<typeof spaces>;
+export type NewSpaceDB = InferInsertModel<typeof spaces>;
+
 export const spaceMembers = pgTable("space_members", {
   id: text("id").primaryKey(),
   spaceId: text("space_id")

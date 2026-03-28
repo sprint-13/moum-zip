@@ -107,6 +107,11 @@ export async function getAuthenticatedApi() {
           params?: Parameters<typeof core.meetings.participantsList>[3],
         ) => core.meetings.participantsList(teamId, meetingId, query, params),
       },
+
+      create: (
+        data: Parameters<typeof core.meetings.meetingsCreate>[1],
+        params?: Parameters<typeof core.meetings.meetingsCreate>[2],
+      ) => core.meetings.meetingsCreate(teamId, data, params),
     },
     favorites: {
       getList: (
