@@ -3,11 +3,11 @@
 import { Badge, Button, CheckCircleIcon, UtilityButton } from "@ui/components";
 import { Heart } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
-import { useState } from "react";
-import type { MoimCardMockData, MoimImageTone } from "../mock-data";
+import type { MoimImageTone, MypageMoimCard } from "../model/types";
 
 interface MoimCardProps {
-  moim: MoimCardMockData;
+  moim: MypageMoimCard;
+  onToggleLike?: (meetingId: string, nextLiked: boolean) => void;
 }
 
 const imageToneClassName: Record<MoimImageTone, string> = {
@@ -62,9 +62,13 @@ function MoimPreview({ imageTone, className }: MoimPreviewProps) {
   );
 }
 
-export default function MoimCard({ moim }: MoimCardProps) {
-  const [isLiked, setIsLiked] = useState(moim.liked);
+export default function MoimCard({ moim, onToggleLike }: MoimCardProps) {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
+
+  const handleToggleLike = () => {
+    const nextLiked = !moim.liked;
+    onToggleLike?.(moim.id, nextLiked);
+  };
 
   const renderActionButton = (className?: string) => (
     <Button type="button" variant={actionVariant} size="small" className={className}>
@@ -80,7 +84,7 @@ export default function MoimCard({ moim }: MoimCardProps) {
           className="aspect-[343/156] rounded-t-3xl md:aspect-square md:size-[11.75rem] md:rounded-3xl"
         />
         <div className="absolute top-4 right-4 md:hidden">
-          <HeartButton isLiked={isLiked} onToggle={() => setIsLiked((prev) => !prev)} className="bg-white shadow-sm" />
+          <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-white shadow-sm" />
         </div>
       </div>
 
@@ -120,7 +124,7 @@ export default function MoimCard({ moim }: MoimCardProps) {
       </div>
 
       <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
-        <HeartButton isLiked={isLiked} onToggle={() => setIsLiked((prev) => !prev)} className="bg-card" />
+        <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-card" />
 
         {renderActionButton("h-12 min-w-[9.75rem] text-base")}
       </div>
