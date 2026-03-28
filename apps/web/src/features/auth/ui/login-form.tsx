@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, InputField, SocialButton } from "@ui/components";
+import { Button, InputField, SocialButton } from "@moum-zip/ui/components";
 import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
