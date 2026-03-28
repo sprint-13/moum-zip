@@ -10,6 +10,9 @@ export type NewSpace = InferInsertModel<typeof spaces>;
 // 모임 생성 시 SPACE 테이블에 저장 (MEETING 생성 후 meetingId 연결)
 export async function insertSpace(data: NewSpace) {
   const [result] = await db.insert(spaces).values(data).returning();
+  if (!result) {
+    throw new Error("Space 저장 결과를 받아오지 못했습니다.");
+  }
   return result;
 }
 
