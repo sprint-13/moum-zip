@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import type { SpaceInfo } from "@/entities/spaces";
-import { isAuth } from "@/shared/api/auth-client";
+import { isAuth } from "@/shared/api/server";
 import { getSpaceMembershipQuery } from "@/shared/db/queries";
 import { getSpaceInfoRemote } from "../use-cases/get-space-info";
 
