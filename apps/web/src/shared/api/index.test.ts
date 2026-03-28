@@ -48,7 +48,7 @@ vi.mock("@moum-zip/api/index", () => {
 import { api } from "./index";
 
 // index.ts 에 정의된 기본 teamId 값을 상수로 정의합니다.
-const MOCK_TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
+const MOCK_TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 
 describe("shared/api/index.ts Wrapper Tests", () => {
   beforeEach(() => {

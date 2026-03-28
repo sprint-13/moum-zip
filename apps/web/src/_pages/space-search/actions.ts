@@ -1,37 +1,26 @@
 "use server";
 
 import { redirect } from "next/navigation";
-
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import { getApiClient } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
-
 import { createSearchFavorite } from "./use-cases/create-search-favorite";
 import { deleteSearchFavorite } from "./use-cases/delete-search-favorite";
 
 export const createSearchFavoriteAction = async (meetingId: number) => {
-  if (!(await isAuthenticated())) {
-    redirect("/login");
-  }
+  const client = await getApiClient();
 
-  const authedApi = await getAuthenticatedApi();
-
-  return createSearchFavorite({ meetingId }, { favoritesApi: authedApi.favorites });
+  return createSearchFavorite({ meetingId }, { favoritesApi: client.favorites });
 };
 
 export const deleteSearchFavoriteAction = async (meetingId: number) => {
-  if (!(await isAuthenticated())) {
-    redirect("/login");
-  }
+  const client = await getApiClient();
 
-  const authedApi = await getAuthenticatedApi();
-
-  return deleteSearchFavorite({ meetingId }, { favoritesApi: authedApi.favorites });
+  return deleteSearchFavorite({ meetingId }, { favoritesApi: client.favorites });
 };
 
 export const redirectToMoimCreateAction = async () => {
-  if (!(await isAuthenticated())) {
-    redirect(ROUTES.login);
-  }
+  const client = await getApiClient();
 
+  void client; // 인증 확인용 — 미인증 시 onAuthFailed에서 redirect
   redirect(ROUTES.moimCreate);
 };

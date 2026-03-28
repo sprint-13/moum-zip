@@ -1,12 +1,12 @@
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getAuthenticatedApi } from "@/shared/api/auth-client";
+import { getApiClient } from "@/shared/api/server";
 import { safe } from "@/shared/lib/safe";
 import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
 export const getSpaceListRemote = async (cursor?: string) => {
-  let authedApi: Awaited<ReturnType<typeof getAuthenticatedApi>>;
+  let authedApi: Awaited<ReturnType<typeof getApiClient>>;
   try {
-    authedApi = await getAuthenticatedApi(); // TODO: 인증 실패 시 401 응답
+    authedApi = await getApiClient(); // TODO: 인증 실패 시 401 응답
   } catch {
     throw Error("Unauthorized");
   }

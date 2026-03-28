@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuthenticatedApi } from "@/shared/api/auth-client";
+import { getApiClient } from "@/shared/api/server";
 
 type ImageContentType = "image/jpeg" | "image/png" | "image/webp" | "image/gif";
 
@@ -16,13 +16,13 @@ async function getResponseErrorDetail(res: Response): Promise<string> {
 }
 
 type Deps = {
-  getAuthApi?: () => ReturnType<typeof getAuthenticatedApi>;
+  getAuthApi?: () => ReturnType<typeof getApiClient>;
 };
 
 export async function getImagePresignedUrl(
   fileName: string,
   contentType: string,
-  { getAuthApi = getAuthenticatedApi }: Deps = {},
+  { getAuthApi = getApiClient }: Deps = {},
 ) {
   if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
     throw new Error(`허용되지 않는 파일 형식입니다: ${contentType}`);

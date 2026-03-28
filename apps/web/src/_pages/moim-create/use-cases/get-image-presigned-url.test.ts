@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { getAuthenticatedApi } from "@/shared/api/auth-client";
+import type { ApiClient } from "@/shared/api";
 import { getImagePresignedUrl } from "./get-image-presigned-url";
 
 const mockCreate = vi.fn();
@@ -8,7 +8,7 @@ beforeEach(() => {
   mockCreate.mockReset();
 });
 
-type AuthedApi = Awaited<ReturnType<typeof getAuthenticatedApi>>;
+type AuthedApi = ApiClient;
 
 const mockAuthedApi = {
   images: {

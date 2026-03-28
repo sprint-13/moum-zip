@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as spaceQueries from "@/entities/spaces/queries";
-import type { getAuthenticatedApi } from "@/shared/api/auth-client";
+import type { ApiClient } from "@/shared/api";
 import { createMoim } from "./moim-create";
 
-// shared/db를 빈 객체로 대체해 neon() 실행 차단
 vi.mock("@/shared/db", () => ({ db: {} }));
 vi.mock("@/entities/spaces/queries");
 
 const mockInsertSpace = vi.mocked(spaceQueries.insertSpace);
 const mockCreate = vi.fn();
 
-type AuthedApi = Awaited<ReturnType<typeof getAuthenticatedApi>>;
+type AuthedApi = ApiClient;
 const mockAuthedApi = {
   meetings: { create: mockCreate },
 } as unknown as AuthedApi;
@@ -38,7 +37,6 @@ const baseInput = {
   options: [],
 };
 
-// DB insert 성공했을 때 반환될 가짜 결과값
 const mockSpaceResult = {
   id: "20",
   slug: "20",

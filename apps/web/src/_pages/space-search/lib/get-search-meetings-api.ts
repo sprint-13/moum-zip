@@ -1,20 +1,20 @@
 import "server-only";
 
 import { api } from "@/shared/api";
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import { getApiClient } from "@/shared/api/server";
 
 export const getSearchMeetingsApi = async () => {
-  if (!(await isAuthenticated())) {
+  try {
+    const authedApi = await getApiClient();
+
+    return {
+      isAuthenticatedRequest: true,
+      meetingsApi: authedApi.meetings,
+    };
+  } catch {
     return {
       isAuthenticatedRequest: false,
       meetingsApi: api.meetings,
     };
   }
-
-  const authedApi = await getAuthenticatedApi();
-
-  return {
-    isAuthenticatedRequest: true,
-    meetingsApi: authedApi.meetings,
-  };
 };

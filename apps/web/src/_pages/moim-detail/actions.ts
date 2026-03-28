@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import { getApiClient, isAuth } from "@/shared/api/server";
 import { deleteMeeting } from "./use-cases/delete-meeting";
 import { favoriteMeeting } from "./use-cases/favorite-meeting";
 import { joinMeeting } from "./use-cases/join-meeting";
@@ -45,7 +45,9 @@ const getErrorMessage = async (error: unknown) => {
 };
 
 export async function getCurrentUser(): Promise<ActionResult<{ id: number | null }>> {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return {
       ok: true,
       data: {
@@ -55,7 +57,7 @@ export async function getCurrentUser(): Promise<ActionResult<{ id: number | null
   }
 
   try {
-    const api = await getAuthenticatedApi();
+    const api = await getApiClient();
     const response = await api.user.getUser();
     const user = response.data ?? response;
 
@@ -79,12 +81,14 @@ export async function favoriteMeetingAction(
   meetingId: number,
   isLiked: boolean,
 ): Promise<ActionResult<{ meetingId: number; isLiked: boolean }>> {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     redirect("/login");
   }
 
   try {
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApiClient();
 
     const result = await favoriteMeeting({ meetingId, isLiked }, { favoritesApi: authedApi.favorites });
 
@@ -106,12 +110,14 @@ export async function joinMeetingAction(
   meetingId: number,
   isJoined: boolean,
 ): Promise<ActionResult<{ meetingId: number; isJoined: boolean }>> {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     redirect("/login");
   }
 
   try {
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApiClient();
 
     const result = await joinMeeting({ meetingId, isJoined }, { meetingsApi: authedApi.meetings });
 
@@ -128,14 +134,15 @@ export async function joinMeetingAction(
     };
   }
 }
-
 export async function deleteMeetingAction(meetingId: number): Promise<ActionResult<{ meetingId: number }>> {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     redirect("/login");
   }
 
   try {
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApiClient();
 
     const result = await deleteMeeting({ meetingId }, { meetingsApi: authedApi.meetings });
 
@@ -154,7 +161,9 @@ export async function deleteMeetingAction(meetingId: number): Promise<ActionResu
 }
 
 export async function getSpaceSlugByMeetingAction(meetingId: number): Promise<ActionResult<{ slug: string }>> {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     redirect("/login");
   }
 

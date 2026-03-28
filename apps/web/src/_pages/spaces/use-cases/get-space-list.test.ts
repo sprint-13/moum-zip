@@ -3,8 +3,8 @@ import { getSpaceListRemote } from "./get-space-list";
 
 const mockGetJoined = vi.fn();
 
-vi.mock("@/shared/api/auth-client", () => ({
-  getAuthenticatedApi: vi.fn(),
+vi.mock("@/shared/api/server", () => ({
+  getApiClient: vi.fn(),
 }));
 
 vi.mock("@/entities/spaces/queries", () => ({
@@ -18,10 +18,10 @@ vi.mock("./get-joined-space-infos", () => ({
 }));
 
 import { spaceQueries } from "@/entities/spaces/queries";
-import { getAuthenticatedApi } from "@/shared/api/auth-client";
+import { getApiClient } from "@/shared/api/server";
 import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
-const mockGetAuthenticatedApi = vi.mocked(getAuthenticatedApi);
+const mockGetApiClient = vi.mocked(getApiClient);
 const mockFindByMeetingIds = vi.mocked(spaceQueries.findByMeetingIds);
 const mockGetJoinedSpaceInfos = vi.mocked(getJoinedSpaceInfosUseCase);
 
@@ -45,11 +45,11 @@ const mockJoinedMeetingList = {
 };
 
 function setupAuthApi(getJoinedResponse: object = { data: mockJoinedMeetingList }) {
-  mockGetAuthenticatedApi.mockResolvedValue({
+  mockGetApiClient.mockResolvedValue({
     meetings: {
       getJoined: mockGetJoined.mockResolvedValue(getJoinedResponse),
     },
-  } as unknown as Awaited<ReturnType<typeof getAuthenticatedApi>>);
+  } as unknown as Awaited<ReturnType<typeof getApiClient>>);
 }
 
 describe("getSpaceListRemote", () => {
@@ -107,28 +107,28 @@ describe("getSpaceListRemote", () => {
     expect(mockFindByMeetingIds).toHaveBeenCalledWith([10, 20]);
   });
 
-  it("getAuthenticatedApi가 실패하면 'Unauthorized' 에러를 던진다", async () => {
-    mockGetAuthenticatedApi.mockRejectedValue(new Error("no token"));
+  it("getApiClient가 실패하면 'Unauthorized' 에러를 던진다", async () => {
+    mockGetApiClient.mockRejectedValue(new Error("no token"));
 
     await expect(getSpaceListRemote()).rejects.toThrow("Unauthorized");
   });
 
   it("API가 401을 응답하면 'Unauthorized' 에러를 던진다", async () => {
-    mockGetAuthenticatedApi.mockResolvedValue({
+    mockGetApiClient.mockResolvedValue({
       meetings: {
         getJoined: mockGetJoined.mockRejectedValue({ status: 401 }),
       },
-    } as unknown as Awaited<ReturnType<typeof getAuthenticatedApi>>);
+    } as unknown as Awaited<ReturnType<typeof getApiClient>>);
 
     await expect(getSpaceListRemote()).rejects.toThrow("Unauthorized");
   });
 
   it("API가 그 외 에러를 응답하면 'Failed to fetch meetings' 에러를 던진다", async () => {
-    mockGetAuthenticatedApi.mockResolvedValue({
+    mockGetApiClient.mockResolvedValue({
       meetings: {
         getJoined: mockGetJoined.mockRejectedValue({ status: 500 }),
       },
-    } as unknown as Awaited<ReturnType<typeof getAuthenticatedApi>>);
+    } as unknown as Awaited<ReturnType<typeof getApiClient>>);
 
     await expect(getSpaceListRemote()).rejects.toThrow("Failed to fetch meetings");
   });
