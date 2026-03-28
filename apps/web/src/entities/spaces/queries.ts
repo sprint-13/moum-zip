@@ -1,6 +1,17 @@
-import { eq, type InferInsertModel, type InferSelectModel } from "drizzle-orm";
+import { eq, type InferInsertModel, type InferSelectModel, inArray } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { spaces } from "@/shared/db/scheme";
+
+// meetingId -> space 조회 -> location, themeColor, status, modules
+
+export const spaceQueries = {
+  /** meetingId로 space 조회 */
+  findByMeetingId: (meetingId: number) =>
+    db.query.spaces.findFirst({
+      where: eq(spaces.meetingId, meetingId),
+    }),
+  findByMeetingIds: (meetingIds: number[]) => db.select().from(spaces).where(inArray(spaces.meetingId, meetingIds)),
+};
 
 // SPACE 테이블 기반 타입 자동 추출
 // Space: DB 조회 결과 타입 / SpaceInsert: DB 저장 시 타입
