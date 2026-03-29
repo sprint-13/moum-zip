@@ -22,12 +22,16 @@ function OAuthCallbackContent() {
 
     const handleCallback = async () => {
       try {
+        // 토큰을 URL에서 즉시 제거 (히스토리/Referer 헤더로 토큰 노출 방지)
+        window.history.replaceState({}, "", window.location.pathname);
+
         // httpOnly 쿠키는 서버에서만 set 가능하므로 Route Handler에 위임
         const res = await fetch("/api/auth/token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accessToken, refreshToken }),
           credentials: "include",
+          referrerPolicy: "no-referrer", // Referer 헤더로 토큰 노출 방지
         });
 
         if (res.ok) {

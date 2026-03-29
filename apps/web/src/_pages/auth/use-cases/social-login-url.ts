@@ -1,6 +1,6 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-// 환경변수 미설정 시 기본값으로 팀 ID 사용
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID ?? "moum-zip-dev";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
+// (index.ts 컨벤션과 통일)
+const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 
 /**
  * 구글 소셜 로그인 시작 URL 반환

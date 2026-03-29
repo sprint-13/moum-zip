@@ -10,9 +10,20 @@ import {
 // 소셜 로그인 콜백에서 받은 토큰을 httpOnly 쿠키에 저장
 // 클라이언트에서 직접 쿠키를 set할 수 없음 → Route Handler로 처리
 export async function POST(request: Request) {
-  const { accessToken, refreshToken } = await request.json();
+  let accessToken: unknown;
+  let refreshToken: unknown;
 
-  if (!accessToken || !refreshToken) {
+  try {
+    const body = await request.json();
+    accessToken = body.accessToken;
+    refreshToken = body.refreshToken;
+  } catch {
+    // JSON 파싱 실패 시 (malformed body) 500 대신 400 반환
+    return NextResponse.json({ message: "잘못된 요청입니다." }, { status: 400 });
+  }
+
+  // 토큰 존재 여부 및 string 타입 검증
+  if (!accessToken || !refreshToken || typeof accessToken !== "string" || typeof refreshToken !== "string") {
     return NextResponse.json({ message: "토큰이 없습니다." }, { status: 400 });
   }
 
