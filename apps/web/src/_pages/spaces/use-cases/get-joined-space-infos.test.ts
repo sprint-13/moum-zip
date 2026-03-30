@@ -151,6 +151,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     expect(result[0]).toEqual({
       spaceId: "db-id-1",
       name: "테스트 스페이스",
+      meetingId: 1,
       image: "https://example.com/img.png",
       slug: "slug-1",
       type: "study",
