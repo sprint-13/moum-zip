@@ -25,7 +25,9 @@ export const SpaceInfoGridCard = ({ space }: SpaceInfoCardProps) => {
         </div>
 
         <div className="inline-flex items-center justify-between">
-          <SpaceInfoCardLabel icon={<Calendar className="h-3.5 w-3.5" />}>{space.startDate} ~</SpaceInfoCardLabel>
+          <SpaceInfoCardLabel icon={<Calendar className="h-3.5 w-3.5" />}>
+            {space.startDate ? `${space.startDate} ~` : "일정 미정"}
+          </SpaceInfoCardLabel>
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
             <ChevronRight className="size-5" />
           </div>
