@@ -35,7 +35,7 @@ function OAuthCallbackContent() {
         });
 
         if (res.ok) {
-          // router.replace는 서버 컴포넌트를 재실행하지 않아 네비게이션 상태가 바뀌지 않음음
+          // router.replace는 서버 컴포넌트를 재실행하지 않아 네비게이션 상태가 바뀌지 않음
           // 풀 리로드로 쿠키 반영
           window.location.replace(ROUTES.home);
         } else {
