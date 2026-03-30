@@ -1,8 +1,6 @@
 import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
-
 import { cn } from "@/shared/lib/cn";
-
 import LocationPinIcon from "../assets/location-pin.svg";
 import type { SpaceCardItem, SpaceCardMetaChip } from "../model/types";
 import { SpaceCardJoinButton } from "./space-card-join-button";
@@ -46,6 +44,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
     metaChips,
     status,
     title,
+    id: meetingId,
   } = item;
 
   return (
@@ -113,6 +112,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
             )}
             size="small"
             variant="secondary"
+            meetingId={meetingId}
           >
             참여하기
           </SpaceCardJoinButton>
