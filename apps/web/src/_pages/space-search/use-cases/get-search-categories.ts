@@ -14,8 +14,7 @@ interface GetSearchCategoriesDeps {
 export const getSearchCategories = async ({
   meetingTypesApi = api.meetingTypes,
 }: GetSearchCategoriesDeps = {}): Promise<SpaceSearchCategory[]> => {
-  const timerLabel = "[search] GET /meeting-types";
-  console.time(timerLabel);
+  const startedAt = Date.now();
 
   try {
     const response = await meetingTypesApi.getList();
@@ -41,6 +40,6 @@ export const getSearchCategories = async ({
     console.error("[search] failed to get categories", { error });
     return [DEFAULT_SEARCH_CATEGORY];
   } finally {
-    console.timeEnd(timerLabel);
+    console.info("[search] GET /meeting-types", { durationMs: Date.now() - startedAt });
   }
 };

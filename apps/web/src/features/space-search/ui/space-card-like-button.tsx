@@ -86,6 +86,12 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
+  const matchesSearchResultsQuery = (queryKey: readonly unknown[]) =>
+    queryKey[0] === spaceSearchQueryKeys.all[0] &&
+    typeof queryKey[2] === "object" &&
+    queryKey[2] !== null &&
+    "isAuthenticated" in queryKey[2] &&
+    queryKey[2].isAuthenticated === isAuthenticated;
 
   useEffect(() => {
     setOptimisticIsLiked(isLiked);
@@ -112,7 +118,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
       setOptimisticIsLiked(previousIsLiked);
       queryClient.setQueriesData<SearchResultsInfiniteData>(
         {
-          predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
+          predicate: (query) => matchesSearchResultsQuery(query.queryKey),
         },
         (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, previousIsLiked),
       );
@@ -121,14 +127,15 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
     setOptimisticIsLiked(nextIsLiked);
     queryClient.setQueriesData<SearchResultsInfiniteData>(
       {
-        predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
+        predicate: (query) => matchesSearchResultsQuery(query.queryKey),
       },
       (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, nextIsLiked),
     );
 
+    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const timerLabel = nextIsLiked
-      ? `[search] client like action meetingId=${meetingId}`
-      : `[search] client unlike action meetingId=${meetingId}`;
+      ? `[search] client like action meetingId=${meetingId} requestId=${requestId}`
+      : `[search] client unlike action meetingId=${meetingId} requestId=${requestId}`;
     console.time(timerLabel);
 
     startTransition(async () => {
@@ -139,8 +146,17 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
 
         if (!result.ok) {
           rollbackLikedState();
+
+          if (result.error === "UNAUTHORIZED") {
+            toast({
+              message: "로그인 후 이용할 수 있어요.",
+              size: "small",
+            });
+            return;
+          }
+
           toast({
-            message: "로그인 후 이용할 수 있어요.",
+            message: "요청에 실패했어요. 다시 시도해 주세요.",
             size: "small",
           });
         }
@@ -148,12 +164,13 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
         rollbackLikedState();
 
         if (isRedirectError(error)) {
-          toast({
-            message: "로그인 후 이용할 수 있어요.",
-            size: "small",
-          });
-          return;
+          throw error;
         }
+
+        toast({
+          message: "요청에 실패했어요. 다시 시도해 주세요.",
+          size: "small",
+        });
       } finally {
         console.timeEnd(timerLabel);
       }
