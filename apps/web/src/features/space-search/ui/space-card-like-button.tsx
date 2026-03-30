@@ -126,6 +126,11 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
       (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, nextIsLiked),
     );
 
+    const timerLabel = nextIsLiked
+      ? `[search] client like action meetingId=${meetingId}`
+      : `[search] client unlike action meetingId=${meetingId}`;
+    console.time(timerLabel);
+
     startTransition(async () => {
       try {
         const result = nextIsLiked
@@ -149,6 +154,8 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
           });
           return;
         }
+      } finally {
+        console.timeEnd(timerLabel);
       }
     });
   };

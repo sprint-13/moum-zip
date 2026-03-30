@@ -12,7 +12,11 @@ export const deleteSearchFavorite = async (
   { meetingId }: DeleteSearchFavoriteInput,
   { favoritesApi }: DeleteSearchFavoriteDeps,
 ) => {
-  await favoritesApi.delete(meetingId);
+  const timerLabel = `[search] DELETE /favorites meetingId=${meetingId}`;
+  console.time(timerLabel);
+  await favoritesApi.delete(meetingId).finally(() => {
+    console.timeEnd(timerLabel);
+  });
 
   return {
     meetingId,
