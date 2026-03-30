@@ -33,8 +33,6 @@ export const LoginForm = () => {
     mode: "onBlur", // 필드 입력 완료 후 넘어갈 때 유효성 검사
   });
 
-  console.log(errors.email);
-
   // 유효성 검사 통과 후 → 서버 액션 호출
   const onSubmit = handleSubmit((data) => {
     const formData = new FormData();
