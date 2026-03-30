@@ -60,13 +60,19 @@ const ParticipantRow = ({
 
 export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCardProps) {
   const [rejectedIds, setRejectedIds] = useState<Set<number>>(new Set());
+  const [acceptedIds, setAcceptedIds] = useState<Set<number>>(new Set());
+
+  const handleAccept = async (member: { userId: number; name: string; image: string }) => {
+    await onAccept(member);
+    setAcceptedIds((prev) => new Set(prev).add(member.userId));
+  };
 
   // TODO: 현재는 임시상태. 결국 pending member 관리도 neon db에서 수행해야 한다.
   const handleReject = (userId: number) => {
     setRejectedIds((prev) => new Set(prev).add(userId));
   };
 
-  const visible = pendingMembers.filter((m) => !rejectedIds.has(m.userId));
+  const visible = pendingMembers.filter((m) => !rejectedIds.has(m.userId) && !acceptedIds.has(m.userId));
 
   if (visible.length === 0) return null;
 
@@ -75,7 +81,7 @@ export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCar
       <span className="mb-1 block font-semibold text-base text-foreground">참가를 요청한 사용자</span>
       <div className="flex flex-col gap-2">
         {visible.map((member) => (
-          <ParticipantRow key={member.userId} member={member} onAccept={onAccept} onReject={handleReject} />
+          <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
         ))}
       </div>
     </div>

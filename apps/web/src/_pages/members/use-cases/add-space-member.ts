@@ -11,6 +11,9 @@ export const addSpaceMemberUseCase = async (
   name: string,
   image: string,
 ): Promise<Member | null> => {
+  const existing = await memberQueries.getMember(spaceId, userId);
+  if (existing) return existing;
+
   const newMember: NewMember = {
     spaceId,
     userId,

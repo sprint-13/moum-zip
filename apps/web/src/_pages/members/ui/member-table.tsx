@@ -7,9 +7,13 @@ import { MemberRow } from "./member-row";
 export function MemberTable({ members }: { members: Member[] }) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
+  const normalizedQuery = deferredQuery.trim().toLowerCase();
 
   const filtered = members.filter(
-    (m) => deferredQuery.length === 0 || m.nickname.toLowerCase().includes(deferredQuery.toLowerCase()),
+    (m) =>
+      normalizedQuery.length === 0 ||
+      m.nickname.toLowerCase().includes(normalizedQuery) ||
+      (m.email ?? "").toLowerCase().includes(normalizedQuery),
   );
 
   return (

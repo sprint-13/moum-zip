@@ -24,7 +24,7 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
         <button
           type="button"
           onClick={() => setTab(null)}
-          className={`relative px-5 py-3 text-md transition-all duration-200 ${
+          className={`relative px-5 py-3 text-base transition-all duration-200 ${
             tab === null ? "font-bold text-primary" : "font-medium text-neutral-400 hover:text-neutral-600"
           }`}
         >
@@ -38,7 +38,7 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
             key={category}
             type="button"
             onClick={() => setTab(category)}
-            className={`relative px-5 py-3 text-md transition-all duration-200 ${
+            className={`relative px-5 py-3 text-base transition-all duration-200 ${
               tab === category ? "font-bold text-primary" : "font-medium text-neutral-400 hover:text-neutral-600"
             }`}
           >

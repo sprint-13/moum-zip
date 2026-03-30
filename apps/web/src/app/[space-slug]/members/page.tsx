@@ -20,10 +20,13 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
   const slug = (await params)["space-slug"];
   // layout에서 이미 검증 완료 + React.cache()로 메모이제이션된 결과 반환 (DB 재조회 없음)
   const { space, membership } = await getSpaceContext(slug);
-  const [{ members }, { pendingMembers }] = await Promise.all([
-    getSpaceMembersUseCase(space.spaceId),
-    getPendingMembersRemote(Number(space.spaceId)),
-  ]);
+  const membersPromise = getSpaceMembersUseCase(space.spaceId);
+  const pendingMembersPromise =
+    membership.role === "manager"
+      ? getPendingMembersRemote(Number(space.spaceId))
+      : Promise.resolve({ pendingMembers: [] });
+
+  const [{ members }, { pendingMembers }] = await Promise.all([membersPromise, pendingMembersPromise]);
 
   const acceptMember = addSpaceMemberAction.bind(null, slug);
 

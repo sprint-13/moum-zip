@@ -25,7 +25,11 @@ export const memberQueries = {
   createMany: async (data: NewMember[]) => {
     return await db.insert(spaceMembers).values(data).returning();
   },
-  update: async (spaceId: string, userId: number, partialData: Partial<NewMember>) => {
+  update: async (
+    spaceId: string,
+    userId: number,
+    partialData: Partial<Pick<NewMember, "nickname" | "role" | "email" | "avatarUrl">>,
+  ) => {
     const [updatedMember] = await db
       .update(spaceMembers)
       .set(partialData)
