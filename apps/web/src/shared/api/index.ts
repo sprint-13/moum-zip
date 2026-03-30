@@ -28,7 +28,7 @@ import {
   Users,
 } from "@moum-zip/api/index";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://together-dallaem-api.vercel.app";
 const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 
 // ─────────────────────────────────────────────────────────────

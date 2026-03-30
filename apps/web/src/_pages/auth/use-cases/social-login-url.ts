@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://together-dallaem-api.vercel.app";
 // (index.ts 컨벤션과 통일)
 const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 
