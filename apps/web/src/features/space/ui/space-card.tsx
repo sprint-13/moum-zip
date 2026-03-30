@@ -9,7 +9,7 @@ interface SpaceCardProps {
 export const SpaceCard = ({ children, className }: SpaceCardProps) => {
   return (
     <section
-      className={cn("rounded-2xl border border-primary/20 bg-background p-5 text-foreground shadow-sm", className)}
+      className={cn("rounded-lg border border-primary/20 bg-background p-5 text-foreground shadow-sm", className)}
     >
       {children}
     </section>

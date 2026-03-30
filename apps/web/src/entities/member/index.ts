@@ -5,4 +5,4 @@ export type { Member, NewMember } from "@/shared/db/scheme";
 export type { MemberRole, RolePermissions } from "./model/types";
 export { ROLE_LABEL, ROLE_PERMISSIONS } from "./model/types";
 
-export { getSpaceMembers, insertSpaceMember } from "./queries";
+export { memberQueries } from "./queries";

@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import type { Member } from "@/entities/member";
-import { getSpaceMembers as querySpaceMembers } from "@/entities/member/queries";
+import { memberQueries } from "@/entities/member";
 
 export interface GetSpaceMembersResult {
   members: Member[];
@@ -14,7 +14,7 @@ export interface GetSpaceMembersResult {
 export function getSpaceMembersUseCase(spaceId: string): Promise<GetSpaceMembersResult> {
   return unstable_cache(
     async () => {
-      const rows = await querySpaceMembers(spaceId);
+      const rows = await memberQueries.getBySpaceId(spaceId);
       return { members: rows, total: rows.length };
     },
     ["space-members", spaceId],
