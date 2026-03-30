@@ -41,3 +41,9 @@ export const memberQueries = {
     return deletedMember; // 삭제된 데이터 확인용
   },
 };
+
+export async function insertSpaceMember(data: NewMember) {
+  const [row] = await db.insert(spaceMembers).values(data).returning();
+  if (!row) throw new Error("스페이스 멤버 저장에 실패했습니다.");
+  return row;
+}
