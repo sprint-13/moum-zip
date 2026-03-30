@@ -22,7 +22,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
   const { space, membership } = await getSpaceContext(slug);
   const [{ members }, { pendingMembers }] = await Promise.all([
     getSpaceMembersUseCase(space.spaceId),
-    getPendingMembersRemote(space.meetingId),
+    getPendingMembersRemote(Number(space.spaceId)),
   ]);
 
   const acceptMember = addSpaceMemberAction.bind(null, slug);
