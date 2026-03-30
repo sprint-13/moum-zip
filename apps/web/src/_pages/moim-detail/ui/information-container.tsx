@@ -270,11 +270,7 @@ export function InformationContainer({
 
           <div className="mt-auto w-full">
             <div className="flex w-full items-center gap-4 max-sm:gap-2">
-              <LikeButton
-                isLiked={data.isLiked}
-                className="h-10 w-10 shrink-0 sm:h-[60px] sm:w-[60px]"
-                onClick={handleLikeClick}
-              />
+              <LikeButton isLiked={data.isLiked} onClick={handleLikeClick} />
 
               <div className="flex min-w-0 flex-1 items-center gap-4 max-sm:gap-2">{renderActionButtons()}</div>
             </div>

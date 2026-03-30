@@ -4,7 +4,6 @@ import { cn } from "@ui/lib/utils";
 
 interface LoadingIndicatorProps {
   text?: string;
-  description?: string;
   fullScreen?: boolean;
   className?: string;
 }
