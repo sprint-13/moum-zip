@@ -1,6 +1,7 @@
+import { insertSpaceMember } from "@/entities/member";
 import { insertSpace } from "@/entities/spaces/queries";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
-import { getApi } from "@/shared/api/server";
+import { getApi, isAuth } from "@/shared/api/server";
 
 type Deps = {
   getAuthApi?: () => ReturnType<typeof getApi>;
@@ -18,17 +19,21 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
     registrationEnd: new Date(`${formData.deadlineDate}T${formData.deadlineTime}`).toISOString(), // deadlineDate
   };
 
-  // meetings API 호출 → MEETING 생성
+  // 인증
   const authedApi = await getAuthApi();
+  const { userId } = await isAuth();
+  if (userId == null) throw new Error("로그인이 필요합니다.");
+
+  const userRes = await authedApi.user.getUser();
+  if (!userRes.ok || !userRes.data) throw new Error("유저 정보를 불러오지 못했습니다.");
+  const me = userRes.data;
+
+  // 외부 API 호출 → MEETING 생성
   const res = await authedApi.meetings.create(meetingPayload);
-
-  if (!res.ok) {
-    throw new Error("모임 생성에 실패했습니다.");
-  }
-
+  if (!res.ok) throw new Error("모임 생성에 실패했습니다.");
   const meeting = res.data as { id: number };
 
-  // 외부 API 응답 meetingId로 SPACE DB 저장
+  // SPACE DB 저장
   const space = await insertSpace({
     id: String(meeting.id),
     slug: String(meeting.id),
@@ -37,6 +42,17 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
     themeColor: formData.themeColor,
     status: "ongoing",
     modules: formData.options ?? [],
+  });
+
+  // 스페이스 멤버 등록
+  await insertSpaceMember({
+    id: crypto.randomUUID(),
+    spaceId: space.id,
+    userId,
+    role: "manager",
+    nickname: me.name,
+    email: me.email,
+    avatarUrl: me.image,
   });
 
   return { meeting, space };
