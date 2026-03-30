@@ -45,7 +45,7 @@ export function InformationContainer({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isManager = viewType === "manager";
-  const isClosedMeeting = data.status === "full";
+  const isClosedMeeting = data.status === "full" || data.status === "canceled";
 
   const tagItems = [
     {
@@ -190,7 +190,7 @@ export function InformationContainer({
     }
 
     if (isClosedMeeting) {
-      return renderPrimaryButton("모집 마감", () => {}, "primary", true);
+      return renderPrimaryButton(data.status === "canceled" ? "모집 취소" : "모집 마감", () => {}, "primary", true);
     }
 
     return renderPrimaryButton("신청하기", handleMainButtonClick);
