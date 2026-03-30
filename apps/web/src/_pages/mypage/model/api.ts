@@ -1,6 +1,7 @@
 import type { FavoriteList, FavoriteWithMeeting, UserMeetingsResponse } from "@moum-zip/api";
 
 const FAVORITES_PAGE_SIZE = 100;
+const MAX_FAVORITES_PAGE_COUNT = 20;
 
 export type MyMeetingsQuery = {
   type: "joined" | "created";
@@ -44,7 +45,9 @@ export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<UserMeeti
     throw new Error("MY_MEETINGS_REQUEST_FAILED");
   }
 
-  return response.json();
+  // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
+  const data = await response.json();
+  return data;
 }
 
 export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<FavoriteList> {
@@ -55,7 +58,9 @@ export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<Fa
     throw new Error("MY_FAVORITES_REQUEST_FAILED");
   }
 
-  return response.json();
+  // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
+  const data = await response.json();
+  return data;
 }
 
 export async function fetchAllMyFavorites(
@@ -64,8 +69,16 @@ export async function fetchAllMyFavorites(
   const favorites: FavoriteList["data"] = [];
   let cursor: string | undefined;
   let hasMore = false;
+  let pageCount = 0;
 
   do {
+    pageCount += 1;
+
+    // 비정상적인 hasMore/cursor 응답으로 인한 무한 루프를 방지합니다.
+    if (pageCount > MAX_FAVORITES_PAGE_COUNT) {
+      throw new Error("MY_FAVORITES_PAGINATION_LIMIT_EXCEEDED");
+    }
+
     const response = await fetchMyFavorites({
       ...query,
       size: FAVORITES_PAGE_SIZE,
@@ -97,7 +110,9 @@ export async function createFavorite(meetingId: number): Promise<FavoriteWithMee
     throw new Error("CREATE_FAVORITE_REQUEST_FAILED");
   }
 
-  return response.json();
+  // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
+  const data = await response.json();
+  return data;
 }
 
 export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
@@ -113,5 +128,7 @@ export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
     throw new Error("DELETE_FAVORITE_REQUEST_FAILED");
   }
 
-  return response.json();
+  // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
+  const data = await response.json();
+  return data;
 }

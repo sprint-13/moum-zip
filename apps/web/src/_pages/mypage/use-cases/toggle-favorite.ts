@@ -21,6 +21,7 @@ export function useToggleFavorite(enableRemoteFetch: boolean) {
       return null;
     },
     onMutate: async ({ meetingId, nextLiked }) => {
+      // meetingId별 최신 요청 버전을 기록해 늦게 도착한 이전 응답을 무시합니다.
       const requestVersion = (requestVersionRef.current.get(meetingId) ?? 0) + 1;
       requestVersionRef.current.set(meetingId, requestVersion);
       const meetingIdString = String(meetingId);

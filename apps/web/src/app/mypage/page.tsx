@@ -18,6 +18,7 @@ export default async function Page() {
 
   try {
     const authedApi = await getAuthenticatedApi();
+    // created 탭은 클라이언트 query로 실제 목록을 조회하고, 서버에서는 초기 fallback만 전달합니다.
     const { initialFavoriteList, profile, moims, createdMoims } = await getMypagePageData({
       getUser: () => authedApi.user.getUser(),
       getJoinedMeetings: () => getMyJoinedMeetings(),
