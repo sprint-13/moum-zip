@@ -1,15 +1,14 @@
 "use client";
 
-import type { FavoriteList } from "@moum-zip/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useMemo, useState } from "react";
-import { createFavorite, deleteFavorite, fetchMyFavorites, fetchMyMeetings } from "./api";
-import { mapCreatedMeeting, mapFavoriteMeeting, mapJoinedMeeting } from "./model/mappers";
-import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "./model/types";
-import MoimCardList from "./ui/moim-card-list";
-import ProfileSection from "./ui/profile-section";
+import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "../model";
+import { getCreatedMeetingsQueryOptions, getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
+import { applyFavoriteState, buildFavoriteMeetingIds, buildLikedMeetings, useToggleFavorite } from "../use-cases";
+import MoimCardList from "./moim-card-list";
+import ProfileSection from "./profile-section";
 
 type MoimTabKey = Exclude<MypageTabKey, "created">;
 
@@ -26,47 +25,17 @@ interface MypagePageProps {
   enableRemoteFetch?: boolean;
 }
 
-function applyFavoriteState(moims: MypageMoimCard[], favoriteMeetingIds: Set<string>) {
-  return moims.map((moim) => ({
-    ...moim,
-    liked: favoriteMeetingIds.has(moim.id),
-  }));
-}
-
-function updateLikedState(moims: MypageMoimCard[] | undefined, meetingId: string, nextLiked: boolean) {
-  if (!moims) {
-    return moims;
-  }
-
-  return moims.map((moim) => (moim.id === meetingId ? { ...moim, liked: nextLiked } : moim));
-}
-
-export default function MypagePage({ profile, tabs, moims, createdMoims, enableRemoteFetch = true }: MypagePageProps) {
+export default function MypageView({ profile, tabs, moims, createdMoims, enableRemoteFetch = true }: MypagePageProps) {
   const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
-  const isCreatedOngoing = createdFilter === "ongoing";
-  const queryClient = useQueryClient();
+  const favoriteMutation = useToggleFavorite(enableRemoteFetch);
 
   const {
     data: joinedMeetingCards = moims.joined,
     isError: isJoinedError,
     refetch: refetchJoinedMeetings,
   } = useQuery({
-    queryKey: ["mypage", "meetings", "joined"],
-    queryFn: async () => {
-      const response = await fetchMyMeetings({
-        type: "joined",
-        sortBy: "dateTime",
-        sortOrder: "asc",
-        size: 10,
-      });
-
-      return response.data.map((meeting, index) =>
-        mapJoinedMeeting(meeting, index, favoriteMeetingIds.has(String(meeting.id))),
-      );
-    },
-    // 첫 진입은 서버에서 받은 목록을 보여주고, 탭을 다시 열 때부터 클라이언트 조회를 재사용합니다.
-    initialData: moims.joined,
+    ...getJoinedMeetingsQueryOptions(moims.joined),
     enabled: enableRemoteFetch && selectedTab === "joined",
   });
 
@@ -75,20 +44,7 @@ export default function MypagePage({ profile, tabs, moims, createdMoims, enableR
     isError: isCreatedError,
     refetch: refetchCreatedMeetings,
   } = useQuery({
-    queryKey: ["mypage", "meetings", "created", createdFilter],
-    queryFn: async () => {
-      const response = await fetchMyMeetings({
-        type: "created",
-        completed: isCreatedOngoing ? "false" : "true",
-        sortBy: "dateTime",
-        sortOrder: isCreatedOngoing ? "asc" : "desc",
-        size: 10,
-      });
-
-      return response.data.map((meeting, index) =>
-        mapCreatedMeeting(meeting, index, favoriteMeetingIds.has(String(meeting.id))),
-      );
-    },
+    ...getCreatedMeetingsQueryOptions(createdFilter),
     enabled: enableRemoteFetch && selectedTab === "created",
   });
 
@@ -97,24 +53,12 @@ export default function MypagePage({ profile, tabs, moims, createdMoims, enableR
     isError: isLikedError,
     refetch: refetchLikedMeetings,
   } = useQuery({
-    queryKey: ["mypage", "favorites"],
-    queryFn: async () => {
-      return fetchMyFavorites({
-        sortBy: "createdAt",
-        sortOrder: "desc",
-        size: 10,
-      });
-    },
+    ...getFavoritesQueryOptions(),
     enabled: enableRemoteFetch,
   });
 
   const favoriteMeetingIds = useMemo(
-    () =>
-      new Set(
-        (enableRemoteFetch
-          ? favoriteList?.data.map((favorite) => String(favorite.meetingId))
-          : moims.liked.map((moim) => moim.id)) ?? [],
-      ),
+    () => buildFavoriteMeetingIds(enableRemoteFetch ? favoriteList : undefined, moims.liked),
     [enableRemoteFetch, favoriteList, moims.liked],
   );
 
@@ -127,97 +71,9 @@ export default function MypagePage({ profile, tabs, moims, createdMoims, enableR
     [createdMeetingCards, favoriteMeetingIds],
   );
   const likedMeetings = useMemo(
-    () => (enableRemoteFetch ? (favoriteList?.data ?? []).map(mapFavoriteMeeting) : moims.liked),
+    () => buildLikedMeetings(enableRemoteFetch ? favoriteList : undefined, moims.liked, enableRemoteFetch),
     [enableRemoteFetch, favoriteList, moims.liked],
   );
-
-  const favoriteMutation = useMutation({
-    mutationFn: async ({ meetingId, nextLiked }: { meetingId: number; nextLiked: boolean }) => {
-      if (nextLiked) {
-        return createFavorite(meetingId);
-      }
-
-      await deleteFavorite(meetingId);
-      return null;
-    },
-    onMutate: async ({ meetingId, nextLiked }) => {
-      const meetingIdString = String(meetingId);
-      const previousJoined = queryClient.getQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"]);
-      const previousCreatedOngoing = queryClient.getQueryData<MypageMoimCard[]>([
-        "mypage",
-        "meetings",
-        "created",
-        "ongoing",
-      ]);
-      const previousCreatedEnded = queryClient.getQueryData<MypageMoimCard[]>([
-        "mypage",
-        "meetings",
-        "created",
-        "ended",
-      ]);
-      const previousFavorites = queryClient.getQueryData<FavoriteList>(["mypage", "favorites"]);
-
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"], (current) =>
-        updateLikedState(current, meetingIdString, nextLiked),
-      );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ongoing"], (current) =>
-        updateLikedState(current, meetingIdString, nextLiked),
-      );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ended"], (current) =>
-        updateLikedState(current, meetingIdString, nextLiked),
-      );
-
-      if (!nextLiked) {
-        queryClient.setQueryData<FavoriteList>(["mypage", "favorites"], (current) =>
-          current
-            ? {
-                ...current,
-                data: current.data.filter((favorite) => favorite.meetingId !== meetingId),
-              }
-            : current,
-        );
-      }
-
-      return {
-        previousJoined,
-        previousCreatedOngoing,
-        previousCreatedEnded,
-        previousFavorites,
-      };
-    },
-    onSuccess: (data, { nextLiked }) => {
-      if (nextLiked && data) {
-        queryClient.setQueryData<FavoriteList>(["mypage", "favorites"], (current) => {
-          if (!current) {
-            return {
-              data: [data],
-              nextCursor: null,
-              hasMore: false,
-            };
-          }
-
-          if (current.data.some((favorite) => favorite.meetingId === data.meetingId)) {
-            return current;
-          }
-
-          return {
-            ...current,
-            data: [data, ...current.data],
-          };
-        });
-      }
-    },
-    onError: (_error, _variables, context) => {
-      if (!context) {
-        return;
-      }
-
-      queryClient.setQueryData(["mypage", "meetings", "joined"], context.previousJoined);
-      queryClient.setQueryData(["mypage", "meetings", "created", "ongoing"], context.previousCreatedOngoing);
-      queryClient.setQueryData(["mypage", "meetings", "created", "ended"], context.previousCreatedEnded);
-      queryClient.setQueryData(["mypage", "favorites"], context.previousFavorites);
-    },
-  });
 
   const handleToggleLike = (meetingId: string, nextLiked: boolean) => {
     if (!enableRemoteFetch) {

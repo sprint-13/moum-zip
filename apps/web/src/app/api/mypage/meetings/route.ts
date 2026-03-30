@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMyMeetings } from "@/_pages/mypage/queries";
+import { getMyMeetings } from "@/_pages/mypage/queries/server";
 import { isAuthenticated } from "@/shared/api/auth-client";
 
 function isMeetingType(value: string | null): value is "joined" | "created" {

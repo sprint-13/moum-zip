@@ -5,7 +5,7 @@ import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
 const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
 
-export async function getMyMeetings(query: {
+export type MyMeetingsServerQuery = {
   type: "joined" | "created";
   completed?: "true" | "false";
   reviewed?: "true" | "false";
@@ -13,7 +13,9 @@ export async function getMyMeetings(query: {
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
-}) {
+};
+
+export async function getMyMeetings(query: MyMeetingsServerQuery) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const usersApi = new Users({
