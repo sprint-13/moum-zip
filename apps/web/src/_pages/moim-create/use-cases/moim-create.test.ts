@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as memberQueries from "@/entities/member";
-import * as spaceQueries from "@/entities/spaces/queries";
+import { memberQueries } from "@/entities/member";
+import { spaceQueries } from "@/entities/spaces";
 import type { ApiClient } from "@/shared/api";
 import { createMoim } from "./moim-create";
 
@@ -13,13 +13,11 @@ vi.mock("@/shared/api/server", async (importOriginal) => {
 });
 
 vi.mock("@/shared/db", () => ({ db: {} }));
-vi.mock("@/entities/member", () => ({
-  insertSpaceMember: vi.fn(),
-}));
-vi.mock("@/entities/spaces/queries");
+vi.mock("@/entities/member");
+vi.mock("@/entities/spaces");
 
-const mockInsertSpace = vi.mocked(spaceQueries.insertSpace);
-const mockInsertSpaceMember = vi.mocked(memberQueries.insertSpaceMember);
+const mockInsertSpace = vi.mocked(spaceQueries.create);
+const mockInsertSpaceMember = vi.mocked(memberQueries.create);
 
 const mockCreate = vi.fn();
 const mockGetUser = vi.fn().mockResolvedValue({
