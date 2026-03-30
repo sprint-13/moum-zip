@@ -356,7 +356,7 @@ export default function MoimDetailPage({ params }: PageProps) {
   const viewType = informationData.viewerRole === "manager" ? "manager" : "member";
 
   return (
-    <div className="min-h-screen bg-background-secondary">
+    <div className="min-h-screen">
       <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="relative h-full min-h-[190px] w-full overflow-hidden rounded-[20px] md:min-h-[260px] md:rounded-[32px] xl:min-h-[443px]">

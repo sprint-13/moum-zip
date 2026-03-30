@@ -12,7 +12,7 @@ const logo = <Logo className="block h-8 w-auto" aria-hidden preserveAspectRatio=
 export const NavigationMenuClient = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <>
-      <div className="hidden w-full py-5 md:block">
+      <div className="hidden w-full py-2 md:block">
         <Gnb viewport={false}>
           <Gnb.List>
             <Gnb.Item className="shrink-0">

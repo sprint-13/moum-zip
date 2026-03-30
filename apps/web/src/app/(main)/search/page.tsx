@@ -1,7 +1,7 @@
 import type { InfiniteData } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { SpaceSearchHeader, SpaceSearchHero } from "@/_pages/space-search";
+import { SpaceSearchHero } from "@/_pages/space-search";
 import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
@@ -25,7 +25,9 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSpaceSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
+
   const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
+
   const queryClient = getQueryClient();
   const initialPageParam: string | null = null;
 
@@ -53,9 +55,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
   ]);
 
   return (
-    <div className="min-h-screen bg-background-secondary">
-      <SpaceSearchHeader />
-
+    <div className="min-h-screen">
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-[1.6875rem]">
         <SpaceSearchHero />
         <HydrationBoundary state={dehydrate(queryClient)}>

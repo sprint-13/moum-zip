@@ -1,14 +1,14 @@
 import { notFound, redirect } from "next/navigation";
 import type { SpaceInfo } from "@/entities/spaces";
-import { getApiClient } from "@/shared/api/server";
+import { getApi } from "@/shared/api/server";
 import { getSpaceBySlugQuery } from "@/shared/db/queries";
 import { safe } from "@/shared/lib/safe";
 
 export const getSpaceInfoRemote = async (slug: string): Promise<SpaceInfo> => {
   const dbSpace = await safe(getSpaceBySlugQuery(slug), { notFound: () => notFound() });
-  const authedApi = await getApiClient();
+  const api = await getApi();
 
-  const { data: apiSpace } = await safe(authedApi.meetings.getDetail(dbSpace.meetingId), {
+  const { data: apiSpace } = await safe(api.meetings.getDetail(dbSpace.meetingId), {
     401: () => {
       redirect("/login");
     },
@@ -19,6 +19,7 @@ export const getSpaceInfoRemote = async (slug: string): Promise<SpaceInfo> => {
 
   return {
     spaceId: dbSpace.id,
+    slug: dbSpace.slug,
     name: apiSpace.name,
     location: dbSpace.location,
     themeColor: dbSpace.themeColor,
