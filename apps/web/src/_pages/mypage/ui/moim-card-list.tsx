@@ -8,7 +8,7 @@ interface MoimCardListProps {
   emptyLabel?: string;
   isError?: boolean;
   onRetry?: () => void;
-  onToggleLike?: (meetingId: string, nextLiked: boolean) => void;
+  onToggleLike?: (meetingId: string) => void;
 }
 
 function ListStatusContainer({ children }: { children: ReactNode }) {

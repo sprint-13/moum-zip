@@ -1,5 +1,7 @@
 import type { FavoriteList, FavoriteWithMeeting, UserMeetingsResponse } from "@moum-zip/api";
 
+const FAVORITES_PAGE_SIZE = 100;
+
 export type MyMeetingsQuery = {
   type: "joined" | "created";
   completed?: "true" | "false";
@@ -54,6 +56,32 @@ export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<Fa
   }
 
   return response.json();
+}
+
+export async function fetchAllMyFavorites(
+  query: Omit<MyFavoritesQuery, "size" | "cursor"> = {},
+): Promise<FavoriteList> {
+  const favorites: FavoriteList["data"] = [];
+  let cursor: string | undefined;
+  let hasMore = false;
+
+  do {
+    const response = await fetchMyFavorites({
+      ...query,
+      size: FAVORITES_PAGE_SIZE,
+      cursor,
+    });
+
+    favorites.push(...response.data);
+    cursor = response.nextCursor ?? undefined;
+    hasMore = response.hasMore;
+  } while (hasMore && cursor);
+
+  return {
+    data: favorites,
+    nextCursor: cursor ?? null,
+    hasMore,
+  };
 }
 
 export async function createFavorite(meetingId: number): Promise<FavoriteWithMeeting> {

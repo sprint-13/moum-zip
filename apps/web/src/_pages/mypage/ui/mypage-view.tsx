@@ -1,5 +1,6 @@
 "use client";
 
+import type { FavoriteList } from "@moum-zip/api";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
@@ -18,6 +19,7 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
 ];
 
 interface MypagePageProps {
+  initialFavoriteList: FavoriteList;
   profile: MypageProfile;
   tabs: Array<{ key: MypageTabKey; label: string }>;
   moims: Record<MoimTabKey, MypageMoimCard[]>;
@@ -25,7 +27,14 @@ interface MypagePageProps {
   enableRemoteFetch?: boolean;
 }
 
-export default function MypageView({ profile, tabs, moims, createdMoims, enableRemoteFetch = true }: MypagePageProps) {
+export default function MypageView({
+  initialFavoriteList,
+  profile,
+  tabs,
+  moims,
+  createdMoims,
+  enableRemoteFetch = true,
+}: MypagePageProps) {
   const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
   const favoriteMutation = useToggleFavorite(enableRemoteFetch);
@@ -53,7 +62,7 @@ export default function MypageView({ profile, tabs, moims, createdMoims, enableR
     isError: isLikedError,
     refetch: refetchLikedMeetings,
   } = useQuery({
-    ...getFavoritesQueryOptions(),
+    ...getFavoritesQueryOptions(initialFavoriteList),
     enabled: enableRemoteFetch,
   });
 
@@ -75,14 +84,28 @@ export default function MypageView({ profile, tabs, moims, createdMoims, enableR
     [enableRemoteFetch, favoriteList, moims.liked],
   );
 
-  const handleToggleLike = (meetingId: string, nextLiked: boolean) => {
+  const findMeetingById = (meetingId: string) => {
+    return (
+      joinedMeetings.find((meeting) => meeting.id === meetingId) ??
+      createdMeetings.find((meeting) => meeting.id === meetingId) ??
+      likedMeetings.find((meeting) => meeting.id === meetingId)
+    );
+  };
+
+  const handleToggleLike = (meetingId: string) => {
     if (!enableRemoteFetch) {
+      return;
+    }
+
+    const meeting = findMeetingById(meetingId);
+
+    if (!meeting) {
       return;
     }
 
     favoriteMutation.mutate({
       meetingId: Number(meetingId),
-      nextLiked,
+      nextLiked: !meeting.liked,
     });
   };
 

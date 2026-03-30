@@ -1,6 +1,7 @@
 export {
   createFavorite,
   deleteFavorite,
+  fetchAllMyFavorites,
   fetchMyFavorites,
   fetchMyMeetings,
   type MyFavoritesQuery,

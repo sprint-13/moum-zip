@@ -2,12 +2,14 @@
 
 import type { FavoriteList } from "@moum-zip/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { createFavorite, deleteFavorite } from "../model";
 import type { MypageMoimCard } from "../model/types";
 import { updateLikedState } from "./favorite-state";
 
 export function useToggleFavorite(enableRemoteFetch: boolean) {
   const queryClient = useQueryClient();
+  const requestVersionRef = useRef(new Map<number, number>());
 
   return useMutation({
     mutationFn: async ({ meetingId, nextLiked }: { meetingId: number; nextLiked: boolean }) => {
@@ -19,6 +21,8 @@ export function useToggleFavorite(enableRemoteFetch: boolean) {
       return null;
     },
     onMutate: async ({ meetingId, nextLiked }) => {
+      const requestVersion = (requestVersionRef.current.get(meetingId) ?? 0) + 1;
+      requestVersionRef.current.set(meetingId, requestVersion);
       const meetingIdString = String(meetingId);
       const previousJoined = queryClient.getQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"]);
       const previousCreatedOngoing = queryClient.getQueryData<MypageMoimCard[]>([
@@ -57,13 +61,18 @@ export function useToggleFavorite(enableRemoteFetch: boolean) {
       }
 
       return {
+        requestVersion,
         previousJoined,
         previousCreatedOngoing,
         previousCreatedEnded,
         previousFavorites,
       };
     },
-    onSuccess: (data, { nextLiked }) => {
+    onSuccess: (data, { meetingId, nextLiked }, context) => {
+      if (!context || requestVersionRef.current.get(meetingId) !== context.requestVersion) {
+        return;
+      }
+
       if (nextLiked && data) {
         queryClient.setQueryData<FavoriteList>(["mypage", "favorites"], (current) => {
           if (!current) {
@@ -85,8 +94,12 @@ export function useToggleFavorite(enableRemoteFetch: boolean) {
         });
       }
     },
-    onError: (_error, _variables, context) => {
+    onError: (_error, variables, context) => {
       if (!context) {
+        return;
+      }
+
+      if (requestVersionRef.current.get(variables.meetingId) !== context.requestVersion) {
         return;
       }
 

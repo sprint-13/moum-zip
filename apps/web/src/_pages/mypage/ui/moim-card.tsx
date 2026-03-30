@@ -7,7 +7,7 @@ import type { MoimImageTone, MypageMoimCard } from "../model/types";
 
 interface MoimCardProps {
   moim: MypageMoimCard;
-  onToggleLike?: (meetingId: string, nextLiked: boolean) => void;
+  onToggleLike?: (meetingId: string) => void;
 }
 
 const imageToneClassName: Record<MoimImageTone, string> = {
@@ -66,8 +66,7 @@ export default function MoimCard({ moim, onToggleLike }: MoimCardProps) {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
 
   const handleToggleLike = () => {
-    const nextLiked = !moim.liked;
-    onToggleLike?.(moim.id, nextLiked);
+    onToggleLike?.(moim.id);
   };
 
   const renderActionButton = (className?: string) => (

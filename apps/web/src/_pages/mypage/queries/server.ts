@@ -2,8 +2,16 @@ import { Users } from "@moum-zip/api";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://dallaem-backend.vercel.app";
-const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "dallaem";
+function getMypageServerConfig() {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const teamId = process.env.NEXT_PUBLIC_TEAM_ID;
+
+  if (!baseUrl || !teamId) {
+    throw new Error("MYPAGE_SERVER_CONFIG_MISSING");
+  }
+
+  return { baseUrl, teamId };
+}
 
 export type MyMeetingsServerQuery = {
   type: "joined" | "created";
@@ -16,6 +24,7 @@ export type MyMeetingsServerQuery = {
 };
 
 export async function getMyMeetings(query: MyMeetingsServerQuery) {
+  const { baseUrl, teamId } = getMypageServerConfig();
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const usersApi = new Users({

@@ -18,13 +18,21 @@ export default async function Page() {
 
   try {
     const authedApi = await getAuthenticatedApi();
-    const { profile, moims, createdMoims } = await getMypagePageData({
+    const { initialFavoriteList, profile, moims, createdMoims } = await getMypagePageData({
       getUser: () => authedApi.user.getUser(),
       getJoinedMeetings: () => getMyJoinedMeetings(),
-      getFavorites: () => authedApi.favorites.getList({ size: 100 }),
+      getFavoritesPage: (cursor) => authedApi.favorites.getList({ size: 100, cursor }),
     });
 
-    return <MypagePage profile={profile} tabs={mypageTabs} moims={moims} createdMoims={createdMoims} />;
+    return (
+      <MypagePage
+        initialFavoriteList={initialFavoriteList}
+        profile={profile}
+        tabs={mypageTabs}
+        moims={moims}
+        createdMoims={createdMoims}
+      />
+    );
   } catch (error) {
     if (isUnauthorizedError(error)) {
       redirect("/login");

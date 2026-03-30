@@ -1,15 +1,16 @@
 "use client";
 
-import { fetchMyFavorites } from "../model";
+import type { FavoriteList } from "@moum-zip/api";
+import { fetchAllMyFavorites } from "../model";
 
-export function getFavoritesQueryOptions() {
+export function getFavoritesQueryOptions(initialData?: FavoriteList) {
   return {
     queryKey: ["mypage", "favorites"],
     queryFn: async () =>
-      fetchMyFavorites({
+      fetchAllMyFavorites({
         sortBy: "createdAt",
         sortOrder: "desc",
-        size: 10,
       }),
+    initialData,
   } as const;
 }
