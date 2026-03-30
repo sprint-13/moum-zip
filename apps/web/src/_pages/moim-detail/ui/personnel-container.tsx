@@ -64,7 +64,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
             </div>
 
             <Badge variant="confirmed" container="none">
-              {statusLabel !== "모집중" && <CheckCircleIcon className="size-6 max-sm:size-4.5" />}
+              {statusLabel === "개설확정" && <CheckCircleIcon className="size-6 max-sm:size-4.5" />}
               <span className="font-semibold text-base max-sm:font-medium max-sm:text-xs">
                 {statusLabel || "모집중"}
               </span>

@@ -45,6 +45,7 @@ export function InformationContainer({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isManager = viewType === "manager";
+  const isClosedMeeting = data.status === "full";
 
   const tagItems = [
     {
@@ -97,7 +98,7 @@ export function InformationContainer({
   };
 
   const handleMainButtonClick = () => {
-    if (isManager) {
+    if (isManager || isClosedMeeting) {
       return;
     }
 
@@ -128,12 +129,18 @@ export function InformationContainer({
     onLoginAction?.();
   };
 
-  const renderPrimaryButton = (label: string, onClick: () => void, variant: "primary" | "secondary" = "primary") => (
+  const renderPrimaryButton = (
+    label: string,
+    onClick: () => void,
+    variant: "primary" | "secondary" = "primary",
+    disabled = false,
+  ) => (
     <>
       <Button
         type="button"
         variant={variant}
         size="large"
+        disabled={disabled}
         className={cn(
           "min-w-0 flex-1 max-sm:hidden",
           variant === "secondary" && "border border-primary bg-white text-green-600",
@@ -147,6 +154,7 @@ export function InformationContainer({
         type="button"
         variant={variant}
         size="small"
+        disabled={disabled}
         className={cn(
           "hidden min-w-0 flex-1 max-sm:inline-flex",
           variant === "secondary" && "border border-primary bg-white text-green-600",
@@ -175,6 +183,10 @@ export function InformationContainer({
           {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
         </>
       );
+    }
+
+    if (isClosedMeeting) {
+      return renderPrimaryButton("모집 마감", () => {}, "primary", true);
     }
 
     return renderPrimaryButton("신청하기", handleMainButtonClick);
