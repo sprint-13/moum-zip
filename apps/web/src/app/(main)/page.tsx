@@ -1,4 +1,3 @@
-import { Button } from "@ui/components";
 import Image from "next/image";
 import {
   bgDoubleOval,
@@ -8,6 +7,7 @@ import {
   CategoryCard,
   heroImage,
   IcoChevronDownDouble,
+  LandingCtaButton,
   spaceLg,
   spaceMd,
   spaceSm,
@@ -28,12 +28,8 @@ export default function Home() {
               <span className="block">작은 한 걸음도 혼자가 아니면 가벼워집니다.</span>
               <span className="block">당신의 첫 모임, 모음.zip이 도와드릴게요.</span>
             </p>
-            <Button size="medium" className="mt-12 min-w-0 max-w-[132px] md:hidden">
-              모임 찾아보기
-            </Button>
-            <Button size="large" className="mt-12 hidden w-[168px] min-w-0 md:inline-flex">
-              모임 찾아보기
-            </Button>
+            <LandingCtaButton size="medium" className="mt-12 min-w-0 max-w-[132px] md:hidden" />
+            <LandingCtaButton size="large" className="mt-12 hidden w-[168px] min-w-0 md:inline-flex" />
           </div>
           <Image
             src={heroImage}
@@ -116,12 +112,8 @@ export default function Home() {
             <span className="relative block text-gray-950">혼자 시작하기 어려웠던 일들,</span>
             <span className="relative mt-2 block text-green-600">모음.zip에서 함께 해요</span>
           </h2>
-          <Button size="medium" className="min-w-0 max-w-[140px] md:hidden">
-            모임 찾아보기
-          </Button>
-          <Button size="large" className="hidden w-[168px] min-w-0 md:block">
-            모임 찾아보기
-          </Button>
+          <LandingCtaButton size="medium" className="min-w-0 max-w-[140px] md:hidden" />
+          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:block" />
         </div>
       </section>
     </>
