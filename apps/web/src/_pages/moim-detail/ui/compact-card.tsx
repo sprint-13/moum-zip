@@ -13,7 +13,7 @@ interface CompactCardProps {
   locationIcon?: ReactNode;
   locationText: string;
   isLiked?: boolean;
-  onLikeClick?: () => void;
+  onLikeClick?: () => boolean | Promise<boolean>;
 }
 
 export function CompactCard({

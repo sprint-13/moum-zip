@@ -18,7 +18,7 @@ interface InformationContainerProps {
   viewType?: ViewType;
   isLoggedIn?: boolean;
   isParticipating?: boolean;
-  onToggleLike?: () => void;
+  onToggleLike?: () => boolean | Promise<boolean>;
   onParticipateToggle?: (meetingId: number, nextParticipating: boolean) => void;
   onShare?: (meetingId: number) => void;
   onEdit?: (meetingId: number) => void;
@@ -88,17 +88,21 @@ export function InformationContainer({
     },
   ].filter((item) => item.label);
 
-  const handleLikeClick = () => {
+  const handleLikeClick = async (): Promise<boolean> => {
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
-      return;
+      return false;
     }
 
-    onToggleLike?.();
+    if (!onToggleLike) {
+      return true;
+    }
+
+    return await onToggleLike();
   };
 
   const handleMainButtonClick = () => {
-    if (isManager || isClosedMeeting) {
+    if (isManager || (isClosedMeeting && !isParticipating)) {
       return;
     }
 

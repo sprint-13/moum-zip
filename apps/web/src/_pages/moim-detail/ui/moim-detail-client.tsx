@@ -48,14 +48,14 @@ export function MoimDetailClient({
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
-  const handleToggleMeetingLike = async () => {
+  const handleToggleMeetingLike = async (): Promise<boolean> => {
     if (isFavoritePending) {
-      return;
+      return false;
     }
 
     if (!currentUserId) {
       router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
-      return;
+      return false;
     }
 
     setIsFavoritePending(true);
@@ -65,15 +65,18 @@ export function MoimDetailClient({
 
       if (!result.ok) {
         alert(result.message);
-        return;
+        return false;
       }
 
       setInformationData((prev) => ({
         ...prev,
         isLiked: result.data.isLiked,
       }));
+
+      return true;
     } catch (error) {
       alert("좋아요 처리 중 오류가 발생했습니다.");
+      return false;
     } finally {
       setIsFavoritePending(false);
     }
@@ -188,20 +191,20 @@ export function MoimDetailClient({
     router.push(`/moim-detail/${targetMeetingId}`);
   };
 
-  const handleToggleRecommendedLike = async (targetMeetingId: number) => {
+  const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
     if (pendingRecommendedLikeIds.includes(targetMeetingId)) {
-      return;
+      return false;
     }
 
     if (!currentUserId) {
       router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
-      return;
+      return false;
     }
 
     const targetMeeting = recommendedMeetings.find((meeting) => meeting.id === targetMeetingId);
 
     if (!targetMeeting) {
-      return;
+      return false;
     }
 
     setPendingRecommendedLikeIds((prev) => [...prev, targetMeetingId]);
@@ -211,7 +214,7 @@ export function MoimDetailClient({
 
       if (!result.ok) {
         alert(result.message);
-        return;
+        return false;
       }
 
       setRecommendedMeetings((prev) =>
@@ -224,8 +227,11 @@ export function MoimDetailClient({
             : meeting,
         ),
       );
+
+      return true;
     } catch (error) {
       alert("좋아요 처리 중 오류가 발생했습니다.");
+      return false;
     } finally {
       setPendingRecommendedLikeIds((prev) => prev.filter((id) => id !== targetMeetingId));
     }
@@ -324,10 +330,10 @@ export function MoimDetailClient({
                     isLiked={meeting.isLiked}
                     onLikeClick={() => {
                       if (isRecommendedLikePending) {
-                        return;
+                        return false;
                       }
 
-                      void handleToggleRecommendedLike(meeting.id);
+                      return handleToggleRecommendedLike(meeting.id);
                     }}
                   />
                 </div>

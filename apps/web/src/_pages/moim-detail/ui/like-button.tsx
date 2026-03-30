@@ -10,7 +10,7 @@ import HeartDefaultIcon from "../assets/svg/heart-default.svg";
 interface LikeButtonProps {
   isLiked?: boolean;
   className?: string;
-  onClick?: () => void | Promise<void>;
+  onClick?: () => boolean | Promise<boolean>;
 }
 
 export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonProps) => {
@@ -29,7 +29,10 @@ export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonPr
 
     startTransition(async () => {
       try {
-        await onClick?.();
+        const succeeded = (await onClick?.()) ?? true;
+        if (!succeeded) {
+          setOptimisticIsLiked(previousIsLiked);
+        }
       } catch {
         setOptimisticIsLiked(previousIsLiked);
       }
