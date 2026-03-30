@@ -1,14 +1,19 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { ROUTES } from "@/shared/config/routes";
 
 function OAuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const handledRef = useRef(false);
 
   useEffect(() => {
+    // 토큰 처리 중복 실행 방지
+    if (handledRef.current) return;
+    handledRef.current = true;
+
     const accessToken = searchParams.get("accessToken");
     const refreshToken = searchParams.get("refreshToken");
     // 백엔드 OAuth 실패 시 ?error=... 형태로 넘어오는 케이스 대비
@@ -47,12 +52,11 @@ function OAuthCallbackContent() {
     };
 
     handleCallback();
-  }, [searchParams, router]); // searchParams나 router가 바뀔 때마다 재실행 (실제로는 최초 1회만 실행)
+  }, [searchParams, router]);
 
   return <div>로그인 처리 중...</div>;
 }
 
-// useSearchParams()를 쓰려면 반드시 Suspense로 감싸야 함 (Next.js 규칙)
 export default function OAuthCallbackPage() {
   return (
     <Suspense fallback={<div>로그인 처리 중...</div>}>
