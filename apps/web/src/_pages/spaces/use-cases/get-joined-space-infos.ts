@@ -14,7 +14,6 @@ export const getJoinedSpaceInfosUseCase = async (
     return {
       spaceId: dbSpace.id,
       slug: dbSpace.slug,
-      meetingId: apiSpace.id,
       name: apiSpace.name,
       location: dbSpace.location ?? "online",
       themeColor: dbSpace.themeColor ?? "#000000",

@@ -19,7 +19,6 @@ export const getSpaceInfoRemote = async (slug: string): Promise<SpaceInfo> => {
 
   return {
     spaceId: dbSpace.id,
-    meetingId: dbSpace.meetingId,
     slug: dbSpace.slug,
     name: apiSpace.name,
     location: dbSpace.location,
