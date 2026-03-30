@@ -97,7 +97,7 @@ export const MoimCreateForm = () => {
             message={errors.capacity?.message}
             {...register("capacity", { valueAsNumber: true })}
             onKeyDown={(e) => {
-              if (e.key === "-" || e.key === "e") e.preventDefault();
+              if (["-", "e", "E", "+"].includes(e.key)) e.preventDefault();
             }}
           />
 
