@@ -30,10 +30,12 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormValues>({
-    mode: "onSubmit",
+    mode: "onBlur", // 필드 입력 완료 후 넘어갈 때 유효성 검사
   });
 
-  // react-hook-form 유효성 검사 통과 후 → 서버 액션 호출
+  console.log(errors.email);
+
+  // 유효성 검사 통과 후 → 서버 액션 호출
   const onSubmit = handleSubmit((data) => {
     const formData = new FormData();
     formData.append("email", data.email);
