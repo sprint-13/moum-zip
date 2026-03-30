@@ -7,11 +7,18 @@ import { SpaceCard } from "./space-card";
 interface SpaceSearchResultsProps {
   errorMessage?: string;
   hasMore: boolean;
+  isAuthenticated: boolean;
   items: SpaceCardItem[];
   loadMoreRef: RefObject<HTMLDivElement | null>;
 }
 
-export const SpaceSearchResults = ({ errorMessage, hasMore, items, loadMoreRef }: SpaceSearchResultsProps) => {
+export const SpaceSearchResults = ({
+  errorMessage,
+  hasMore,
+  isAuthenticated,
+  items,
+  loadMoreRef,
+}: SpaceSearchResultsProps) => {
   if (items.length === 0) {
     return (
       <section className="rounded-[2rem] px-6 py-16">
@@ -26,7 +33,7 @@ export const SpaceSearchResults = ({ errorMessage, hasMore, items, loadMoreRef }
     <section className="flex flex-col gap-8">
       <div className="grid gap-6 xl:grid-cols-2">
         {items.map((item) => (
-          <SpaceCard item={item} key={item.id} />
+          <SpaceCard isAuthenticated={isAuthenticated} item={item} key={item.id} />
         ))}
       </div>
       {errorMessage ? (
