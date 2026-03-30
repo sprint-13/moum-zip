@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMyMeetings } from "@/_pages/mypage/queries/server";
-import { isAuthenticated } from "@/shared/api/auth-client";
+import { isAuth } from "@/shared/api/server";
 
 function isMeetingType(value: string | null): value is "joined" | "created" {
   return value === "joined" || value === "created";
@@ -15,7 +15,9 @@ function isSortOrder(value: string | null): value is "asc" | "desc" {
 }
 
 export async function GET(request: Request) {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
   }
 

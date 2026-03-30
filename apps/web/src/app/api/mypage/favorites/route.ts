@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import { getApi, isAuth } from "@/shared/api/server";
 
 function isFavoriteSortBy(
   value: string | null,
@@ -12,7 +12,9 @@ function isSortOrder(value: string | null): value is "asc" | "desc" {
 }
 
 export async function GET(request: Request) {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
   }
 
@@ -20,7 +22,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const sortBy = searchParams.get("sortBy");
     const sortOrder = searchParams.get("sortOrder");
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApi();
     const { data } = await authedApi.favorites.getList({
       type: searchParams.get("type") ?? undefined,
       region: searchParams.get("region") ?? undefined,
@@ -38,7 +40,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
   }
 
@@ -49,7 +53,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "잘못된 모임 정보입니다." }, { status: 400 });
     }
 
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApi();
     const { data } = await authedApi.favorites.create(meetingId);
 
     return NextResponse.json(data, { status: 201 });
@@ -59,7 +63,9 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
   }
 
@@ -70,7 +76,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ message: "잘못된 모임 정보입니다." }, { status: 400 });
     }
 
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApi();
     await authedApi.favorites.delete(meetingId);
 
     return NextResponse.json({ ok: true });

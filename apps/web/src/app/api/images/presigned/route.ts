@@ -1,6 +1,6 @@
 import type { PresignedUrlRequest } from "@moum-zip/api";
 import { NextResponse } from "next/server";
-import { getAuthenticatedApi, isAuthenticated } from "@/shared/api/auth-client";
+import { getApi, isAuth } from "@/shared/api/server";
 
 function isUnauthorizedError(error: unknown): boolean {
   if (error instanceof Response) {
@@ -11,14 +11,16 @@ function isUnauthorizedError(error: unknown): boolean {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAuthenticated())) {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
     return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
   }
 
   try {
     // 클라이언트는 이 내부 API만 호출하고, 실제 외부 인증 API 호출은 서버에서 처리합니다.
     const body = (await request.json()) as PresignedUrlRequest;
-    const authedApi = await getAuthenticatedApi();
+    const authedApi = await getApi();
     const { data } = await authedApi.images.create(body);
 
     return NextResponse.json(data);
