@@ -11,7 +11,13 @@ import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
 import { createApiClient } from "@/shared/api";
 import { ROUTES } from "@/shared/config/routes";
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "@/shared/lib/cookies";
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_MAX_AGE,
+  COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_MAX_AGE,
+} from "@/shared/lib/cookies";
 
 // ─────────────────────────────────────────────────────────────
 // getApiClient
@@ -45,8 +51,14 @@ export async function getApi() {
 
     // 갱신 성공 시 새 토큰을 쿠키에 저장
     ({ accessToken, refreshToken }) => {
-      cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, { httpOnly: true, path: "/" });
-      cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, { httpOnly: true, path: "/" });
+      cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
+        ...COOKIE_OPTIONS,
+        maxAge: ACCESS_TOKEN_MAX_AGE,
+      });
+      cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+        ...COOKIE_OPTIONS,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
+      });
     },
 
     // 갱신 실패 시 쿠키 삭제 + 로그인으로 redirect
