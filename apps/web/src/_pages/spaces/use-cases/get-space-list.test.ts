@@ -29,6 +29,7 @@ const mockSpaceInfo = {
   spaceId: "space-1",
   name: "테스트 스페이스",
   image: null,
+  meetingId: 1,
   status: "ongoing" as const,
   slug: "slug-1",
   capacity: 10,
