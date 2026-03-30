@@ -7,6 +7,7 @@ import { SpaceCardJoinButton } from "./space-card-join-button";
 import { SpaceCardLikeButton } from "./space-card-like-button";
 
 interface SpaceCardProps {
+  isAuthenticated: boolean;
   item: SpaceCardItem;
 }
 
@@ -31,7 +32,7 @@ const SpaceCardStatus = ({ label }: { label: string }) => {
   );
 };
 
-export const SpaceCard = ({ item }: SpaceCardProps) => {
+export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   const {
     category,
     currentParticipants,
@@ -59,7 +60,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           width={340}
         />
         <div className="absolute top-4 right-4 sm:hidden">
-          <SpaceCardLikeButton isLiked={isLiked} meetingId={item.id} />
+          <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
         </div>
       </div>
 
@@ -81,7 +82,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           </div>
 
           <div className="hidden sm:block">
-            <SpaceCardLikeButton isLiked={isLiked} meetingId={item.id} />
+            <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
           </div>
         </div>
 
@@ -112,6 +113,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
             )}
             size="small"
             variant="secondary"
+            isAuthenticated={isAuthenticated}
             meetingId={meetingId}
           >
             참여하기

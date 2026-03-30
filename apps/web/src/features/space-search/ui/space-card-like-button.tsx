@@ -2,7 +2,7 @@
 
 import type { InfiniteData } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { UtilityButton } from "@ui/components";
+import { toast, UtilityButton } from "@ui/components";
 import { useEffect, useState, useTransition } from "react";
 
 import { createSearchFavoriteAction, deleteSearchFavoriteAction } from "@/_pages/space-search/actions";
@@ -12,6 +12,7 @@ import HeartIcon from "../assets/heart-default.svg";
 import { spaceSearchQueryKeys } from "../model/query-keys";
 
 interface SpaceCardLikeButtonProps {
+  isAuthenticated: boolean;
   isLiked?: boolean;
   meetingId: string;
 }
@@ -81,7 +82,7 @@ const updateLikedStateInSearchResults = (
   };
 };
 
-export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLikeButtonProps) => {
+export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingId }: SpaceCardLikeButtonProps) => {
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
@@ -91,6 +92,14 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
   }, [isLiked]);
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      toast({
+        message: "로그인 후 이용할 수 있어요.",
+        size: "small",
+      });
+      return;
+    }
+
     const parsedMeetingId = Number(meetingId);
 
     if (!Number.isFinite(parsedMeetingId)) {
@@ -119,19 +128,27 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
 
     startTransition(async () => {
       try {
-        if (nextIsLiked) {
-          await createSearchFavoriteAction(parsedMeetingId);
-        } else {
-          await deleteSearchFavoriteAction(parsedMeetingId);
+        const result = nextIsLiked
+          ? await createSearchFavoriteAction(parsedMeetingId)
+          : await deleteSearchFavoriteAction(parsedMeetingId);
+
+        if (!result.ok) {
+          rollbackLikedState();
+          toast({
+            message: "로그인 후 이용할 수 있어요.",
+            size: "small",
+          });
         }
       } catch (error) {
-        if (isRedirectError(error)) {
-          rollbackLikedState();
-
-          throw error;
-        }
-
         rollbackLikedState();
+
+        if (isRedirectError(error)) {
+          toast({
+            message: "로그인 후 이용할 수 있어요.",
+            size: "small",
+          });
+          return;
+        }
       }
     });
   };
