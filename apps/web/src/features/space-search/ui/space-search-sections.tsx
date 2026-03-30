@@ -204,6 +204,7 @@ const InfiniteSpaceSearchResults = ({ isAuthenticated, queryState }: SpaceSearch
     <SpaceSearchResults
       errorMessage={errorMessage}
       hasMore={Boolean(hasNextPage && !hasQueryError)}
+      isAuthenticated={isAuthenticated}
       items={items}
       loadMoreRef={loadMoreRef}
     />
