@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingIndicator } from "@ui/components";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
@@ -342,7 +343,7 @@ export default function MoimDetailPage({ params }: PageProps) {
   }
 
   if (isLoading) {
-    return <div>불러오는 중...</div>;
+    return <LoadingIndicator fullScreen text="모임 정보를 불러오는 중" />;
   }
 
   if (errorMessage) {
