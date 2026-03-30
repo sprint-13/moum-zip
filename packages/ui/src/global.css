@@ -304,7 +304,7 @@
 @media (min-width: 768px) {
   /* 태블릿 이상 헤더 높이 */
   :root {
-    --layout-gnb-height: 88px;
+    --layout-gnb-height: 64px;
   }
 }
 

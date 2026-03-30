@@ -1,5 +1,6 @@
-import { Calendar, FolderOpen, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
+import { Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
 import type { ComponentType, ReactNode } from "react";
+import type { SpaceContext } from "@/features/space/lib/get-space-context";
 import { MobileHeader } from "./sidebar/mobile-header";
 import { MobileTabBar } from "./sidebar/mobile-tab-bar";
 import { SidebarInset, SidebarPanel, SidebarProvider } from "./sidebar/sidebar";
@@ -14,35 +15,44 @@ export type NavItem = {
   Actions?: ComponentType;
 };
 
-// TODO: 실제 사용하는 기능들을 NAV_ITEM으로 변경 필요
 const NAV_ITEMS: NavItem[] = [
   { label: "대시보드", path: "", icon: <Hexagon /> },
-  { label: "게시판", path: "/bulletin", icon: <Newspaper /> },
-  { label: "멤버", path: "/members", icon: <Users /> },
-  { label: "일정", path: "/schedule", icon: <Calendar /> },
-  { label: "자료", path: "/files", icon: <FolderOpen /> },
+  { label: "게시판", path: "bulletin", icon: <Newspaper /> },
+  { label: "멤버", path: "members", icon: <Users /> },
+  { label: "일정", path: "schedule", icon: <Calendar /> },
+  // { label: "자료", path: "files", icon: <FolderOpen /> },
 ];
 
-export const SpaceSidebar = ({ children }: { children: ReactNode }) => {
+interface SpaceSidebarProps {
+  children: ReactNode;
+  space: SpaceContext["space"];
+  membership: SpaceContext["membership"];
+}
+
+export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps) => {
   return (
     <SidebarProvider>
       {/* 데스크탑: 고정 사이드바 */}
       <SidebarPanel>
-        {/* TODO: 실제 스페이스 정보로 교체 필요 */}
-        <SidebarHeader icon={<Hexagon />} title="Study Hub" description="스터디" />
+        <SidebarHeader icon={<Hexagon />} title={space.name} description={space.type} />
         <SidebarContent navItems={NAV_ITEMS} />
         <div className="mt-auto">
-          {/* TODO: 실제 유저 정보로 교체 필요 */}
-          <SidebarFooter name="Jon Doe" email="joe@acmecorp.com" />
+          <SidebarFooter
+            name={membership.nickname}
+            email={membership.email}
+            avatarUrl={membership.avatarUrl ?? undefined}
+          />
         </div>
       </SidebarPanel>
 
       {/* 메인 콘텐츠 영역 */}
       <SidebarInset>
         {/* 모바일 전용: 상단 헤더 + 탭 네비게이션 */}
-        <MobileHeader navItems={NAV_ITEMS} />
-        <MobileTabBar navItems={NAV_ITEMS} />
-        {children}
+        <div className="flex min-h-svh flex-1 flex-col overflow-hidden">
+          <MobileHeader navItems={NAV_ITEMS} />
+          <MobileTabBar navItems={NAV_ITEMS} />
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

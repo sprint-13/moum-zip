@@ -1,8 +1,9 @@
 "use client";
+
 import { Eye, EyeOff } from "@moum-zip/ui/icons";
-import { cn } from "@ui/lib/utils";
 import { useState } from "react";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { cn } from "@/shared/lib/cn";
 
 interface PasswordInputProps {
   id: string;

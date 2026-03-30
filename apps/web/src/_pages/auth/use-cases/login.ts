@@ -12,7 +12,7 @@ export type LoginResult =
   | { ok: true; data: LoginResponse }
   | { ok: false; error: "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "SERVER_ERROR" };
 
-export async function login(
+export async function loginRemote(
   input: { email: string; password: string },
   { authApi = api.auth }: Deps = {},
 ): Promise<LoginResult> {

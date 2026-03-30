@@ -1,13 +1,13 @@
-import { Button, CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
+import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
-
 import { cn } from "@/shared/lib/cn";
-
 import LocationPinIcon from "../assets/location-pin.svg";
 import type { SpaceCardItem, SpaceCardMetaChip } from "../model/types";
+import { SpaceCardJoinButton } from "./space-card-join-button";
 import { SpaceCardLikeButton } from "./space-card-like-button";
 
 interface SpaceCardProps {
+  isAuthenticated: boolean;
   item: SpaceCardItem;
 }
 
@@ -32,7 +32,7 @@ const SpaceCardStatus = ({ label }: { label: string }) => {
   );
 };
 
-export const SpaceCard = ({ item }: SpaceCardProps) => {
+export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   const {
     category,
     currentParticipants,
@@ -45,6 +45,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
     metaChips,
     status,
     title,
+    id: meetingId,
   } = item;
 
   return (
@@ -59,7 +60,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           width={340}
         />
         <div className="absolute top-4 right-4 sm:hidden">
-          <SpaceCardLikeButton isLiked={isLiked} />
+          <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
         </div>
       </div>
 
@@ -81,7 +82,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
           </div>
 
           <div className="hidden sm:block">
-            <SpaceCardLikeButton isLiked={isLiked} />
+            <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
           </div>
         </div>
 
@@ -93,7 +94,7 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
                   <MetaChip chip={chip} key={chip.id} />
                 ))}
               </div>
-              <Tag className="shrink-0" icon>
+              <Tag size="small" className="shrink-0" icon>
                 {deadlineLabel}
               </Tag>
             </div>
@@ -105,16 +106,18 @@ export const SpaceCard = ({ item }: SpaceCardProps) => {
             />
           </div>
 
-          <Button
+          <SpaceCardJoinButton
             className={cn(
               "h-12 min-w-26 shrink-0 rounded-xl border-[1.5px] px-6 font-semibold text-base leading-6 tracking-[-0.02em]",
               "w-auto",
             )}
             size="small"
             variant="secondary"
+            isAuthenticated={isAuthenticated}
+            meetingId={meetingId}
           >
             참여하기
-          </Button>
+          </SpaceCardJoinButton>
         </div>
       </div>
     </article>

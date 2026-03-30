@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { TokenService } from "@/entities/auth/model/token-service";
+import { getApi } from "@/shared/api/server";
+import { ROUTES } from "@/shared/config/routes";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
@@ -10,8 +12,11 @@ import {
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/shared/lib/cookies";
-import { login } from "./use-cases/login";
+import { loginRemote } from "./use-cases/login";
+import { logout } from "./use-cases/logout";
+import { signup } from "./use-cases/signup";
 
+// 로그인
 export type LoginActionState = {
   ok: false;
   error: "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "SERVER_ERROR";
@@ -23,7 +28,7 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
   const password = formData.get("password") as string;
 
   // use-case 호출
-  const result = await login({ email, password });
+  const result = await loginRemote({ email, password });
 
   // 실패하면 에러 반환
   if (!result.ok) return result;
@@ -44,6 +49,44 @@ export async function loginAction(_: LoginActionState, formData: FormData): Prom
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 
-  // 대시보드로 이동
-  redirect("/");
+  // 랜딩 페이지로 이동
+  redirect(ROUTES.home);
+}
+
+// 회원가입
+export type SignupActionState = {
+  ok: false;
+  error: "EMAIL_ALREADY_EXISTS" | "SERVER_ERROR";
+} | null;
+
+export async function signupAction(_: SignupActionState, formData: FormData): Promise<SignupActionState> {
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  const result = await signup({ name, email, password });
+
+  if (!result.ok) return result;
+
+  // 로그인 페이지로 이동
+  redirect(ROUTES.login);
+}
+
+// 로그아웃
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+
+  // 백엔드 로그아웃 API 호출 (accessToken 헤더 자동 주입)
+  try {
+    if (refreshToken) {
+      const api = await getApi();
+      await logout({ refreshToken }, { authApi: api.auth });
+    }
+  } finally {
+    // API 실패해도 로컬 로그아웃 항상 보장
+    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    redirect(ROUTES.login);
+  }
 }

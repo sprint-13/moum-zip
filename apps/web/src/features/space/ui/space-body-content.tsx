@@ -8,7 +8,7 @@ interface SpaceBodyContentProps {
 
 export const SpaceBodyContent = ({ title, children, onOpen }: SpaceBodyContentProps) => {
   return (
-    <div className="rounded-lg border border-gray-200 p-4">
+    <div className="rounded-lg border border-border p-4">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-bold text-foreground text-xl">{title}</h2>
         {onOpen ? (

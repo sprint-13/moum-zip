@@ -9,7 +9,7 @@ interface CompactCardProps {
   deadlineLabel?: string;
   dateLabel?: string;
   timeLabel?: string;
-  title?: string;
+  title: string;
   locationIcon?: ReactNode;
   locationText: string;
   isLiked?: boolean;
@@ -86,11 +86,9 @@ export function CompactCard({
       </div>
 
       <div className="flex flex-col items-start gap-0.5">
-        {title ? (
-          <h3 className="line-clamp-2 font-semibold text-[1.125rem] text-black leading-[1.4] max-sm:text-base">
-            {title}
-          </h3>
-        ) : null}
+        <h3 className="line-clamp-2 font-semibold text-[1.125rem] text-black leading-[1.4] max-sm:text-base">
+          {title}
+        </h3>
 
         <div className="flex items-center gap-1 font-medium text-slate-600 text-sm leading-[1.4] max-sm:text-xs">
           {locationIcon ? <span className="shrink-0">{locationIcon}</span> : null}

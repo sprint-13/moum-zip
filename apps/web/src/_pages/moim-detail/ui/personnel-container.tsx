@@ -3,19 +3,7 @@
 import { Badge, CheckCircleIcon, ProgressBar } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 
-interface Participant {
-  id: number | string;
-  name: string;
-  avatarText: string;
-}
-
-interface PersonnelData {
-  currentCount: number;
-  maxCount: number;
-  statusLabel: string;
-  participants: Participant[];
-  extraCount?: number;
-}
+import type { PersonnelData } from "../model/types";
 
 interface PersonnelContainerProps {
   data: PersonnelData;
@@ -23,7 +11,7 @@ interface PersonnelContainerProps {
 }
 
 export function PersonnelContainer({ data, className }: PersonnelContainerProps) {
-  const { currentCount, maxCount, statusLabel, participants, extraCount = 0 } = data;
+  const { currentParticipants, maxParticipants, statusLabel, participants, extraCount = 0 } = data;
 
   const visibleParticipants = participants.slice(0, 4);
   const hiddenCount = Math.max(participants.length - visibleParticipants.length + extraCount, 0);
@@ -45,7 +33,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
           <div className="flex w-full items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <p className="shrink-0 font-medium text-gray-900 text-lg leading-[1.4] tracking-[-0.02em] max-sm:text-sm">
-                <span className="font-bold text-primary">{currentCount}</span>명 참여
+                <span className="font-bold text-primary">{currentParticipants}</span>명 참여
               </p>
 
               <div className="flex min-w-0 items-center">
@@ -59,7 +47,11 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                     )}
                     title={participant.name}
                   >
-                    {participant.avatarText}
+                    {participant.image ? (
+                      <img src={participant.image} alt={participant.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span>{participant.name.slice(0, 1) || "?"}</span>
+                    )}
                   </div>
                 ))}
 
@@ -72,20 +64,24 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
             </div>
 
             <Badge variant="confirmed" container="none">
-              <CheckCircleIcon className="size-6 max-sm:size-4.5" />
-              <span className="font-semibold text-base max-sm:font-medium max-sm:text-xs">{statusLabel}</span>
+              {statusLabel !== "모집중" && <CheckCircleIcon className="size-6 max-sm:size-4.5" />}
+              <span className="font-semibold text-base max-sm:font-medium max-sm:text-xs">
+                {statusLabel || "모집중"}
+              </span>
             </Badge>
           </div>
 
           <div className="flex w-full flex-col items-start gap-2">
             <div className="flex w-full justify-end">
-              <span className="font-medium text-gray-500 text-sm leading-[1.4] max-sm:text-xs">최대 {maxCount}명</span>
+              <span className="font-medium text-gray-500 text-sm leading-[1.4] max-sm:text-xs">
+                최대 {maxParticipants}명
+              </span>
             </div>
 
             <ProgressBar
               aria-label="모임 참여 인원 진행률"
-              maxValue={maxCount}
-              value={currentCount}
+              maxValue={maxParticipants}
+              value={currentParticipants}
               className="w-full"
             />
           </div>

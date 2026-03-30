@@ -20,8 +20,9 @@ export const SidebarContent = ({ navItems }: SidebarContentProps) => {
     <div className="hidden flex-col gap-0.5 md:flex">
       <div className="my-4 h-[0.2px] w-full bg-primary/30" />
       {navItems.map(({ label, path, icon }) => {
-        const href = `/${spaceSlug}${path}`;
-        return <SidebarItem key={path} href={href} label={label} icon={icon} active={pathname.startsWith(href)} />;
+        const href = path === "" ? `/${spaceSlug}` : `/${spaceSlug}/${path}`;
+        const active = path === "" ? pathname === href : pathname.startsWith(href);
+        return <SidebarItem key={path} href={href} label={label} icon={icon} active={active} />;
       })}
     </div>
   );

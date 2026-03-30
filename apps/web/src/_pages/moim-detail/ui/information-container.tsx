@@ -4,23 +4,13 @@ import { MoreHorizontal } from "@moum-zip/ui/icons";
 import { Button, Dropdown, Tag } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-
 import CrownIcon from "../assets/svg/crown.svg";
 import LocationIcon from "../assets/svg/location.svg";
+import type { InformationData } from "../model/types";
 import { AlertModal } from "./alert-modal";
 import { LikeButton } from "./like-button";
 
 type ViewType = "member" | "manager";
-
-interface InformationData {
-  id: number | string;
-  deadlineLabel: string;
-  dateLabel: string;
-  timeLabel: string;
-  title: string;
-  category: string;
-  isLiked: boolean;
-}
 
 interface InformationContainerProps {
   data: InformationData;
@@ -28,12 +18,13 @@ interface InformationContainerProps {
   viewType?: ViewType;
   isLoggedIn?: boolean;
   isParticipating?: boolean;
-  onToggleLike?: (id: number | string) => void;
-  onParticipateToggle?: (id: number | string, nextParticipating: boolean) => void;
-  onShare?: (id: number | string) => void;
-  onEdit?: (id: number | string) => void;
-  onDelete?: (id: number | string) => void;
+  onToggleLike?: () => void;
+  onParticipateToggle?: (meetingId: number, nextParticipating: boolean) => void;
+  onShare?: (meetingId: number) => void;
+  onEdit?: (meetingId: number) => void;
+  onDelete?: (meetingId: number) => void;
   onLoginAction?: () => void;
+  onEnterSpace?: (meetingId: number) => void;
 }
 
 export function InformationContainer({
@@ -48,6 +39,7 @@ export function InformationContainer({
   onEdit,
   onDelete,
   onLoginAction,
+  onEnterSpace,
 }: InformationContainerProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -93,10 +85,21 @@ export function InformationContainer({
         size: "small" as const,
       },
     },
-  ];
+  ].filter((item) => item.label);
+
+  const handleLikeClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    onToggleLike?.();
+  };
 
   const handleMainButtonClick = () => {
-    if (isManager) return;
+    if (isManager) {
+      return;
+    }
 
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
@@ -104,6 +107,15 @@ export function InformationContainer({
     }
 
     onParticipateToggle?.(data.id, !isParticipating);
+  };
+
+  const handleEnterSpaceClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    onEnterSpace?.(data.id);
   };
 
   const handleDeleteConfirm = () => {
@@ -114,6 +126,58 @@ export function InformationContainer({
   const handleLoginConfirm = () => {
     setIsLoginModalOpen(false);
     onLoginAction?.();
+  };
+
+  const renderPrimaryButton = (label: string, onClick: () => void, variant: "primary" | "secondary" = "primary") => (
+    <>
+      <Button
+        type="button"
+        variant={variant}
+        size="large"
+        className={cn(
+          "min-w-0 flex-1 max-sm:hidden",
+          variant === "secondary" && "border border-primary bg-white text-green-600",
+        )}
+        onClick={onClick}
+      >
+        {label}
+      </Button>
+
+      <Button
+        type="button"
+        variant={variant}
+        size="small"
+        className={cn(
+          "hidden min-w-0 flex-1 max-sm:inline-flex",
+          variant === "secondary" && "border border-primary bg-white text-green-600",
+        )}
+        onClick={onClick}
+      >
+        {label}
+      </Button>
+    </>
+  );
+
+  const renderActionButtons = () => {
+    if (isManager) {
+      return (
+        <>
+          {renderPrimaryButton("공유하기", () => onShare?.(data.id), "secondary")}
+          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
+        </>
+      );
+    }
+
+    if (isParticipating) {
+      return (
+        <>
+          {renderPrimaryButton("참여 취소하기", handleMainButtonClick, "secondary")}
+          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
+        </>
+      );
+    }
+
+    return renderPrimaryButton("참여하기", handleMainButtonClick);
   };
 
   return (
@@ -159,7 +223,7 @@ export function InformationContainer({
                     <Dropdown.Item onSelect={() => onEdit?.(data.id)}>수정하기</Dropdown.Item>
 
                     <Dropdown.Item
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setIsDeleteModalOpen(true);
                       }}
                     >
@@ -171,12 +235,12 @@ export function InformationContainer({
             </div>
 
             <div className="flex w-full flex-col gap-3 max-sm:gap-2">
-              <div className="flex min-w-0 items-center gap-2 max-sm:gap-1.5">
+              <div className="flex min-w-0 items-start gap-2 max-sm:gap-1.5">
                 <h3 className="min-w-0 break-words font-semibold text-[28px] text-gray-800 leading-[1.4] max-sm:text-[18px]">
                   {data.title}
                 </h3>
 
-                {isManager ? <CrownIcon className="h-7 w-7 shrink-0 max-sm:h-5 max-sm:w-5" /> : null}
+                {isManager ? <CrownIcon className="mt-1 h-7 w-7 shrink-0 max-sm:mt-0.5 max-sm:h-5 max-sm:w-5" /> : null}
               </div>
 
               <div className="flex min-w-0 items-center gap-1 text-slate-500">
@@ -194,83 +258,17 @@ export function InformationContainer({
                 isLiked={data.isLiked}
                 size="lg"
                 className="shrink-0 max-sm:hidden"
-                onClick={() => onToggleLike?.(data.id)}
+                onClick={handleLikeClick}
               />
 
               <LikeButton
                 isLiked={data.isLiked}
                 size="sm"
                 className="hidden shrink-0 max-sm:flex"
-                onClick={() => onToggleLike?.(data.id)}
+                onClick={handleLikeClick}
               />
 
-              {isManager ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="large"
-                    className="min-w-0 flex-1 max-sm:hidden"
-                    onClick={() => onShare?.(data.id)}
-                  >
-                    공유하기
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="small"
-                    className="hidden min-w-0 flex-1 max-sm:inline-flex"
-                    onClick={() => onShare?.(data.id)}
-                  >
-                    공유하기
-                  </Button>
-                </>
-              ) : isParticipating ? (
-                <>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="large"
-                    className="min-w-0 flex-1 border border-primary bg-white text-green-600 max-sm:hidden"
-                    onClick={handleMainButtonClick}
-                  >
-                    참여 취소하기
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="small"
-                    className="hidden min-w-0 flex-1 border border-primary bg-white text-green-600 max-sm:inline-flex"
-                    onClick={handleMainButtonClick}
-                  >
-                    참여 취소하기
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="large"
-                    className="min-w-0 flex-1 max-sm:hidden"
-                    onClick={handleMainButtonClick}
-                  >
-                    참여하기
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="small"
-                    className="hidden min-w-0 flex-1 max-sm:inline-flex"
-                    onClick={handleMainButtonClick}
-                  >
-                    참여하기
-                  </Button>
-                </>
-              )}
+              <div className="flex min-w-0 flex-1 items-center gap-4 max-sm:gap-2">{renderActionButtons()}</div>
             </div>
           </div>
         </article>

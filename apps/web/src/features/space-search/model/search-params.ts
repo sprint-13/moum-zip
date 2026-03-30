@@ -1,13 +1,28 @@
 import { SPACE_SEARCH_CATEGORIES, SPACE_SEARCH_INITIAL_QUERY_STATE } from "./constants";
-import { SPACE_SEARCH_MOCK_ITEMS } from "./mocks";
-import type { SpaceSearchCategoryId, SpaceSearchQueryState, SpaceSearchResultPage } from "./types";
+import type {
+  SpaceSearchCategoryId,
+  SpaceSearchDateSortId,
+  SpaceSearchDeadlineSortId,
+  SpaceSearchLocationId,
+  SpaceSearchQueryState,
+} from "./types";
 
-const SPACE_SEARCH_ITEMS_PER_PAGE = 4;
+export type SearchResultsCategoryId = "all" | "study" | "project";
+
+export interface SearchResultsQueryState {
+  categoryId: SearchResultsCategoryId;
+  dateSortId: SpaceSearchDateSortId;
+  deadlineSortId: SpaceSearchDeadlineSortId;
+  locationId: SpaceSearchLocationId;
+}
 
 type SearchParamRecord = Record<string, string | string[] | undefined>;
 type SearchParamSource = SearchParamRecord | { get(name: string): string | null } | undefined;
 
 const categoryIds = new Set<SpaceSearchCategoryId>(SPACE_SEARCH_CATEGORIES.map(({ id }) => id));
+const dateSortIds = new Set<SpaceSearchDateSortId>(["default", "latest", "oldest"]);
+const deadlineSortIds = new Set<SpaceSearchDeadlineSortId>(["default", "fast", "slow"]);
+const locationIds = new Set<SpaceSearchLocationId>(["all", "online", "offline"]);
 
 const isSearchParamGetter = (value: SearchParamSource): value is { get(name: string): string | null } => {
   return typeof value === "object" && value !== null && "get" in value && typeof value.get === "function";
@@ -31,44 +46,77 @@ const getSearchParamValue = (searchParams: SearchParamSource, key: string) => {
   return value ?? null;
 };
 
-const parsePositiveInteger = (value: string | null, fallback: number) => {
-  if (!value) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return fallback;
-  }
-
-  return parsed;
-};
-
 const isSpaceSearchCategoryId = (value: string): value is SpaceSearchCategoryId => {
   return categoryIds.has(value as SpaceSearchCategoryId);
 };
 
+const isSpaceSearchDateSortId = (value: string): value is SpaceSearchDateSortId => {
+  return dateSortIds.has(value as SpaceSearchDateSortId);
+};
+
+const isSpaceSearchDeadlineSortId = (value: string): value is SpaceSearchDeadlineSortId => {
+  return deadlineSortIds.has(value as SpaceSearchDeadlineSortId);
+};
+
+const isSpaceSearchLocationId = (value: string): value is SpaceSearchLocationId => {
+  return locationIds.has(value as SpaceSearchLocationId);
+};
+
+export const normalizeSearchCategoryId = (categoryId: SpaceSearchQueryState["categoryId"]): SearchResultsCategoryId => {
+  if (categoryId === "study" || categoryId === "project") {
+    return categoryId;
+  }
+
+  return "all";
+};
+
+export const normalizeSearchQueryState = (queryState: SpaceSearchQueryState): SearchResultsQueryState => {
+  return {
+    categoryId: normalizeSearchCategoryId(queryState.categoryId),
+    dateSortId: queryState.dateSortId,
+    deadlineSortId: queryState.deadlineSortId,
+    locationId: queryState.locationId,
+  };
+};
+
 export const parseSpaceSearchQueryState = (searchParams: SearchParamSource): SpaceSearchQueryState => {
   const categoryId = getSearchParamValue(searchParams, "category");
-  const page = parsePositiveInteger(getSearchParamValue(searchParams, "page"), SPACE_SEARCH_INITIAL_QUERY_STATE.page);
+  const dateSortId = getSearchParamValue(searchParams, "dateSort");
+  const deadlineSortId = getSearchParamValue(searchParams, "deadlineSort");
+  const locationId = getSearchParamValue(searchParams, "location");
 
   return {
     categoryId:
       categoryId && isSpaceSearchCategoryId(categoryId) ? categoryId : SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId,
-    page,
+    dateSortId:
+      dateSortId && isSpaceSearchDateSortId(dateSortId) ? dateSortId : SPACE_SEARCH_INITIAL_QUERY_STATE.dateSortId,
+    deadlineSortId:
+      deadlineSortId && isSpaceSearchDeadlineSortId(deadlineSortId)
+        ? deadlineSortId
+        : SPACE_SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+    locationId:
+      locationId && isSpaceSearchLocationId(locationId) ? locationId : SPACE_SEARCH_INITIAL_QUERY_STATE.locationId,
   };
 };
 
 export const buildSpaceSearchHref = (pathname: string, queryState: SpaceSearchQueryState) => {
   const searchParams = new URLSearchParams();
+  const normalizedQueryState = normalizeSearchQueryState(queryState);
 
-  if (queryState.categoryId !== SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId) {
-    searchParams.set("category", queryState.categoryId);
+  if (normalizedQueryState.categoryId !== SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId) {
+    searchParams.set("category", normalizedQueryState.categoryId);
   }
 
-  if (queryState.page > 1) {
-    searchParams.set("page", String(queryState.page));
+  if (normalizedQueryState.dateSortId !== SPACE_SEARCH_INITIAL_QUERY_STATE.dateSortId) {
+    searchParams.set("dateSort", normalizedQueryState.dateSortId);
+  }
+
+  if (normalizedQueryState.locationId !== SPACE_SEARCH_INITIAL_QUERY_STATE.locationId) {
+    searchParams.set("location", normalizedQueryState.locationId);
+  }
+
+  if (normalizedQueryState.deadlineSortId !== SPACE_SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
+    searchParams.set("deadlineSort", normalizedQueryState.deadlineSortId);
   }
 
   const queryString = searchParams.toString();
@@ -76,23 +124,13 @@ export const buildSpaceSearchHref = (pathname: string, queryState: SpaceSearchQu
   return queryString ? `${pathname}?${queryString}` : pathname;
 };
 
-export const getSpaceSearchResultPage = (queryState: SpaceSearchQueryState): SpaceSearchResultPage => {
-  // TODO: API 연동 시 mock 필터링 대신 서버 응답을 매핑할 예정
-  let filteredItems = [...SPACE_SEARCH_MOCK_ITEMS];
+export const createSpaceSearchStateKey = (queryState: SpaceSearchQueryState) => {
+  const normalizedQueryState = normalizeSearchQueryState(queryState);
 
-  if (queryState.categoryId !== SPACE_SEARCH_INITIAL_QUERY_STATE.categoryId) {
-    filteredItems = filteredItems.filter(({ categoryId }) => categoryId === queryState.categoryId);
-  }
-
-  const totalPages = filteredItems.length === 0 ? 0 : Math.ceil(filteredItems.length / SPACE_SEARCH_ITEMS_PER_PAGE);
-  const currentPage = totalPages === 0 ? 1 : Math.min(queryState.page, totalPages);
-  const startIndex = (currentPage - 1) * SPACE_SEARCH_ITEMS_PER_PAGE;
-
-  return {
-    items: filteredItems.slice(startIndex, startIndex + SPACE_SEARCH_ITEMS_PER_PAGE),
-    pagination: {
-      currentPage,
-      totalPages,
-    },
-  };
+  return [
+    normalizedQueryState.categoryId,
+    normalizedQueryState.dateSortId,
+    normalizedQueryState.locationId,
+    normalizedQueryState.deadlineSortId,
+  ].join(":");
 };

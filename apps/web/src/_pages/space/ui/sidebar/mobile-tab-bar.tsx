@@ -16,8 +16,8 @@ export function MobileTabBar({ navItems }: MobileTabBarProps) {
   return (
     <nav className="no-scrollbar flex h-11 shrink-0 justify-around gap-4 overflow-x-scroll border-b bg-card md:hidden">
       {navItems.map(({ label, path, icon }) => {
-        const href = `/${spaceSlug}${path}`;
-        const active = pathname.startsWith(href);
+        const href = path === "" ? `/${spaceSlug}` : `/${spaceSlug}/${path}`;
+        const active = path === "" ? pathname === href : pathname.startsWith(href);
         return (
           <Link
             key={path}
