@@ -39,9 +39,7 @@ export function CompactCard({
         {image}
 
         <div className="absolute right-3 bottom-3 max-sm:right-2.5 max-sm:bottom-2.5">
-          <LikeButton isLiked={isLiked} size="md" className="shrink-0 max-sm:hidden" onClick={onLikeClick} />
-
-          <LikeButton isLiked={isLiked} size="sm" className="hidden shrink-0 max-sm:flex" onClick={onLikeClick} />
+          <LikeButton isLiked={isLiked} className="h-10 w-10 shrink-0 sm:h-12 sm:w-12" onClick={onLikeClick} />
         </div>
       </div>
 

@@ -134,6 +134,7 @@ export async function joinMeetingAction(
     };
   }
 }
+
 export async function deleteMeetingAction(meetingId: number): Promise<ActionResult<{ meetingId: number }>> {
   const { authenticated } = await isAuth();
 
