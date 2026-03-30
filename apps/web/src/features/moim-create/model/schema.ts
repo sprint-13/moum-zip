@@ -11,7 +11,10 @@ export const moimCreateSchema = z
   .object({
     type: z.enum(["study", "project"], { error: "모임 종류를 선택해주세요." }),
     name: z.string().min(1, "모임 이름을 입력해주세요."),
-    capacity: z.number({ error: "모집 정원을 입력해주세요." }).min(1, "1명 이상 입력해주세요."),
+    capacity: z
+      .number({ error: "모집 정원을 입력해주세요." })
+      .min(1, "1명 이상 입력해주세요.")
+      .max(1000, "최대 1000명까지 가능합니다."),
     description: z.string().min(1, "모임 설명을 입력해주세요."),
     image: z.string().min(1, "이미지를 첨부해주세요."),
     location: z.enum(["online", "offline"], { error: "장소를 선택해주세요." }),

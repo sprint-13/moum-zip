@@ -58,4 +58,22 @@ describe("moimCreateSchema", () => {
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].message).toBe("1명 이상 입력해주세요.");
   });
+
+  it("capacity가 최대 정원 1000을 초과하면 실패", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, capacity: 1001 });
+    expect(result.success).toBe(false);
+    const capacityIssue = result.error?.issues.find((issue) => issue.path[0] === "capacity");
+    expect(capacityIssue?.message).toBe("최대 1000명까지 가능합니다.");
+  });
+
+  it("capacity가 최대 정원과 같으면 성공", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, capacity: 1000 });
+    expect(result.success).toBe(true);
+  });
+
+  it("capacity가 음수이면 실패", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, capacity: -1 });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("1명 이상 입력해주세요.");
+  });
 });
