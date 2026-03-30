@@ -86,12 +86,19 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
-  const matchesSearchResultsQuery = (queryKey: readonly unknown[]) =>
-    queryKey[0] === spaceSearchQueryKeys.all[0] &&
-    typeof queryKey[2] === "object" &&
-    queryKey[2] !== null &&
-    "isAuthenticated" in queryKey[2] &&
-    queryKey[2].isAuthenticated === isAuthenticated;
+  const matchesSearchResultsQuery = (queryKey: readonly unknown[]) => {
+    const authSegment = queryKey[2];
+
+    if (queryKey[0] !== spaceSearchQueryKeys.all[0]) {
+      return false;
+    }
+
+    if (!authSegment || typeof authSegment !== "object") {
+      return false;
+    }
+
+    return "isAuthenticated" in authSegment && authSegment.isAuthenticated === isAuthenticated;
+  };
 
   useEffect(() => {
     setOptimisticIsLiked(isLiked);
