@@ -1,21 +1,25 @@
 "use client";
 
-import { Button } from "@ui/components";
+import { Button, toast } from "@ui/components";
 import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 
 import { ROUTES } from "@/shared/config/routes";
 
-type SpaceCardJoinButtonProps = ComponentProps<typeof Button> & { meetingId: string };
+interface SpaceCardJoinButtonProps extends Omit<ComponentProps<typeof Button>, "onClick"> {
+  isAuthenticated: boolean;
+  meetingId: string;
+}
 
-export const SpaceCardJoinButton = ({ onClick, meetingId, ...props }: SpaceCardJoinButtonProps) => {
+export const SpaceCardJoinButton = ({ isAuthenticated, meetingId, ...props }: SpaceCardJoinButtonProps) => {
   const router = useRouter();
 
-  // TODO: 라우팅 용 버튼인데 onClick compose할 필요 없어 보임
-  const handleClick: SpaceCardJoinButtonProps["onClick"] = (event) => {
-    onClick?.(event);
-
-    if (event.defaultPrevented) {
+  const handleClick = () => {
+    if (!isAuthenticated) {
+      toast({
+        message: "로그인 후 이용할 수 있어요.",
+        size: "small",
+      });
       return;
     }
 

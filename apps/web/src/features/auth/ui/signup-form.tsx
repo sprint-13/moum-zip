@@ -4,6 +4,7 @@ import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
+import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login-url";
 import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
@@ -113,8 +114,20 @@ export const SignupForm = () => {
         <div className="flex-1 border-border border-t" />
       </div>
       <div className="flex flex-col items-center gap-3 md:flex-row md:justify-center">
-        <SocialButton provider="google" className="w-full md:w-[222px]" />
-        <SocialButton provider="kakao" className="w-full md:w-[222px]" />
+        <SocialButton
+          provider="google"
+          className="w-full md:w-[222px]"
+          onClick={() => {
+            window.location.href = getGoogleLoginUrl();
+          }}
+        />
+        <SocialButton
+          provider="kakao"
+          className="w-full md:w-[222px]"
+          onClick={() => {
+            window.location.href = getKakaoLoginUrl();
+          }}
+        />
       </div>
       <p className="mt-8 text-center text-foreground text-sm md:text-[15px]">
         이미 회원이신가요?{" "}
