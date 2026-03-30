@@ -1,17 +1,43 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as spaceQueries from "@/entities/spaces/queries";
+import { memberQueries } from "@/entities/member";
+import { spaceQueries } from "@/entities/spaces";
 import type { ApiClient } from "@/shared/api";
 import { createMoim } from "./moim-create";
 
-vi.mock("@/shared/db", () => ({ db: {} }));
-vi.mock("@/entities/spaces/queries");
+vi.mock("@/shared/api/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/shared/api/server")>();
+  return {
+    ...actual,
+    isAuth: vi.fn().mockResolvedValue({ authenticated: true, userId: 1 }),
+  };
+});
 
-const mockInsertSpace = vi.mocked(spaceQueries.insertSpace);
+vi.mock("@/shared/db", () => ({ db: {} }));
+vi.mock("@/entities/member");
+vi.mock("@/entities/spaces");
+
+const mockInsertSpace = vi.mocked(spaceQueries.create);
+const mockInsertSpaceMember = vi.mocked(memberQueries.create);
+
 const mockCreate = vi.fn();
+const mockGetUser = vi.fn().mockResolvedValue({
+  ok: true,
+  data: {
+    id: 1,
+    teamId: "moum-zip-dev",
+    email: "test@example.com",
+    name: "테스트",
+    companyName: null,
+    image: null,
+    createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z",
+  },
+});
 
 type AuthedApi = ApiClient;
 const mockAuthedApi = {
   meetings: { create: mockCreate },
+  user: { getUser: mockGetUser },
 } as unknown as AuthedApi;
 
 const mockDeps = {
@@ -55,10 +81,21 @@ describe("createMoim", () => {
     mockInsertSpace.mockResolvedValue(mockSpaceResult);
   });
 
-  it("외부 API 호출 후 SPACE DB에 저장", async () => {
+  it("외부 API 호출 후 SPACE DB에 저장 후 멤버로 등록", async () => {
     const result = await createMoim(baseInput, mockDeps);
     expect(mockCreate).toHaveBeenCalledOnce();
     expect(mockInsertSpace).toHaveBeenCalledOnce();
+    expect(mockInsertSpaceMember).toHaveBeenCalledOnce();
+    expect(mockInsertSpaceMember).toHaveBeenCalledWith(
+      expect.objectContaining({
+        spaceId: mockSpaceResult.id,
+        userId: 1,
+        role: "manager",
+        nickname: "테스트",
+        email: "test@example.com",
+        avatarUrl: null,
+      }),
+    );
     expect(result.meeting.id).toBe(20);
     expect(result.space.slug).toBe("20");
   });
@@ -72,5 +109,11 @@ describe("createMoim", () => {
     mockCreate.mockResolvedValue({ ok: false });
     await expect(createMoim(baseInput, mockDeps)).rejects.toThrow();
     expect(mockInsertSpace).not.toHaveBeenCalled();
+    expect(mockInsertSpaceMember).not.toHaveBeenCalled();
+  });
+
+  it("스페이스 멤버 등록 실패 시 에러를 던짐", async () => {
+    mockInsertSpaceMember.mockRejectedValue(new Error("스페이스 멤버 저장에 실패했습니다."));
+    await expect(createMoim(baseInput, mockDeps)).rejects.toThrow("스페이스 멤버 저장에 실패했습니다.");
   });
 });

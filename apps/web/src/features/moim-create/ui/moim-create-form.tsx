@@ -91,9 +91,14 @@ export const MoimCreateForm = () => {
             placeholder="숫자만 입력해주세요"
             type="number"
             required
+            min={1}
+            max={1000}
             isDestructive={!!errors.capacity}
             message={errors.capacity?.message}
             {...register("capacity", { valueAsNumber: true })}
+            onKeyDown={(e) => {
+              if (["-", "e", "E", "+"].includes(e.key)) e.preventDefault();
+            }}
           />
 
           <Controller

@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { date, integer, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import { date, integer, pgTable, serial, text, timestamp, unique } from "drizzle-orm/pg-core";
 
 export const spaces = pgTable("spaces", {
   id: text("id").primaryKey(),
@@ -18,7 +18,7 @@ export type SpaceDB = InferSelectModel<typeof spaces>;
 export type NewSpaceDB = InferInsertModel<typeof spaces>;
 
 export const spaceMembers = pgTable("space_members", {
-  id: text("id").primaryKey(),
+  id: serial("id").primaryKey(),
   spaceId: text("space_id")
     .notNull()
     .references(() => spaces.id),
@@ -26,7 +26,7 @@ export const spaceMembers = pgTable("space_members", {
   role: text("role", { enum: ["manager", "moderator", "member"] }).notNull(),
   nickname: text("nickname").notNull(),
   avatarUrl: text("avatar_url"),
-  email: text("email").notNull(),
+  email: text("email"),
   joinedAt: timestamp("joined_at", {
     withTimezone: true,
     mode: "string",

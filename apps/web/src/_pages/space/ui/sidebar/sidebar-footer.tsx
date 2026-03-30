@@ -6,7 +6,7 @@ import { useSidebar } from "./sidebar";
 
 interface SidebarFooterProps {
   name: string;
-  email: string;
+  email: string | null;
   avatarUrl?: string;
 }
 

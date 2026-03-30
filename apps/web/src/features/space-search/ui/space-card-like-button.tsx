@@ -2,7 +2,7 @@
 
 import type { InfiniteData } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { UtilityButton } from "@ui/components";
+import { toast, UtilityButton } from "@ui/components";
 import { useEffect, useState, useTransition } from "react";
 
 import { createSearchFavoriteAction, deleteSearchFavoriteAction } from "@/_pages/space-search/actions";
@@ -12,6 +12,7 @@ import HeartIcon from "../assets/heart-default.svg";
 import { spaceSearchQueryKeys } from "../model/query-keys";
 
 interface SpaceCardLikeButtonProps {
+  isAuthenticated: boolean;
   isLiked?: boolean;
   meetingId: string;
 }
@@ -81,16 +82,37 @@ const updateLikedStateInSearchResults = (
   };
 };
 
-export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLikeButtonProps) => {
+export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingId }: SpaceCardLikeButtonProps) => {
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
+  const matchesSearchResultsQuery = (queryKey: readonly unknown[]) => {
+    const authSegment = queryKey[2];
+
+    if (queryKey[0] !== spaceSearchQueryKeys.all[0]) {
+      return false;
+    }
+
+    if (!authSegment || typeof authSegment !== "object") {
+      return false;
+    }
+
+    return "isAuthenticated" in authSegment && authSegment.isAuthenticated === isAuthenticated;
+  };
 
   useEffect(() => {
     setOptimisticIsLiked(isLiked);
   }, [isLiked]);
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      toast({
+        message: "로그인 후 이용할 수 있어요.",
+        size: "small",
+      });
+      return;
+    }
+
     const parsedMeetingId = Number(meetingId);
 
     if (!Number.isFinite(parsedMeetingId)) {
@@ -103,7 +125,7 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
       setOptimisticIsLiked(previousIsLiked);
       queryClient.setQueriesData<SearchResultsInfiniteData>(
         {
-          predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
+          predicate: (query) => matchesSearchResultsQuery(query.queryKey),
         },
         (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, previousIsLiked),
       );
@@ -112,26 +134,52 @@ export const SpaceCardLikeButton = ({ isLiked = false, meetingId }: SpaceCardLik
     setOptimisticIsLiked(nextIsLiked);
     queryClient.setQueriesData<SearchResultsInfiniteData>(
       {
-        predicate: (query) => query.queryKey[0] === spaceSearchQueryKeys.all[0],
+        predicate: (query) => matchesSearchResultsQuery(query.queryKey),
       },
       (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, nextIsLiked),
     );
 
+    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const timerLabel = nextIsLiked
+      ? `[search] client like action meetingId=${meetingId} requestId=${requestId}`
+      : `[search] client unlike action meetingId=${meetingId} requestId=${requestId}`;
+    console.time(timerLabel);
+
     startTransition(async () => {
       try {
-        if (nextIsLiked) {
-          await createSearchFavoriteAction(parsedMeetingId);
-        } else {
-          await deleteSearchFavoriteAction(parsedMeetingId);
-        }
-      } catch (error) {
-        if (isRedirectError(error)) {
+        const result = nextIsLiked
+          ? await createSearchFavoriteAction(parsedMeetingId)
+          : await deleteSearchFavoriteAction(parsedMeetingId);
+
+        if (!result.ok) {
           rollbackLikedState();
 
+          if (result.error === "UNAUTHORIZED") {
+            toast({
+              message: "로그인 후 이용할 수 있어요.",
+              size: "small",
+            });
+            return;
+          }
+
+          toast({
+            message: "요청에 실패했어요. 다시 시도해 주세요.",
+            size: "small",
+          });
+        }
+      } catch (error) {
+        rollbackLikedState();
+
+        if (isRedirectError(error)) {
           throw error;
         }
 
-        rollbackLikedState();
+        toast({
+          message: "요청에 실패했어요. 다시 시도해 주세요.",
+          size: "small",
+        });
+      } finally {
+        console.timeEnd(timerLabel);
       }
     });
   };
