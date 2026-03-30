@@ -171,13 +171,13 @@ export function InformationContainer({
     if (isParticipating) {
       return (
         <>
-          {renderPrimaryButton("참여 취소하기", handleMainButtonClick, "secondary")}
+          {renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary")}
           {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
         </>
       );
     }
 
-    return renderPrimaryButton("참여하기", handleMainButtonClick);
+    return renderPrimaryButton("신청하기", handleMainButtonClick);
   };
 
   return (
@@ -256,15 +256,7 @@ export function InformationContainer({
             <div className="flex w-full items-center gap-4 max-sm:gap-2">
               <LikeButton
                 isLiked={data.isLiked}
-                size="lg"
-                className="shrink-0 max-sm:hidden"
-                onClick={handleLikeClick}
-              />
-
-              <LikeButton
-                isLiked={data.isLiked}
-                size="sm"
-                className="hidden shrink-0 max-sm:flex"
+                className="h-10 w-10 shrink-0 sm:h-[60px] sm:w-[60px]"
                 onClick={handleLikeClick}
               />
 
