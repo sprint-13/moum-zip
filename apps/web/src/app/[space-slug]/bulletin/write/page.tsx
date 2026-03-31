@@ -1,6 +1,6 @@
 import { PostCategoryGuideCard, PostWritingTipsCard } from "@/_pages/bulletin";
 import { PostWriteForm } from "@/_pages/bulletin/ui/post-write-form";
-import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceCard, SpaceHeader } from "@/features/space";
+import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 
 export default async function BulletinWritePage({ params }: { params: Promise<{ "space-slug": string }> }) {
   const slug = (await params)["space-slug"];
