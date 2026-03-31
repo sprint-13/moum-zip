@@ -2,12 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
-import { MoimFormFields, type MoimFormValues } from "@/features/moim-create/ui/moim-form-fields";
+import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
 import { useMoimEditForm } from "@/features/moim-edit/model/use-moim-edit-form";
 
 interface MoimEditFormProps {
   meetingId: number;
-  initialValues: MoimFormValues;
+  initialValues: MoimCreateFormValues;
 }
 
 export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) => {

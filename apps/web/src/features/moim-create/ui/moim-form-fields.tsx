@@ -6,21 +6,8 @@ import Image from "next/image";
 import type { BaseSyntheticEvent } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
+import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
-
-export interface MoimFormValues {
-  type: "study" | "project";
-  name: string;
-  capacity: number;
-  location: "online" | "offline";
-  description: string;
-  image: string;
-  date: string;
-  time: string;
-  deadlineDate: string;
-  deadlineTime: string;
-  themeColor: string;
-}
 
 interface MoimFormState {
   ok: false;
@@ -28,8 +15,8 @@ interface MoimFormState {
 }
 
 interface MoimFormFieldsProps {
-  form: UseFormReturn<MoimFormValues>;
-  onSubmit: (event?: BaseSyntheticEvent) => void | Promise<void>;
+  form: UseFormReturn<MoimCreateFormValues>;
+  onSubmit: (event?: React.BaseSyntheticEvent) => void;
   state: MoimFormState | null;
   isPending: boolean;
   submitLabel: string;
