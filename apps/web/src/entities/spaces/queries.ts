@@ -17,4 +17,13 @@ export const spaceQueries = {
     }
     return result;
   },
+  updateByMeetingId: async (meetingId: number, data: Partial<NewSpaceDB>) => {
+    const [result] = await db.update(spaces).set(data).where(eq(spaces.meetingId, meetingId)).returning();
+
+    if (!result) {
+      throw new Error("Space 저장 결과를 받아오지 못했습니다.");
+    }
+
+    return result;
+  },
 };
