@@ -1,36 +1,6 @@
-export type MypageTabKey = "joined" | "created" | "liked";
-export type MypageBadgeVariant = "scheduled" | "waiting" | "completed" | "confirmed";
-export type MypageActionVariant = "primary" | "secondary";
-export type MoimImageTone = "beige" | "daylight" | "sunset" | "city";
+import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "./model/types";
 
-export interface ProfileMockData {
-  name: string;
-  email: string;
-  imageUrl?: string;
-}
-
-export interface BadgeMockData {
-  label: string;
-  variant: MypageBadgeVariant;
-  withIcon?: boolean;
-}
-
-export interface MoimCardMockData {
-  id: string;
-  title: string;
-  participantCount: string;
-  location: string;
-  date: string;
-  time: string;
-  liked: boolean;
-  imageTone: MoimImageTone;
-  actionLabel: string;
-  actionVariant: MypageActionVariant;
-  primaryBadge: BadgeMockData;
-  secondaryBadge?: BadgeMockData;
-}
-
-export const profileMockData: ProfileMockData = {
+export const profileMockData: MypageProfile = {
   name: "럽윈즈올",
   email: "lovewins@codeit.com",
 };
@@ -41,7 +11,7 @@ export const mypageTabs: Array<{ key: MypageTabKey; label: string }> = [
   { key: "liked", label: "찜한 모임" },
 ];
 
-export const mypageMoimMockData: Record<MypageTabKey, MoimCardMockData[]> = {
+export const mypageMoimMockData: Record<MypageTabKey, MypageMoimCard[]> = {
   joined: [
     {
       id: "joined-1",
@@ -133,7 +103,7 @@ export const mypageMoimMockData: Record<MypageTabKey, MoimCardMockData[]> = {
   ],
 };
 
-export const createdMoimMockData: Record<"ongoing" | "ended", MoimCardMockData[]> = {
+export const createdMoimMockData: Record<CreatedFilterKey, MypageMoimCard[]> = {
   ongoing: mypageMoimMockData.created,
   ended: [
     /*
