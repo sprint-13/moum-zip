@@ -43,16 +43,6 @@ export const ProfileEditModal = ({
   const normalizedEmail = email ?? "";
   const isSaveDisabled = nickname.trim() === "" || normalizedEmail.trim() === "";
 
-  const handleDialogOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) {
-      onCancel();
-    }
-  };
-
-  const handleImageButtonClick = () => {
-    fileInputRef.current?.click();
-  };
-
   const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const imageFile = event.target.files?.[0];
 
@@ -65,7 +55,14 @@ export const ProfileEditModal = ({
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={handleDialogOpenChange}>
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          onCancel();
+        }
+      }}
+    >
       <AlertDialogContent className="w-[calc(100vw-32px)] max-w-120 gap-0 rounded-[28px] border border-primary/20 bg-background p-6 shadow-xl sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -103,7 +100,7 @@ export const ProfileEditModal = ({
                   variant="secondary"
                   size="small"
                   className="min-w-0 gap-2 px-4"
-                  onClick={handleImageButtonClick}
+                  onClick={() => fileInputRef.current?.click()}
                   icon={<Pencil size={14} />}
                 >
                   이미지 변경

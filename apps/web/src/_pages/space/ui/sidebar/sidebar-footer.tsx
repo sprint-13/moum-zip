@@ -87,7 +87,7 @@ export const SidebarFooter = ({ name, email, avatarUrl }: SidebarFooterProps) =>
     setIsProfileModalOpen(true);
   };
 
-  const handleProfileModalCancel = () => {
+  const handleProfileEditingCancel = () => {
     resetEditingProfile();
     setIsProfileModalOpen(false);
   };
@@ -150,7 +150,7 @@ export const SidebarFooter = ({ name, email, avatarUrl }: SidebarFooterProps) =>
       <ProfileEditModal
         isOpen={isProfileModalOpen}
         profile={editingProfile}
-        onCancel={handleProfileModalCancel}
+        onCancel={handleProfileEditingCancel}
         onImageChange={handleProfileImageChange}
         onImageRemove={handleProfileImageRemove}
         onProfileChange={updateEditingProfile}
