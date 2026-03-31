@@ -4,27 +4,9 @@ import { CheckIcon } from "@ui/icons";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { createPostAction, updatePostAction } from "../actions";
-
-const CATEGORY_STYLE: Record<PostCategory, { active: string; inactive: string }> = {
-  notice: {
-    active: "bg-blue-500 text-white border-blue-500",
-    inactive: "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100",
-  },
-  discussion: {
-    active: "bg-purple-500 text-white border-purple-500",
-    inactive: "bg-purple-50 text-purple-600 border-purple-100 hover:bg-purple-100",
-  },
-  question: {
-    active: "bg-amber-500 text-white border-amber-500",
-    inactive: "bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100",
-  },
-  material: {
-    active: "bg-emerald-500 text-white border-emerald-500",
-    inactive: "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100",
-  },
-};
 
 interface PostWriteFormProps {
   slug: string;
@@ -91,8 +73,8 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       <div className="flex flex-col gap-2.5">
         <span className="font-semibold text-neutral-700 text-sm">카테고리</span>
         <div className="flex flex-wrap gap-2">
-          {(Object.keys(CATEGORY_LABELS) as PostCategory[]).map((cat) => {
-            const style = CATEGORY_STYLE[cat];
+          {POST_CATEGORY_ORDER.map((cat) => {
+            const { chip } = POST_CATEGORY_META[cat];
             return (
               <button
                 key={cat}
@@ -100,7 +82,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
                 aria-pressed={selectedCategory === cat}
                 onClick={() => setValue("category", cat)}
                 className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-bold text-[12px] transition-all ${
-                  selectedCategory === cat ? `${style.active} shadow-md` : style.inactive
+                  selectedCategory === cat ? `${chip.active} shadow-md` : chip.inactive
                 }`}
               >
                 {selectedCategory === cat && <CheckIcon size={14} />}
