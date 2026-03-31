@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckIcon } from "@ui/icons";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -97,19 +98,17 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
                 key={cat}
                 type="button"
                 onClick={() => setValue("category", cat)}
-                className={`rounded-full border px-3.5 py-1 font-bold text-[12px] transition-all ${
-                  selectedCategory === cat ? style.active : style.inactive
+                className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-bold text-[12px] transition-all ${
+                  selectedCategory === cat ? `${style.active} shadow-md` : style.inactive
                 }`}
               >
+                {selectedCategory === cat && <CheckIcon size={14} />}
                 {CATEGORY_LABELS[cat]}
               </button>
             );
           })}
         </div>
       </div>
-
-      {/* 구분선 */}
-      <div className="border-border border-t" />
 
       {/* 제목 */}
       <div className="flex flex-col gap-2">
@@ -147,7 +146,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       {errors.root && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-red-600 text-sm">{errors.root.message}</p>}
 
       {/* 버튼 */}
-      <div className="flex justify-end gap-2 border-border border-t pt-4">
+      <div className="flex justify-end gap-2 pt-4">
         <button
           type="button"
           onClick={() => router.back()}
