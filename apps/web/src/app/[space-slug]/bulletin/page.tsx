@@ -1,14 +1,11 @@
 import { Pencil } from "@moum-zip/ui/icons";
 import Link from "next/link";
+import { Suspense } from "react";
 import { BulletinInfoCard, BulletinPopularPostCard, BulletinTable } from "@/_pages/bulletin";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
-import { getSpaceContext } from "@/features/space/lib/get-space-context";
-import { getBulletinPostsUseCase } from "@/features/space/use-cases/get-bulletin-posts";
 
 export default async function BulletinPage({ params }: { params: Promise<{ "space-slug": string }> }) {
   const slug = (await params)["space-slug"];
-  const { space } = await getSpaceContext(slug);
-  const { posts } = await getBulletinPostsUseCase(space.spaceId, { page: 1 });
 
   const WritePostButton = (
     <Link
@@ -29,7 +26,9 @@ export default async function BulletinPage({ params }: { params: Promise<{ "spac
       />
       <SpaceBody>
         <SpaceBodyLeft>
-          <BulletinTable posts={posts} />
+          <Suspense fallback={<BulletinTableSkeleton />}>
+            <BulletinTable />
+          </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
           <BulletinInfoCard />
@@ -37,5 +36,19 @@ export default async function BulletinPage({ params }: { params: Promise<{ "spac
         </SpaceBodyRight>
       </SpaceBody>
     </>
+  );
+}
+
+function BulletinTableSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-2 px-3 pb-2">
+      <div className="h-12 rounded-t-lg bg-muted" />
+      <div className="flex flex-col gap-3 rounded-lg rounded-t-none bg-background p-4 shadow-sm">
+        {Array.from({ length: 5 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+          <div key={i} className="h-10 rounded bg-muted" />
+        ))}
+      </div>
+    </div>
   );
 }
