@@ -11,7 +11,7 @@ interface JoinMeetingDeps {
 
 export async function joinMeeting({ meetingId, isJoined }: JoinMeetingInput, { meetingsApi }: JoinMeetingDeps) {
   if (isJoined) {
-    await meetingsApi.cancelJoin(meetingId);
+    const response = await meetingsApi.cancelJoin(meetingId);
 
     return {
       meetingId,
@@ -19,7 +19,7 @@ export async function joinMeeting({ meetingId, isJoined }: JoinMeetingInput, { m
     };
   }
 
-  await meetingsApi.join(meetingId);
+  const response = await meetingsApi.join(meetingId);
 
   return {
     meetingId,

@@ -218,7 +218,13 @@ export function getIsJoined(participantsResponse: ParticipantsListResponse, curr
 }
 
 function getIsLiked<T>(meeting: T) {
-  return (meeting as T & { isFavorited?: boolean | null }).isFavorited ?? false;
+  const target = meeting as T & {
+    isFavorited?: boolean | null;
+    isLiked?: boolean | null;
+    liked?: boolean | null;
+  };
+
+  return target.isFavorited ?? target.isLiked ?? target.liked ?? false;
 }
 
 function getMeetingActionState(params: {
