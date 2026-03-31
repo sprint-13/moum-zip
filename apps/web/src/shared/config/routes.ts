@@ -4,6 +4,7 @@ export const ROUTES = {
   moimCreate: "/moim-create",
   moimDetail: "/moim-detail",
   spaces: "/spaces",
+  mypage: "/mypage",
   login: "/login",
   signup: "/signup",
 } as const;
