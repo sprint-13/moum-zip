@@ -40,8 +40,8 @@ export const ProfileEditModal = ({
 }: ProfileEditModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { avatarUrl, email, nickname } = profile;
-  const normalizedEmail = email ?? "";
-  const isSaveDisabled = nickname.trim() === "" || normalizedEmail.trim() === "";
+  const emailInputValue = email ?? "";
+  const isSaveDisabled = nickname.trim() === "";
 
   const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const imageFile = event.target.files?.[0];
@@ -142,10 +142,9 @@ export const ProfileEditModal = ({
           <InputField
             label="이메일"
             placeholder="이메일을 입력해주세요"
-            required
-            value={normalizedEmail}
+            value={emailInputValue}
             className="max-md:!max-w-full max-w-full bg-background"
-            onChange={(event) => onProfileChange({ email: event.target.value })}
+            onChange={(event) => onProfileChange({ email: event.target.value === "" ? null : event.target.value })}
           />
         </div>
 
