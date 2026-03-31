@@ -15,7 +15,7 @@ import { ProfileAvatar } from "./profile-avatar";
 
 interface ProfileEditModalProfile {
   avatarUrl?: string;
-  email: string;
+  email: string | null;
   nickname: string;
 }
 
@@ -40,7 +40,8 @@ export const ProfileEditModal = ({
 }: ProfileEditModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { avatarUrl, email, nickname } = profile;
-  const isSaveDisabled = nickname.trim() === "" || email.trim() === "";
+  const normalizedEmail = email ?? "";
+  const isSaveDisabled = nickname.trim() === "" || normalizedEmail.trim() === "";
 
   const handleDialogOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -143,7 +144,7 @@ export const ProfileEditModal = ({
             label="이메일"
             placeholder="이메일을 입력해주세요"
             required
-            value={email}
+            value={normalizedEmail}
             className="max-w-full bg-background"
             onChange={(event) => onProfileChange({ email: event.target.value })}
           />
