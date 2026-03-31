@@ -13,6 +13,18 @@ interface MoimEditContentProps {
   meetingId: number;
 }
 
+interface MeetingDetailForEdit {
+  type: string | null;
+  name: string | null;
+  capacity: number | null;
+  description: string | null;
+  image: string | null;
+  region: string | null;
+  dateTime: string | null;
+  registrationEnd: string | null;
+  themeColor?: string | null;
+}
+
 function formatDate(value?: string | null) {
   if (!value) return "";
 
@@ -52,11 +64,11 @@ function formatTime(value?: string | null) {
   return `${hour}:${minute}`;
 }
 
-function mapMeetingDetailToEditFormValues(meetingDetail: any): MoimCreateFormValues {
+function mapMeetingDetailToEditFormValues(meetingDetail: MeetingDetailForEdit): MoimCreateFormValues {
   return {
     type: meetingDetail.type === "프로젝트" ? "project" : "study",
     name: meetingDetail.name ?? "",
-    capacity: meetingDetail.capacity ?? undefined,
+    capacity: Number(meetingDetail.capacity ?? 1),
     description: meetingDetail.description ?? "",
     image: meetingDetail.image ?? "",
     location: meetingDetail.region === "offline" ? "offline" : "online",
@@ -64,7 +76,7 @@ function mapMeetingDetailToEditFormValues(meetingDetail: any): MoimCreateFormVal
     time: formatTime(meetingDetail.dateTime),
     deadlineDate: formatDate(meetingDetail.registrationEnd),
     deadlineTime: formatTime(meetingDetail.registrationEnd),
-    themeColor: "primary",
+    themeColor: meetingDetail.themeColor ?? "primary",
   };
 }
 
@@ -95,7 +107,7 @@ export default async function MoimEditPage({ params }: PageProps) {
   const { meetingId } = await params;
   const numericMeetingId = Number(meetingId);
 
-  if (Number.isNaN(numericMeetingId)) {
+  if (!Number.isInteger(numericMeetingId) || numericMeetingId <= 0) {
     notFound();
   }
 

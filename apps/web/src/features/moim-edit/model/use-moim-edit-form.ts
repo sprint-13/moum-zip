@@ -31,14 +31,16 @@ export const useMoimEditForm = ({ meetingId, initialValues }: UseMoimEditFormPar
   const [state, formAction, isPending] = useActionState(updateMoimAction, null);
 
   const form = useForm<MoimCreateFormValues>({
-    resolver: zodResolver(moimCreateSchema as any),
+    resolver: zodResolver(moimCreateSchema),
     defaultValues: initialValues,
     mode: "onSubmit",
   });
 
+  const { reset } = form;
+
   useEffect(() => {
-    form.reset(initialValues);
-  }, [initialValues, form]);
+    reset(initialValues);
+  }, [initialValues, reset]);
 
   const onSubmit = form.handleSubmit((data) => {
     startTransition(() => {

@@ -24,7 +24,7 @@ export async function updateMoimAction(_: UpdateMoimActionState, formData: FormD
   // 2. meetingId 꺼내기 (없으면 에러)
   const meetingId = Number(formData.get("meetingId"));
 
-  if (!meetingId) {
+  if (!meetingId || meetingId < 1 || !Number.isInteger(meetingId)) {
     return {
       ok: false,
       error: "잘못된 요청입니다. (meetingId 없음)",

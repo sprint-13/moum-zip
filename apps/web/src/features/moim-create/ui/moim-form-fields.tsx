@@ -23,7 +23,7 @@ export interface MoimFormValues {
 }
 
 interface MoimFormState {
-  ok: boolean;
+  ok: false;
   error?: string;
 }
 
