@@ -121,7 +121,9 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
           placeholder="제목을 입력하세요"
           disabled={isPending}
           className="rounded-lg border border-border bg-background px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
-          {...register("title", { required: "제목을 입력해주세요." })}
+          {...register("title", {
+            validate: (value) => value.trim().length > 0 || "제목을 입력해주세요.",
+          })}
         />
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
@@ -137,7 +139,9 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
           rows={14}
           disabled={isPending}
           className="resize-none rounded-lg border border-border bg-background px-4 py-3 text-[15px] text-foreground leading-relaxed outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
-          {...register("content", { required: "내용을 입력해주세요." })}
+          {...register("content", {
+            validate: (value) => value.trim().length > 0 || "내용을 입력해주세요.",
+          })}
         />
         {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
       </div>
