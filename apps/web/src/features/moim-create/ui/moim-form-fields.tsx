@@ -265,7 +265,7 @@ export const MoimFormFields = ({
         <div className="flex-1" />
       </div>
 
-      {state && !state.ok && <p className="font-medium text-destructive text-sm">{state.error}</p>}
+      {state?.error && <p className="font-medium text-destructive text-sm">{state.error}</p>}
 
       <div className="flex gap-4 pt-[80px] md:justify-end">
         <Button
