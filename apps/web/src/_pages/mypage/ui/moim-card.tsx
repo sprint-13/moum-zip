@@ -117,7 +117,7 @@ export default function MoimCard({ moim, onToggleLike, onEnterSpace }: MoimCardP
             </div>
 
             <p className="leading-relaxed">
-              <span className={metaLabelClassName}>위치</span> {moim.location}
+              {moim.location}
               <span className="mx-2 text-border">|</span>
               <span className={metaLabelClassName}>날짜</span> {moim.date}
               <span className="mx-2 text-border">|</span>

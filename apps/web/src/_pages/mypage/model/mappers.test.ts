@@ -51,7 +51,7 @@ describe("mypage mappers", () => {
       id: "7",
       title: "달램핏 모임",
       participantCount: "5/10",
-      location: "강남",
+      location: "offline",
       imageTone: "daylight",
       actionVariant: "primary",
       primaryBadge: {
@@ -78,6 +78,7 @@ describe("mypage mappers", () => {
 
     expect(mapJoinedMeeting(meeting, 2)).toMatchObject({
       id: "8",
+      location: "offline",
       imageTone: "sunset",
       actionVariant: "secondary",
       primaryBadge: {
@@ -103,6 +104,7 @@ describe("mypage mappers", () => {
 
     expect(mapCreatedMeeting(meeting, 0)).toMatchObject({
       id: "11",
+      location: "offline",
       imageTone: "beige",
       actionVariant: "primary",
       primaryBadge: {
@@ -154,6 +156,7 @@ describe("mypage mappers", () => {
     expect(mapFavoriteMeeting(favorite, 3)).toMatchObject({
       id: "12",
       liked: true,
+      location: "offline",
       imageTone: "city",
       secondaryBadge: {
         label: "개설확정",

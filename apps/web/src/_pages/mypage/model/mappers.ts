@@ -3,6 +3,20 @@ import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
+function normalizeMeetingLocation(region: string) {
+  const normalized = region.trim().toLowerCase();
+
+  if (normalized === "online" || normalized === "온라인") {
+    return "online";
+  }
+
+  if (normalized === "offline" || normalized === "오프라인") {
+    return "offline";
+  }
+
+  return "offline";
+}
+
 export function formatMeetingDateTime(dateTime: string) {
   const meetingDate = new Date(dateTime);
 
@@ -37,7 +51,7 @@ export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = fa
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: meeting.region,
+    location: normalizeMeetingLocation(meeting.region),
     date,
     time,
     liked,
@@ -58,7 +72,7 @@ export function mapCreatedMeeting(meeting: UserMeeting, index: number, liked = f
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: meeting.region,
+    location: normalizeMeetingLocation(meeting.region),
     date,
     time,
     liked,
@@ -80,7 +94,7 @@ export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number)
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: meeting.region,
+    location: normalizeMeetingLocation(meeting.region),
     date,
     time,
     liked: true,

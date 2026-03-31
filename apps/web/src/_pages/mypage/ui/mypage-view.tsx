@@ -124,7 +124,7 @@ export default function MypageView({
   };
 
   return (
-    <main className="no-scrollbar h-dvh overflow-y-auto bg-background px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
+    <main className="no-scrollbar h-dvh overflow-y-auto bg-background-secondary px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
       <div className="mx-auto w-full max-w-[80rem]">
         <section className="grid gap-8 xl:grid-cols-[17.625rem_59.875rem] xl:items-start xl:gap-10">
           <div className="space-y-8 xl:pt-4">
