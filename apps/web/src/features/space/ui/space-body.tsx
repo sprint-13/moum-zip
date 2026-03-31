@@ -8,7 +8,7 @@ type SpaceBodyProps = React.HTMLAttributes<HTMLElement>;
  * Left -> Right 순서로 컴포넌트 사용하는 것을 권장.
  */
 const SpaceBody = ({ children, className }: SpaceBodyProps) => {
-  return <section className={cn("mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3", className)}>{children}</section>;
+  return <section className={cn("grid grid-cols-1 gap-6 md:mt-12 lg:grid-cols-3", className)}>{children}</section>;
 };
 
 type SpaceBodyLeftProps = React.HTMLAttributes<HTMLElement>;
