@@ -80,6 +80,11 @@ describe("mypage mappers", () => {
         label: "참여 예정",
         variant: "scheduled",
       },
+      secondaryBadge: {
+        label: "개설대기",
+        variant: "waiting",
+        withIcon: false,
+      },
     });
   });
 
@@ -128,6 +133,7 @@ describe("mypage mappers", () => {
         variant: "completed",
       },
     });
+    expect(mapJoinedMeeting(meeting, 2).secondaryBadge).toBeUndefined();
   });
 
   it("내가 만든 모임은 진행 상태에 맞는 카드로 변환한다", () => {
@@ -171,6 +177,11 @@ describe("mypage mappers", () => {
       primaryBadge: {
         label: "진행 중",
         variant: "scheduled",
+      },
+      secondaryBadge: {
+        label: "개설대기",
+        variant: "waiting",
+        withIcon: false,
       },
     });
   });

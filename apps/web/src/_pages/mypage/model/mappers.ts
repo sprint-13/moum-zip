@@ -3,6 +3,14 @@ import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
+function getConfirmationBadge(confirmedAt: string | null | undefined) {
+  return {
+    label: confirmedAt ? "개설확정" : "개설대기",
+    variant: confirmedAt ? "confirmed" : "waiting",
+    withIcon: Boolean(confirmedAt),
+  } as const;
+}
+
 export function formatMeetingDateTime(dateTime: string | null) {
   const meetingDate = new Date(dateTime ?? new Date().toISOString());
 
@@ -49,6 +57,7 @@ export function mapJoinedMeeting(meeting: JoinedMeeting, index: number, liked = 
       label: isCompleted ? "참여 완료" : "참여 예정",
       variant: isCompleted ? "completed" : "scheduled",
     },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
 }
 
@@ -71,6 +80,7 @@ export function mapCreatedMeeting(meeting: MeetingWithHost, index: number, liked
       label: isCompleted ? "진행 종료" : "진행 중",
       variant: isCompleted ? "completed" : "scheduled",
     },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
 }
 
@@ -94,10 +104,6 @@ export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number)
       label: isCompleted ? "참여 완료" : "참여 예정",
       variant: isCompleted ? "completed" : "scheduled",
     },
-    secondaryBadge: {
-      label: meeting.confirmedAt ? "개설확정" : "개설대기",
-      variant: meeting.confirmedAt ? "confirmed" : "waiting",
-      withIcon: Boolean(meeting.confirmedAt),
-    },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
 }
