@@ -1,37 +1,21 @@
 "use client";
 
-import { useDeferredValue, useState } from "react";
-import type { Member } from "@/entities/member";
+import { Pagination } from "@moum-zip/ui/components";
+import { useSpaceContext } from "@/features/space";
+import { usePaginationUrl } from "@/shared/hooks/use-pagination-url";
+import { useMemberList } from "../hooks/use-member-list";
 import { MemberRow } from "./member-row";
 
-export function MemberTable({ members }: { members: Member[] }) {
-  const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query);
-  const normalizedQuery = deferredQuery.trim().toLowerCase();
+export function MemberTable() {
+  const { space } = useSpaceContext();
+  const { page, setPage } = usePaginationUrl();
 
-  const filtered = members.filter(
-    (m) =>
-      normalizedQuery.length === 0 ||
-      m.nickname.toLowerCase().includes(normalizedQuery) ||
-      (m.email ?? "").toLowerCase().includes(normalizedQuery),
-  );
+  const { data } = useMemberList(space.spaceId, { page });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col">
       {/* Search Row */}
-      <div className="flex items-center gap-3">
-        <label htmlFor="member-search" className="sr-only">
-          멤버 검색
-        </label>
-        <input
-          id="member-search"
-          type="text"
-          placeholder="Search members..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
-        />
-      </div>
+      <div className="flex items-center gap-3"></div>
 
       {/* Table Card */}
       <div className="overflow-hidden rounded-lg border border-border bg-background">
@@ -39,7 +23,7 @@ export function MemberTable({ members }: { members: Member[] }) {
         <div className="flex items-center justify-between border-border border-b px-5 py-4">
           <span className="font-semibold text-base text-foreground">All Members</span>
           <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-muted-foreground text-xs">
-            {members.length} members
+            {data.total} members
           </span>
         </div>
 
@@ -52,9 +36,24 @@ export function MemberTable({ members }: { members: Member[] }) {
         </div>
 
         {/* Rows */}
-        {filtered.map((member) => (
+        {data.members.map((member) => (
           <MemberRow key={member.id} member={member} />
         ))}
+
+        {/* 페이지네이션 */}
+        {data.totalPages > 1 && (
+          <div className="flex justify-center pt-2">
+            <Pagination
+              ariaLabel="멤버 페이지네이션"
+              currentPage={data.page}
+              totalPages={data.totalPages}
+              onPageChange={setPage}
+              previousAriaLabel="이전 페이지"
+              nextAriaLabel="다음 페이지"
+              size="responsive"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
