@@ -27,7 +27,7 @@ export function DashboardAttendanceCard({ slug, attendance, totalMembers }: Dash
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-background p-5 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-lg border border-border p-5 shadow-sm">
       <div className="flex flex-col gap-0.5">
         <h3 className="font-bold text-base">출석체크</h3>
         <p className="text-neutral-500 text-sm">실시간 출결 상태를 확인하세요.</p>

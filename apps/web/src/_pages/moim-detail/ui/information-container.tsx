@@ -18,7 +18,7 @@ interface InformationContainerProps {
   viewType?: ViewType;
   isLoggedIn?: boolean;
   isParticipating?: boolean;
-  onToggleLike?: () => void;
+  onToggleLike?: () => boolean | Promise<boolean>;
   onParticipateToggle?: (meetingId: number, nextParticipating: boolean) => void;
   onShare?: (meetingId: number) => void;
   onEdit?: (meetingId: number) => void;
@@ -45,6 +45,7 @@ export function InformationContainer({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isManager = viewType === "manager";
+  const isClosedMeeting = data.status === "full" || data.status === "canceled";
 
   const tagItems = [
     {
@@ -87,17 +88,21 @@ export function InformationContainer({
     },
   ].filter((item) => item.label);
 
-  const handleLikeClick = () => {
+  const handleLikeClick = async (): Promise<boolean> => {
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
-      return;
+      return false;
     }
 
-    onToggleLike?.();
+    if (!onToggleLike) {
+      return true;
+    }
+
+    return await onToggleLike();
   };
 
   const handleMainButtonClick = () => {
-    if (isManager) {
+    if (isManager || (isClosedMeeting && !isParticipating)) {
       return;
     }
 
@@ -128,12 +133,18 @@ export function InformationContainer({
     onLoginAction?.();
   };
 
-  const renderPrimaryButton = (label: string, onClick: () => void, variant: "primary" | "secondary" = "primary") => (
+  const renderPrimaryButton = (
+    label: string,
+    onClick: () => void,
+    variant: "primary" | "secondary" = "primary",
+    disabled = false,
+  ) => (
     <>
       <Button
         type="button"
         variant={variant}
         size="large"
+        disabled={disabled}
         className={cn(
           "min-w-0 flex-1 max-sm:hidden",
           variant === "secondary" && "border border-primary bg-white text-green-600",
@@ -147,6 +158,7 @@ export function InformationContainer({
         type="button"
         variant={variant}
         size="small"
+        disabled={disabled}
         className={cn(
           "hidden min-w-0 flex-1 max-sm:inline-flex",
           variant === "secondary" && "border border-primary bg-white text-green-600",
@@ -171,13 +183,17 @@ export function InformationContainer({
     if (isParticipating) {
       return (
         <>
-          {renderPrimaryButton("참여 취소하기", handleMainButtonClick, "secondary")}
+          {renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary")}
           {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
         </>
       );
     }
 
-    return renderPrimaryButton("참여하기", handleMainButtonClick);
+    if (isClosedMeeting) {
+      return renderPrimaryButton(data.status === "canceled" ? "모집 취소" : "모집 마감", () => {}, "primary", true);
+    }
+
+    return renderPrimaryButton("신청하기", handleMainButtonClick);
   };
 
   return (
@@ -185,7 +201,7 @@ export function InformationContainer({
       <section className={cn("w-full", className)}>
         <article
           className={cn(
-            "mx-auto flex w-full max-w-[630px] flex-col items-start gap-2.5",
+            "mx-auto flex w-full max-w-[630px] flex-col items-start gap-6",
             "rounded-[32px] bg-white",
             "px-10 pt-8.5 pb-8",
             "max-sm:rounded-[20px]",
@@ -254,19 +270,7 @@ export function InformationContainer({
 
           <div className="mt-auto w-full">
             <div className="flex w-full items-center gap-4 max-sm:gap-2">
-              <LikeButton
-                isLiked={data.isLiked}
-                size="lg"
-                className="shrink-0 max-sm:hidden"
-                onClick={handleLikeClick}
-              />
-
-              <LikeButton
-                isLiked={data.isLiked}
-                size="sm"
-                className="hidden shrink-0 max-sm:flex"
-                onClick={handleLikeClick}
-              />
+              <LikeButton isLiked={data.isLiked} onClick={handleLikeClick} />
 
               <div className="flex min-w-0 flex-1 items-center gap-4 max-sm:gap-2">{renderActionButtons()}</div>
             </div>

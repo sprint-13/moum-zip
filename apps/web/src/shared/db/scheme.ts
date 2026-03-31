@@ -26,7 +26,7 @@ export const spaceMembers = pgTable("space_members", {
   role: text("role", { enum: ["manager", "moderator", "member"] }).notNull(),
   nickname: text("nickname").notNull(),
   avatarUrl: text("avatar_url"),
-  email: text("email").notNull(),
+  email: text("email"),
   joinedAt: timestamp("joined_at", {
     withTimezone: true,
     mode: "string",

@@ -7,14 +7,14 @@ import { ProfileEditModal } from "./profile-edit-modal";
 import { useSidebar } from "./sidebar";
 
 interface SidebarFooterProps {
-  avatarUrl?: string;
-  email: string;
   name: string;
+  email: string | null;
+  avatarUrl?: string;
 }
 
 interface SidebarProfile {
   avatarUrl?: string;
-  email: string;
+  email: string | null;
   nickname: string;
 }
 

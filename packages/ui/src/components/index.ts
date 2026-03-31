@@ -11,6 +11,7 @@ export * from "./ui/gnb";
 export * from "./ui/input-field";
 export * from "./ui/input-image";
 export * from "./ui/input-text-area";
+export * from "./ui/loading-indicator";
 export * from "./ui/pagination";
 export * from "./ui/progress-bar";
 export * from "./ui/sheet";

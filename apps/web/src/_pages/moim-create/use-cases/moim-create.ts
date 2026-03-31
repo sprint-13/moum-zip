@@ -1,5 +1,5 @@
-import { insertSpaceMember } from "@/entities/member";
-import { insertSpace } from "@/entities/spaces/queries";
+import { memberQueries } from "@/entities/member";
+import { spaceQueries } from "@/entities/spaces";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { getApi, isAuth } from "@/shared/api/server";
 
@@ -34,7 +34,7 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
   const meeting = res.data as { id: number };
 
   // SPACE DB 저장
-  const space = await insertSpace({
+  const space = await spaceQueries.create({
     id: String(meeting.id),
     slug: String(meeting.id),
     meetingId: meeting.id,
@@ -45,14 +45,14 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
   });
 
   // 스페이스 멤버 등록
-  await insertSpaceMember({
+  await memberQueries.create({
     id: crypto.randomUUID(),
     spaceId: space.id,
     userId,
     role: "manager",
     nickname: me.name,
     email: me.email,
-    avatarUrl: me.image,
+    avatarUrl: me.image ?? null,
   });
 
   return { meeting, space };

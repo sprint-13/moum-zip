@@ -315,3 +315,18 @@
     var(--color-personnel-gradient-end) 100%
   );
 }
+
+/* 로딩 인디케이터 애니메이션 */
+@keyframes soft-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+    scale: 0.9;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+    scale: 1;
+  }
+}
