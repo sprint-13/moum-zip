@@ -4,7 +4,9 @@ import type { FavoriteList } from "@moum-zip/api";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { getSpaceSlugAction } from "../actions";
 import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "../model";
 import { getCreatedMeetingsQueryOptions, getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
 import { applyFavoriteState, buildFavoriteMeetingIds, buildLikedMeetings, useToggleFavorite } from "../use-cases";
@@ -35,6 +37,7 @@ export default function MypageView({
   createdMoims,
   enableRemoteFetch = true,
 }: MypagePageProps) {
+  const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
   const favoriteMutation = useToggleFavorite(enableRemoteFetch);
@@ -109,6 +112,17 @@ export default function MypageView({
     });
   };
 
+  const handleEnterSpace = async (meetingId: string) => {
+    // 클릭 시 meetingId에 연결된 space slug를 찾아 스페이스 메인으로 이동합니다.
+    const result = await getSpaceSlugAction(Number(meetingId));
+
+    if (!result.ok) {
+      return;
+    }
+
+    router.push(`/${result.slug}`);
+  };
+
   return (
     <main className="no-scrollbar h-dvh overflow-y-auto bg-background px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
       <div className="mx-auto w-full max-w-[80rem]">
@@ -146,6 +160,7 @@ export default function MypageView({
                   isError={isJoinedError}
                   onRetry={() => void refetchJoinedMeetings()}
                   onToggleLike={handleToggleLike}
+                  onEnterSpace={handleEnterSpace}
                 />
               </Tabs.Content>
 
@@ -180,6 +195,7 @@ export default function MypageView({
                     isError={isCreatedError}
                     onRetry={() => void refetchCreatedMeetings()}
                     onToggleLike={handleToggleLike}
+                    onEnterSpace={handleEnterSpace}
                   />
                 </div>
               </Tabs.Content>
@@ -191,6 +207,7 @@ export default function MypageView({
                   isError={isLikedError}
                   onRetry={() => void refetchLikedMeetings()}
                   onToggleLike={handleToggleLike}
+                  onEnterSpace={handleEnterSpace}
                 />
               </Tabs.Content>
             </div>

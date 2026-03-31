@@ -8,6 +8,7 @@ import type { MoimImageTone, MypageMoimCard } from "../model/types";
 interface MoimCardProps {
   moim: MypageMoimCard;
   onToggleLike?: (meetingId: string) => void;
+  onEnterSpace?: (meetingId: string) => void;
 }
 
 const imageToneClassName: Record<MoimImageTone, string> = {
@@ -62,7 +63,7 @@ function MoimPreview({ imageTone, className }: MoimPreviewProps) {
   );
 }
 
-export default function MoimCard({ moim, onToggleLike }: MoimCardProps) {
+export default function MoimCard({ moim, onToggleLike, onEnterSpace }: MoimCardProps) {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
 
   const handleToggleLike = () => {
@@ -70,7 +71,13 @@ export default function MoimCard({ moim, onToggleLike }: MoimCardProps) {
   };
 
   const renderActionButton = (className?: string) => (
-    <Button type="button" variant={actionVariant} size="small" className={className}>
+    <Button
+      type="button"
+      variant={actionVariant}
+      size="small"
+      className={className}
+      onClick={() => onEnterSpace?.(moim.id)}
+    >
       {moim.actionLabel}
     </Button>
   );

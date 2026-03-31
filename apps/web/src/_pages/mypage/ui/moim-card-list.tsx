@@ -9,6 +9,7 @@ interface MoimCardListProps {
   isError?: boolean;
   onRetry?: () => void;
   onToggleLike?: (meetingId: string) => void;
+  onEnterSpace?: (meetingId: string) => void;
 }
 
 function ListStatusContainer({ children }: { children: ReactNode }) {
@@ -25,12 +26,13 @@ export default function MoimCardList({
   isError = false,
   onRetry,
   onToggleLike,
+  onEnterSpace,
 }: MoimCardListProps) {
   if (moims.length > 0) {
     return (
       <div className="flex flex-col items-start gap-6">
         {moims.map((moim) => (
-          <MoimCard key={moim.id} moim={moim} onToggleLike={onToggleLike} />
+          <MoimCard key={moim.id} moim={moim} onToggleLike={onToggleLike} onEnterSpace={onEnterSpace} />
         ))}
       </div>
     );
