@@ -1,3 +1,4 @@
+import { spaceQueries } from "@/entities/spaces";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { getApi, isAuth } from "@/shared/api/server";
 
@@ -34,6 +35,12 @@ export async function updateMoim({ meetingId, data }: UpdateMoimParams, { getAut
   if (!res.ok) {
     throw new Error("모임 수정에 실패했습니다.");
   }
+
+  await spaceQueries.updateByMeetingId(meetingId, {
+    location: data.location,
+    themeColor: data.themeColor,
+    modules: data.options ?? [],
+  });
 
   return {
     meeting: res.data,
