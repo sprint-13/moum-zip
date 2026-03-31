@@ -6,8 +6,10 @@ function isMeetingType(value: string | null): value is "joined" | "created" {
   return value === "joined" || value === "created";
 }
 
-function isMeetingSortBy(value: string | null): value is "dateTime" | "joinedAt" | "createdAt" {
-  return value === "dateTime" || value === "joinedAt" || value === "createdAt";
+function isMeetingSortBy(
+  value: string | null,
+): value is "dateTime" | "registrationEnd" | "joinedAt" | "participantCount" {
+  return value === "dateTime" || value === "registrationEnd" || value === "joinedAt" || value === "participantCount";
 }
 
 function isSortOrder(value: string | null): value is "asc" | "desc" {

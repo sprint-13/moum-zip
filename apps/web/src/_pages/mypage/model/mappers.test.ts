@@ -1,4 +1,4 @@
-import type { FavoriteWithMeeting, User, UserMeeting } from "@moum-zip/api";
+import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "@moum-zip/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { formatMeetingDateTime, mapCreatedMeeting, mapFavoriteMeeting, mapJoinedMeeting, mapProfile } from "./mappers";
 
@@ -37,21 +37,43 @@ describe("mypage mappers", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
-    const meeting: UserMeeting = {
+    const meeting: JoinedMeeting = {
       id: 7,
+      teamId: "dallaem",
       name: "달램핏 모임",
+      type: "스터디",
       dateTime: "2026-02-10T14:00:00.000Z",
       region: "강남",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: null,
       participantCount: 5,
       capacity: 10,
-      role: "participant",
+      image: "https://example.com/meeting.png",
+      description: null,
+      canceledAt: null,
+      confirmedAt: null,
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
+      joinedAt: "2026-02-01T00:00:00.000Z",
+      isReviewed: false,
+      isCompleted: false,
     };
 
     expect(mapJoinedMeeting(meeting, 1)).toMatchObject({
       id: "7",
       title: "달램핏 모임",
       participantCount: "5/10",
-      location: "offline",
+      location: "강남",
+      imageUrl: "https://example.com/meeting.png",
       imageTone: "daylight",
       actionVariant: "primary",
       primaryBadge: {
@@ -65,20 +87,40 @@ describe("mypage mappers", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-01T00:00:00.000Z"));
 
-    const meeting: UserMeeting = {
+    const meeting: JoinedMeeting = {
       id: 8,
+      teamId: "dallaem",
       name: "지난 모임",
+      type: "스터디",
       dateTime: "2026-02-10T14:00:00.000Z",
       region: "성수",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: null,
       participantCount: 8,
       capacity: 12,
-      role: "participant",
+      image: null,
+      description: null,
+      canceledAt: null,
+      confirmedAt: null,
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
+      joinedAt: "2026-02-01T00:00:00.000Z",
       isReviewed: false,
+      isCompleted: true,
     };
 
     expect(mapJoinedMeeting(meeting, 2)).toMatchObject({
       id: "8",
-      location: "offline",
+      location: "성수",
       imageTone: "sunset",
       actionVariant: "secondary",
       primaryBadge: {
@@ -92,19 +134,38 @@ describe("mypage mappers", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
-    const meeting: UserMeeting = {
+    const meeting: MeetingWithHost = {
       id: 11,
+      teamId: "dallaem",
       name: "내가 만든 모임",
+      type: "프로젝트",
       dateTime: "2026-02-10T14:00:00.000Z",
       region: "을지로",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: null,
       participantCount: 12,
       capacity: 20,
-      role: "host",
+      image: "https://example.com/created.png",
+      description: null,
+      canceledAt: null,
+      confirmedAt: null,
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
     };
 
     expect(mapCreatedMeeting(meeting, 0)).toMatchObject({
       id: "11",
-      location: "offline",
+      location: "을지로",
+      imageUrl: "https://example.com/created.png",
       imageTone: "beige",
       actionVariant: "primary",
       primaryBadge: {
@@ -156,7 +217,7 @@ describe("mypage mappers", () => {
     expect(mapFavoriteMeeting(favorite, 3)).toMatchObject({
       id: "12",
       liked: true,
-      location: "offline",
+      location: "성수",
       imageTone: "city",
       secondaryBadge: {
         label: "개설확정",

@@ -1,24 +1,10 @@
-import type { FavoriteWithMeeting, User, UserMeeting } from "@moum-zip/api";
+import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "@moum-zip/api";
 import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
-function normalizeMeetingLocation(region: string) {
-  const normalized = region.trim().toLowerCase();
-
-  if (normalized === "online" || normalized === "온라인") {
-    return "online";
-  }
-
-  if (normalized === "offline" || normalized === "오프라인") {
-    return "offline";
-  }
-
-  return "offline";
-}
-
-export function formatMeetingDateTime(dateTime: string) {
-  const meetingDate = new Date(dateTime);
+export function formatMeetingDateTime(dateTime: string | null) {
+  const meetingDate = new Date(dateTime ?? new Date().toISOString());
 
   return {
     date: new Intl.DateTimeFormat("ko-KR", {
@@ -44,16 +30,17 @@ export function mapProfile(user: User): MypageProfile {
   };
 }
 
-export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
+export function mapJoinedMeeting(meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
@@ -65,16 +52,17 @@ export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = fa
   };
 }
 
-export function mapCreatedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
+export function mapCreatedMeeting(meeting: MeetingWithHost, index: number, liked = false): MypageMoimCard {
+  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime ?? new Date().toISOString());
 
   return {
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
@@ -94,9 +82,10 @@ export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number)
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked: true,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",

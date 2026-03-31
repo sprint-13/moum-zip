@@ -1,9 +1,9 @@
-import type { FavoriteList, User, UserMeetingsResponse } from "@moum-zip/api";
+import type { FavoriteList, JoinedMeetingList, User } from "@moum-zip/api";
 import { type MypageMoimCard, type MypageProfile, mapFavoriteMeeting, mapJoinedMeeting, mapProfile } from "../model";
 
 type Deps = {
   getUser: () => Promise<{ data: User }>;
-  getJoinedMeetings: () => Promise<{ data: UserMeetingsResponse }>;
+  getJoinedMeetings: () => Promise<{ data: JoinedMeetingList }>;
   getFavoritesPage: (cursor?: string) => Promise<{ data: FavoriteList }>;
 };
 

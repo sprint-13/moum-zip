@@ -1,5 +1,6 @@
 "use client";
 
+import type { MeetingWithHost } from "@moum-zip/api";
 import { type CreatedFilterKey, fetchMyMeetings, mapCreatedMeeting } from "../model";
 
 export function getCreatedMeetingsQueryOptions(createdFilter: CreatedFilterKey) {
@@ -16,7 +17,7 @@ export function getCreatedMeetingsQueryOptions(createdFilter: CreatedFilterKey) 
         size: 10,
       });
 
-      return response.data.map((meeting, index) => mapCreatedMeeting(meeting, index));
+      return (response.data as MeetingWithHost[]).map((meeting, index) => mapCreatedMeeting(meeting, index));
     },
   } as const;
 }

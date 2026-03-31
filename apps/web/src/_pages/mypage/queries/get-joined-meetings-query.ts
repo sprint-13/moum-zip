@@ -1,5 +1,6 @@
 "use client";
 
+import type { JoinedMeeting } from "@moum-zip/api";
 import { fetchMyMeetings, type MypageMoimCard, mapJoinedMeeting } from "../model";
 
 export function getJoinedMeetingsQueryOptions(initialData: MypageMoimCard[]) {
@@ -13,7 +14,7 @@ export function getJoinedMeetingsQueryOptions(initialData: MypageMoimCard[]) {
         size: 10,
       });
 
-      return response.data.map((meeting, index) => mapJoinedMeeting(meeting, index));
+      return (response.data as JoinedMeeting[]).map((meeting, index) => mapJoinedMeeting(meeting, index));
     },
     initialData,
   } as const;

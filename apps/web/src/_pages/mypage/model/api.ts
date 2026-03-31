@@ -1,4 +1,4 @@
-import type { FavoriteList, FavoriteWithMeeting, UserMeetingsResponse } from "@moum-zip/api";
+import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost } from "@moum-zip/api";
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
@@ -7,10 +7,16 @@ export type MyMeetingsQuery = {
   type: "joined" | "created";
   completed?: "true" | "false";
   reviewed?: "true" | "false";
-  sortBy?: "dateTime" | "joinedAt" | "createdAt";
+  sortBy?: "dateTime" | "registrationEnd" | "joinedAt" | "participantCount";
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
+};
+
+export type MyMeetingsResponse = {
+  data: Array<JoinedMeeting | MeetingWithHost>;
+  nextCursor: string | null;
+  hasMore: boolean;
 };
 
 export type MyFavoritesQuery = {
@@ -37,7 +43,7 @@ function toSearchParams(query: Record<string, string | number | undefined>) {
   return searchParams;
 }
 
-export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<UserMeetingsResponse> {
+export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<MyMeetingsResponse> {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/meetings?${searchParams.toString()}`);
 
