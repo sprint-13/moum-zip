@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { createPostAction, updatePostAction } from "../actions";
 
@@ -28,39 +29,63 @@ interface PostWriteFormProps {
   slug: string;
   initialPost?: Pick<Post, "id" | "title" | "content" | "category">;
 }
+interface PostWriteFormValues {
+  category: PostCategory;
+  title: string;
+  content: string;
+}
 
 export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [category, setCategory] = useState<PostCategory>(initialPost?.category ?? "notice");
-  const [error, setError] = useState<string | null>(null);
-
   const isEdit = !!initialPost;
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    setError,
+  } = useForm<PostWriteFormValues>({
+    defaultValues: {
+      category: initialPost?.category ?? "notice",
+      title: initialPost?.title ?? "",
+      content: initialPost?.content ?? "",
+    },
+  });
 
-    const formData = new FormData(e.currentTarget);
-    formData.set("category", category);
+  const selectedCategory = watch("category");
+
+  const onSubmit = (values: PostWriteFormValues) => {
+    const formData = new FormData();
+    formData.set("category", values.category);
+    formData.set("title", values.title);
+    formData.set("content", values.content);
 
     startTransition(async () => {
       try {
-        if (isEdit) {
+        if (isEdit && initialPost) {
           const { postId } = await updatePostAction(slug, initialPost.id, formData);
           router.push(`/${slug}/bulletin/${postId}`);
-        } else {
-          const { postId } = await createPostAction(slug, formData);
-          router.push(`/${slug}/bulletin/${postId}`);
+          return;
         }
+
+        const { postId } = await createPostAction(slug, formData);
+        router.push(`/${slug}/bulletin/${postId}`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "게시글 저장에 실패했습니다.");
+        setError("root", {
+          message: err instanceof Error ? err.message : "게시글 저장에 실패했습니다.",
+        });
       }
     });
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 rounded-xl border border-border bg-background p-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-6 rounded-xl border border-border bg-background p-6"
+    >
       {/* 카테고리 */}
       <div className="flex flex-col gap-2.5">
         <span className="font-semibold text-neutral-700 text-sm">카테고리</span>
@@ -71,9 +96,9 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
               <button
                 key={cat}
                 type="button"
-                onClick={() => setCategory(cat)}
+                onClick={() => setValue("category", cat)}
                 className={`rounded-full border px-3.5 py-1 font-bold text-[12px] transition-all ${
-                  category === cat ? style.active : style.inactive
+                  selectedCategory === cat ? style.active : style.inactive
                 }`}
               >
                 {CATEGORY_LABELS[cat]}
@@ -93,14 +118,13 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         </label>
         <input
           id="title"
-          name="title"
           type="text"
           placeholder="제목을 입력하세요"
-          defaultValue={initialPost?.title}
-          required
           disabled={isPending}
           className="rounded-lg border border-border bg-background px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
+          {...register("title", { required: "제목을 입력해주세요." })}
         />
+        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
 
       {/* 내용 */}
@@ -110,18 +134,17 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         </label>
         <textarea
           id="content"
-          name="content"
           placeholder="내용을 자유롭게 작성하세요"
-          defaultValue={initialPost?.content}
-          required
           rows={14}
           disabled={isPending}
           className="resize-none rounded-lg border border-border bg-background px-4 py-3 text-[15px] text-foreground leading-relaxed outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
+          {...register("content", { required: "내용을 입력해주세요." })}
         />
+        {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
       </div>
 
       {/* 에러 메시지 */}
-      {error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-red-600 text-sm">{error}</p>}
+      {errors.root && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-red-600 text-sm">{errors.root.message}</p>}
 
       {/* 버튼 */}
       <div className="flex justify-end gap-2 border-border border-t pt-4">
