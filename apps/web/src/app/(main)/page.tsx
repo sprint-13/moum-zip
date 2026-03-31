@@ -6,8 +6,8 @@ import {
   CATEGORIES,
   CategoryCard,
   heroImage,
-  IcoChevronDownDouble,
   LandingCtaButton,
+  LandingScrollButton,
   spaceLg,
   spaceMd,
   spaceSm,
@@ -40,12 +40,13 @@ export default function Home() {
             className="w-[90vw] object-contain md:absolute md:top-[80%] md:-right-[24px] md:w-[50vw] lg:top-[60%] lg:right-[-10%] xl:top-[138px] xl:-right-[16%] xl:w-[58vw] xl:max-w-[800px]"
           />
         </div>
-        <button type="button" aria-label="아래로 이동" className="mx-auto mt-auto mb-6 lg:mb-10">
-          <IcoChevronDownDouble />
-        </button>
+        <LandingScrollButton />
       </section>
 
-      <section className="px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]">
+      <section
+        id="landing-find"
+        className="px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]"
+      >
         <div className="flex flex-col items-center justify-center gap-1 lg:gap-2">
           <p className="pb-2 font-semibold text-green-600 text-sm md:text-xl lg:pb-4">모임 찾기</p>
           <h3 className="font-bold text-foreground text-xl leading-[30px] tracking-tight md:text-[40px] md:leading-[56px]">
