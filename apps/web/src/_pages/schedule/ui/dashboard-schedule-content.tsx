@@ -22,7 +22,7 @@ export function DashboardScheduleContent({ upcoming, slug }: DashboardScheduleCo
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {items.map((schedule) => (
             <li key={schedule.id}>
-              <ScheduleItem schedule={schedule} slug={slug} />
+              <ScheduleItem schedule={schedule} />
             </li>
           ))}
         </ul>

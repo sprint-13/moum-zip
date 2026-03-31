@@ -89,7 +89,7 @@ export function ScheduleList({ slug, upcoming, expired }: ScheduleListProps) {
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {items.map((s) => (
-            <ScheduleItem key={s.id} schedule={s} slug={slug} onEdit={openEdit} />
+            <ScheduleItem key={s.id} schedule={s} onEdit={openEdit} />
           ))}
         </div>
       )}
