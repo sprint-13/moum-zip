@@ -97,6 +97,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
               <button
                 key={cat}
                 type="button"
+                aria-pressed={selectedCategory === cat}
                 onClick={() => setValue("category", cat)}
                 className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 font-bold text-[12px] transition-all ${
                   selectedCategory === cat ? `${style.active} shadow-md` : style.inactive
