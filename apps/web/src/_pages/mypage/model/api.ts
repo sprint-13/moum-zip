@@ -2,6 +2,8 @@ import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost 
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
+const CREATED_MEETINGS_PAGE_SIZE = 100;
+const MAX_CREATED_MEETINGS_PAGE_COUNT = 20;
 
 export type MyMeetingsQuery = {
   type: "joined" | "created";
@@ -54,6 +56,40 @@ export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<MyMeeting
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
+}
+
+export async function fetchAllMyCreatedMeetings(
+  query: Omit<MyMeetingsQuery, "type" | "completed" | "reviewed" | "size" | "cursor"> = {},
+): Promise<MyMeetingsResponse> {
+  const meetings: MeetingWithHost[] = [];
+  let cursor: string | undefined;
+  let hasMore = false;
+  let pageCount = 0;
+
+  do {
+    pageCount += 1;
+
+    if (pageCount > MAX_CREATED_MEETINGS_PAGE_COUNT) {
+      throw new Error("MY_CREATED_MEETINGS_PAGINATION_LIMIT_EXCEEDED");
+    }
+
+    const response = await fetchMyMeetings({
+      ...query,
+      type: "created",
+      size: CREATED_MEETINGS_PAGE_SIZE,
+      cursor,
+    });
+
+    meetings.push(...(response.data as MeetingWithHost[]));
+    cursor = response.nextCursor ?? undefined;
+    hasMore = response.hasMore;
+  } while (hasMore && cursor);
+
+  return {
+    data: meetings,
+    nextCursor: cursor ?? null,
+    hasMore,
+  };
 }
 
 export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<FavoriteList> {

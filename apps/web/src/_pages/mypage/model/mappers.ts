@@ -62,7 +62,7 @@ export function mapJoinedMeeting(meeting: JoinedMeeting, index: number, liked = 
 }
 
 export function mapCreatedMeeting(meeting: MeetingWithHost, index: number, liked = false): MypageMoimCard {
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime ?? new Date().toISOString());
+  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),

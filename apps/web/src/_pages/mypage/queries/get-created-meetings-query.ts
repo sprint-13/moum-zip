@@ -1,7 +1,7 @@
 "use client";
 
 import type { MeetingWithHost } from "@moum-zip/api";
-import { type CreatedFilterKey, fetchMyMeetings, mapCreatedMeeting } from "../model";
+import { type CreatedFilterKey, fetchAllMyCreatedMeetings, mapCreatedMeeting } from "../model";
 
 function isCompletedMeeting(dateTime: string | null) {
   if (!dateTime) {
@@ -17,11 +17,9 @@ export function getCreatedMeetingsQueryOptions(createdFilter: CreatedFilterKey) 
   return {
     queryKey: ["mypage", "meetings", "created", createdFilter],
     queryFn: async () => {
-      const response = await fetchMyMeetings({
-        type: "created",
+      const response = await fetchAllMyCreatedMeetings({
         sortBy: "dateTime",
         sortOrder: "asc",
-        size: 100,
       });
 
       const filteredMeetings = (response.data as MeetingWithHost[])
