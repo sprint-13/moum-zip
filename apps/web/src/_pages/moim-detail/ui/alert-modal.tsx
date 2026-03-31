@@ -1,7 +1,7 @@
 "use client";
 
+import * as Shadcn from "@moum-zip/ui/components";
 import { X } from "@moum-zip/ui/icons";
-import * as Shadcn from "@ui/components/shadcn/alert-dialog";
 import { cn } from "@ui/lib/utils";
 import type { ComponentProps, ReactElement, ReactNode } from "react";
 

@@ -3,6 +3,7 @@ export const ROUTES = {
   search: "/search",
   moimCreate: "/moim-create",
   moimDetail: "/moim-detail",
+  moimEdit: "/moim-edit",
   spaces: "/spaces",
   login: "/login",
   signup: "/signup",
