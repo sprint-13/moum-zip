@@ -49,7 +49,7 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
       </div>
 
       {/* 포스트 목록 */}
-      <div className="flex flex-col gap-2 rounded-b-lg border border-primary/20 border-t-none bg-background p-3 md:min-h-[350px]">
+      <div className="flex flex-col gap-2 rounded-b-lg border border-primary/20 border-t-0 bg-background p-3 md:min-h-[350px]">
         {filteredPosts.length === 0 ? (
           <p className="my-auto py-4 text-center text-neutral-400 text-sm">등록된 게시글이 없습니다.</p>
         ) : (
