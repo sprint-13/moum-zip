@@ -20,10 +20,9 @@ export async function createScheduleAction(slug: string, formData: FormData) {
   const title = formData.get("title");
   const description = formData.get("description");
   const startAt = formData.get("startAt");
-  const endAt = formData.get("endAt");
 
   if (typeof title !== "string") throw new Error("제목을 입력해주세요.");
-  if (typeof startAt !== "string" || typeof endAt !== "string") throw new Error("날짜를 선택해주세요.");
+  if (typeof startAt !== "string") throw new Error("날짜를 선택해주세요.");
 
   await createScheduleUseCase({
     spaceId: space.spaceId,
@@ -31,7 +30,6 @@ export async function createScheduleAction(slug: string, formData: FormData) {
     title,
     description: typeof description === "string" && description ? description : undefined,
     startAt: kstInputToDate(startAt),
-    endAt: kstInputToDate(endAt),
   });
 
   invalidate(space.spaceId, slug);
@@ -44,13 +42,11 @@ export async function updateScheduleAction(slug: string, scheduleId: string, for
   const title = formData.get("title");
   const description = formData.get("description");
   const startAt = formData.get("startAt");
-  const endAt = formData.get("endAt");
 
   await updateScheduleUseCase(scheduleId, {
     title: typeof title === "string" ? title : undefined,
     description: typeof description === "string" ? description || null : undefined,
     startAt: typeof startAt === "string" && startAt ? kstInputToDate(startAt) : undefined,
-    endAt: typeof endAt === "string" && endAt ? kstInputToDate(endAt) : undefined,
   });
 
   invalidate(space.spaceId, slug);
