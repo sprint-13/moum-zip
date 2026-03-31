@@ -8,7 +8,7 @@ import { updateMemberProfileUseCase } from "./use-cases/update-member-profile";
 export interface UpdateMemberProfileActionInput {
   avatarUrl?: string | null;
   email?: string | null;
-  nickname: string;
+  nickname?: string;
 }
 
 export async function updateMemberProfileAction(

@@ -28,7 +28,7 @@ describe("updateMemberProfileUseCase", () => {
     mockUpdate.mockResolvedValue(BASE_MEMBER);
   });
 
-  it("정규화한 프로필 값으로 memberQueries.update를 호출한다", async () => {
+  it("전달된 필드를 정규화한 뒤 수정한다", async () => {
     const result = await updateMemberProfileUseCase({
       avatarUrl: "  https://example.com/avatar.png  ",
       email: "  user@example.com  ",
@@ -45,11 +45,46 @@ describe("updateMemberProfileUseCase", () => {
     expect(result).toEqual(BASE_MEMBER);
   });
 
-  it("빈 이메일과 아바타 URL은 null로 정규화한다", async () => {
+  it("닉네임만 전달되면 닉네임만 수정한다", async () => {
+    await updateMemberProfileUseCase({
+      nickname: "새 닉네임",
+      spaceId: "space-1",
+      userId: 7,
+    });
+
+    expect(mockUpdate).toHaveBeenCalledWith("space-1", 7, {
+      nickname: "새 닉네임",
+    });
+  });
+
+  it("이메일만 전달되면 이메일만 수정한다", async () => {
+    await updateMemberProfileUseCase({
+      email: "  user@example.com  ",
+      spaceId: "space-1",
+      userId: 7,
+    });
+
+    expect(mockUpdate).toHaveBeenCalledWith("space-1", 7, {
+      email: "user@example.com",
+    });
+  });
+
+  it("아바타 URL만 전달되면 아바타 URL만 수정한다", async () => {
+    await updateMemberProfileUseCase({
+      avatarUrl: "  https://example.com/avatar.png  ",
+      spaceId: "space-1",
+      userId: 7,
+    });
+
+    expect(mockUpdate).toHaveBeenCalledWith("space-1", 7, {
+      avatarUrl: "https://example.com/avatar.png",
+    });
+  });
+
+  it("이메일과 아바타 URL을 빈 값으로 보내면 null로 정규화한다", async () => {
     await updateMemberProfileUseCase({
       avatarUrl: "   ",
       email: "",
-      nickname: "닉네임",
       spaceId: "space-1",
       userId: 7,
     });
@@ -57,11 +92,10 @@ describe("updateMemberProfileUseCase", () => {
     expect(mockUpdate).toHaveBeenCalledWith("space-1", 7, {
       avatarUrl: null,
       email: null,
-      nickname: "닉네임",
     });
   });
 
-  it("닉네임이 비어 있으면 에러를 던진다", async () => {
+  it("닉네임이 전달됐지만 비어 있으면 에러를 던진다", async () => {
     await expect(
       updateMemberProfileUseCase({
         nickname: "   ",
@@ -85,12 +119,23 @@ describe("updateMemberProfileUseCase", () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  it("업데이트할 멤버가 없으면 에러를 던진다", async () => {
+  it("수정할 필드가 하나도 없으면 에러를 던진다", async () => {
+    await expect(
+      updateMemberProfileUseCase({
+        spaceId: "space-1",
+        userId: 7,
+      }),
+    ).rejects.toThrow("수정할 프로필 정보가 없습니다.");
+
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("수정 대상 멤버가 없으면 에러를 던진다", async () => {
     mockUpdate.mockResolvedValue(undefined as never);
 
     await expect(
       updateMemberProfileUseCase({
-        nickname: "닉네임",
+        nickname: "새 닉네임",
         spaceId: "space-1",
         userId: 7,
       }),
