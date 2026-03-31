@@ -84,7 +84,10 @@ function createAuthFetch(
 
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshResponse.json();
 
-    onTokenRefreshed({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    onTokenRefreshed({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
 
     const retryHeaders = new Headers(init?.headers);
     retryHeaders.set("Authorization", `Bearer ${newAccessToken}`);
@@ -154,8 +157,13 @@ function buildApiShape(core: {
         core.meetings.joinDelete(teamId, meetingId, params),
       delete: (meetingId: number, params?: Parameters<typeof core.meetings.meetingsDelete>[2]) =>
         core.meetings.meetingsDelete(teamId, meetingId, params),
+      update: (
+        meetingId: Parameters<typeof core.meetings.meetingsPartialUpdate>[1],
+        data: Parameters<typeof core.meetings.meetingsPartialUpdate>[2],
+        params?: Parameters<typeof core.meetings.meetingsPartialUpdate>[3],
+      ) => core.meetings.meetingsPartialUpdate(teamId, meetingId, data, params),
 
-      // getList 추가가
+      // getList 추가
       participants: {
         getList: (
           meetingId: Parameters<typeof core.meetings.participantsList>[1],
