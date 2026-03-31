@@ -25,25 +25,25 @@ export function PostItem({ post, slug }: PostItemProps) {
     <div className={`relative`}>
       <Link
         href={`/${slug}/bulletin/${post.id}`}
-        className="group block w-full cursor-pointer rounded-xl border border-primary/20 bg-background p-4 transition-all hover:shadow-xs"
+        className="group block w-full cursor-pointer rounded-xl border border-primary/20 bg-background p-4 py-2 shadow-xs transition-all hover:shadow-sm"
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {/* 상단: 카테고리 및 날짜 */}
           <div className="flex items-center justify-between">
             {category && (
-              <span className={`rounded-full border px-2.5 py-0.5 font-bold text-[11px] ${category.color}`}>
+              <span className={`rounded-xl border px-2.5 py-0.5 font-bold text-xs ${category.color}`}>
                 {category.label}
               </span>
             )}
+
             <time className="text-neutral-400 text-sm">{formatDate(displayDate)}</time>
           </div>
 
           {/* 중단: 제목 및 내용 */}
           <div className="flex flex-col gap-1">
-            <h3 className="line-clamp-1 font-bold text-[16px] text-foreground transition-colors group-hover:text-primary">
+            <h3 className="line-clamp-1 font-bold text-base text-foreground transition-colors group-hover:text-primary">
               {post.title}
             </h3>
-            <p className="line-clamp-2 text-[14px] text-neutral-600 leading-relaxed">{post.content}</p>
           </div>
 
           {/* 하단: 메타 정보 (좋아요, 조회수 등) */}
