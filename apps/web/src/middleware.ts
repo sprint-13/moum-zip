@@ -42,6 +42,9 @@ async function refreshTokens(refreshToken: string) {
     if (!res.ok) return null;
 
     const { accessToken, refreshToken: newRefreshToken } = await res.json();
+
+    if (typeof accessToken !== "string" || typeof newRefreshToken !== "string") return null;
+
     return { accessToken, refreshToken: newRefreshToken };
   } catch {
     return null;
