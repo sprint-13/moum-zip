@@ -63,11 +63,13 @@ export const ProfileEditModal = ({
         }
       }}
     >
-      <AlertDialogContent className="w-[calc(100vw-32px)] max-w-120 gap-0 rounded-[28px] border border-primary/20 bg-background p-6 shadow-xl sm:p-7">
-        <div className="flex items-start justify-between gap-4">
+      <AlertDialogContent className="max-h-[calc(100vh-32px)] w-[calc(100vw-32px)] max-w-120 gap-0 overflow-y-auto rounded-[24px] border border-primary/20 bg-background p-5 shadow-xl sm:rounded-[28px] sm:p-7">
+        <div className="flex items-start justify-between gap-3 sm:gap-4">
           <div className="min-w-0">
-            <AlertDialogTitle className="text-left font-bold text-foreground text-xl">프로필 수정</AlertDialogTitle>
-            <AlertDialogDescription className="mt-1 text-left text-muted-foreground text-sm">
+            <AlertDialogTitle className="text-left font-bold text-foreground text-lg sm:text-xl">
+              프로필 수정
+            </AlertDialogTitle>
+            <AlertDialogDescription className="mt-1 text-left text-muted-foreground text-xs sm:text-sm">
               스페이스에서 보이는 프로필 정보를 수정할 수 있어요.
             </AlertDialogDescription>
           </div>
@@ -81,25 +83,25 @@ export const ProfileEditModal = ({
           </button>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-4">
-          <div className="flex items-center gap-4">
+        <div className="mt-5 rounded-2xl border border-border bg-muted/30 p-4 sm:mt-6 sm:p-5">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             <ProfileAvatar
-              className="size-16 text-base"
+              className="size-14 text-sm sm:size-16 sm:text-base"
               imageUrl={avatarUrl}
               name={nickname}
-              textClassName="text-base"
+              textClassName="text-sm sm:text-base"
             />
             <div className="min-w-0 flex-1">
-              <p className="font-semibold text-foreground text-sm">프로필 이미지</p>
-              <p className="mt-1 text-muted-foreground text-sm">
+              <p className="text-center font-semibold text-foreground text-sm sm:text-left">프로필 이미지</p>
+              <p className="mt-1 text-center text-muted-foreground text-sm sm:text-left">
                 새 이미지를 선택하거나 현재 이미지를 삭제할 수 있어요.
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-col gap-1 sm:flex-row sm:justify-start">
                 <Button
                   type="button"
                   variant="secondary"
                   size="small"
-                  className="min-w-0 gap-2 px-4"
+                  className="w-full min-w-0 justify-center gap-1 px-3 sm:w-auto"
                   onClick={() => fileInputRef.current?.click()}
                   icon={<Pencil size={14} />}
                 >
@@ -110,7 +112,7 @@ export const ProfileEditModal = ({
                     type="button"
                     variant="tertiary"
                     size="small"
-                    className="min-w-0 px-4"
+                    className="w-full min-w-0 px-3 sm:w-auto"
                     onClick={onImageRemove}
                   >
                     이미지 삭제
@@ -128,13 +130,13 @@ export const ProfileEditModal = ({
           />
         </div>
 
-        <div className="mt-5 flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4 sm:mt-5">
           <InputField
             label="닉네임"
             placeholder="닉네임을 입력해주세요"
             required
             value={nickname}
-            className="max-w-full bg-background"
+            className="max-md:!max-w-full max-w-full bg-background"
             onChange={(event) => onProfileChange({ nickname: event.target.value })}
           />
           <InputField
@@ -142,12 +144,12 @@ export const ProfileEditModal = ({
             placeholder="이메일을 입력해주세요"
             required
             value={normalizedEmail}
-            className="max-w-full bg-background"
+            className="max-md:!max-w-full max-w-full bg-background"
             onChange={(event) => onProfileChange({ email: event.target.value })}
           />
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-1 gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-3">
           <Button type="button" variant="secondary" size="small" className="h-11 w-full min-w-0" onClick={onCancel}>
             취소
           </Button>
