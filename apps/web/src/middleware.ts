@@ -19,8 +19,15 @@ function isExcluded(pathname: string) {
   return EXCLUDED_PATHS.some((p) => pathname.startsWith(p));
 }
 
+// 경로 정확히 매칭
 function isPublic(pathname: string) {
-  return PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+function isAuthPage(pathname: string) {
+  return (
+    pathname === "/login" || pathname === "/signup" || pathname.startsWith("/login/") || pathname.startsWith("/signup/")
+  );
 }
 
 // 토큰 갱신
@@ -42,16 +49,23 @@ async function refreshTokens(refreshToken: string) {
 }
 
 // 쿠키 set
-function setTokenCookies(response: NextResponse, tokens: { accessToken: string; refreshToken: string }) {
-  response.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
+// request.cookies.set → 현재 요청의 서버 컴포넌트가 새 토큰을 바로 읽을 수 있도록
+// response.cookies.set → 브라우저가 다음 요청부터 새 토큰을 쿠키에 담아 보내도록
+function setTokenCookies(request: NextRequest, tokens: { accessToken: string; refreshToken: string }) {
+  request.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken);
+  request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
+
+  const res = NextResponse.next({ request });
+
+  res.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
     ...COOKIE_OPTIONS,
     maxAge: ACCESS_TOKEN_MAX_AGE,
   });
-  response.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
+  res.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
     ...COOKIE_OPTIONS,
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
-  return response;
+  return res;
 }
 
 // 쿠키 삭제 (로그인 세션 만료)
@@ -69,9 +83,10 @@ export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  // 액세스 토큰 검증
+  // 액세스 토큰이 유효하면 통과
+  // 로그인 상태에서 /login, /signup 접근 시 홈으로 redirect
   if (accessToken && TokenService.isValid(accessToken)) {
-    if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
+    if (isAuthPage(pathname)) {
       return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
@@ -82,11 +97,14 @@ export async function middleware(request: NextRequest) {
     const tokens = await refreshTokens(refreshToken);
 
     if (tokens) {
-      // 갱신 성공 → 새 토큰 쿠키 저장 후 통과
-      return setTokenCookies(NextResponse.next(), tokens);
+      // 갱신 성공 시 /login이나 /signup이면 홈으로 redirect, 그 외엔 새 토큰 저장 후 요청 페이지로 통과
+      if (isAuthPage(pathname)) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return setTokenCookies(request, tokens);
     }
 
-    // 갱신 실패 → 토큰 삭제 후 공개 경로면 통과 / 보호 경로면 /login redirect
+    // 갱신 실패 시 토큰 삭제 후 공개 경로면 통과 / 보호 경로면 /login redirect
     if (isPublic(pathname)) {
       return clearTokenCookies(NextResponse.next());
     }
@@ -102,5 +120,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2)$).*)"],
 };
