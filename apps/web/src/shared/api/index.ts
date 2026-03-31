@@ -27,9 +27,7 @@ import {
   Reviews,
   Users,
 } from "@moum-zip/api/index";
-
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://together-dallaem-api.vercel.app";
-const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
+import { API_BASE_URL as baseUrl, TEAM_ID as teamId } from "@/shared/config/env";
 
 // ─────────────────────────────────────────────────────────────
 // createAuthFetch
@@ -52,8 +50,8 @@ const teamId = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
 function createAuthFetch(
   getAccessToken: () => string | undefined,
   getRefreshToken: () => string | undefined,
-  onTokenRefreshed: (tokens: { accessToken: string; refreshToken: string }) => void,
-  onAuthFailed: () => void,
+  onTokenRefreshed: (tokens: { accessToken: string; refreshToken: string }) => Promise<void> | void,
+  onAuthFailed: () => Promise<void> | void,
 ): typeof fetch {
   return async (input, init) => {
     const headers = new Headers(init?.headers);
@@ -67,7 +65,7 @@ function createAuthFetch(
     const refreshToken = getRefreshToken();
 
     if (!refreshToken) {
-      onAuthFailed();
+      await onAuthFailed();
       return new Response(null, { status: 401 });
     }
 
@@ -78,13 +76,13 @@ function createAuthFetch(
     });
 
     if (!refreshResponse.ok) {
-      onAuthFailed();
+      await onAuthFailed();
       return new Response(null, { status: 401 });
     }
 
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshResponse.json();
 
-    onTokenRefreshed({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    await onTokenRefreshed({ accessToken: newAccessToken, refreshToken: newRefreshToken });
 
     const retryHeaders = new Headers(init?.headers);
     retryHeaders.set("Authorization", `Bearer ${newAccessToken}`);
@@ -342,8 +340,8 @@ export const api = buildApiShape(publicCore);
 export function createApiClient(
   getAccessToken: () => string | undefined,
   getRefreshToken: () => string | undefined,
-  onTokenRefreshed: (tokens: { accessToken: string; refreshToken: string }) => void,
-  onAuthFailed: () => void,
+  onTokenRefreshed: (tokens: { accessToken: string; refreshToken: string }) => Promise<void> | void,
+  onAuthFailed: () => Promise<void> | void,
 ) {
   const customFetch = createAuthFetch(getAccessToken, getRefreshToken, onTokenRefreshed, onAuthFailed);
 

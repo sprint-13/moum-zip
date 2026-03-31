@@ -35,7 +35,7 @@ import {
 //    서버 컴포넌트에서 인증이 필요한 경우 서버 액션으로 분리할 것
 //
 // @example
-// const client = await getApiClient();
+// const client = await getApi();
 // const data = await client.user.getUser();
 // ─────────────────────────────────────────────────────────────
 
