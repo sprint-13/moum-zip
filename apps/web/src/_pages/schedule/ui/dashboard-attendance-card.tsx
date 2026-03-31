@@ -27,19 +27,19 @@ export function DashboardAttendanceCard({ slug, attendance, totalMembers }: Dash
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-border p-5 shadow-sm">
+    <div className="flex flex-col gap-4 rounded-lg border border-primary/20 bg-background p-5 shadow-sm">
       <div className="flex flex-col gap-0.5">
         <h3 className="font-bold text-base">출석체크</h3>
         <p className="text-neutral-500 text-sm">실시간 출결 상태를 확인하세요.</p>
       </div>
 
-      <div className="flex flex-col gap-2 rounded-lg bg-muted px-4 py-3">
+      <div className="flex flex-col gap-2 rounded-lg bg-muted/50 px-4 py-3">
         <div className="flex items-center justify-between">
           <span className="text-neutral-500 text-sm">출석률</span>
           <span className="font-bold text-foreground text-sm">{rate}%</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-200">
-          <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${rate}%` }} />
+          <div className="h-full rounded-full bg-background-gradient transition-all" style={{ width: `${rate}%` }} />
         </div>
         <div className="flex items-center justify-between">
           <span className="text-neutral-500 text-sm">출석 인원</span>
