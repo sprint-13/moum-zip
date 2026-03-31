@@ -3,9 +3,8 @@ import {
   bgDoubleOval,
   bgEllipse,
   bgStar,
-  CATEGORIES,
-  CategoryCard,
   heroImage,
+  LandingCategoryGrid,
   LandingCtaButton,
   LandingScrollButton,
   spaceLg,
@@ -56,11 +55,7 @@ export default function Home() {
             취향에 따라서 원하는 모임을 골라보세요.
           </p>
         </div>
-        <div className="mt-12 grid grid-cols-2 gap-4 md:mt-20 md:grid-cols-3 lg:mt-[94px] lg:grid-cols-6 lg:gap-6">
-          {CATEGORIES.map((category) => (
-            <CategoryCard key={category.label} category={category} />
-          ))}
-        </div>
+        <LandingCategoryGrid />
       </section>
 
       <section className="overflow-hidden bg-gray-100 px-5 py-[64px] md:px-8 md:pt-[80px] md:pb-[120px] lg:px-[72px] lg:pt-[110px] lg:pb-[180px]">
