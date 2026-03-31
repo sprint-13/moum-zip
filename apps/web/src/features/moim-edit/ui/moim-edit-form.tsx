@@ -2,12 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
-import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
-import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
+import { MoimFormFields, type MoimFormValues } from "@/features/moim-create/ui/moim-form-fields";
+import { useMoimEditForm } from "@/features/moim-edit/model/use-moim-edit-form";
 
-export const MoimCreateForm = () => {
+interface MoimEditFormProps {
+  meetingId: number;
+  initialValues: MoimFormValues;
+}
+
+export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) => {
   const router = useRouter();
-  const { form, onSubmit, state, isPending } = useMoimCreateForm();
+  const { form, onSubmit, state, isPending } = useMoimEditForm({
+    meetingId,
+    initialValues,
+  });
+
   const { setError, clearErrors } = form;
 
   const handleImageUpload = async (onChange: (url: string) => void) => {
@@ -40,7 +49,7 @@ export const MoimCreateForm = () => {
       onSubmit={onSubmit}
       state={state}
       isPending={isPending}
-      submitLabel={isPending ? "생성 중" : "모임 만들기"}
+      submitLabel={isPending ? "수정 중" : "수정하기"}
       onCancel={() => router.back()}
       onImageUpload={handleImageUpload}
     />

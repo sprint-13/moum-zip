@@ -155,8 +155,8 @@ export function MoimDetailClient({
     }
   };
 
-  const handleEdit = (_id: number) => {
-    // TODO: 수정 페이지 연결 시 경로 교체
+  const handleEdit = (targetMeetingId: number) => {
+    router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
   };
 
   const handleDelete = async (_id: number) => {
@@ -188,7 +188,7 @@ export function MoimDetailClient({
   };
 
   const handleMoveToMeetingDetail = (targetMeetingId: number) => {
-    router.push(`/moim-detail/${targetMeetingId}`);
+    router.push(`${ROUTES.moimDetail}/${targetMeetingId}`);
   };
 
   const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
