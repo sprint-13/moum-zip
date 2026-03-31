@@ -144,7 +144,10 @@ export const ProfileEditModal = ({
             placeholder="이메일을 입력해주세요"
             value={emailInputValue}
             className="max-w-full bg-background max-md:max-w-full!"
-            onChange={(event) => onProfileChange({ email: event.target.value === "" ? null : event.target.value })}
+            onChange={(event) => {
+              const trimmedEmail = event.target.value.trim();
+              onProfileChange({ email: trimmedEmail === "" ? null : trimmedEmail });
+            }}
           />
         </div>
 
