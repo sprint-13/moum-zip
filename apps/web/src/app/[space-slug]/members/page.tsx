@@ -2,7 +2,7 @@ import { UserPlus } from "@moum-zip/ui/icons";
 import { MemberTable, OnlineNowCard, PendingMemberCard, RolesOverviewCard } from "@/_pages/members";
 import { addSpaceMemberAction } from "@/_pages/members/action";
 import { getPendingMembersRemote } from "@/_pages/members/use-cases/get-pending-members";
-import { queryAllMembers } from "@/_pages/members/use-cases/query-all-members";
+import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
 import { hasPermission, SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 
@@ -21,7 +21,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
   // layout에서 이미 검증 완료 + React.cache()로 메모이제이션된 결과 반환 (DB 재조회 없음)
   const { space, membership } = await getSpaceContext(slug);
 
-  const membersPromise = queryAllMembers(space.spaceId);
+  const membersPromise = queryAllMembersUseCase(space.spaceId);
 
   const pendingMembersPromise =
     membership.role === "manager"
