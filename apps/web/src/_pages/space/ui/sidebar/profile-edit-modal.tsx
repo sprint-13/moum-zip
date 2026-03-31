@@ -63,7 +63,7 @@ export const ProfileEditModal = ({
         }
       }}
     >
-      <AlertDialogContent className="max-h-[calc(100vh-32px)] w-[calc(100vw-32px)] max-w-120 gap-0 overflow-y-auto rounded-[24px] border border-primary/20 bg-background p-5 shadow-xl sm:rounded-[28px] sm:p-7">
+      <AlertDialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-120 gap-0 overflow-y-auto rounded-3xl border border-primary/20 bg-background p-5 shadow-xl sm:rounded-[1.75rem] sm:p-7">
         <div className="flex items-start justify-between gap-3 sm:gap-4">
           <div className="min-w-0">
             <AlertDialogTitle className="text-left font-bold text-foreground text-lg sm:text-xl">
@@ -136,14 +136,14 @@ export const ProfileEditModal = ({
             placeholder="닉네임을 입력해주세요"
             required
             value={nickname}
-            className="max-md:!max-w-full max-w-full bg-background"
+            className="max-w-full bg-background max-md:max-w-full!"
             onChange={(event) => onProfileChange({ nickname: event.target.value })}
           />
           <InputField
             label="이메일"
             placeholder="이메일을 입력해주세요"
             value={emailInputValue}
-            className="max-md:!max-w-full max-w-full bg-background"
+            className="max-w-full bg-background max-md:max-w-full!"
             onChange={(event) => onProfileChange({ email: event.target.value === "" ? null : event.target.value })}
           />
         </div>
