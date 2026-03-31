@@ -16,7 +16,7 @@ const PUBLIC_PATHS = ["/login", "/signup", "/search", "/oauth", "/moim-detail"];
 const EXCLUDED_PATHS = ["/_next", "/api", "/fonts", "/favicon"];
 
 function isExcluded(pathname: string) {
-  return EXCLUDED_PATHS.some((p) => pathname.startsWith(p));
+  return EXCLUDED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 // 경로 정확히 매칭
@@ -48,9 +48,8 @@ async function refreshTokens(refreshToken: string) {
   }
 }
 
-// 쿠키 set
-// request.cookies.set → 현재 요청의 서버 컴포넌트가 새 토큰을 바로 읽을 수 있도록
-// response.cookies.set → 브라우저가 다음 요청부터 새 토큰을 쿠키에 담아 보내도록
+// request.cookies.set: 현재 요청에서 서버 컴포넌트가 새 토큰을 읽을 수 있도록
+// res.cookies.set: 브라우저 쿠키 갱신 (다음 요청부터 새 토큰 사용)
 function setTokenCookies(request: NextRequest, tokens: { accessToken: string; refreshToken: string }) {
   request.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken);
   request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken);
@@ -97,13 +96,22 @@ export async function middleware(request: NextRequest) {
     const tokens = await refreshTokens(refreshToken);
 
     if (tokens) {
-      // 갱신 성공 시 /login이나 /signup이면 홈으로 redirect, 그 외엔 새 토큰 저장 후 요청 페이지로 통과
+      // 갱신 성공 시 /login, /signup이면 홈으로 redirect (새 토큰은 redirect 응답에 저장)
+      // 그 외엔 새 토큰 저장 후 요청 페이지로 통과
       if (isAuthPage(pathname)) {
-        return NextResponse.redirect(new URL("/", request.url));
+        const redirectRes = NextResponse.redirect(new URL("/", request.url));
+        redirectRes.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: ACCESS_TOKEN_MAX_AGE,
+        });
+        redirectRes.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: REFRESH_TOKEN_MAX_AGE,
+        });
+        return redirectRes;
       }
       return setTokenCookies(request, tokens);
     }
-
     // 갱신 실패 시 토큰 삭제 후 공개 경로면 통과 / 보호 경로면 /login redirect
     if (isPublic(pathname)) {
       return clearTokenCookies(NextResponse.next());
