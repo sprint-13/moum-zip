@@ -64,7 +64,7 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
           </p>
         </div>
         {onEdit !== undefined &&
-        hasPermission(schedule.createdBy, { userId: membership.userId, role: membership.role }) ? (
+        hasPermission({ userId: membership.userId, role: membership.role }, schedule.createdBy) ? (
           <div>
             {!schedule.isExpired && (
               <div className="flex shrink-0 flex-col items-center">
