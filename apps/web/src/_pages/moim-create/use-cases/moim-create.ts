@@ -46,12 +46,13 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
 
   // 스페이스 멤버 등록
   await memberQueries.create({
+    id: crypto.randomUUID(),
     spaceId: space.id,
     userId,
     role: "manager",
     nickname: me.name,
     email: me.email,
-    avatarUrl: me.image,
+    avatarUrl: me.image ?? null,
   });
 
   return { meeting, space };

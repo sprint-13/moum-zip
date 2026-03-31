@@ -15,6 +15,7 @@ export const addSpaceMemberUseCase = async (
   if (existing) return existing;
 
   const newMember: NewMember = {
+    id: crypto.randomUUID(),
     spaceId,
     userId,
     nickname: name,
