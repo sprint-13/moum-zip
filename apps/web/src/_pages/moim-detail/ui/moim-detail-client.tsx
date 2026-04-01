@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
-import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail/model/types";
+import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
 
 interface MoimDetailClientProps {
