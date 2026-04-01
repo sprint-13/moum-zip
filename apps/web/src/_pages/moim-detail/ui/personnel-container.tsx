@@ -80,7 +80,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
             </div>
 
             <ProgressBar
-              aria-label="모임 참여 인원 진행률"
+              aria-label="모임 신청 인원 진행률"
               maxValue={maxParticipants}
               value={currentParticipants}
               className="w-full"
