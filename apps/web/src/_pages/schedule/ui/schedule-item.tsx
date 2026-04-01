@@ -1,9 +1,12 @@
 "use client";
 
+import { toast } from "@moum-zip/ui/components";
 import { Clock } from "@moum-zip/ui/icons";
 import { useTransition } from "react";
 import type { ScheduleWithStatus } from "@/entities/schedule";
 import { hasPermission, useSpaceContext } from "@/features/space";
+import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
+import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
 import { deleteScheduleAction } from "../actions";
 
@@ -26,6 +29,7 @@ const TimeCard = ({ date }: { date: Date | string }) => {
 export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
   const [isPending, startTransition] = useTransition();
   const { space, membership } = useSpaceContext();
+  const { open, openModal, closeModal } = useAlertModal();
 
   const borderColor = schedule.isExpired ? "border-l-neutral-300" : "border-l-green-500";
 
@@ -34,15 +38,18 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
     : { text: "예정", className: "bg-green-50 text-green-600" };
 
   function handleDelete() {
-    if (!confirm("일정을 삭제하시겠습니까?")) return; // TODO: 모달 처리
     startTransition(async () => {
       try {
         await deleteScheduleAction(space.slug, schedule.id);
       } catch (err) {
-        alert(err instanceof Error ? err.message : "일정 삭제에 실패했습니다."); // TODO: 모달 처리
+        toast({
+          message: err instanceof Error ? err.message : "일정 삭제에 실패했습니다.",
+          size: "small",
+        });
       }
     });
   }
+
   return (
     <div
       className={`flex flex-col gap-1.5 rounded-xl border border-border/50 border-l-4 bg-background px-4 py-3 shadow-sm transition-opacity ${borderColor} ${isPending ? "opacity-50" : ""}`}
@@ -79,7 +86,7 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
 
                 <button
                   type="button"
-                  onClick={handleDelete}
+                  onClick={openModal}
                   disabled={isPending}
                   className="rounded px-2 py-1 text-red-400 text-xs transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                 >
@@ -90,6 +97,13 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
           </div>
         ) : null}
       </div>
+      <AlertModal
+        open={open}
+        message="일정을 삭제하시겠어요?"
+        description="삭제하신 일정은 복구가 불가능합니다."
+        onCancel={closeModal}
+        onAction={handleDelete}
+      />
     </div>
   );
 }
