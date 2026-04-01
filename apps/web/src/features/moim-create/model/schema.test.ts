@@ -76,4 +76,32 @@ describe("moimCreateSchema", () => {
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].message).toBe("1명 이상 입력해주세요.");
   });
+
+  it("모임 시간이 시만 있으면 분 선택 메시지", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, time: "14:" });
+    expect(result.success).toBe(false);
+    const issue = result.error?.issues.find((i) => i.path[0] === "time");
+    expect(issue?.message).toBe("분을 선택해주세요.");
+  });
+
+  it("모임 시간이 분만 있으면 시 선택 메시지", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, time: ":30" });
+    expect(result.success).toBe(false);
+    const issue = result.error?.issues.find((i) => i.path[0] === "time");
+    expect(issue?.message).toBe("시를 선택해주세요.");
+  });
+
+  it("모임 시간이 비어있으면 실패", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, time: "" });
+    expect(result.success).toBe(false);
+    const issue = result.error?.issues.find((i) => i.path[0] === "time");
+    expect(issue?.message).toBe("모임 시간을 선택해주세요.");
+  });
+
+  it("마감 시간이 분만 있으면 시 선택 메시지", () => {
+    const result = moimCreateSchema.safeParse({ ...baseInput, deadlineTime: ":30" });
+    expect(result.success).toBe(false);
+    const issue = result.error?.issues.find((i) => i.path[0] === "deadlineTime");
+    expect(issue?.message).toBe("시를 선택해주세요.");
+  });
 });

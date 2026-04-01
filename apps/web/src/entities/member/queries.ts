@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/shared/db";
 import type { NewMember } from "@/shared/db/scheme";
 import { spaceMembers } from "@/shared/db/scheme";
@@ -6,10 +6,23 @@ import { spaceMembers } from "@/shared/db/scheme";
 // TODO: spaceId를 curry function 형태로 넘겨도 될 듯
 
 export const memberQueries = {
-  getBySpaceId: async (spaceId: string) => {
-    return db.query.spaceMembers.findMany({
-      where: eq(spaceMembers.spaceId, spaceId),
-    });
+  findAllBySpaceId: async (spaceId: string) => {
+    return db.select().from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId)).orderBy(
+      desc(spaceMembers.role), // 관리자 우선
+      sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
+    );
+  },
+  findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
+    return db
+      .select({
+        member: spaceMembers,
+        total: sql<number>`COUNT(*) OVER()`.mapWith(Number),
+      })
+      .from(spaceMembers)
+      .where(eq(spaceMembers.spaceId, spaceId))
+      .orderBy(desc(spaceMembers.role)) // TODO 정렬 방식 명시하기
+      .limit(opts?.limit ?? 10)
+      .offset(opts?.offset ?? 0);
   },
   getMember: async (spaceId: string, userId: number) => {
     const [member] = await db

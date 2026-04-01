@@ -1,6 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://together-dallaem-api.vercel.app";
-// (index.ts 컨벤션과 통일)
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID || "moum-zip-dev";
+import { API_BASE_URL, TEAM_ID } from "@/shared/config/env";
 
 /**
  * 구글 소셜 로그인 시작 URL 반환

@@ -36,8 +36,8 @@ describe("parseTimeString", () => {
     expect(result).toEqual({ hour: "14", minute: "30" });
   });
 
-  it("undefined이면 기본값 00:00을 반환", () => {
-    expect(parseTimeString(undefined)).toEqual({ hour: "00", minute: "00" });
+  it("undefined이면 빈 문자열을 반환", () => {
+    expect(parseTimeString(undefined)).toEqual({ hour: "", minute: "" });
   });
 });
 

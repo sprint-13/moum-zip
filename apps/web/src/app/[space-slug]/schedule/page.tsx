@@ -1,4 +1,4 @@
-import { getSpaceMembersUseCase } from "@/_pages/members/use-cases/get-space-members";
+import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
 import { AttendanceCard, ScheduleList } from "@/_pages/schedule";
 import { getSchedulesUseCase } from "@/_pages/schedule/use-cases/get-schedules";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
@@ -11,7 +11,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ "spac
 
   const [scheduleData, membersData] = await Promise.all([
     getSchedulesUseCase(space.spaceId, membership.userId),
-    getSpaceMembersUseCase(space.spaceId),
+    queryAllMembersUseCase(space.spaceId),
   ]);
 
   return (
@@ -22,7 +22,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ "spac
           <ScheduleList slug={slug} upcoming={scheduleData.upcoming} expired={scheduleData.expired} />
         </SpaceBodyLeft>
         <SpaceBodyRight>
-          <AttendanceCard slug={slug} attendance={scheduleData.attendance} totalMembers={membersData.total} />
+          <AttendanceCard slug={slug} attendance={scheduleData.attendance} totalMembers={membersData.length} />
         </SpaceBodyRight>
       </SpaceBody>
     </>
