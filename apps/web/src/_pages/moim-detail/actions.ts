@@ -1,10 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { deleteMeeting } from "@/features/moim-detail/use-cases/delete-meeting";
+import { favoriteMeeting } from "@/features/moim-detail/use-cases/favorite-meeting";
+import { joinMeeting } from "@/features/moim-detail/use-cases/join-meeting";
 import { getApi, isAuth } from "@/shared/api/server";
-import { deleteMeeting } from "./use-cases/delete-meeting";
-import { favoriteMeeting } from "./use-cases/favorite-meeting";
-import { joinMeeting } from "./use-cases/join-meeting";
 
 type ActionResult<T> = { ok: true; data: T } | { ok: false; message: string };
 

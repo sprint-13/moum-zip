@@ -1,7 +1,7 @@
 import { Tag } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import type { ReactNode } from "react";
-import { LikeButton } from "./like-button";
+import { LikeButton } from "@/features/moim-detail/ui/like-button";
 
 interface CompactCardProps {
   className?: string;

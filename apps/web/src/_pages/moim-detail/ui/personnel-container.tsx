@@ -3,7 +3,7 @@
 import { Badge, CheckCircleIcon, ProgressBar } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 
-import type { PersonnelData } from "../model/types";
+import type { PersonnelData } from "@/entities/moim-detail/model/types";
 
 interface PersonnelContainerProps {
   data: PersonnelData;

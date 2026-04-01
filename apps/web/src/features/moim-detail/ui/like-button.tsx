@@ -4,8 +4,8 @@ import { UtilityButton } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useEffect, useState, useTransition } from "react";
 
-import HeartActiveIcon from "../assets/svg/heart-active.svg";
-import HeartDefaultIcon from "../assets/svg/heart-default.svg";
+import HeartActiveIcon from "@/shared/assets/heart-active.svg";
+import HeartDefaultIcon from "@/shared/assets/heart-default.svg";
 
 interface LikeButtonProps {
   isLiked?: boolean;

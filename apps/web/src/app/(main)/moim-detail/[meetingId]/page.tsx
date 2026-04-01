@@ -10,7 +10,7 @@ import {
   mapMeetingDetailToPersonnelBaseData,
   mapMeetingToRecommendedMeetingData,
   mapParticipantsToParticipantData,
-} from "@/_pages/moim-detail/model/mapper";
+} from "@/entities/moim-detail/model/mapper";
 import { getApi } from "@/shared/api/server";
 
 interface PageProps {

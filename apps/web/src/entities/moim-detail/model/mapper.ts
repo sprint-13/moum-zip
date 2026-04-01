@@ -1,4 +1,3 @@
-import type { api } from "@/shared/api";
 import type {
   InformationData,
   MeetingActionState,
@@ -11,7 +10,8 @@ import type {
   PersonnelData,
   RecommendedMeetingData,
   ViewerRole,
-} from "./types";
+} from "@/entities/moim-detail/model/types";
+import type { api } from "@/shared/api";
 
 type MeetingDetailResponse = Awaited<ReturnType<typeof api.meetings.getDetail>>["data"];
 
