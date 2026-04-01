@@ -20,12 +20,11 @@ async function fetchSchedules(spaceId: string, userId: number): Promise<GetSched
   ]);
 
   const classified: ScheduleWithStatus[] = rows.map((schedule) => {
-    const endAt = new Date(schedule.endAt);
     const startAt = new Date(schedule.startAt);
     return {
       ...schedule,
-      isExpired: endAt < now,
-      isOngoing: startAt <= now && now <= endAt,
+      isExpired: startAt < now,
+      isUpcoming: startAt >= now,
     };
   });
 

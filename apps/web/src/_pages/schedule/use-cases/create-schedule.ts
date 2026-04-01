@@ -6,7 +6,6 @@ export interface CreateScheduleInput {
   title: string;
   description?: string;
   startAt: Date;
-  endAt: Date;
 }
 
 /**
@@ -16,7 +15,6 @@ export interface CreateScheduleInput {
  */
 export async function createScheduleUseCase(input: CreateScheduleInput): Promise<{ scheduleId: string }> {
   if (!input.title.trim()) throw new Error("제목을 입력해주세요.");
-  if (input.endAt <= input.startAt) throw new Error("종료 시간은 시작 시간 이후여야 합니다.");
 
   const [schedule] = await scheduleQueries.create({
     id: crypto.randomUUID(),
@@ -25,7 +23,6 @@ export async function createScheduleUseCase(input: CreateScheduleInput): Promise
     title: input.title.trim(),
     description: input.description?.trim() || undefined,
     startAt: input.startAt,
-    endAt: input.endAt,
   });
 
   if (!schedule) throw new Error("일정 생성에 실패했습니다.");
