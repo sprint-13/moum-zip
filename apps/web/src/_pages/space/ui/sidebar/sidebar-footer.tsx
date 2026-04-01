@@ -2,8 +2,8 @@
 
 import { ChevronsUpDown } from "@moum-zip/ui/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { updateMemberProfileAction } from "@/_pages/space/actions";
-import { isAllowedProfileImageType, uploadProfileImage } from "@/_pages/space/use-cases/upload-profile-image";
+import { saveSpaceMemberProfileUseCase } from "@/_pages/space/use-cases/save-space-member-profile";
+import { isAllowedProfileImageType } from "@/_pages/space/use-cases/upload-profile-image";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileEditModal } from "./profile-edit-modal";
 import { useSidebar } from "./sidebar";
@@ -15,30 +15,17 @@ interface SidebarFooterProps {
   avatarUrl?: string;
 }
 
-interface SidebarProfile {
+interface SidebarProfileDraft {
   avatarUrl?: string;
   email: string;
   nickname: string;
 }
 
-const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfile => ({
+const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfileDraft => ({
   avatarUrl,
   email: email ?? "",
   nickname: name,
 });
-
-const getTrimmedProfile = ({ email, nickname }: Pick<SidebarProfile, "email" | "nickname">) => ({
-  email: email.trim(),
-  nickname: nickname.trim(),
-});
-
-const getProfileSaveErrorMessage = (error: unknown) => {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return "프로필 저장에 실패했어요. 다시 시도해 주세요.";
-};
 
 export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterProps) => {
   const { open, setOpen } = useSidebar();
@@ -63,7 +50,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   }, []);
 
   const applyEditingSnapshot = useCallback(
-    (nextProfile: SidebarProfile) => {
+    (nextProfile: SidebarProfileDraft) => {
       revokePreviewAvatarUrl();
       setInitialEditingProfile({ ...nextProfile });
       setEditingProfile({ ...nextProfile });
@@ -85,7 +72,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
     };
   }, [revokePreviewAvatarUrl]);
 
-  const updateEditingProfile = (changes: Partial<SidebarProfile>) => {
+  const updateEditingProfile = (changes: Partial<SidebarProfileDraft>) => {
     setErrorMessage(null);
     setEditingProfile((prevProfile) => ({
       ...prevProfile,
@@ -134,40 +121,22 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   };
 
   const handleProfileSave = async () => {
-    const { email: nextEmail, nickname: nextNickname } = getTrimmedProfile(editingProfile);
-    const { email: initialEmail, nickname: initialNickname } = getTrimmedProfile(initialEditingProfile);
-
-    const isTextProfileChanged = nextEmail !== initialEmail || nextNickname !== initialNickname;
-    const hasAvatarChange = editingImageFile !== null;
-
-    if (!isTextProfileChanged && !hasAvatarChange) {
-      setIsProfileModalOpen(false);
-      return;
-    }
-
     setIsSaving(true);
     setErrorMessage(null);
 
     try {
-      const payload: {
-        avatarUrl?: string;
-        email?: string;
-        nickname?: string;
-      } = {};
+      const member = await saveSpaceMemberProfileUseCase({
+        editingImageFile,
+        editingProfile,
+        initialProfile: initialEditingProfile,
+        slug,
+      });
 
-      if (nextNickname !== initialNickname) {
-        payload.nickname = nextNickname;
+      if (!member) {
+        setIsProfileModalOpen(false);
+        return;
       }
 
-      if (nextEmail !== initialEmail) {
-        payload.email = nextEmail;
-      }
-
-      if (editingImageFile) {
-        payload.avatarUrl = await uploadProfileImage(editingImageFile);
-      }
-
-      const { member } = await updateMemberProfileAction(slug, payload);
       const nextProfile = createSidebarProfile({
         avatarUrl: member.avatarUrl ?? undefined,
         email: member.email,
@@ -178,7 +147,9 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
       applyEditingSnapshot(nextProfile);
       setIsProfileModalOpen(false);
     } catch (error) {
-      setErrorMessage(getProfileSaveErrorMessage(error));
+      setErrorMessage(
+        error instanceof Error && error.message ? error.message : "프로필 저장에 실패했어요. 다시 시도해 주세요.",
+      );
     } finally {
       setIsSaving(false);
     }
