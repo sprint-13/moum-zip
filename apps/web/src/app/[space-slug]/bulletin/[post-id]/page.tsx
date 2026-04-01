@@ -1,5 +1,6 @@
 import { after } from "next/server";
 import { Suspense } from "react";
+import { PostInfoCard } from "@/_pages/bulletin";
 import { postQueries } from "@/entities/post/queries";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
@@ -7,7 +8,6 @@ import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail
 import { safe } from "@/shared/lib/safe";
 import { CommentSection } from "./_components/comment-section";
 import { PostArticleSection } from "./_components/post-article-section";
-import { PostInfoSection } from "./_components/post-info-section";
 
 export default async function PostDetailPage({
   params,
@@ -23,7 +23,7 @@ export default async function PostDetailPage({
   after(async () => {
     await postQueries.incrementViewCount(postId);
   });
-
+  // TODO: membership prop 제거하고 각 컴포넌트에서 getSpaceContext로 가져오기 (캐싱됨)
   return (
     <>
       <SpaceHeader title={post.title} description={post.author.name} />
@@ -48,7 +48,7 @@ export default async function PostDetailPage({
         </SpaceBodyLeft>
         <SpaceBodyRight>
           <Suspense fallback={<PostInfoSkeleton />}>
-            <PostInfoSection postId={postId} />
+            <PostInfoCard postId={postId} />
           </Suspense>
         </SpaceBodyRight>
       </SpaceBody>

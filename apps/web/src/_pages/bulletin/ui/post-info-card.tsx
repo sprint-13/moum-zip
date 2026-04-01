@@ -2,6 +2,7 @@ import { Eye, Heart, MessageSquare } from "@moum-zip/ui/icons";
 import type { ReactNode } from "react";
 import { CATEGORY_LABELS, type Post } from "@/entities/post";
 import { SpaceCard } from "@/features/space";
+import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
 
 const CATEGORY_COLOR: Record<Post["category"], string> = {
   notice: "bg-blue-50 text-blue-600 border-blue-100",
@@ -11,10 +12,12 @@ const CATEGORY_COLOR: Record<Post["category"], string> = {
 };
 
 interface PostInfoCardProps {
-  post: Post;
+  postId: string;
 }
 
-export function PostInfoCard({ post }: PostInfoCardProps) {
+export async function PostInfoCard({ postId }: PostInfoCardProps) {
+  const { post } = await getPostDetailUseCase(postId);
+
   return (
     <SpaceCard>
       <h3 className="mb-4 font-bold text-base text-neutral-900">게시글 정보</h3>
