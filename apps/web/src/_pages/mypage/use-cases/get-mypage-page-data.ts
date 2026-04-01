@@ -1,20 +1,20 @@
 import type { FavoriteList, JoinedMeetingList, User } from "@moum-zip/api";
 import { type MypageMoimCard, type MypageProfile, mapFavoriteMeeting, mapJoinedMeeting, mapProfile } from "../model";
 
-type Deps = {
+interface Deps {
   getUser: () => Promise<{ data: User }>;
   getJoinedMeetings: () => Promise<{ data: JoinedMeetingList }>;
   getFavoritesPage: (cursor?: string) => Promise<{ data: FavoriteList }>;
-};
+}
 
-type MypagePageData = {
+interface MypagePageData {
   initialFavoriteList: FavoriteList;
   profile: MypageProfile;
   moims: Record<"joined" | "liked", MypageMoimCard[]>;
   createdMoims: Record<"ongoing" | "ended", MypageMoimCard[]>;
-};
+}
 
-async function getAllFavorites(getFavoritesPage: Deps["getFavoritesPage"]): Promise<FavoriteList> {
+const getAllFavorites = async (getFavoritesPage: Deps["getFavoritesPage"]): Promise<FavoriteList> => {
   const favorites: FavoriteList["data"] = [];
   let cursor: string | undefined;
   let hasMore = false;
@@ -31,13 +31,13 @@ async function getAllFavorites(getFavoritesPage: Deps["getFavoritesPage"]): Prom
     nextCursor: cursor ?? null,
     hasMore,
   };
-}
+};
 
-export async function getMypagePageData({
+export const getMypagePageData = async ({
   getUser,
   getJoinedMeetings,
   getFavoritesPage,
-}: Deps): Promise<MypagePageData> {
+}: Deps): Promise<MypagePageData> => {
   const [{ data: user }, { data: joinedMeetings }, favoritesList] = await Promise.all([
     getUser(),
     getJoinedMeetings(),
@@ -61,4 +61,4 @@ export async function getMypagePageData({
       ended: [],
     },
   };
-}
+};

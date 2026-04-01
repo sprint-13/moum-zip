@@ -3,7 +3,7 @@
 import type { JoinedMeeting } from "@moum-zip/api";
 import { fetchMyMeetings, type MypageMoimCard, mapJoinedMeeting } from "../model";
 
-export function getJoinedMeetingsQueryOptions(initialData: MypageMoimCard[]) {
+export const getJoinedMeetingsQueryOptions = (initialData: MypageMoimCard[]) => {
   return {
     queryKey: ["mypage", "meetings", "joined"],
     queryFn: async () => {
@@ -18,4 +18,4 @@ export function getJoinedMeetingsQueryOptions(initialData: MypageMoimCard[]) {
     },
     initialData,
   } as const;
-}
+};

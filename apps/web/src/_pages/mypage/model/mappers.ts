@@ -3,15 +3,15 @@ import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
-function getConfirmationBadge(confirmedAt: string | null | undefined) {
+const getConfirmationBadge = (confirmedAt: string | null | undefined) => {
   return {
     label: confirmedAt ? "개설확정" : "개설대기",
     variant: confirmedAt ? "confirmed" : "waiting",
     withIcon: Boolean(confirmedAt),
   } as const;
-}
+};
 
-export function formatMeetingDateTime(dateTime: string | null) {
+export const formatMeetingDateTime = (dateTime: string | null) => {
   const meetingDate = new Date(dateTime ?? new Date().toISOString());
 
   return {
@@ -28,17 +28,17 @@ export function formatMeetingDateTime(dateTime: string | null) {
     }).format(meetingDate),
     isCompleted: meetingDate.getTime() < Date.now(),
   };
-}
+};
 
-export function mapProfile(user: User): MypageProfile {
+export const mapProfile = (user: User): MypageProfile => {
   return {
     name: user.name,
     email: user.email,
     imageUrl: user.image ?? undefined,
   };
-}
+};
 
-export function mapJoinedMeeting(meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard {
+export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard => {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
@@ -59,9 +59,9 @@ export function mapJoinedMeeting(meeting: JoinedMeeting, index: number, liked = 
     },
     secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};
 
-export function mapCreatedMeeting(meeting: MeetingWithHost, index: number, liked = false): MypageMoimCard {
+export const mapCreatedMeeting = (meeting: MeetingWithHost, index: number, liked = false): MypageMoimCard => {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
@@ -82,11 +82,11 @@ export function mapCreatedMeeting(meeting: MeetingWithHost, index: number, liked
     },
     secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};
 
-export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number): MypageMoimCard {
+export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number): MypageMoimCard => {
   const { meeting } = favorite;
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime ?? new Date().toISOString());
+  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),
@@ -106,4 +106,4 @@ export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number)
     },
     secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};

@@ -2,10 +2,8 @@ import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost 
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
-const CREATED_MEETINGS_PAGE_SIZE = 100;
-const MAX_CREATED_MEETINGS_PAGE_COUNT = 20;
 
-export type MyMeetingsQuery = {
+export interface MyMeetingsQuery {
   type: "joined" | "created";
   completed?: "true" | "false";
   reviewed?: "true" | "false";
@@ -13,15 +11,15 @@ export type MyMeetingsQuery = {
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
-};
+}
 
-export type MyMeetingsResponse = {
+export interface MyMeetingsResponse {
   data: Array<JoinedMeeting | MeetingWithHost>;
   nextCursor: string | null;
   hasMore: boolean;
-};
+}
 
-export type MyFavoritesQuery = {
+export interface MyFavoritesQuery {
   type?: string;
   region?: string;
   date?: string;
@@ -29,12 +27,12 @@ export type MyFavoritesQuery = {
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
-};
+}
 
-function toSearchParams(query: Record<string, string | number | undefined>) {
+const toSearchParams = (query: object) => {
   const searchParams = new URLSearchParams();
 
-  Object.entries(query).forEach(([key, value]) => {
+  Object.entries(query as Record<string, string | number | undefined>).forEach(([key, value]) => {
     if (value === undefined || value === "") {
       return;
     }
@@ -43,9 +41,9 @@ function toSearchParams(query: Record<string, string | number | undefined>) {
   });
 
   return searchParams;
-}
+};
 
-export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<MyMeetingsResponse> {
+export const fetchMyMeetings = async (query: MyMeetingsQuery): Promise<MyMeetingsResponse> => {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/meetings?${searchParams.toString()}`);
 
@@ -56,43 +54,9 @@ export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<MyMeeting
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function fetchAllMyCreatedMeetings(
-  query: Omit<MyMeetingsQuery, "type" | "completed" | "reviewed" | "size" | "cursor"> = {},
-): Promise<MyMeetingsResponse> {
-  const meetings: MeetingWithHost[] = [];
-  let cursor: string | undefined;
-  let hasMore = false;
-  let pageCount = 0;
-
-  do {
-    pageCount += 1;
-
-    if (pageCount > MAX_CREATED_MEETINGS_PAGE_COUNT) {
-      throw new Error("MY_CREATED_MEETINGS_PAGINATION_LIMIT_EXCEEDED");
-    }
-
-    const response = await fetchMyMeetings({
-      ...query,
-      type: "created",
-      size: CREATED_MEETINGS_PAGE_SIZE,
-      cursor,
-    });
-
-    meetings.push(...(response.data as MeetingWithHost[]));
-    cursor = response.nextCursor ?? undefined;
-    hasMore = response.hasMore;
-  } while (hasMore && cursor);
-
-  return {
-    data: meetings,
-    nextCursor: cursor ?? null,
-    hasMore,
-  };
-}
-
-export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<FavoriteList> {
+export const fetchMyFavorites = async (query: MyFavoritesQuery = {}): Promise<FavoriteList> => {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/favorites?${searchParams.toString()}`);
 
@@ -103,11 +67,11 @@ export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<Fa
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function fetchAllMyFavorites(
+export const fetchAllMyFavorites = async (
   query: Omit<MyFavoritesQuery, "size" | "cursor"> = {},
-): Promise<FavoriteList> {
+): Promise<FavoriteList> => {
   const favorites: FavoriteList["data"] = [];
   let cursor: string | undefined;
   let hasMore = false;
@@ -137,9 +101,9 @@ export async function fetchAllMyFavorites(
     nextCursor: cursor ?? null,
     hasMore,
   };
-}
+};
 
-export async function createFavorite(meetingId: number): Promise<FavoriteWithMeeting> {
+export const createFavorite = async (meetingId: number): Promise<FavoriteWithMeeting> => {
   const response = await fetch("/api/mypage/favorites", {
     method: "POST",
     headers: {
@@ -155,9 +119,9 @@ export async function createFavorite(meetingId: number): Promise<FavoriteWithMee
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
+export const deleteFavorite = async (meetingId: number): Promise<{ ok: true }> => {
   const response = await fetch("/api/mypage/favorites", {
     method: "DELETE",
     headers: {
@@ -173,4 +137,4 @@ export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};

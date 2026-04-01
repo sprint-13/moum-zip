@@ -1,19 +1,19 @@
 import type { UpdateUserRequest } from "@moum-zip/api";
 
-type Deps = {
+interface Deps {
   userApi: {
     patchUser: (data: UpdateUserRequest) => Promise<unknown>;
   };
-};
+}
 
 export type UpdateProfileResult =
   | { ok: true }
   | { ok: false; error: "EMPTY_NAME" | "NAME_TOO_LONG" | "UNAUTHORIZED" | "SERVER_ERROR" };
 
-export async function updateProfile(
+export const updateProfile = async (
   input: { name: string; image?: string },
   { userApi }: Deps,
-): Promise<UpdateProfileResult> {
+): Promise<UpdateProfileResult> => {
   const name = input.name.trim();
   const image = input.image?.trim();
 
@@ -45,4 +45,4 @@ export async function updateProfile(
 
     return { ok: false, error: "SERVER_ERROR" };
   }
-}
+};
