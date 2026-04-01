@@ -3,7 +3,6 @@
 import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/components";
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
-import type { BaseSyntheticEvent } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
