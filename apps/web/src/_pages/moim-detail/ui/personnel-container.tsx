@@ -33,7 +33,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
           <div className="flex w-full items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <p className="shrink-0 font-medium text-gray-900 text-lg leading-[1.4] tracking-[-0.02em] max-sm:text-sm">
-                <span className="font-bold text-primary">{currentParticipants}</span>명 참여
+                <span className="font-bold text-primary">{currentParticipants}</span>명 신청
               </p>
 
               <div className="flex min-w-0 items-center">
