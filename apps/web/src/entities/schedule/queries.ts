@@ -26,11 +26,10 @@ export const scheduleQueries = {
     title: string;
     description?: string;
     startAt: Date;
-    endAt: Date;
   }) => db.insert(schedules).values(input).returning(),
 
   /** 일정 수정 */
-  update: (id: string, input: { title?: string; description?: string | null; startAt?: Date; endAt?: Date }) =>
+  update: (id: string, input: { title?: string; description?: string | null; startAt?: Date }) =>
     db.update(schedules).set(input).where(eq(schedules.id, id)).returning(),
 
   /** 일정 삭제 */

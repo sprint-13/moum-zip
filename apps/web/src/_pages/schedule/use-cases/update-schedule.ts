@@ -4,7 +4,6 @@ export interface UpdateScheduleInput {
   title?: string;
   description?: string | null;
   startAt?: Date;
-  endAt?: Date;
 }
 
 /**
@@ -17,9 +16,6 @@ export async function updateScheduleUseCase(
   input: UpdateScheduleInput,
 ): Promise<{ scheduleId: string }> {
   if (input.title !== undefined && !input.title.trim()) throw new Error("제목을 입력해주세요.");
-  if (input.startAt && input.endAt && input.endAt <= input.startAt) {
-    throw new Error("종료 시간은 시작 시간 이후여야 합니다.");
-  }
 
   const [schedule] = await scheduleQueries.update(scheduleId, {
     ...input,

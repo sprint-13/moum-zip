@@ -12,3 +12,7 @@ export function assertPermission(authorId: number, requester: Requester): void {
     throw new Error("권한이 없습니다.");
   }
 }
+
+export function hasPermission(requester: Requester, authorId?: number): boolean {
+  return requester.userId === authorId || requester.role === "manager";
+}

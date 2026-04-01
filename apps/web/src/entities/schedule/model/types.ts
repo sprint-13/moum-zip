@@ -26,7 +26,7 @@ export function kstInputToDate(kstString: string): Date {
 /** 일정의 만료/진행 상태 */
 export interface ScheduleWithStatus extends Schedule {
   isExpired: boolean;
-  isOngoing: boolean;
+  isUpcoming: boolean;
 }
 
 /** 오늘의 출석 체크 현황 */
