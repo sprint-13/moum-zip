@@ -27,10 +27,9 @@ interface SpaceSidebarProps {
   children: ReactNode;
   space: SpaceContext["space"];
   membership: SpaceContext["membership"];
-  slug: string;
 }
 
-export const SpaceSidebar = ({ children, space, membership, slug }: SpaceSidebarProps) => {
+export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps) => {
   return (
     <SidebarProvider>
       {/* 데스크탑: 고정 사이드바 */}
@@ -39,7 +38,7 @@ export const SpaceSidebar = ({ children, space, membership, slug }: SpaceSidebar
         <SidebarContent navItems={NAV_ITEMS} />
         <div className="mt-auto">
           <SidebarFooter
-            slug={slug}
+            slug={space.slug}
             name={membership.nickname}
             email={membership.email ?? ""}
             avatarUrl={membership.avatarUrl ?? undefined}

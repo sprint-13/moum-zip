@@ -22,7 +22,7 @@ export default async function SpaceLayout({
   return (
     <QueryProvider>
       <SpaceProvider value={{ space, membership }}>
-        <SpaceSidebar slug={slug} space={space} membership={membership}>
+        <SpaceSidebar space={space} membership={membership}>
           <main className="mx-auto w-full max-w-6xl p-6">{children}</main>
         </SpaceSidebar>
       </SpaceProvider>
