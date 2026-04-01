@@ -1,19 +1,25 @@
-import type { FavoriteList, FavoriteWithMeeting, UserMeetingsResponse } from "@moum-zip/api";
+import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost } from "@moum-zip/api";
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
 
-export type MyMeetingsQuery = {
+export interface MyMeetingsQuery {
   type: "joined" | "created";
   completed?: "true" | "false";
   reviewed?: "true" | "false";
-  sortBy?: "dateTime" | "joinedAt" | "createdAt";
+  sortBy?: "dateTime" | "registrationEnd" | "joinedAt" | "participantCount";
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
-};
+}
 
-export type MyFavoritesQuery = {
+export interface MyMeetingsResponse {
+  data: Array<JoinedMeeting | MeetingWithHost>;
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export interface MyFavoritesQuery {
   type?: string;
   region?: string;
   date?: string;
@@ -21,12 +27,12 @@ export type MyFavoritesQuery = {
   sortOrder?: "asc" | "desc";
   size?: number;
   cursor?: string;
-};
+}
 
-function toSearchParams(query: Record<string, string | number | undefined>) {
+const toSearchParams = (query: object) => {
   const searchParams = new URLSearchParams();
 
-  Object.entries(query).forEach(([key, value]) => {
+  Object.entries(query as Record<string, string | number | undefined>).forEach(([key, value]) => {
     if (value === undefined || value === "") {
       return;
     }
@@ -35,9 +41,9 @@ function toSearchParams(query: Record<string, string | number | undefined>) {
   });
 
   return searchParams;
-}
+};
 
-export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<UserMeetingsResponse> {
+export const fetchMyMeetings = async (query: MyMeetingsQuery): Promise<MyMeetingsResponse> => {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/meetings?${searchParams.toString()}`);
 
@@ -48,9 +54,9 @@ export async function fetchMyMeetings(query: MyMeetingsQuery): Promise<UserMeeti
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<FavoriteList> {
+export const fetchMyFavorites = async (query: MyFavoritesQuery = {}): Promise<FavoriteList> => {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/favorites?${searchParams.toString()}`);
 
@@ -61,11 +67,11 @@ export async function fetchMyFavorites(query: MyFavoritesQuery = {}): Promise<Fa
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function fetchAllMyFavorites(
+export const fetchAllMyFavorites = async (
   query: Omit<MyFavoritesQuery, "size" | "cursor"> = {},
-): Promise<FavoriteList> {
+): Promise<FavoriteList> => {
   const favorites: FavoriteList["data"] = [];
   let cursor: string | undefined;
   let hasMore = false;
@@ -95,9 +101,9 @@ export async function fetchAllMyFavorites(
     nextCursor: cursor ?? null,
     hasMore,
   };
-}
+};
 
-export async function createFavorite(meetingId: number): Promise<FavoriteWithMeeting> {
+export const createFavorite = async (meetingId: number): Promise<FavoriteWithMeeting> => {
   const response = await fetch("/api/mypage/favorites", {
     method: "POST",
     headers: {
@@ -113,9 +119,9 @@ export async function createFavorite(meetingId: number): Promise<FavoriteWithMee
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};
 
-export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
+export const deleteFavorite = async (meetingId: number): Promise<{ ok: true }> => {
   const response = await fetch("/api/mypage/favorites", {
     method: "DELETE",
     headers: {
@@ -131,4 +137,4 @@ export async function deleteFavorite(meetingId: number): Promise<{ ok: true }> {
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data = await response.json();
   return data;
-}
+};

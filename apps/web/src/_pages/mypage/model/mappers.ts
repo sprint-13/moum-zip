@@ -1,24 +1,18 @@
-import type { FavoriteWithMeeting, User, UserMeeting } from "@moum-zip/api";
+import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "@moum-zip/api";
 import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
-function normalizeMeetingLocation(region: string) {
-  const normalized = region.trim().toLowerCase();
+const getConfirmationBadge = (confirmedAt: string | null | undefined) => {
+  return {
+    label: confirmedAt ? "개설확정" : "개설대기",
+    variant: confirmedAt ? "confirmed" : "waiting",
+    withIcon: Boolean(confirmedAt),
+  } as const;
+};
 
-  if (normalized === "online" || normalized === "온라인") {
-    return "online";
-  }
-
-  if (normalized === "offline" || normalized === "오프라인") {
-    return "offline";
-  }
-
-  return "offline";
-}
-
-export function formatMeetingDateTime(dateTime: string) {
-  const meetingDate = new Date(dateTime);
+export const formatMeetingDateTime = (dateTime: string | null) => {
+  const meetingDate = new Date(dateTime ?? new Date().toISOString());
 
   return {
     date: new Intl.DateTimeFormat("ko-KR", {
@@ -34,26 +28,27 @@ export function formatMeetingDateTime(dateTime: string) {
     }).format(meetingDate),
     isCompleted: meetingDate.getTime() < Date.now(),
   };
-}
+};
 
-export function mapProfile(user: User): MypageProfile {
+export const mapProfile = (user: User): MypageProfile => {
   return {
     name: user.name,
     email: user.email,
     imageUrl: user.image ?? undefined,
   };
-}
+};
 
-export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
+export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard => {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
@@ -62,19 +57,21 @@ export function mapJoinedMeeting(meeting: UserMeeting, index: number, liked = fa
       label: isCompleted ? "참여 완료" : "참여 예정",
       variant: isCompleted ? "completed" : "scheduled",
     },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};
 
-export function mapCreatedMeeting(meeting: UserMeeting, index: number, liked = false): MypageMoimCard {
+export const mapCreatedMeeting = (meeting: MeetingWithHost, index: number, liked = false): MypageMoimCard => {
   const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
@@ -83,20 +80,22 @@ export function mapCreatedMeeting(meeting: UserMeeting, index: number, liked = f
       label: isCompleted ? "진행 종료" : "진행 중",
       variant: isCompleted ? "completed" : "scheduled",
     },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};
 
-export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number): MypageMoimCard {
+export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number): MypageMoimCard => {
   const { meeting } = favorite;
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime ?? new Date().toISOString());
+  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
 
   return {
     id: String(meeting.id),
     title: meeting.name,
     participantCount: `${meeting.participantCount}/${meeting.capacity}`,
-    location: normalizeMeetingLocation(meeting.region),
+    location: meeting.region,
     date,
     time,
+    imageUrl: meeting.image ?? undefined,
     liked: true,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
@@ -105,10 +104,6 @@ export function mapFavoriteMeeting(favorite: FavoriteWithMeeting, index: number)
       label: isCompleted ? "참여 완료" : "참여 예정",
       variant: isCompleted ? "completed" : "scheduled",
     },
-    secondaryBadge: {
-      label: meeting.confirmedAt ? "개설확정" : "개설대기",
-      variant: meeting.confirmedAt ? "confirmed" : "waiting",
-      withIcon: Boolean(meeting.confirmedAt),
-    },
+    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
   };
-}
+};

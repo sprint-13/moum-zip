@@ -3,7 +3,7 @@
 import type { FavoriteList } from "@moum-zip/api";
 import { fetchAllMyFavorites } from "../model";
 
-export function getFavoritesQueryOptions(initialData?: FavoriteList) {
+export const getFavoritesQueryOptions = (initialData?: FavoriteList) => {
   return {
     queryKey: ["mypage", "favorites"],
     queryFn: async () =>
@@ -13,4 +13,4 @@ export function getFavoritesQueryOptions(initialData?: FavoriteList) {
       }),
     initialData,
   } as const;
-}
+};
