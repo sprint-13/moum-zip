@@ -1,7 +1,4 @@
-import { Users } from "@moum-zip/api";
-import { cookies } from "next/headers";
-import { isAuth } from "@/shared/api/server";
-import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
+import { getApi, isAuth } from "@/shared/api/server";
 import { NavigationMenuClient } from "./navigation-menu-client";
 
 type NavigationUser = {
@@ -10,26 +7,9 @@ type NavigationUser = {
 };
 
 async function getNavigationUser(): Promise<NavigationUser | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const teamId = process.env.NEXT_PUBLIC_TEAM_ID;
-
-  if (!baseUrl || !teamId) {
-    return null;
-  }
-
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-
-  if (!accessToken) {
-    return null;
-  }
-
   try {
-    const usersApi = new Users({
-      baseUrl,
-      securityWorker: () => ({ headers: { Authorization: `Bearer ${accessToken}` } }),
-    });
-    const response = await usersApi.getUsers(teamId);
+    const api = await getApi();
+    const response = await api.user.getUser();
 
     return {
       imageUrl: response.data.image ?? undefined,
