@@ -33,7 +33,9 @@ export const TimePicker = ({ value, onChange }: TimePickerProps) => {
           className="flex items-center gap-2 rounded-md border border-input p-3"
         >
           <ClockIcon className="size-4 text-muted-foreground" />
-          <span className="text-sm leading-[22px]"> {value ? value.replace(":", " : ") : "HH : MM"}</span>
+          <span className={cn("text-sm leading-[22px]", value ? "text-foreground" : "text-muted-foreground")}>
+            {value ? value.replace(":", " : ") : "HH : MM"}
+          </span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="flex w-auto flex-row gap-2 p-2">
