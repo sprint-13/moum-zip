@@ -5,6 +5,7 @@ export const ROUTES = {
   moimDetail: "/moim-detail",
   moimEdit: "/moim-edit",
   spaces: "/spaces",
+  mypage: "/mypage",
   login: "/login",
   signup: "/signup",
 } as const;
