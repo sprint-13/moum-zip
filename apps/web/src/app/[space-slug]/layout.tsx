@@ -2,7 +2,7 @@ import { Toaster } from "@moum-zip/ui/components";
 import type { ReactNode } from "react";
 import { SpaceSidebar } from "@/_pages/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
-import { SpaceProvider } from "@/features/space/lib/space-context";
+import { SpaceProvider } from "@/features/space/lib/space-context-provider";
 import { QueryProvider } from "@/shared/providers/query-client-provider";
 
 // layout에서 인증·스페이스·멤버십 검증을 수행한다.
@@ -22,11 +22,9 @@ export default async function SpaceLayout({
   return (
     <QueryProvider>
       <SpaceProvider value={{ space, membership }}>
-        <div className={space.themeColor}>
-          <SpaceSidebar space={space} membership={membership}>
-            <main className={`mx-auto w-full max-w-6xl p-6`}>{children}</main>
-          </SpaceSidebar>
-        </div>
+        <SpaceSidebar space={space} membership={membership}>
+          <main className={`mx-auto w-full max-w-6xl p-6`}>{children}</main>
+        </SpaceSidebar>
       </SpaceProvider>
       <Toaster />
     </QueryProvider>
