@@ -16,8 +16,8 @@ export const formatDate = (date: Date): string => {
 
 // "00:00" 형식의 문자열을 { hour, minute } 객체로 변환
 export const parseTimeString = (value: string | undefined): { hour: string; minute: string } => {
-  if (!value) return { hour: "00", minute: "00" };
-  const [hour = "00", minute = "00"] = value.split(":");
+  if (!value) return { hour: "", minute: "" };
+  const [hour = "", minute = ""] = value.split(":");
   return { hour, minute };
 };
 
