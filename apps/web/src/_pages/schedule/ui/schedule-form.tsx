@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@moum-zip/ui/components";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -61,7 +62,10 @@ export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
       }
       onClose();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "오류가 발생했습니다.");
+      toast({
+        message: err instanceof Error ? err.message : "일정 생성 중 오류가 발생했습니다.",
+        size: "small",
+      });
     }
   }
 
