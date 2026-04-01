@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/p
 import { CalendarIcon } from "@ui/icons";
 import { useState } from "react";
 import { formatDate, parseDateString } from "@/_pages/moim-create/lib/date-time";
+import { cn } from "@/shared/lib/cn";
 
 interface DatePickerProps {
   value?: string;
@@ -30,7 +31,9 @@ export const DatePicker = ({ value, onChange }: DatePickerProps) => {
           className="flex items-center gap-2 rounded-md border border-input p-3"
         >
           <CalendarIcon className="size-4 text-muted-foreground" />
-          <span className="text-sm leading-[22px]">{value || "YYYY-MM-DD"}</span>
+          <span className={cn("text-sm leading-[22px]", value ? "text-foreground" : "text-muted-foreground")}>
+            {value || "YYYY-MM-DD"}
+          </span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto">
