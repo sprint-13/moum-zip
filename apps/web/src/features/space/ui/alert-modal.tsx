@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from "@moum-zip/ui/components";
 
-interface AlertModal {
+interface AlertModalProps {
   open: boolean;
   message: string;
   description?: string;
@@ -17,9 +17,9 @@ interface AlertModal {
   onAction: () => void;
 }
 
-export const AlertModal = ({ open, message, description, onCancel, onAction }: AlertModal) => {
+export const AlertModal = ({ open, message, description, onCancel, onAction }: AlertModalProps) => {
   return (
-    <AlertDialog open={open}>
+    <AlertDialog open={open} onOpenChange={(open) => !open && onCancel()}>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogTitle>{message}</AlertDialogTitle>
