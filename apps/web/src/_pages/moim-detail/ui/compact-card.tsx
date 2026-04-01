@@ -31,7 +31,7 @@ export function CompactCard({
   return (
     <article
       className={cn(
-        "flex min-w-0 max-w-[30.2rem] flex-col items-start gap-4 max-sm:inline-flex max-sm:w-full max-sm:gap-1.5",
+        "group flex min-w-0 max-w-[30.2rem] flex-col items-start gap-3.5 transition-transform duration-300 ease-out hover:-translate-y-1 max-sm:inline-flex max-sm:w-full max-sm:gap-2",
         className,
       )}
     >
@@ -39,7 +39,7 @@ export function CompactCard({
         {image}
 
         <div className="absolute right-3 bottom-3 max-sm:right-2.5 max-sm:bottom-2.5">
-          <LikeButton isLiked={isLiked} onClick={onLikeClick} />
+          <LikeButton isLiked={isLiked} onClick={onLikeClick} className="h-8 w-8 scale-90 sm:h-10 sm:w-10" />
         </div>
       </div>
 

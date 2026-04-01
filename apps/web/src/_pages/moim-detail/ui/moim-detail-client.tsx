@@ -213,8 +213,8 @@ export function MoimDetailClient({
   return (
     <div className="min-h-screen">
       <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-4 pt-6 pb-24 md:px-6 md:pt-10 xl:px-12">
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="relative mx-auto max-h-[443px] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
+        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-stretch">
+          <div className="relative mx-auto aspect-[630/443] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
             {informationData.image ? (
               <img src={informationData.image} alt="모임 대표 이미지" className="h-full w-full object-cover" />
             ) : (
