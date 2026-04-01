@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { DatePicker, TimePicker } from "@/_pages/moim-create";
+
 import type { ScheduleWithStatus } from "@/entities/schedule";
 import { toDatetimeLocalKST } from "@/shared/lib/date";
+import { DatePicker, TimePicker } from "@/shared/ui";
 import { createScheduleAction, updateScheduleAction } from "../actions";
 
 const scheduleSchema = z.object({

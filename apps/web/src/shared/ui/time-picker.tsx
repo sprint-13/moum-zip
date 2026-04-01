@@ -3,8 +3,8 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/popover";
 import { ClockIcon } from "@ui/icons";
 import { useState } from "react";
-import { formatTime, parseTimeString } from "@/_pages/moim-create/lib/date-time";
 import { cn } from "@/shared/lib/cn";
+import { formatTime, parseTimeString } from "@/shared/lib/date-time";
 
 interface TimePickerProps {
   value?: string;
