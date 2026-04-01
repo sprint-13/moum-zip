@@ -24,7 +24,6 @@ interface InformationContainerProps {
   onEdit?: (meetingId: number) => void;
   onDelete?: (meetingId: number) => void;
   onLoginAction?: () => void;
-  onEnterSpace?: (meetingId: number) => void;
 }
 
 export function InformationContainer({
@@ -39,7 +38,6 @@ export function InformationContainer({
   onEdit,
   onDelete,
   onLoginAction,
-  onEnterSpace,
 }: InformationContainerProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -114,15 +112,6 @@ export function InformationContainer({
     onParticipateToggle?.(data.id, !isParticipating);
   };
 
-  const handleEnterSpaceClick = () => {
-    if (!isLoggedIn) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    onEnterSpace?.(data.id);
-  };
-
   const handleDeleteConfirm = () => {
     onDelete?.(data.id);
     setIsDeleteModalOpen(false);
@@ -172,21 +161,11 @@ export function InformationContainer({
 
   const renderActionButtons = () => {
     if (isManager) {
-      return (
-        <>
-          {renderPrimaryButton("공유하기", () => onShare?.(data.id), "secondary")}
-          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
-        </>
-      );
+      return renderPrimaryButton("공유하기", () => onShare?.(data.id), "secondary");
     }
 
     if (isParticipating) {
-      return (
-        <>
-          {renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary")}
-          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
-        </>
-      );
+      return renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary");
     }
 
     if (isClosedMeeting) {

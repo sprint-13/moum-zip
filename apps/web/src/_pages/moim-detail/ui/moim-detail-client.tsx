@@ -3,12 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
-import {
-  deleteMeetingAction,
-  favoriteMeetingAction,
-  getSpaceSlugByMeetingAction,
-  joinMeetingAction,
-} from "@/_pages/moim-detail/actions";
+import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import LocationIcon from "@/_pages/moim-detail/assets/svg/location.svg";
 import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/_pages/moim-detail/model/types";
 import { ROUTES } from "@/shared/config/routes";
@@ -40,7 +35,6 @@ export function MoimDetailClient({
 
   const [isFavoritePending, setIsFavoritePending] = useState(false);
   const [isJoinPending, setIsJoinPending] = useState(false);
-  const [isEnterSpacePending, setIsEnterSpacePending] = useState(false);
   const [isDeletePending, setIsDeletePending] = useState(false);
   const [pendingRecommendedLikeIds, setPendingRecommendedLikeIds] = useState<number[]>([]);
 
@@ -129,29 +123,6 @@ export function MoimDetailClient({
       alert("모임 링크가 복사되었습니다.");
     } catch (error) {
       alert("링크 복사에 실패했습니다.");
-    }
-  };
-
-  const handleEnterSpace = async (targetMeetingId: number) => {
-    if (isEnterSpacePending) {
-      return;
-    }
-
-    setIsEnterSpacePending(true);
-
-    try {
-      const result = await getSpaceSlugByMeetingAction(targetMeetingId);
-
-      if (!result.ok) {
-        alert(result.message);
-        return;
-      }
-
-      router.push(`/${result.data.slug}`);
-    } catch (error) {
-      alert("스페이스 입장 중 오류가 발생했습니다.");
-    } finally {
-      setIsEnterSpacePending(false);
     }
   };
 
@@ -261,7 +232,6 @@ export function MoimDetailClient({
               isParticipating={isParticipating}
               onToggleLike={handleToggleMeetingLike}
               onParticipateToggle={handleParticipateToggle}
-              onEnterSpace={handleEnterSpace}
               onShare={handleShare}
               onEdit={handleEdit}
               onDelete={handleDelete}

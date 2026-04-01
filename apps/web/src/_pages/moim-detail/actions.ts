@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { spaceQueries } from "@/entities/spaces/queries";
 import { getApi, isAuth } from "@/shared/api/server";
 import { deleteMeeting } from "./use-cases/delete-meeting";
 import { favoriteMeeting } from "./use-cases/favorite-meeting";
@@ -153,39 +152,6 @@ export async function deleteMeetingAction(meetingId: number): Promise<ActionResu
     };
   } catch (error) {
     console.error("[deleteMeetingAction] error:", error);
-
-    return {
-      ok: false,
-      message: await getErrorMessage(error),
-    };
-  }
-}
-
-export async function getSpaceSlugByMeetingAction(meetingId: number): Promise<ActionResult<{ slug: string }>> {
-  const { authenticated } = await isAuth();
-
-  if (!authenticated) {
-    redirect("/login");
-  }
-
-  try {
-    const space = await spaceQueries.findByMeetingId(meetingId);
-
-    if (!space?.slug) {
-      return {
-        ok: false,
-        message: "연결된 스페이스를 찾을 수 없습니다.",
-      };
-    }
-
-    return {
-      ok: true,
-      data: {
-        slug: space.slug,
-      },
-    };
-  } catch (error) {
-    console.error("[getSpaceSlugByMeetingAction] error:", error);
 
     return {
       ok: false,
