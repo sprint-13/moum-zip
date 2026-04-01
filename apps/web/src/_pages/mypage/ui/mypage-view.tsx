@@ -7,8 +7,9 @@ import { cn } from "@ui/lib/utils";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { getSpaceSlugAction } from "../actions";
+import { useCreatedMeetings } from "../hooks/use-created-meetings";
 import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "../model";
-import { getCreatedMeetingsQueryOptions, getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
+import { getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
 import { applyFavoriteState, buildFavoriteMeetingIds, buildLikedMeetings, useToggleFavorite } from "../use-cases";
 import MoimCardList from "./moim-card-list";
 import ProfileSection from "./profile-section";
@@ -55,10 +56,7 @@ export default function MypageView({
     data: createdMeetingCards = createdMoims[createdFilter],
     isError: isCreatedError,
     refetch: refetchCreatedMeetings,
-  } = useQuery({
-    ...getCreatedMeetingsQueryOptions(createdFilter),
-    enabled: enableRemoteFetch && selectedTab === "created",
-  });
+  } = useCreatedMeetings(createdFilter, createdMoims[createdFilter], enableRemoteFetch && selectedTab === "created");
 
   const {
     data: favoriteList,

@@ -4,11 +4,11 @@ import { MoreHorizontal } from "@moum-zip/ui/icons";
 import { Button, Dropdown, Tag } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 import { useState } from "react";
-import CrownIcon from "../assets/svg/crown.svg";
-import LocationIcon from "../assets/svg/location.svg";
-import type { InformationData } from "../model/types";
-import { AlertModal } from "./alert-modal";
-import { LikeButton } from "./like-button";
+import CrownIcon from "@/_pages/moim-detail/assets/crown.svg";
+import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
+import { AlertModal } from "@/_pages/moim-detail/ui/alert-modal";
+import type { InformationData } from "@/entities/moim-detail";
+import { LikeButton } from "@/features/moim-detail/ui/like-button";
 
 type ViewType = "member" | "manager";
 
@@ -24,7 +24,6 @@ interface InformationContainerProps {
   onEdit?: (meetingId: number) => void;
   onDelete?: (meetingId: number) => void;
   onLoginAction?: () => void;
-  onEnterSpace?: (meetingId: number) => void;
 }
 
 export function InformationContainer({
@@ -39,7 +38,6 @@ export function InformationContainer({
   onEdit,
   onDelete,
   onLoginAction,
-  onEnterSpace,
 }: InformationContainerProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -114,15 +112,6 @@ export function InformationContainer({
     onParticipateToggle?.(data.id, !isParticipating);
   };
 
-  const handleEnterSpaceClick = () => {
-    if (!isLoggedIn) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    onEnterSpace?.(data.id);
-  };
-
   const handleDeleteConfirm = () => {
     onDelete?.(data.id);
     setIsDeleteModalOpen(false);
@@ -147,7 +136,9 @@ export function InformationContainer({
         disabled={disabled}
         className={cn(
           "min-w-0 flex-1 max-sm:hidden",
-          variant === "secondary" && "border border-primary bg-white text-green-600",
+          "transition-all duration-200 active:scale-[0.985]",
+          disabled && "cursor-not-allowed opacity-60 active:scale-100",
+          variant === "secondary" && "border border-primary bg-white text-green-600 hover:bg-green-50",
         )}
         onClick={onClick}
       >
@@ -161,7 +152,9 @@ export function InformationContainer({
         disabled={disabled}
         className={cn(
           "hidden min-w-0 flex-1 max-sm:inline-flex",
-          variant === "secondary" && "border border-primary bg-white text-green-600",
+          "transition-all duration-200 active:scale-[0.985]",
+          disabled && "cursor-not-allowed opacity-60 active:scale-100",
+          variant === "secondary" && "border border-primary bg-white text-green-600 hover:bg-green-50",
         )}
         onClick={onClick}
       >
@@ -172,21 +165,11 @@ export function InformationContainer({
 
   const renderActionButtons = () => {
     if (isManager) {
-      return (
-        <>
-          {renderPrimaryButton("공유하기", () => onShare?.(data.id), "secondary")}
-          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
-        </>
-      );
+      return renderPrimaryButton("공유하기", () => onShare?.(data.id), "secondary");
     }
 
     if (isParticipating) {
-      return (
-        <>
-          {renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary")}
-          {renderPrimaryButton("스페이스 입장", handleEnterSpaceClick)}
-        </>
-      );
+      return renderPrimaryButton("신청 취소하기", handleMainButtonClick, "secondary");
     }
 
     if (isClosedMeeting) {
@@ -201,11 +184,14 @@ export function InformationContainer({
       <section className={cn("w-full", className)}>
         <article
           className={cn(
-            "mx-auto flex w-full max-w-[630px] flex-col items-start gap-6",
-            "rounded-[32px] bg-white",
-            "px-10 pt-8.5 pb-8",
-            "max-sm:rounded-[20px]",
-            "max-sm:px-6 max-sm:pt-5 max-sm:pb-6",
+            "mx-auto flex w-full flex-col items-start gap-6",
+            "rounded-[2rem] border border-slate-100 bg-white",
+            "px-8 pt-8 pb-7",
+            "shadow-[0_8px_24px_rgba(15,23,42,0.04)]",
+            "transition-all duration-200",
+            "max-sm:gap-5",
+            "max-sm:rounded-[1.25rem]",
+            "max-sm:px-5 max-sm:pt-5 max-sm:pb-5",
           )}
         >
           <div className="flex w-full flex-col gap-6 max-sm:gap-4">
@@ -252,7 +238,7 @@ export function InformationContainer({
 
             <div className="flex w-full flex-col gap-3 max-sm:gap-2">
               <div className="flex min-w-0 items-start gap-2 max-sm:gap-1.5">
-                <h3 className="min-w-0 break-words font-semibold text-[28px] text-gray-800 leading-[1.4] max-sm:text-[18px]">
+                <h3 className="min-w-0 break-words font-semibold text-2xl text-gray-800 leading-[1.4] max-sm:text-[18px]">
                   {data.title}
                 </h3>
 

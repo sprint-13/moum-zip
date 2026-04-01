@@ -3,14 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
-import {
-  deleteMeetingAction,
-  favoriteMeetingAction,
-  getSpaceSlugByMeetingAction,
-  joinMeetingAction,
-} from "@/_pages/moim-detail/actions";
-import LocationIcon from "@/_pages/moim-detail/assets/svg/location.svg";
-import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/_pages/moim-detail/model/types";
+import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
+import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
+import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
 
 interface MoimDetailClientProps {
@@ -40,7 +35,6 @@ export function MoimDetailClient({
 
   const [isFavoritePending, setIsFavoritePending] = useState(false);
   const [isJoinPending, setIsJoinPending] = useState(false);
-  const [isEnterSpacePending, setIsEnterSpacePending] = useState(false);
   const [isDeletePending, setIsDeletePending] = useState(false);
   const [pendingRecommendedLikeIds, setPendingRecommendedLikeIds] = useState<number[]>([]);
 
@@ -132,29 +126,6 @@ export function MoimDetailClient({
     }
   };
 
-  const handleEnterSpace = async (targetMeetingId: number) => {
-    if (isEnterSpacePending) {
-      return;
-    }
-
-    setIsEnterSpacePending(true);
-
-    try {
-      const result = await getSpaceSlugByMeetingAction(targetMeetingId);
-
-      if (!result.ok) {
-        alert(result.message);
-        return;
-      }
-
-      router.push(`/${result.data.slug}`);
-    } catch (error) {
-      alert("스페이스 입장 중 오류가 발생했습니다.");
-    } finally {
-      setIsEnterSpacePending(false);
-    }
-  };
-
   const handleEdit = (targetMeetingId: number) => {
     router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
   };
@@ -241,9 +212,9 @@ export function MoimDetailClient({
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="relative mx-auto max-h-[443px] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
+      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-4 pt-6 pb-24 md:px-6 md:pt-10 xl:px-12">
+        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-stretch">
+          <div className="relative mx-auto aspect-[630/443] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
             {informationData.image ? (
               <img src={informationData.image} alt="모임 대표 이미지" className="h-full w-full object-cover" />
             ) : (
@@ -261,7 +232,6 @@ export function MoimDetailClient({
               isParticipating={isParticipating}
               onToggleLike={handleToggleMeetingLike}
               onParticipateToggle={handleParticipateToggle}
-              onEnterSpace={handleEnterSpace}
               onShare={handleShare}
               onEdit={handleEdit}
               onDelete={handleDelete}

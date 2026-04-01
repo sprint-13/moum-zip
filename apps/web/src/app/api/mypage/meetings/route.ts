@@ -6,8 +6,12 @@ function isMeetingType(value: string | null): value is "joined" | "created" {
   return value === "joined" || value === "created";
 }
 
-function isMeetingSortBy(value: string | null): value is "dateTime" | "joinedAt" | "createdAt" {
-  return value === "dateTime" || value === "joinedAt" || value === "createdAt";
+function isJoinedMeetingSortBy(value: string | null): value is "dateTime" | "registrationEnd" | "joinedAt" {
+  return value === "dateTime" || value === "registrationEnd" || value === "joinedAt";
+}
+
+function isCreatedMeetingSortBy(value: string | null): value is "dateTime" | "registrationEnd" | "participantCount" {
+  return value === "dateTime" || value === "registrationEnd" || value === "participantCount";
 }
 
 function isSortOrder(value: string | null): value is "asc" | "desc" {
@@ -31,6 +35,14 @@ export async function GET(request: Request) {
   try {
     const sortBy = searchParams.get("sortBy");
     const sortOrder = searchParams.get("sortOrder");
+    const validatedSortBy =
+      type === "joined"
+        ? isJoinedMeetingSortBy(sortBy)
+          ? sortBy
+          : undefined
+        : isCreatedMeetingSortBy(sortBy)
+          ? sortBy
+          : undefined;
 
     // 탭/필터 변경 시에도 같은 외부 API를 재사용할 수 있도록 query를 그대로 전달합니다.
     const { data } = await getMyMeetings({
@@ -47,7 +59,7 @@ export async function GET(request: Request) {
           : searchParams.get("reviewed") === "false"
             ? "false"
             : undefined,
-      sortBy: isMeetingSortBy(sortBy) ? sortBy : undefined,
+      sortBy: validatedSortBy,
       sortOrder: isSortOrder(sortOrder) ? sortOrder : undefined,
       size: searchParams.get("size") ? Number(searchParams.get("size")) : undefined,
       cursor: searchParams.get("cursor") ?? undefined,
