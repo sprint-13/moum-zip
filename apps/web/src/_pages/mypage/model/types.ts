@@ -23,6 +23,7 @@ export interface MypageMoimCard {
   location: string;
   date: string;
   time: string;
+  imageUrl?: string;
   liked: boolean;
   imageTone: MoimImageTone;
   actionLabel: string;

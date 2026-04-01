@@ -3,6 +3,7 @@
 import { Badge, Button, CheckCircleIcon, UtilityButton } from "@ui/components";
 import { Heart } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
+import Image from "next/image";
 import type { MoimImageTone, MypageMoimCard } from "../model/types";
 
 interface MoimCardProps {
@@ -26,7 +27,7 @@ interface HeartButtonProps {
   className?: string;
 }
 
-function HeartButton({ isLiked, onToggle, className }: HeartButtonProps) {
+const HeartButton = ({ isLiked, onToggle, className }: HeartButtonProps) => {
   return (
     <UtilityButton
       active={isLiked}
@@ -47,23 +48,35 @@ function HeartButton({ isLiked, onToggle, className }: HeartButtonProps) {
       className={className}
     />
   );
-}
+};
 
 interface MoimPreviewProps {
   imageTone: MoimImageTone;
+  imageUrl?: string;
   className?: string;
 }
 
-function MoimPreview({ imageTone, className }: MoimPreviewProps) {
+const FALLBACK_MOIM_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" fill="none"><rect width="640" height="640" rx="48" fill="#F2F4F7"/><path d="M188 420V220H452V420H188Z" fill="#D0D5DD"/><circle cx="262" cy="276" r="36" fill="#98A2B3"/><path d="M224 388L306 306L368 368L410 326L452 388H224Z" fill="#98A2B3"/></svg>',
+)}`;
+
+const MoimPreview = ({ imageTone, imageUrl, className }: MoimPreviewProps) => {
+  const normalizedImageUrl = imageUrl?.trim();
+
   return (
     <div className={cn("relative w-full overflow-hidden", imageToneClassName[imageTone], className)}>
-      <div className="absolute inset-0 bg-linear-to-br from-white/40 via-white/10 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-black/6" />
+      <Image
+        alt=""
+        className="object-cover"
+        fill
+        src={normalizedImageUrl ? normalizedImageUrl : FALLBACK_MOIM_IMAGE}
+        unoptimized
+      />
     </div>
   );
-}
+};
 
-export default function MoimCard({ moim, onToggleLike, onEnterSpace }: MoimCardProps) {
+const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) => {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
 
   const handleToggleLike = () => {
@@ -87,6 +100,7 @@ export default function MoimCard({ moim, onToggleLike, onEnterSpace }: MoimCardP
       <div className="relative w-full md:w-[11.75rem] md:min-w-[11.75rem]">
         <MoimPreview
           imageTone={moim.imageTone}
+          imageUrl={moim.imageUrl}
           className="aspect-[343/156] rounded-t-3xl md:aspect-square md:size-[11.75rem] md:rounded-3xl"
         />
         <div className="absolute top-4 right-4 md:hidden">
@@ -136,4 +150,6 @@ export default function MoimCard({ moim, onToggleLike, onEnterSpace }: MoimCardP
       </div>
     </article>
   );
-}
+};
+
+export default MoimCard;

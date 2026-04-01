@@ -23,7 +23,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
   const { space, membership } = await getSpaceContext(slug);
 
   const membersPromise = queryAllMembersUseCase(space.spaceId);
-
+  // TODO 쿼리 조회 하위로 내리기
   const pendingMembersPromise =
     membership.role === "manager"
       ? getPendingMembersRemote(Number(space.spaceId))
@@ -38,7 +38,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
       <SpaceHeader title="Members" buttonGroup={InviteButton} />
       <SpaceBody>
         <SpaceBodyLeft>
-          <Suspense fallback={<div>멤버 테이블 로딩 중</div>}>
+          <Suspense fallback={<MemberTableSkeleton />}>
             <MemberTable />
           </Suspense>
         </SpaceBodyLeft>
@@ -51,5 +51,41 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
         </SpaceBodyRight>
       </SpaceBody>
     </>
+  );
+}
+
+function MemberTableSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col">
+      <div className="flex items-center gap-3" />
+      <div className="overflow-hidden rounded-lg border border-border bg-background">
+        <div className="flex items-center justify-between border-border border-b px-5 py-4">
+          <div className="h-5 w-28 rounded bg-muted" />
+          <div className="h-5 w-20 rounded-full bg-muted" />
+        </div>
+
+        <div className="flex border-border border-b bg-primary/10">
+          <div className="w-[220px] shrink-0 p-3">
+            <div className="h-4 w-16 rounded bg-muted" />
+          </div>
+          <div className="flex-1 p-3">
+            <div className="h-4 w-12 rounded bg-muted" />
+          </div>
+          <div className="w-[120px] shrink-0 p-3">
+            <div className="h-4 w-14 rounded bg-muted" />
+          </div>
+          <div className="w-20 shrink-0 p-3">
+            <div className="mx-auto h-4 w-12 rounded bg-muted" />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 p-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+            <div key={i} className="h-10 rounded bg-muted" />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

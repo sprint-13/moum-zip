@@ -1,3 +1,4 @@
+import { Toaster } from "@moum-zip/ui/components";
 import type { ReactNode } from "react";
 import { SpaceSidebar } from "@/_pages/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
@@ -25,6 +26,7 @@ export default async function SpaceLayout({
           <main className="mx-auto w-full max-w-6xl p-6">{children}</main>
         </SpaceSidebar>
       </SpaceProvider>
+      <Toaster />
     </QueryProvider>
   );
 }

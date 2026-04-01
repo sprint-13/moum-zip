@@ -12,22 +12,22 @@ interface MoimCardListProps {
   onEnterSpace?: (meetingId: string) => void;
 }
 
-function ListStatusContainer({ children }: { children: ReactNode }) {
+const ListStatusContainer = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-[22rem] w-full items-center justify-center md:min-h-[20rem] xl:min-h-[24rem]">
       {children}
     </div>
   );
-}
+};
 
-export default function MoimCardList({
+const MoimCardList = ({
   moims,
   emptyLabel = "아직 신청한 모임이 없어요",
   isError = false,
   onRetry,
   onToggleLike,
   onEnterSpace,
-}: MoimCardListProps) {
+}: MoimCardListProps) => {
   if (moims.length > 0) {
     return (
       <div className="flex flex-col items-start gap-6">
@@ -65,4 +65,6 @@ export default function MoimCardList({
       </div>
     </ListStatusContainer>
   );
-}
+};
+
+export default MoimCardList;

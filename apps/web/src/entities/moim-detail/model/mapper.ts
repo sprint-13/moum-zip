@@ -1,4 +1,3 @@
-import type { api } from "@/shared/api";
 import type {
   InformationData,
   MeetingActionState,
@@ -11,7 +10,8 @@ import type {
   PersonnelData,
   RecommendedMeetingData,
   ViewerRole,
-} from "./types";
+} from "@/entities/moim-detail";
+import type { api } from "@/shared/api";
 
 type MeetingDetailResponse = Awaited<ReturnType<typeof api.meetings.getDetail>>["data"];
 
@@ -109,6 +109,20 @@ function formatTime(value: string | null) {
   });
 }
 
+function isDeadlinePassed(value: string | null) {
+  if (!value) {
+    return false;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  return date.getTime() <= Date.now();
+}
+
 function formatDeadlineLabel(value: string | null) {
   if (!value) {
     return "마감 정보 없음";
@@ -118,6 +132,10 @@ function formatDeadlineLabel(value: string | null) {
 
   if (Number.isNaN(date.getTime())) {
     return "마감 정보 없음";
+  }
+
+  if (date.getTime() <= Date.now()) {
+    return "마감";
   }
 
   if (isSameDayInKst(new Date(), date)) {
@@ -166,14 +184,15 @@ function getMeetingStatus(params: {
   confirmedAt: string | null;
   participantCount: number;
   capacity: number;
+  registrationEnd: string | null;
 }): MeetingStatus {
-  const { canceledAt, confirmedAt, participantCount, capacity } = params;
+  const { canceledAt, confirmedAt, participantCount, capacity, registrationEnd } = params;
 
   if (canceledAt) {
     return "canceled";
   }
 
-  if (participantCount >= capacity) {
+  if (participantCount >= capacity || isDeadlinePassed(registrationEnd)) {
     return "full";
   }
 
@@ -262,6 +281,7 @@ export function mapMeetingDetailToInformationData(params: {
     confirmedAt: meeting.confirmedAt,
     participantCount: meeting.participantCount,
     capacity: meeting.capacity,
+    registrationEnd: meeting.registrationEnd,
   });
 
   return {
@@ -299,6 +319,7 @@ export function mapMeetingDetailToPersonnelBaseData(
     confirmedAt: meeting.confirmedAt,
     participantCount: meeting.participantCount,
     capacity: meeting.capacity,
+    registrationEnd: meeting.registrationEnd,
   });
 
   return {

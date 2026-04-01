@@ -7,28 +7,28 @@ import { createFavorite, deleteFavorite } from "../model";
 import type { MypageMoimCard } from "../model/types";
 import { updateLikedState } from "./favorite-state";
 
-function findMeetingLiked(meetings: MypageMoimCard[] | undefined, meetingId: string) {
+const findMeetingLiked = (meetings: MypageMoimCard[] | undefined, meetingId: string) => {
   return meetings?.find((meeting) => meeting.id === meetingId)?.liked;
-}
+};
 
-function restoreLikedState(
+const restoreLikedState = (
   meetings: MypageMoimCard[] | undefined,
   meetingId: string,
   previousLiked: boolean | undefined,
-) {
+) => {
   if (previousLiked === undefined) {
     return meetings;
   }
 
   return meetings?.map((meeting) => (meeting.id === meetingId ? { ...meeting, liked: previousLiked } : meeting));
-}
+};
 
-function restoreFavoriteItem(
+const restoreFavoriteItem = (
   current: FavoriteList | undefined,
   previousFavorite: FavoriteList["data"][number] | undefined,
   previousFavoriteIndex: number,
   meetingId: number,
-) {
+) => {
   if (!current) {
     if (!previousFavorite) {
       return current;
@@ -57,9 +57,9 @@ function restoreFavoriteItem(
     ...current,
     data: nextData,
   };
-}
+};
 
-export function useToggleFavorite(enableRemoteFetch: boolean) {
+export const useToggleFavorite = (enableRemoteFetch: boolean) => {
   const queryClient = useQueryClient();
   const requestVersionRef = useRef(new Map<number, number>());
 
@@ -186,4 +186,4 @@ export function useToggleFavorite(enableRemoteFetch: boolean) {
     },
     meta: { enableRemoteFetch },
   });
-}
+};

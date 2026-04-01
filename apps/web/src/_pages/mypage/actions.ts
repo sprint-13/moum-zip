@@ -8,10 +8,10 @@ import { type UpdateProfileResult, updateProfile } from "./use-cases/update-prof
 
 export type UpdateProfileActionState = UpdateProfileResult | null;
 
-export async function updateProfileAction(
+export const updateProfileAction = async (
   _: UpdateProfileActionState,
   formData: FormData,
-): Promise<UpdateProfileActionState> {
+): Promise<UpdateProfileActionState> => {
   // 서버 액션은 입력 파싱과 후처리만 담당하고, 검증/호출 로직은 use-case에 둡니다.
   const name = (formData.get("name") as string | null) ?? "";
   const image = (formData.get("image") as string | null) ?? undefined;
@@ -26,11 +26,11 @@ export async function updateProfileAction(
   revalidatePath("/mypage");
 
   return { ok: true };
-}
+};
 
-export async function getSpaceSlugAction(
+export const getSpaceSlugAction = async (
   meetingId: number,
-): Promise<{ ok: true; slug: string } | { ok: false; message: string }> {
+): Promise<{ ok: true; slug: string } | { ok: false; message: string }> => {
   const { authenticated } = await isAuth();
 
   if (!authenticated) {
@@ -51,4 +51,4 @@ export async function getSpaceSlugAction(
     ok: true,
     slug: space.slug,
   };
-}
+};

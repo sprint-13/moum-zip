@@ -3,7 +3,7 @@
 import { Badge, CheckCircleIcon, ProgressBar } from "@ui/components";
 import { cn } from "@ui/lib/utils";
 
-import type { PersonnelData } from "../model/types";
+import type { PersonnelData } from "@/entities/moim-detail";
 
 interface PersonnelContainerProps {
   data: PersonnelData;
@@ -20,20 +20,21 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
     <section className={cn("w-full", className)}>
       <div
         className={cn(
-          "mx-auto flex w-full max-w-157.5 flex-col items-start gap-2.5",
-          "rounded-[28px] border border-[var(--color-personnel-border)]",
-          "bg-personnel-gradient",
-          "px-10 pt-7 pb-8.5",
-          "max-sm:gap-2",
-          "max-sm:rounded-[20px]",
-          "max-sm:px-6 max-sm:pt-5 max-sm:pb-5.5",
+          "mx-auto flex w-full flex-col items-start gap-5",
+          "rounded-[1.5rem] border border-[var(--color-personnel-border)]",
+          "bg-personnel-gradient px-8 pt-6 pb-6",
+          "shadow-[0_8px_24px_rgba(15,23,42,0.05)]",
+          "transition-all duration-200",
+          "max-sm:gap-4",
+          "max-sm:rounded-[1.25rem]",
+          "max-sm:px-5 max-sm:pt-5 max-sm:pb-5",
         )}
       >
-        <div className="flex w-full flex-col gap-4 max-sm:gap-3">
+        <div className="flex w-full flex-col gap-4 max-sm:gap-3.5">
           <div className="flex w-full items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <p className="shrink-0 font-medium text-gray-900 text-lg leading-[1.4] tracking-[-0.02em] max-sm:text-sm">
-                <span className="font-bold text-primary">{currentParticipants}</span>명 참여
+                <span className="font-bold text-primary">{currentParticipants}</span>명 신청
               </p>
 
               <div className="flex min-w-0 items-center">
@@ -41,9 +42,9 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                   <div
                     key={participant.id}
                     className={cn(
-                      "flex size-7.25 items-center justify-center overflow-hidden rounded-full border border-white bg-emerald-100 font-semibold text-base text-emerald-700 leading-none",
-                      index !== 0 && "-ml-2.5",
-                      "max-sm:size-6.5 max-sm:text-sm",
+                      "relative flex h-[2rem] w-[2rem] items-center justify-center overflow-hidden rounded-full border border-white bg-emerald-100 font-semibold text-[0.875rem] text-emerald-700 leading-none shadow-[0_2px_8px_rgba(15,23,42,0.08)] transition-transform duration-200 hover:z-10 hover:scale-105",
+                      index !== 0 && "-ml-2",
+                      "max-sm:h-7 max-sm:w-7 max-sm:text-xs",
                     )}
                     title={participant.name}
                   >
@@ -79,7 +80,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
             </div>
 
             <ProgressBar
-              aria-label="모임 참여 인원 진행률"
+              aria-label="모임 신청 인원 진행률"
               maxValue={maxParticipants}
               value={currentParticipants}
               className="w-full"
