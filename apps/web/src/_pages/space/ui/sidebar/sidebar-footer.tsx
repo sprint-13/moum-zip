@@ -81,8 +81,11 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   useEffect(() => {
     const nextProfile = createSidebarProfile({ avatarUrl, email, name });
     setProfile(nextProfile);
-    applyEditingSnapshot(nextProfile);
-  }, [avatarUrl, email, name, applyEditingSnapshot]);
+
+    if (!isProfileModalOpen) {
+      applyEditingSnapshot(nextProfile);
+    }
+  }, [avatarUrl, email, name, isProfileModalOpen, applyEditingSnapshot]);
 
   useEffect(() => {
     return () => {
@@ -171,6 +174,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
       });
 
       if (!member) {
+        setErrorMessage("프로필 정보를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.");
         return;
       }
 
