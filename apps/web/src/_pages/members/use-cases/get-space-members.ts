@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import type { Member } from "@/entities/member";
 import { memberQueries } from "@/entities/member";
 
@@ -21,7 +20,7 @@ async function fetchMemberList(spaceId: string, opts: { page?: number }): Promis
     offset,
   });
 
-  const total = rows[0].total ?? 0;
+  const total = rows[0]?.total ?? 0;
   const members: Member[] = rows.map((data) => data.member);
 
   return {
@@ -38,8 +37,5 @@ async function fetchMemberList(spaceId: string, opts: { page?: number }): Promis
  * 멤버 추가/제거 시 revalidateTag(`members-${spaceId}`)로 무효화한다.
  */
 export function getSpaceMembersUseCase(spaceId: string, opts: { page?: number }): Promise<GetSpaceMembersResult> {
-  return unstable_cache(() => fetchMemberList(spaceId, opts), ["space-members", spaceId], {
-    tags: [`members-${spaceId}`],
-    revalidate: 3600,
-  })();
+  return fetchMemberList(spaceId, opts);
 }
