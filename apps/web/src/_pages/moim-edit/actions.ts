@@ -2,8 +2,8 @@
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
-import { parseMoimFormData } from "@/_pages/moim-create/lib/parse-moim-form-data";
 import { updateMoim } from "@/_pages/moim-edit/use-cases/moim-update";
+import { parseMoimFormData } from "@/features/moim-create";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { isAuth } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
