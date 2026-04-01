@@ -63,7 +63,7 @@ const FALLBACK_MOIM_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURICompone
 const MoimPreview = ({ imageTone, imageUrl, className }: MoimPreviewProps) => {
   return (
     <div className={cn("relative w-full overflow-hidden", imageToneClassName[imageTone], className)}>
-      <Image alt="" className="object-cover" fill src={imageUrl ?? FALLBACK_MOIM_IMAGE} unoptimized />
+      <Image alt="" className="object-cover" fill src={imageUrl?.trim() ? imageUrl : FALLBACK_MOIM_IMAGE} unoptimized />
     </div>
   );
 };
