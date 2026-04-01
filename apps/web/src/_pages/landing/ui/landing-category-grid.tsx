@@ -40,7 +40,7 @@ export function LandingCategoryGrid() {
         <li
           key={category.label}
           className={cn(
-            "lg:transition-[opacity,transform] lg:duration-900 lg:ease-out lg:odd:mt-10",
+            "lg:transition-[opacity,transform] lg:duration-700 lg:ease-out lg:odd:mt-10",
             shown ? "lg:translate-y-0 lg:opacity-100" : "lg:translate-y-6 lg:opacity-0",
           )}
         >
