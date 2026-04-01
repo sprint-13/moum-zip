@@ -21,11 +21,29 @@ interface SidebarProfileDraft {
   nickname: string;
 }
 
+const ALLOWED_PROFILE_SAVE_ERROR_MESSAGES = new Set([
+  "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요",
+  "닉네임을 입력해 주세요.",
+  "닉네임은 20자 이하로 입력해 주세요.",
+  "멤버 정보를 찾을 수 없습니다.",
+  "프로필 이미지 업로드 URL 발급에 실패했어요",
+  "프로필 이미지 업로드 URL 정보가 올바르지 않아요",
+  "프로필 이미지 업로드에 실패했어요",
+]);
+
 const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfileDraft => ({
   avatarUrl,
   email: email ?? "",
   nickname: name,
 });
+
+const getProfileSaveErrorMessage = (error: unknown) => {
+  if (!(error instanceof Error) || !ALLOWED_PROFILE_SAVE_ERROR_MESSAGES.has(error.message)) {
+    return "프로필 저장에 실패했어요. 다시 시도해 주세요.";
+  }
+
+  return error.message;
+};
 
 export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterProps) => {
   const { open, setOpen } = useSidebar();
@@ -80,6 +98,13 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
     }));
   };
 
+  const isProfileChanged =
+    editingImageFile !== null ||
+    editingProfile.nickname.trim() !== initialEditingProfile.nickname.trim() ||
+    editingProfile.email.trim() !== initialEditingProfile.email.trim();
+  const isSaveDisabled =
+    isSaving || !isProfileChanged || editingProfile.nickname.trim() === "" || editingProfile.email.trim() === "";
+
   const handleProfileModalOpen = () => {
     if (!open) {
       setOpen(true);
@@ -100,7 +125,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
 
   const handleProfileImageChange = (imageFile: File) => {
     if (!isAllowedProfileImageType(imageFile.type)) {
-      setErrorMessage("JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.");
+      setErrorMessage("JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요");
       return;
     }
 
@@ -121,6 +146,19 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   };
 
   const handleProfileSave = async () => {
+    if (isSaving) {
+      return;
+    }
+
+    if (editingProfile.nickname.trim() === "" || editingProfile.email.trim() === "") {
+      setErrorMessage("닉네임과 이메일을 입력해 주세요.");
+      return;
+    }
+
+    if (!isProfileChanged) {
+      return;
+    }
+
     setIsSaving(true);
     setErrorMessage(null);
 
@@ -133,7 +171,6 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
       });
 
       if (!member) {
-        setIsProfileModalOpen(false);
         return;
       }
 
@@ -147,9 +184,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
       applyEditingSnapshot(nextProfile);
       setIsProfileModalOpen(false);
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error && error.message ? error.message : "프로필 저장에 실패했어요. 다시 시도해 주세요.",
-      );
+      setErrorMessage(getProfileSaveErrorMessage(error));
     } finally {
       setIsSaving(false);
     }
@@ -158,12 +193,6 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   const triggerButtonClassName = open
     ? "hidden w-full items-center justify-between rounded-md bg-muted/30 p-2 text-left transition-colors hover:bg-muted md:flex"
     : "py-1";
-  const isProfileChanged =
-    editingImageFile !== null ||
-    editingProfile.nickname.trim() !== initialEditingProfile.nickname.trim() ||
-    editingProfile.email.trim() !== initialEditingProfile.email.trim();
-  const isSaveDisabled =
-    isSaving || !isProfileChanged || editingProfile.nickname.trim() === "" || editingProfile.email.trim() === "";
 
   return (
     <>

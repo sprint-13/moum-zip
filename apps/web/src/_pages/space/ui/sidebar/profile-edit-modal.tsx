@@ -172,7 +172,13 @@ export const ProfileEditModal = ({
           >
             취소
           </Button>
-          <Button type="button" size="small" className="h-11 w-full min-w-0" onClick={onSave} disabled={isSaveDisabled}>
+          <Button
+            type="button"
+            size="small"
+            className="h-11 w-full min-w-0"
+            onClick={onSave}
+            disabled={isSaveDisabled || isSaving}
+          >
             {isSaving ? "저장 중..." : "저장"}
           </Button>
         </div>

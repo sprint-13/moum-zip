@@ -14,6 +14,24 @@ export const isAllowedProfileImageType = (
   return ALLOWED_PROFILE_IMAGE_TYPES.includes(contentType as (typeof ALLOWED_PROFILE_IMAGE_TYPES)[number]);
 };
 
+const isNonEmptyString = (value: unknown): value is string => {
+  return typeof value === "string" && value.trim() !== "";
+};
+
+const parseProfileImageUploadUrl = (value: unknown): ProfileImageUploadUrl => {
+  if (!value || typeof value !== "object") {
+    throw new Error("프로필 이미지 업로드 URL 정보가 올바르지 않아요");
+  }
+
+  const { presignedUrl, publicUrl } = value as Partial<ProfileImageUploadUrl>;
+
+  if (!isNonEmptyString(presignedUrl) || !isNonEmptyString(publicUrl)) {
+    throw new Error("프로필 이미지 업로드 URL 정보가 올바르지 않아요");
+  }
+
+  return { presignedUrl, publicUrl };
+};
+
 const getProfileImageUploadUrl = async (fileName: string, contentType: string): Promise<ProfileImageUploadUrl> => {
   const response = await fetch("/api/images/presigned", {
     method: "POST",
@@ -31,7 +49,7 @@ const getProfileImageUploadUrl = async (fileName: string, contentType: string): 
     throw new Error("프로필 이미지 업로드 URL 발급에 실패했어요.");
   }
 
-  return (await response.json()) as ProfileImageUploadUrl;
+  return parseProfileImageUploadUrl(await response.json());
 };
 
 export async function uploadProfileImage(file: File): Promise<string> {
