@@ -8,7 +8,7 @@ import { PostItem } from "./post-item";
 export const DashboardPostContent = ({ posts, slug }: { posts: Post[]; slug: string }) => {
   const router = useRouter();
   return (
-    <SpaceBodyContent title="게시글" onOpen={() => router.push(`/${slug}/bulletin`)}>
+    <SpaceBodyContent title="최근 게시글" onOpen={() => router.push(`/${slug}/bulletin`)}>
       {posts.length === 0 ? (
         <p className="py-4 text-center text-neutral-400 text-sm">등록된 게시글이 없습니다.</p>
       ) : (

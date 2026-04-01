@@ -1,17 +1,17 @@
-import { notFound, redirect } from "next/navigation";
 import type { SpaceInfo } from "@/entities/spaces";
 import { getApi } from "@/shared/api/server";
 import { getSpaceBySlugQuery } from "@/shared/db/queries";
 import { safe } from "@/shared/lib/safe";
 
-export const getSpaceInfoRemote = async (slug: string): Promise<SpaceInfo> => {
-  const dbSpace = await safe(getSpaceBySlugQuery(slug), { notFound: () => notFound() });
+export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
+  const dbSpace = await safe(getSpaceBySlugQuery(slug), {
+    default: (err) => {
+      throw new Error("space by slug query error", { cause: err });
+    },
+  });
   const api = await getApi();
 
   const { data: apiSpace } = await safe(api.meetings.getDetail(dbSpace.meetingId), {
-    401: () => {
-      redirect("/login");
-    },
     default: (err) => {
       throw Error("Failed to verify space access", { cause: err });
     },

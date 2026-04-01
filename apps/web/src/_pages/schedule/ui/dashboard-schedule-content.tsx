@@ -20,7 +20,7 @@ export function DashboardScheduleContent({ upcoming, slug }: DashboardScheduleCo
         <p className="py-4 text-center text-neutral-400 text-sm">예정된 일정이 없습니다.</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {items.map((schedule) => (
+          {items.slice(0, 2).map((schedule) => (
             <li key={schedule.id}>
               <ScheduleItem schedule={schedule} />
             </li>
