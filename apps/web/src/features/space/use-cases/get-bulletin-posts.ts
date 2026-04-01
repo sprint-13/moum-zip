@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 import type { Post, PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 export interface GetBulletinPostsResult {
   posts: Post[];

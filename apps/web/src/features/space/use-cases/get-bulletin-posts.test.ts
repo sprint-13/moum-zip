@@ -65,7 +65,7 @@ describe("getBulletinPostsUseCase", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith("space-1", {
       category: "notice",
-      limit: 10,
+      limit: 5,
       offset: 0,
     });
   });
@@ -77,8 +77,8 @@ describe("getBulletinPostsUseCase", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith("space-1", {
       category: undefined,
-      limit: 10,
-      offset: 10,
+      limit: 5,
+      offset: 5,
     });
     // rows가 없으면 total = 0
     expect(result.total).toBe(0);
@@ -92,7 +92,7 @@ describe("getBulletinPostsUseCase", () => {
     const result = await getBulletinPostsUseCase("space-1", { page: 1 });
 
     expect(result.total).toBe(15);
-    expect(result.totalPages).toBe(2);
+    expect(result.totalPages).toBe(3);
   });
 
   it("게시글이 없으면 total 0, 빈 배열을 반환한다", async () => {

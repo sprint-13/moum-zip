@@ -13,6 +13,6 @@ export function assertPermission(authorId: number, requester: Requester): void {
   }
 }
 
-export function hasPermission(authorId: number, requester: Requester): boolean {
+export function hasPermission(requester: Requester, authorId?: number): boolean {
   return requester.userId === authorId || requester.role === "manager";
 }

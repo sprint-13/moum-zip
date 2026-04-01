@@ -1,5 +1,5 @@
 import { DashboardPostContent } from "@/_pages/bulletin/ui/dashboard-post-content";
-import { getSpaceMembersUseCase } from "@/_pages/members/use-cases/get-space-members";
+import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
 import { DashboardAttendanceCard } from "@/_pages/schedule/ui/dashboard-attendance-card";
 import { DashboardScheduleContent } from "@/_pages/schedule/ui/dashboard-schedule-content";
 import { getSchedulesUseCase } from "@/_pages/schedule/use-cases/get-schedules";
@@ -14,7 +14,7 @@ export default async function SpacePage({ params }: { params: Promise<{ "space-s
   const [bulletinData, scheduleData, membersData] = await Promise.all([
     getBulletinPostsUseCase(space.spaceId),
     getSchedulesUseCase(space.spaceId, membership.userId),
-    getSpaceMembersUseCase(space.spaceId),
+    queryAllMembersUseCase(space.spaceId),
   ]);
 
   return (
@@ -26,7 +26,7 @@ export default async function SpacePage({ params }: { params: Promise<{ "space-s
           <DashboardScheduleContent upcoming={scheduleData.upcoming} slug={slug} />
         </SpaceBodyLeft>
         <SpaceBodyRight>
-          <DashboardAttendanceCard slug={slug} attendance={scheduleData.attendance} totalMembers={membersData.total} />
+          <DashboardAttendanceCard slug={slug} attendance={scheduleData.attendance} totalMembers={membersData.length} />
         </SpaceBodyRight>
       </SpaceBody>
     </>
