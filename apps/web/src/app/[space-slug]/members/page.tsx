@@ -23,7 +23,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
   const { space, membership } = await getSpaceContext(slug);
 
   const membersPromise = queryAllMembersUseCase(space.spaceId);
-
+  // TODO 쿼리 조회 하위로 내리기
   const pendingMembersPromise =
     membership.role === "manager"
       ? getPendingMembersRemote(Number(space.spaceId))
@@ -38,7 +38,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
       <SpaceHeader title="Members" buttonGroup={InviteButton} />
       <SpaceBody>
         <SpaceBodyLeft>
-          <Suspense fallback={<div>멤버 테이블 로딩 중</div>}>
+          <Suspense fallback={<MemberTableSkeleton />}>
             <MemberTable />
           </Suspense>
         </SpaceBodyLeft>
@@ -51,5 +51,19 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
         </SpaceBodyRight>
       </SpaceBody>
     </>
+  );
+}
+
+function MemberTableSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-2 px-3 pb-2">
+      <div className="h-12 rounded-t-lg bg-muted" />
+      <div className="flex flex-col gap-3 rounded-lg rounded-t-none bg-background p-4 shadow-sm">
+        {Array.from({ length: 5 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+          <div key={i} className="h-10 rounded bg-muted" />
+        ))}
+      </div>
+    </div>
   );
 }
