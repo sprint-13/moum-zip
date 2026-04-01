@@ -1,21 +1,31 @@
 "use client";
 
+import { toast } from "@moum-zip/ui/components";
 import { useState, useTransition } from "react";
 import type { Comment } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
 import { deleteCommentAction, updateCommentAction } from "../actions";
+import type { OptimisticAction } from "./comment-list";
 
 interface CommentItemProps {
   comment: Comment;
   slug: string;
   postId: string;
+  optimisticUpdate: (action: OptimisticAction) => void;
   currentUserId: number;
   currentUserRole: Requester["role"];
 }
 
-export function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: CommentItemProps) {
+export function CommentItem({
+  comment,
+  slug,
+  optimisticUpdate,
+  postId,
+  currentUserId,
+  currentUserRole,
+}: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [isPending, startTransition] = useTransition();
@@ -26,7 +36,15 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
   function handleSave() {
     if (!editContent.trim()) return;
     startTransition(async () => {
-      await updateCommentAction(slug, comment.id, postId, editContent.trim());
+      optimisticUpdate({ type: "update", id: comment.id, content: editContent.trim() });
+      try {
+        await updateCommentAction(slug, comment.id, postId, editContent.trim());
+      } catch {
+        toast({
+          message: "댓글 수정에 실패했습니다.",
+          size: "small",
+        });
+      }
       setIsEditing(false);
     });
   }
@@ -34,7 +52,15 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
   function handleDelete() {
     closeModal();
     startTransition(async () => {
-      await deleteCommentAction(slug, comment.id, postId);
+      optimisticUpdate({ type: "delete", id: comment.id });
+      try {
+        await deleteCommentAction(slug, comment.id, postId);
+      } catch {
+        toast({
+          message: "댓글 삭제에 실패했습니다.",
+          size: "small",
+        });
+      }
     });
   }
 
