@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@moum-zip/ui/components";
 import { Check } from "@moum-zip/ui/icons";
 import { useTransition } from "react";
 import type { AttendanceStatus } from "@/entities/schedule";
@@ -21,7 +22,10 @@ export function DashboardAttendanceCard({ slug, attendance, totalMembers }: Dash
       try {
         await checkAttendanceAction(slug);
       } catch (err) {
-        alert(err instanceof Error ? err.message : "출석 체크에 실패했습니다.");
+        toast({
+          message: err instanceof Error ? err.message : "출석 체크에 실패했습니다.",
+          size: "small",
+        });
       }
     });
   }
