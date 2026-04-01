@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/p
 import { ClockIcon } from "@ui/icons";
 import { useState } from "react";
 import { cn } from "@/shared/lib/cn";
-import { formatTime, parseTimeString } from "@/shared/lib/date-time";
+import { formatTime, parseTimeString } from "@/shared/lib/form-date-time";
 
 interface TimePickerProps {
   value?: string;

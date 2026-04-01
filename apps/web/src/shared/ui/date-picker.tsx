@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/p
 import { CalendarIcon } from "@ui/icons";
 import { useState } from "react";
 import { cn } from "@/shared/lib/cn";
-import { formatDate, parseDateString } from "@/shared/lib/date-time";
+import { formatDate, parseDateString } from "@/shared/lib/form-date-time";
 
 interface DatePickerProps {
   value?: string;
