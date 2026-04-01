@@ -41,7 +41,7 @@ export const SpaceSidebar = ({ children, space, membership, slug }: SpaceSidebar
           <SidebarFooter
             slug={slug}
             name={membership.nickname}
-            email={membership.email}
+            email={membership.email ?? ""}
             avatarUrl={membership.avatarUrl ?? undefined}
           />
         </div>

@@ -11,7 +11,7 @@ import { useSidebar } from "./sidebar";
 interface SidebarFooterProps {
   slug: string;
   name: string;
-  email: string | null;
+  email: string;
   avatarUrl?: string;
 }
 
@@ -33,7 +33,7 @@ const ALLOWED_PROFILE_SAVE_ERROR_MESSAGES = new Set([
 
 const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfileDraft => ({
   avatarUrl,
-  email: email ?? "",
+  email,
   nickname: name,
 });
 
@@ -185,7 +185,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
 
       const nextProfile = createSidebarProfile({
         avatarUrl: member.avatarUrl ?? undefined,
-        email: member.email,
+        email: member.email ?? "",
         name: member.nickname,
       });
 
