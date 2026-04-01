@@ -28,8 +28,7 @@ interface GetSearchResultsDeps {
   meetingsApi?: Pick<typeof api.meetings, "getList">;
 }
 
-type SearchMeetingWithUserState = Omit<MeetingWithHost, "region"> & {
-  region: GatheringLocation;
+type SearchMeetingWithUserState = MeetingWithHost & {
   isCompleted?: boolean;
   isFavorited?: boolean | null;
   isJoined?: boolean;
@@ -37,6 +36,24 @@ type SearchMeetingWithUserState = Omit<MeetingWithHost, "region"> & {
 
 const normalizeMeetingType = (type: string): GatheringCategory => {
   return normalizeGatheringCategory(type) ?? "project";
+};
+
+const normalizeMeetingRegion = (region: string | null | undefined): GatheringLocation => {
+  if (typeof region !== "string") {
+    return "offline";
+  }
+
+  const normalizedRegion = region.trim().toLowerCase();
+
+  if (normalizedRegion === "online") {
+    return "online";
+  }
+
+  if (normalizedRegion === "offline") {
+    return "offline";
+  }
+
+  return "offline";
 };
 
 const resolveSortParams = ({
@@ -78,6 +95,8 @@ const resolveSortParams = ({
 };
 
 const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem => {
+  const normalizedRegion = normalizeMeetingRegion(meeting.region);
+
   return {
     address: meeting.address,
     capacity: meeting.capacity,
@@ -87,7 +106,7 @@ const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem
     id: String(meeting.id),
     image: meeting.image,
     isLiked: meeting.isFavorited ?? false,
-    location: meeting.region,
+    location: normalizedRegion,
     participantCount: meeting.participantCount,
     region: meeting.region,
     registrationEnd: meeting.registrationEnd,

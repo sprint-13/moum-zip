@@ -245,6 +245,52 @@ describe("getSearchResults", () => {
         location: "offline",
       });
     });
+
+    it("meetings region 값이 online, offline이 아니면 offline으로 fallback한다", async () => {
+      const mockMeetingsApi = {
+        getList: vi.fn().mockResolvedValue(
+          createMeetingsListResponse([
+            {
+              id: 3,
+              teamId: "team-1",
+              name: "Gangnam Offline",
+              type: "프로젝트",
+              region: "서울시 강남구",
+              address: "서울시 강남구",
+              latitude: null,
+              longitude: null,
+              dateTime: null,
+              registrationEnd: null,
+              capacity: 10,
+              participantCount: 4,
+              image: null,
+              description: null,
+              canceledAt: null,
+              confirmedAt: null,
+              hostId: 1,
+              createdBy: 1,
+              createdAt: null,
+              updatedAt: null,
+              host: {
+                id: 1,
+                image: null,
+                name: "Host",
+              },
+            },
+          ]),
+        ),
+      };
+
+      const result = await getSearchResults({ locationId: "offline" }, { meetingsApi: mockMeetingsApi });
+
+      expect(result.items).toEqual([
+        expect.objectContaining({
+          id: "3",
+          location: "offline",
+          region: "서울시 강남구",
+        }),
+      ]);
+    });
   });
 
   describe("인증된 GET /meetings 응답 경고", () => {
