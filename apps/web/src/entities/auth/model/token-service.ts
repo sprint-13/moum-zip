@@ -31,7 +31,7 @@ export const TokenService = {
       if (!base64) return null;
 
       const normalized = base64.replace(/-/g, "+").replace(/_/g, "/");
-      const payload: unknown = JSON.parse(Buffer.from(normalized, "base64").toString("utf-8"));
+      const payload: unknown = JSON.parse(atob(normalized)); // atob (Edge + Node.js 둘 다 지원)
       return isTokenPayload(payload) ? payload : null; // 검증 추가
     } catch {
       return null;
