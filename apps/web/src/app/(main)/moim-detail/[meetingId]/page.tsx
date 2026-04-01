@@ -10,7 +10,8 @@ import {
   mapMeetingDetailToPersonnelBaseData,
   mapMeetingToRecommendedMeetingData,
   mapParticipantsToParticipantData,
-} from "@/_pages/moim-detail/model/mapper";
+  sortRecommendedMeetings,
+} from "@/entities/moim-detail";
 import { getApi } from "@/shared/api/server";
 
 interface PageProps {
@@ -65,34 +66,9 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
       extraCount: Math.max(meetingDetail.participantCount - mappedParticipants.length, 0),
     };
 
-    const recommendedMeetings = [...meetingsList.data]
-      .filter((meeting) => meeting.id !== meetingId)
-      .sort((a, b) => {
-        const aSameType = a.type === meetingDetail.type ? 1 : 0;
-        const bSameType = b.type === meetingDetail.type ? 1 : 0;
-
-        if (aSameType !== bSameType) {
-          return bSameType - aSameType;
-        }
-
-        const aSameHost = a.hostId === meetingDetail.hostId ? 1 : 0;
-        const bSameHost = b.hostId === meetingDetail.hostId ? 1 : 0;
-
-        if (aSameHost !== bSameHost) {
-          return bSameHost - aSameHost;
-        }
-
-        const aDeadline = a.registrationEnd ? new Date(a.registrationEnd).getTime() : Number.MAX_SAFE_INTEGER;
-        const bDeadline = b.registrationEnd ? new Date(b.registrationEnd).getTime() : Number.MAX_SAFE_INTEGER;
-
-        if (aDeadline !== bDeadline) {
-          return aDeadline - bDeadline;
-        }
-
-        return b.participantCount - a.participantCount;
-      })
-      .slice(0, 4)
-      .map((meeting) => mapMeetingToRecommendedMeetingData(meeting));
+    const recommendedMeetings = sortRecommendedMeetings(meetingsList.data, meetingDetail).map((meeting) =>
+      mapMeetingToRecommendedMeetingData(meeting),
+    );
 
     return (
       <MoimDetailClient
