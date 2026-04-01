@@ -45,7 +45,10 @@ export const TimePicker = ({ value, onChange }: TimePickerProps) => {
             <li key={h}>
               <button
                 type="button"
-                className={cn("w-12 rounded px-2 py-1 text-sm", h === hour && "bg-primary text-white")}
+                className={cn(
+                  "w-12 rounded px-2 py-1 text-sm hover:bg-primary/20 hover:text-foreground",
+                  h === hour && "bg-primary text-white",
+                )}
                 onClick={() => handleHourSelect(h)}
               >
                 {h}
@@ -59,7 +62,10 @@ export const TimePicker = ({ value, onChange }: TimePickerProps) => {
             <li key={m}>
               <button
                 type="button"
-                className={cn("w-12 rounded px-2 py-1 text-sm", m === minute && "bg-primary text-white")}
+                className={cn(
+                  "w-12 rounded px-2 py-1 text-sm hover:bg-primary/20 hover:text-foreground",
+                  m === minute && "bg-primary text-white",
+                )}
                 onClick={() => handleMinuteSelect(m)}
               >
                 {m}
