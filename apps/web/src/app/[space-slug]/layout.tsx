@@ -19,7 +19,7 @@ export default async function SpaceLayout({
 
   return (
     <QueryProvider>
-      <SpaceSidebar space={space} membership={membership}>
+      <SpaceSidebar slug={slug} space={space} membership={membership}>
         <main className="mx-auto w-full max-w-6xl p-6">{children}</main>
       </SpaceSidebar>
     </QueryProvider>
