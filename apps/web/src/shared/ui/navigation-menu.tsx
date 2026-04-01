@@ -13,7 +13,7 @@ async function getNavigationUser(): Promise<NavigationUser | null> {
 
     return {
       imageUrl: response.data.image ?? undefined,
-      name: response.data.name ?? undefined,
+      name: response.data.name,
     };
   } catch {
     return null;
