@@ -20,7 +20,7 @@ export const BulletinTable = () => {
   const { data } = useBulletinPosts(space.slug, { page, filter });
 
   return (
-    <div className="flex flex-col gap-2 px-3 pb-2">
+    <div className="flex flex-col">
       {/* 탭 네비게이션 */}
       <div className="relative mb-2 flex w-full rounded-t-lg border border-primary/20 border-b-border bg-background shadow-sm">
         <button
