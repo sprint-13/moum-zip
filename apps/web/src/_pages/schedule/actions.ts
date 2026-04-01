@@ -22,7 +22,7 @@ export async function createScheduleAction(slug: string, formData: FormData) {
   const startAt = formData.get("startAt");
 
   if (typeof title !== "string") throw new Error("제목을 입력해주세요.");
-  if (typeof startAt !== "string") throw new Error("날짜를 선택해주세요.");
+  if (typeof startAt !== "string" || !startAt) throw new Error("날짜를 선택해주세요.");
 
   await createScheduleUseCase({
     spaceId: space.spaceId,

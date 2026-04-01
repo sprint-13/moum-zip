@@ -1,4 +1,5 @@
 import { UserPlus } from "@moum-zip/ui/icons";
+import { Suspense } from "react";
 import { MemberTable, OnlineNowCard, PendingMemberCard, RolesOverviewCard } from "@/_pages/members";
 import { addSpaceMemberAction } from "@/_pages/members/action";
 import { getPendingMembersRemote } from "@/_pages/members/use-cases/get-pending-members";
@@ -37,7 +38,9 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
       <SpaceHeader title="Members" buttonGroup={InviteButton} />
       <SpaceBody>
         <SpaceBodyLeft>
-          <MemberTable />
+          <Suspense fallback={<div>멤버 테이블 로딩 중</div>}>
+            <MemberTable />
+          </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
           <OnlineNowCard members={allMembers} />

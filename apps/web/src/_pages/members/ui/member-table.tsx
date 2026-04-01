@@ -10,7 +10,7 @@ export function MemberTable() {
   const { space } = useSpaceContext();
   const { page, setPage } = usePaginationUrl();
 
-  const { data } = useMemberList(space.spaceId, { page });
+  const { data } = useMemberList(space.slug, { page });
 
   return (
     <div className="flex flex-col">

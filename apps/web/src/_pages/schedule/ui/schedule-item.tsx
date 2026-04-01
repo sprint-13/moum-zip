@@ -60,7 +60,7 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
           <p className="whitespace-normal break-all font-semibold text-foreground text-lg">{schedule.title}</p>
           <p className="whitespace-normal break-all text-base text-gray-500">{schedule.description}</p>
           <p className="flex items-center gap-2 font-medium text-gray-500 text-sm">
-            <Clock className="size-3" /> {formatDate(schedule.startAt, "hh:mm")}
+            <Clock className="size-3" /> {formatDate(schedule.startAt, "HH:mm")}
           </p>
         </div>
         {onEdit !== undefined &&

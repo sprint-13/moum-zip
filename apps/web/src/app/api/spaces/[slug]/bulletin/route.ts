@@ -30,7 +30,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 
     const data = await getBulletinPostsUseCase(space.id, { page, category });
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error("[GET /api/spaces/[slug]/bulletin]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
