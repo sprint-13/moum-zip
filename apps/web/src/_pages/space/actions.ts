@@ -11,10 +11,6 @@ export interface UpdateMemberProfileActionInput {
   nickname?: string;
 }
 
-interface UpdateMemberProfileActionOptions {
-  shouldRevalidate?: boolean;
-}
-
 const revalidateSpaceProfile = (spaceId: string, slug: string) => {
   revalidateTag(`membership-${spaceId}`, "max");
   revalidateTag(`members-${spaceId}`, "max");
@@ -24,7 +20,6 @@ const revalidateSpaceProfile = (spaceId: string, slug: string) => {
 export async function updateMemberProfileAction(
   slug: string,
   input: UpdateMemberProfileActionInput,
-  { shouldRevalidate = true }: UpdateMemberProfileActionOptions = {},
 ): Promise<{ member: Member }> {
   const { space, membership } = await getSpaceContext(slug);
 
@@ -36,14 +31,7 @@ export async function updateMemberProfileAction(
     userId: membership.userId,
   });
 
-  if (shouldRevalidate) {
-    revalidateSpaceProfile(space.spaceId, slug);
-  }
+  revalidateSpaceProfile(space.spaceId, slug);
 
   return { member };
-}
-
-export async function revalidateSpaceProfileAction(slug: string): Promise<void> {
-  const { space } = await getSpaceContext(slug);
-  revalidateSpaceProfile(space.spaceId, slug);
 }
