@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import { PostCategoryGuideCard, PostWritingTipsCard } from "@/_pages/bulletin";
 import { PostWriteForm } from "@/_pages/bulletin/ui/post-write-form";
-import { SpaceHeader } from "@/features/space";
+import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
 import { safe } from "@/shared/lib/safe";
@@ -22,10 +23,21 @@ export default async function PostEditPage({
   return (
     <>
       <SpaceHeader title="게시글 수정" description={post.author.name} />
-      <PostWriteForm
-        slug={slug}
-        initialPost={{ id: post.id, title: post.title, content: post.content, category: post.category }}
-      />
+      <SpaceBody>
+        <SpaceBodyLeft>
+          <PostWriteForm
+            slug={slug}
+            initialPost={{ id: post.id, title: post.title, content: post.content, category: post.category }}
+          />
+        </SpaceBodyLeft>
+
+        <SpaceBodyRight>
+          {/* 카테고리 안내 */}
+          <PostCategoryGuideCard />
+          {/* 작성 팁 */}
+          <PostWritingTipsCard />
+        </SpaceBodyRight>
+      </SpaceBody>
     </>
   );
 }

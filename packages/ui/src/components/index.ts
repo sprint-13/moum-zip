@@ -1,3 +1,4 @@
+export * from "./shadcn/alert-dialog";
 export * from "./ui/badges";
 export * from "./ui/button";
 export * from "./ui/category-tab";
