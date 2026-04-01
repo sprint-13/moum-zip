@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, toast } from "@ui/components";
+import { Button } from "@ui/components";
 import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 
 import { ROUTES } from "@/shared/config/routes";
+import { showAuthRequiredToast } from "@/shared/lib/auth-required-toast";
 
 interface SpaceCardJoinButtonProps extends Omit<ComponentProps<typeof Button>, "onClick"> {
   isAuthenticated: boolean;
@@ -16,10 +17,7 @@ export const SpaceCardJoinButton = ({ isAuthenticated, meetingId, ...props }: Sp
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast({
-        message: "로그인 후 이용할 수 있어요.",
-        size: "small",
-      });
+      showAuthRequiredToast();
       return;
     }
 

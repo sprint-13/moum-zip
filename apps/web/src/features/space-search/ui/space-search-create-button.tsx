@@ -1,10 +1,11 @@
 "use client";
 
-import { CreateButton, toast } from "@ui/components";
+import { CreateButton } from "@ui/components";
 import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 
 import { ROUTES } from "@/shared/config/routes";
+import { showAuthRequiredToast } from "@/shared/lib/auth-required-toast";
 
 interface SpaceSearchCreateButtonProps extends ComponentProps<typeof CreateButton> {
   isAuthenticated: boolean;
@@ -26,10 +27,7 @@ export const SpaceSearchCreateButton = ({
     }
 
     if (!isAuthenticated) {
-      toast({
-        message: "로그인 후 이용할 수 있어요.",
-        size: "small",
-      });
+      showAuthRequiredToast();
       return;
     }
 
