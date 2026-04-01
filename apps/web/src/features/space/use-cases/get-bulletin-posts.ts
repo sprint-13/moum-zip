@@ -46,9 +46,5 @@ export function getBulletinPostsUseCase(
   spaceId: string,
   opts: { category?: PostCategory; page?: number } = {},
 ): Promise<GetBulletinPostsResult> {
-  return unstable_cache(
-    () => fetchBulletinPosts(spaceId, opts),
-    ["bulletin-posts", spaceId, opts.category ?? "all", String(opts.page ?? 1)],
-    { tags: [`bulletin-${spaceId}`], revalidate: 30 },
-  )();
+  return fetchBulletinPosts(spaceId, opts);
 }
