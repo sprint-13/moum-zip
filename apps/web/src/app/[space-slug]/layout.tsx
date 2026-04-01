@@ -22,9 +22,11 @@ export default async function SpaceLayout({
   return (
     <QueryProvider>
       <SpaceProvider value={{ space, membership }}>
-        <SpaceSidebar space={space} membership={membership}>
-          <main className="mx-auto w-full max-w-6xl p-6">{children}</main>
-        </SpaceSidebar>
+        <div className={space.themeColor}>
+          <SpaceSidebar space={space} membership={membership}>
+            <main className={`mx-auto w-full max-w-6xl p-6`}>{children}</main>
+          </SpaceSidebar>
+        </div>
       </SpaceProvider>
       <Toaster />
     </QueryProvider>

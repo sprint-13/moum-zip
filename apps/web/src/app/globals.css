@@ -6,6 +6,261 @@
   --font-pretendard: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 }
 
+.purple {
+  --radius: 0.625rem;
+
+  /* Background & Basic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.02 285); /* 아주 깊은 보랏빛이 도는 블랙 */
+  --background-secondary: #f8f7ff; /* 메인 컬러와 어울리는 아주 연한 라벤더 배경 */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.02 285);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.02 285);
+
+  /* Brand Colors */
+  --primary: #7b68ee; /* 요청하신 메인 컬러 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #4a90e2; /* 보라색과 잘 어울리는 신뢰감 있는 블루 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #f1f0fb; /* 연한 라벤더 그레이 */
+  --muted-foreground: #6b6a8a;
+
+  --accent: #eeebff; /* Primary의 아주 연한 버전 */
+  --accent-foreground: #7b68ee;
+
+  --destructive: oklch(0.577 0.245 27.325); /* 위험 신호는 유지하되 필요시 조정 */
+
+  /* Borders & Inputs */
+  --border: #e0def7;
+  --border-subtle: #ebe9f9;
+  --input: #e0def7;
+  --ring: #7b68ee;
+
+  /* Charts: 보라색과 조화로운 Analogous & Complementary 팔레트 */
+  --chart-1: oklch(0.65 0.18 285); /* Primary 기반 */
+  --chart-2: oklch(0.75 0.15 200); /* Soft Blue */
+  --chart-3: oklch(0.55 0.2 320); /* Deep Pink/Purple */
+  --chart-4: oklch(0.85 0.12 250); /* Sky Blue */
+  --chart-5: oklch(0.7 0.1 280); /* Muted Purple */
+
+  /* Sidebar: 차분하고 전문적인 느낌 */
+  --sidebar: oklch(0.985 0.01 285);
+  --sidebar-foreground: oklch(0.141 0.02 285);
+  --sidebar-primary: #7b68ee;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f0fb;
+  --sidebar-accent-foreground: #7b68ee;
+  --sidebar-border: #e0def7;
+  --sidebar-ring: #7b68ee;
+
+  /* Custom Palette & Gradients */
+  --slate-100: #f1f0fb;
+  --slate-500: #8e8cad;
+  --gradient-500-start: #7b68ee; /* Primary */
+  --gradient-500-end: #a292ff; /* 약간 더 밝은 보라 */
+  --purple-500: #7b68ee;
+  --purple-600: #6652e4;
+
+  --background-gradient: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  --input-background: #fdfdff;
+
+  /* Personnel Special Tokens: 기존 민트색에서 보라/블루 톤으로 변경 */
+  --personnel-border: #dcd7ff;
+  --personnel-gradient-start: #eeebff;
+  --personnel-gradient-end: #e7f0fe;
+
+  /* Mobile Layout */
+  --layout-gnb-height: 48px;
+}
+
+.yellow {
+  --radius: 0.625rem;
+
+  /* Background & Basic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0.02 60); /* 짙은 갈색톤이 도는 블랙 */
+  --background-secondary: #fffaf2;
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 60);
+
+  --primary: #f5a623;
+  --primary-foreground: #ffffff;
+
+  --secondary: #4a4a4a; /* 대비를 위한 차분한 다크 그레이 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #f7f2ea;
+  --muted-foreground: #7a7369;
+
+  --accent: #fef4e5;
+  --accent-foreground: #d48a00;
+
+  --border: #e9e0d2;
+  --input: #e9e0d2;
+  --ring: #f5a623;
+
+  /* Custom Palette */
+  --gradient-500-start: #f5a623;
+  --gradient-500-end: #ffd200;
+  --background-gradient: linear-gradient(90deg, #f5a623 0%, #ffd200 100%);
+
+  --personnel-border: #fcebc9;
+  --personnel-gradient-start: #fff8eb;
+  --personnel-gradient-end: #fdf2d9;
+}
+
+.navy {
+  --radius: 0.625rem;
+
+  /* Background & Basic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.12 0.03 250);
+  --background-secondary: #f0f4f8;
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.12 0.03 250);
+
+  --primary: #003366;
+  --primary-foreground: #ffffff;
+
+  --secondary: #00a3bf; /* 청량감을 더해주는 시안 블루 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #e6ebf1;
+  --muted-foreground: #5a6b83;
+
+  --accent: #e0e9f1;
+  --accent-foreground: #003366;
+
+  --border: #cedbe9;
+  --input: #cedbe9;
+  --ring: #003366;
+
+  /* Custom Palette */
+  --gradient-500-start: #003366;
+  --gradient-500-end: #00509d;
+  --background-gradient: linear-gradient(90deg, #003366 0%, #00509d 100%);
+
+  --personnel-border: #cbd9e7;
+  --personnel-gradient-start: #e9f0f6;
+  --personnel-gradient-end: #d6e2ee;
+}
+
+.orange {
+  --radius: 0.625rem;
+
+  /* Background & Basic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.14 0.04 35);
+  --background-secondary: #fff6f1;
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.14 0.04 35);
+
+  --primary: #f76b1c;
+  --primary-foreground: #ffffff;
+
+  --secondary: #2d3436; /* 오렌지의 채도를 눌러줄 수 있는 다크 챠콜 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #f9ede7;
+  --muted-foreground: #8c766a;
+
+  --accent: #fff0e8;
+  --accent-foreground: #f76b1c;
+
+  --border: #f2ddd2;
+  --input: #f2ddd2;
+  --ring: #f76b1c;
+
+  /* Custom Palette */
+  --gradient-500-start: #f76b1c;
+  --gradient-500-end: #fbab7e;
+  --background-gradient: linear-gradient(90deg, #f76b1c 0%, #fbab7e 100%);
+
+  --personnel-border: #fbdac9;
+  --personnel-gradient-start: #fff2eb;
+  --personnel-gradient-end: #ffe8db;
+}
+
+.blue {
+  --radius: 0.625rem;
+
+  /* Background & Basic */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0.05 255); /* 깊은 네이비 톤이 섞인 블랙 */
+  --background-secondary: #f4f7ff; /* 메인 컬러와 어울리는 아주 맑은 블루 화이트 */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0.05 255);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0.05 255);
+
+  /* Brand Colors */
+  --primary: #0064ff; /* 요청하신 메인 블루 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #002d72; /* 무게감을 잡아주는 딥 블루 */
+  --secondary-foreground: #ffffff;
+
+  --muted: #edf2ff; /* 아주 연한 블루 그레이 */
+  --muted-foreground: #64748b;
+
+  --accent: #ebf2ff; /* 강조를 위한 매우 연한 블루 */
+  --accent-foreground: #0064ff;
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Borders & Inputs */
+  --border: #dbe4ff;
+  --border-subtle: #eef2ff;
+  --input: #dbe4ff;
+  --ring: #0064ff;
+
+  /* Charts: 신뢰감을 주는 블루/시안/그레이 계열 팔레트 */
+  --chart-1: oklch(0.6 0.2 250); /* Primary Blue */
+  --chart-2: oklch(0.7 0.15 200); /* Soft Cyan */
+  --chart-3: oklch(0.4 0.15 260); /* Deep Blue */
+  --chart-4: oklch(0.8 0.1 230); /* Sky Blue */
+  --chart-5: oklch(0.5 0.1 250); /* Muted Blue */
+
+  /* Sidebar */
+  --sidebar: oklch(0.985 0.01 255);
+  --sidebar-foreground: oklch(0.145 0.05 255);
+  --sidebar-primary: #0064ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edf2ff;
+  --sidebar-accent-foreground: #0064ff;
+  --sidebar-border: #e0e7ff;
+  --sidebar-ring: #0064ff;
+
+  /* Custom Palette & Gradients */
+  --slate-100: #f0f4ff;
+  --slate-500: #718096;
+  --gradient-500-start: #0064ff;
+  --gradient-500-end: #00d1ff; /* 청량한 느낌을 주는 시안 블루로 끝남 */
+  --blue-500: #0064ff;
+  --blue-600: #0052d4;
+
+  --background-gradient: linear-gradient(90deg, #0064ff 0%, #00d1ff 100%);
+  --input-background: #f9faff;
+
+  /* Personnel Special Tokens */
+  --personnel-border: #ceddff;
+  --personnel-gradient-start: #eef3ff;
+  --personnel-gradient-end: #e1e9ff;
+
+  /* Mobile Layout */
+  --layout-gnb-height: 48px;
+}
+
 @layer base {
   body {
     font-family: var(--font-pretendard);
