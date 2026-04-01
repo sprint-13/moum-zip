@@ -34,6 +34,7 @@ export function PostDetail({ post, comments, slug, currentUserId, currentUserRol
   const canEditPost = currentUserId === post.authorId || currentUserRole === "manager";
 
   function handleDeletePost() {
+    closeModal();
     startTransition(async () => {
       await deletePostAction(slug, post.id);
       router.push(`/${slug}/bulletin`);
@@ -189,6 +190,7 @@ function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: 
   }
 
   function handleDelete() {
+    closeModal();
     startTransition(async () => {
       await deleteCommentAction(slug, comment.id, postId);
     });

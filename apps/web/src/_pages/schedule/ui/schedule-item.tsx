@@ -38,6 +38,7 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
     : { text: "예정", className: "bg-green-50 text-green-600" };
 
   function handleDelete() {
+    closeModal();
     startTransition(async () => {
       try {
         await deleteScheduleAction(space.slug, schedule.id);
