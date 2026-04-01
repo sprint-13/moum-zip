@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { joinMeeting } from "./join-meeting";
+import { joinMeeting } from "@/features/moim-detail/use-cases/join-meeting";
 
 describe("joinMeeting", () => {
   it("이미 참여한 모임이면 참여를 취소한다", async () => {

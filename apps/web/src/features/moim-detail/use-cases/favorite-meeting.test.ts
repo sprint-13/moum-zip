@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { favoriteMeeting } from "./favorite-meeting";
+import { favoriteMeeting } from "@/features/moim-detail/use-cases/favorite-meeting";
 
 describe("favoriteMeeting", () => {
   it("이미 찜한 모임이면 찜하기를 취소한다", async () => {
