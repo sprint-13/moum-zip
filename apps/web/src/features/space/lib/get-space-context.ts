@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import type { SpaceInfo } from "@/entities/spaces";
 import { isAuth } from "@/shared/api/server";
 import { getSpaceMembershipQuery } from "@/shared/db/queries";
@@ -9,7 +10,7 @@ export interface SpaceContext {
   membership: NonNullable<Awaited<ReturnType<typeof getSpaceMembershipQuery>>>;
 }
 
-export async function getSpaceContext(slug: string): Promise<SpaceContext> {
+export const getSpaceContext = cache(async (slug: string): Promise<SpaceContext> => {
   const auth = await isAuth();
   if (!auth.authenticated || auth.userId == null) redirect("/login");
 
@@ -20,4 +21,4 @@ export async function getSpaceContext(slug: string): Promise<SpaceContext> {
   if (!membership) redirect("/spaces");
 
   return { space, membership };
-}
+});
