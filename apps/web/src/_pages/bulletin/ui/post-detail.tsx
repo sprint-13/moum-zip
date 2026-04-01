@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useState, useTransition } from "react";
 import { CATEGORY_LABELS, type Comment, type Post } from "@/entities/post";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceCard } from "@/features/space";
+import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
+import { AlertModal } from "@/features/space/ui/alert-modal";
 import { deleteCommentAction, deletePostAction, updateCommentAction } from "../actions";
 import { CommentForm } from "./comment-form";
 
@@ -27,11 +29,11 @@ interface PostDetailProps {
 export function PostDetail({ post, comments, slug, currentUserId, currentUserRole }: PostDetailProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { open, openModal, closeModal } = useAlertModal();
 
   const canEditPost = currentUserId === post.authorId || currentUserRole === "manager";
 
   function handleDeletePost() {
-    if (!confirm("게시글을 삭제하시겠습니까?")) return;
     startTransition(async () => {
       await deletePostAction(slug, post.id);
       router.push(`/${slug}/bulletin`);
@@ -72,7 +74,7 @@ export function PostDetail({ post, comments, slug, currentUserId, currentUserRol
                   </button>
                   <button
                     type="button"
-                    onClick={handleDeletePost}
+                    onClick={openModal}
                     disabled={isPending}
                     className="rounded px-2 py-1 text-red-400 text-xs transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                   >
@@ -125,6 +127,13 @@ export function PostDetail({ post, comments, slug, currentUserId, currentUserRol
 
           <CommentForm slug={slug} postId={post.id} />
         </section>
+        <AlertModal
+          open={open}
+          message="해당 게시물을 삭제할까요?"
+          description="지우면 복구 못해요"
+          onAction={handleDeletePost}
+          onCancel={closeModal}
+        />
       </SpaceBodyLeft>
 
       {/* ── Right: 게시글 정보 ── */}
@@ -167,6 +176,7 @@ function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: 
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [isPending, startTransition] = useTransition();
+  const { open, openModal, closeModal } = useAlertModal();
 
   const canEdit = currentUserId === comment.authorId || currentUserRole === "manager";
 
@@ -179,7 +189,6 @@ function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: 
   }
 
   function handleDelete() {
-    if (!confirm("댓글을 삭제하시겠습니까?")) return;
     startTransition(async () => {
       await deleteCommentAction(slug, comment.id, postId);
     });
@@ -207,7 +216,7 @@ function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: 
             </button>
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={openModal}
               disabled={isPending}
               className="rounded px-2 py-0.5 text-red-400 text-xs transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
             >
@@ -251,6 +260,7 @@ function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: 
       ) : (
         <p className="pl-9 text-neutral-600 text-sm leading-relaxed">{comment.content}</p>
       )}
+      <AlertModal open={open} message="해당 댓글을 지울까요?" onAction={handleDelete} onCancel={closeModal} />
     </li>
   );
 }
