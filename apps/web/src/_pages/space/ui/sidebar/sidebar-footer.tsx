@@ -22,13 +22,13 @@ interface SidebarProfileDraft {
 }
 
 const ALLOWED_PROFILE_SAVE_ERROR_MESSAGES = new Set([
-  "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요",
+  "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
   "닉네임을 입력해 주세요.",
   "닉네임은 20자 이하로 입력해 주세요.",
   "멤버 정보를 찾을 수 없습니다.",
-  "프로필 이미지 업로드 URL 발급에 실패했어요",
+  "프로필 이미지 업로드 URL 발급에 실패했어요.",
   "프로필 이미지 업로드 URL 정보가 올바르지 않아요",
-  "프로필 이미지 업로드에 실패했어요",
+  "프로필 이미지 업로드에 실패했어요.",
 ]);
 
 const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfileDraft => ({
@@ -47,6 +47,7 @@ const getProfileSaveErrorMessage = (error: unknown) => {
 
 export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterProps) => {
   const { open, setOpen } = useSidebar();
+  const isProfileModalOpenRef = useRef(false);
   const previewAvatarUrlRef = useRef<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -79,13 +80,17 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
   );
 
   useEffect(() => {
+    isProfileModalOpenRef.current = isProfileModalOpen;
+  }, [isProfileModalOpen]);
+
+  useEffect(() => {
     const nextProfile = createSidebarProfile({ avatarUrl, email, name });
     setProfile(nextProfile);
 
-    if (!isProfileModalOpen) {
+    if (!isProfileModalOpenRef.current) {
       applyEditingSnapshot(nextProfile);
     }
-  }, [avatarUrl, email, name, isProfileModalOpen, applyEditingSnapshot]);
+  }, [avatarUrl, email, name, applyEditingSnapshot]);
 
   useEffect(() => {
     return () => {
