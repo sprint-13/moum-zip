@@ -17,9 +17,9 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
   const filteredPosts = tab ? posts.filter((p) => p.category === tab) : posts;
 
   return (
-    <div className="flex flex-col gap-2 px-3 pb-2">
+    <div className="flex flex-col">
       {/* 탭 네비게이션 */}
-      <div className="relative mb-2 flex w-full rounded-t-lg border border-primary/20 border-b-border bg-background shadow-sm">
+      <div className="relative flex w-full rounded-t-lg border border-primary/20 border-b-border bg-background">
         {/* '전체' 탭 */}
         <button
           type="button"
@@ -49,9 +49,9 @@ export const BulletinTable = ({ posts }: BulletinTableProps) => {
       </div>
 
       {/* 포스트 목록 */}
-      <div className="flex flex-col gap-2 rounded-lg rounded-t-none bg-background p-4 shadow-sm">
+      <div className="flex flex-col gap-2 rounded-b-lg border border-primary/20 border-t-0 bg-background p-3 md:min-h-[350px]">
         {filteredPosts.length === 0 ? (
-          <p className="py-4 text-center text-neutral-400 text-sm">등록된 게시글이 없습니다.</p>
+          <p className="my-auto py-4 text-center text-neutral-400 text-sm">등록된 게시글이 없습니다.</p>
         ) : (
           filteredPosts.slice(0, 4).map((post) => <PostItem key={post.id} post={post} slug={slug} />)
         )}
