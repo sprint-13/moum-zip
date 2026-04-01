@@ -180,7 +180,7 @@ export function InformationContainer({
       <section className={cn("w-full", className)}>
         <article
           className={cn(
-            "mx-auto flex w-full max-w-[630px] flex-col items-start gap-6",
+            "mx-auto flex w-full flex-col items-start gap-6",
             "rounded-[32px] bg-white",
             "px-10 pt-8.5 pb-8",
             "max-sm:rounded-[20px]",

@@ -212,7 +212,7 @@ export function MoimDetailClient({
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-5 pt-6 pb-24 md:px-6 md:pt-10 xl:px-10">
+      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-4 pt-6 pb-24 md:px-6 md:pt-10 xl:px-12">
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="relative mx-auto max-h-[443px] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
             {informationData.image ? (
