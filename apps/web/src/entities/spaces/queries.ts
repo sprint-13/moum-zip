@@ -6,13 +6,14 @@ import { CACHE_TAGS } from "@/shared/lib/cache";
 
 // meetingId -> space 조회 -> location, themeColor, status, modules
 export const spaceQueries = {
-  findBySlug: (slug: string) => {
+  findBySlug: async (slug: string) => {
     "use cache";
     cacheLife("max");
     cacheTag(CACHE_TAGS.space(slug));
-    return db.query.spaces.findFirst({
+    const space = await db.query.spaces.findFirst({
       where: eq(spaces.slug, slug),
     });
+    return space;
   },
   /** meetingId로 space 조회 */
   findByMeetingId: (meetingId: number) =>
