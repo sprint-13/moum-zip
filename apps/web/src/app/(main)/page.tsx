@@ -36,7 +36,7 @@ export default function Home() {
             width={812}
             height={628}
             priority
-            sizes="(max-width: 768px) 90vw, (max-width: 1280px) 50vw, 800px"
+            sizes="(max-width: 767px) 90vw, (max-width: 1280px) 50vw, 800px"
             className="w-[90vw] object-contain md:absolute md:top-[80%] md:-right-[24px] md:w-[50vw] lg:top-[60%] lg:right-[-10%] xl:top-[138px] xl:-right-[16%] xl:w-[58vw] xl:max-w-[800px]"
           />
         </div>
