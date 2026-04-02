@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatTime, parseDateString, parseTimeString } from "./date-time";
+import { formatDate, formatTime, parseDateString, parseTimeString } from "./form-date-time";
 
 // "0000-00-00" 형식의 문자열을 Date 객체로 변환
 describe("parseDateString", () => {
