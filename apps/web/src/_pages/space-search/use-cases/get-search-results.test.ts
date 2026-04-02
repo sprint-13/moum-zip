@@ -66,7 +66,7 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items).toEqual([
         {
@@ -135,7 +135,7 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: "프로젝트",
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items[0]).toMatchObject({
         location: "offline",
@@ -160,7 +160,7 @@ describe("getSearchResults", () => {
           sortOrder: "desc",
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
     });
 
@@ -237,13 +237,59 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items).toHaveLength(1);
       expect(result.items[0]).toMatchObject({
         id: "2",
         location: "offline",
       });
+    });
+
+    it("meetings region 값이 online, offline이 아니면 offline으로 fallback한다", async () => {
+      const mockMeetingsApi = {
+        getList: vi.fn().mockResolvedValue(
+          createMeetingsListResponse([
+            {
+              id: 3,
+              teamId: "team-1",
+              name: "Gangnam Offline",
+              type: "프로젝트",
+              region: "서울시 강남구",
+              address: "서울시 강남구",
+              latitude: null,
+              longitude: null,
+              dateTime: null,
+              registrationEnd: null,
+              capacity: 10,
+              participantCount: 4,
+              image: null,
+              description: null,
+              canceledAt: null,
+              confirmedAt: null,
+              hostId: 1,
+              createdBy: 1,
+              createdAt: null,
+              updatedAt: null,
+              host: {
+                id: 1,
+                image: null,
+                name: "Host",
+              },
+            },
+          ]),
+        ),
+      };
+
+      const result = await getSearchResults({ locationId: "offline" }, { meetingsApi: mockMeetingsApi });
+
+      expect(result.items).toEqual([
+        expect.objectContaining({
+          id: "3",
+          location: "offline",
+          region: "서울시 강남구",
+        }),
+      ]);
     });
   });
 
@@ -286,7 +332,7 @@ describe("getSearchResults", () => {
 
       await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
 
-      expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", {
         meetingIds: [866],
       });
     });
@@ -330,7 +376,7 @@ describe("getSearchResults", () => {
 
       await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
 
-      expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", {
         meetingIds: [867],
       });
     });

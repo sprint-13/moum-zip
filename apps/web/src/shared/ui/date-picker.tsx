@@ -4,8 +4,8 @@ import { Calendar } from "@ui/components/shadcn/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/shadcn/popover";
 import { CalendarIcon } from "@ui/icons";
 import { useState } from "react";
-import { formatDate, parseDateString } from "@/_pages/moim-create/lib/date-time";
 import { cn } from "@/shared/lib/cn";
+import { formatDate, parseDateString } from "@/shared/lib/form-date-time";
 
 interface DatePickerProps {
   value?: string;

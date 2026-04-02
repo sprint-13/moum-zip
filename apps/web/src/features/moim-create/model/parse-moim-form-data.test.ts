@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseMoimFormData } from "@/_pages/moim-create/lib/parse-moim-form-data";
+import { parseMoimFormData } from "@/features/moim-create/model/parse-moim-form-data";
 
 const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24);
 const tomorrowStr = tomorrow.toISOString().split("T")[0];

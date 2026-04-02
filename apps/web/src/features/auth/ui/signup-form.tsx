@@ -82,6 +82,10 @@ export const SignupForm = () => {
           registration={register("password", {
             required: "비밀번호를 입력해주세요.",
             minLength: { value: 8, message: "8자 이상 입력해주세요." },
+            pattern: {
+              value: /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$/,
+              message: "영문, 숫자, 특수문자를 조합해주세요.",
+            },
           })}
           error={errors.password}
         />
