@@ -5,6 +5,7 @@ import type { Comment } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
+import { formatDate } from "@/shared/lib/date";
 import { deleteCommentAction, updateCommentAction } from "../actions";
 
 interface CommentItemProps {
@@ -45,9 +46,7 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
           {comment.author.name[0]}
         </div>
         <span className="font-medium text-neutral-700 text-sm">{comment.author.name}</span>
-        <time className="ml-auto text-[11px] text-neutral-400">
-          {comment.createdAt?.toLocaleDateString("ko-KR", { month: "long", day: "numeric" })}
-        </time>
+        <time className="ml-auto text-[11px] text-neutral-400">{formatDate(comment.createdAt, "M월 d일")}</time>
         {canEdit && !isEditing && (
           <div className="flex items-center gap-1">
             <button
