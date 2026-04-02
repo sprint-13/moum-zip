@@ -9,7 +9,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <Suspense>
         <NavigationMenu />
       </Suspense>
-      <main>{children}</main>
+      <Suspense>
+        <main>{children}</main>
+      </Suspense>
       <Toaster />
     </QueryProvider>
   );
