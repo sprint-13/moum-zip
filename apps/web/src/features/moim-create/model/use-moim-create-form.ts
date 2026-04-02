@@ -37,7 +37,7 @@ export const useMoimCreateForm = () => {
   const [state, formAction, isPending] = useActionState(createMoimAction, null);
 
   const form = useForm<MoimCreateFormValues>({
-    resolver: zodResolver(moimCreateSchema as any),
+    resolver: zodResolver(moimCreateSchema),
     defaultValues: MOIM_CREATE_DEFAULT_VALUES,
     mode: "onSubmit",
   });
