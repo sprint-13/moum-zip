@@ -1,7 +1,4 @@
-import { Meetings } from "@moum-zip/api";
-import { cookies } from "next/headers";
 import { getApi } from "@/shared/api/server";
-import { ACCESS_TOKEN_COOKIE } from "@/shared/lib/cookies";
 
 export interface MyMeetingsServerQuery {
   type: "joined" | "created";
@@ -13,30 +10,10 @@ export interface MyMeetingsServerQuery {
   cursor?: string;
 }
 
-const getCreatedMeetingsApi = async () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const teamId = process.env.NEXT_PUBLIC_TEAM_ID;
-
-  if (!baseUrl || !teamId) {
-    throw new Error("MYPAGE_SERVER_CONFIG_MISSING");
-  }
-
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-
-  return {
-    meetingsApi: new Meetings({
-      baseUrl,
-      securityWorker: () => (accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {}),
-    }),
-    teamId,
-  };
-};
-
 export const getMyMeetings = async (query: MyMeetingsServerQuery) => {
-  if (query.type === "joined") {
-    const api = await getApi();
+  const api = await getApi();
 
+  if (query.type === "joined") {
     return api.meetings.getJoined({
       completed: query.completed,
       reviewed: query.reviewed,
@@ -50,9 +27,7 @@ export const getMyMeetings = async (query: MyMeetingsServerQuery) => {
     });
   }
 
-  const { meetingsApi, teamId } = await getCreatedMeetingsApi();
-
-  return meetingsApi.getMeetings(teamId, {
+  return api.meetings.getCreated({
     sortBy:
       query.sortBy === "dateTime" || query.sortBy === "registrationEnd" || query.sortBy === "participantCount"
         ? query.sortBy
