@@ -78,7 +78,7 @@ export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCar
     <div className="rounded-lg border border-primary/20 bg-background p-5">
       <span className="mb-1 block font-semibold text-base text-foreground">참가를 요청한 사용자</span>
       <div className="flex flex-col gap-2">
-        {visible.length === 0 ? (
+        {visible.length > 0 ? (
           visible.map((member) => (
             <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
           ))
