@@ -7,6 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import { createSearchFavoriteAction, deleteSearchFavoriteAction } from "@/_pages/space-search/actions";
 import type { SearchResultsResponse } from "@/entities/gathering";
+import { showRequiredToast } from "@/shared/lib/toast-utils";
 
 import HeartIcon from "../assets/heart-default.svg";
 import { spaceSearchQueryKeys } from "../model/query-keys";
@@ -106,10 +107,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      toast({
-        message: "로그인 후 이용할 수 있어요.",
-        size: "small",
-      });
+      showRequiredToast("로그인 후 이용할 수 있어요.");
       return;
     }
 
@@ -139,12 +137,6 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
       (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, nextIsLiked),
     );
 
-    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const timerLabel = nextIsLiked
-      ? `[search] client like action meetingId=${meetingId} requestId=${requestId}`
-      : `[search] client unlike action meetingId=${meetingId} requestId=${requestId}`;
-    console.time(timerLabel);
-
     startTransition(async () => {
       try {
         const result = nextIsLiked
@@ -155,10 +147,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
           rollbackLikedState();
 
           if (result.error === "UNAUTHORIZED") {
-            toast({
-              message: "로그인 후 이용할 수 있어요.",
-              size: "small",
-            });
+            showRequiredToast("로그인 후 이용할 수 있어요.");
             return;
           }
 
@@ -178,8 +167,6 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
           message: "요청에 실패했어요. 다시 시도해 주세요.",
           size: "small",
         });
-      } finally {
-        console.timeEnd(timerLabel);
       }
     });
   };

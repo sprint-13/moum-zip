@@ -4,9 +4,10 @@ import { Button, CategoryTab, FileInput, InputField, InputTextArea } from "@ui/c
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
 import { Controller, type UseFormReturn } from "react-hook-form";
-import { DatePicker, icoProject, icoStudy, TimePicker } from "@/_pages/moim-create";
+import { icoProject, icoStudy } from "@/features/moim-create/assets";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
+import { DatePicker, TimePicker } from "@/shared/ui";
 
 interface MoimFormState {
   ok: false;
