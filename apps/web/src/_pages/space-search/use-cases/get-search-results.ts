@@ -150,23 +150,17 @@ export const getSearchResults = async (
   { isAuthenticatedRequest = false, meetingsApi = api.meetings }: GetSearchResultsDeps = {},
 ): Promise<SearchResultsResponse> => {
   const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
-  const timerLabel = `[search] GET /meetings category=${categoryId} location=${locationId} cursor=${cursor ?? "none"} size=${size}`;
-  console.time(timerLabel);
-  const response = await meetingsApi
-    .getList(
-      {
-        cursor: cursor ?? undefined,
-        region: locationId === "all" ? undefined : locationId,
-        size,
-        sortBy,
-        sortOrder,
-        type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
-      },
-      { cache: "no-store" },
-    )
-    .finally(() => {
-      console.timeEnd(timerLabel);
-    });
+  const response = await meetingsApi.getList(
+    {
+      cursor: cursor ?? undefined,
+      region: locationId === "all" ? undefined : locationId,
+      size,
+      sortBy,
+      sortOrder,
+      type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
+    },
+    { cache: "no-store" },
+  );
   const searchResults = response.data as MeetingsListData;
   const meetings = searchResults.data as SearchMeetingWithUserState[];
   warnMissingFavoritedField(meetings, isAuthenticatedRequest);

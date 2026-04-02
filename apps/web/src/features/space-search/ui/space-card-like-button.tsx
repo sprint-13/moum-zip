@@ -137,12 +137,6 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
       (cachedData) => updateLikedStateInSearchResults(cachedData, meetingId, nextIsLiked),
     );
 
-    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const timerLabel = nextIsLiked
-      ? `[search] client like action meetingId=${meetingId} requestId=${requestId}`
-      : `[search] client unlike action meetingId=${meetingId} requestId=${requestId}`;
-    console.time(timerLabel);
-
     startTransition(async () => {
       try {
         const result = nextIsLiked
@@ -173,8 +167,6 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
           message: "요청에 실패했어요. 다시 시도해 주세요.",
           size: "small",
         });
-      } finally {
-        console.timeEnd(timerLabel);
       }
     });
   };
