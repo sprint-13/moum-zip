@@ -1,16 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { memberQueries } from "@/entities/member";
 import { spaceQueries } from "@/entities/spaces";
-import type { ApiClient } from "@/shared/api";
-import { createMoim } from "./moim-create";
-
-vi.mock("@/shared/api/server", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/shared/api/server")>();
-  return {
-    ...actual,
-    isAuth: vi.fn().mockResolvedValue({ authenticated: true, userId: 1 }),
-  };
-});
+import { type CreateMoimDeps, createMoim } from "./moim-create";
 
 vi.mock("@/shared/db", () => ({ db: {} }));
 vi.mock("@/entities/member");
@@ -34,14 +25,10 @@ const mockGetUser = vi.fn().mockResolvedValue({
   },
 });
 
-type AuthedApi = ApiClient;
-const mockAuthedApi = {
-  meetings: { create: mockCreate },
-  user: { getUser: mockGetUser },
-} as unknown as AuthedApi;
-
-const mockDeps = {
-  getAuthApi: () => Promise.resolve(mockAuthedApi),
+const mockDeps: CreateMoimDeps = {
+  userId: 1,
+  meetingsApi: { create: mockCreate },
+  userApi: { getUser: mockGetUser },
 };
 
 const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24);
