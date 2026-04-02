@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { parseMoimFormData } from "@/_pages/moim-create/lib/parse-moim-form-data";
 import { createMoim } from "@/_pages/moim-create/use-cases/moim-create";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
-import { isAuth } from "@/shared/api/server";
+import { getApi, isAuth } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
 
 export type CreateMoimActionState = {
@@ -14,10 +14,10 @@ export type CreateMoimActionState = {
 } | null;
 
 export async function createMoimAction(_: CreateMoimActionState, formData: FormData): Promise<CreateMoimActionState> {
-  // 로그인 여부 확인
-  const { authenticated } = await isAuth();
+  // 접근 검증
+  const { authenticated, userId } = await isAuth();
 
-  if (!authenticated) {
+  if (!authenticated || userId == null) {
     redirect(ROUTES.login);
   }
 
@@ -31,7 +31,12 @@ export async function createMoimAction(_: CreateMoimActionState, formData: FormD
 
   // use-case 호출 → 성공하면 모임 상세 페이지로 redirect
   try {
-    const { meeting } = await createMoim(parsed);
+    const api = await getApi();
+    const { meeting } = await createMoim(parsed, {
+      userId,
+      meetingsApi: api.meetings,
+      userApi: api.user,
+    });
     redirect(`${ROUTES.moimDetail}/${meeting.id}`);
   } catch (e) {
     if (isRedirectError(e)) throw e;
