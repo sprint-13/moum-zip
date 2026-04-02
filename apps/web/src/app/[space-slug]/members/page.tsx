@@ -1,11 +1,9 @@
 import { UserPlus } from "@moum-zip/ui/icons";
 import { Suspense } from "react";
-import { MemberTable, OnlineNowCard, PendingMemberCard, RolesOverviewCard } from "@/_pages/members";
-import { addSpaceMemberAction } from "@/_pages/members/action";
-import { getPendingMembersRemote } from "@/_pages/members/use-cases/get-pending-members";
-import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
-import { hasPermission, SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
+import { MemberTable } from "@/_pages/members";
+import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { MemberRightSection } from "./_components/member-right-section";
 
 const InviteButton = (
   <button
@@ -19,19 +17,8 @@ const InviteButton = (
 
 export default async function SpaceMembersPage({ params }: { params: Promise<{ "space-slug": string }> }) {
   const slug = (await params)["space-slug"];
-  // layout에서 이미 검증 완료 + React.cache()로 메모이제이션된 결과 반환 (DB 재조회 없음)
+
   const { space, membership } = await getSpaceContext(slug);
-
-  const membersPromise = queryAllMembersUseCase(space.spaceId);
-  // TODO 쿼리 조회 하위로 내리기
-  const pendingMembersPromise =
-    membership.role === "manager"
-      ? getPendingMembersRemote(Number(space.spaceId))
-      : Promise.resolve({ pendingMembers: [] });
-
-  const [allMembers, { pendingMembers }] = await Promise.all([membersPromise, pendingMembersPromise]);
-
-  const acceptMember = addSpaceMemberAction.bind(null, slug);
 
   return (
     <>
@@ -43,11 +30,9 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
-          <OnlineNowCard members={allMembers} />
-          <RolesOverviewCard members={allMembers} />
-          {hasPermission({ userId: membership.userId, role: membership.role }) ? (
-            <PendingMemberCard pendingMembers={pendingMembers} onAccept={acceptMember} />
-          ) : null}
+          <Suspense fallback={<MemberRightSectionSkeleton />}>
+            <MemberRightSection space={space} membership={membership} />
+          </Suspense>
         </SpaceBodyRight>
       </SpaceBody>
     </>
@@ -86,6 +71,15 @@ function MemberTableSkeleton() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function MemberRightSectionSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-4">
+      <div className="h-40 rounded-xl border border-border bg-background shadow-sm" />
+      <div className="h-32 rounded-xl border border-border bg-background shadow-sm" />
     </div>
   );
 }

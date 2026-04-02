@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Comment, Post } from "@/entities/post";
 import { commentQueries, postQueries } from "@/entities/post/queries";
 
@@ -9,7 +10,9 @@ export interface PostDetailResult {
 /**
  * 게시글 단건 + 댓글 목록 조회.
  */
-export async function getPostDetailUseCase(postId: string): Promise<PostDetailResult> {
+export const getPostDetailUseCase = cache(async function getPostDetailUseCase(
+  postId: string,
+): Promise<PostDetailResult> {
   const [postRows, commentRows] = await Promise.all([
     postQueries.findById(postId),
     commentQueries.findManyByPostId(postId),
@@ -22,4 +25,4 @@ export async function getPostDetailUseCase(postId: string): Promise<PostDetailRe
   const comments: Comment[] = commentRows.map(({ comment, author }) => ({ ...comment, author }));
 
   return { post, comments };
-}
+});
