@@ -11,6 +11,7 @@ import {
 import { Pencil, X } from "@moum-zip/ui/icons";
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
+import { PROFILE_IMAGE_ACCEPT } from "@/_pages/space/use-cases/upload-profile-image";
 import { useSpaceContext } from "@/features/space";
 import { ProfileAvatar } from "./profile-avatar";
 
