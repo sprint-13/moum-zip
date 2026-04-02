@@ -1,5 +1,5 @@
 import { DashboardScheduleContent } from "@/_pages/schedule/ui/dashboard-schedule-content";
-import { getSchedulesUseCase } from "@/_pages/schedule/use-cases/get-schedules";
+import { getScheduleListUseCase } from "@/_pages/schedule/use-cases/get-schedule-list";
 
 interface DashboardScheduleSectionProps {
   spaceId: string;
@@ -7,7 +7,7 @@ interface DashboardScheduleSectionProps {
   slug: string;
 }
 
-export const DashboardScheduleSection = async ({ spaceId, userId, slug }: DashboardScheduleSectionProps) => {
-  const scheduleData = await getSchedulesUseCase(spaceId, userId);
+export const DashboardScheduleSection = async ({ spaceId, userId: _userId, slug }: DashboardScheduleSectionProps) => {
+  const scheduleData = await getScheduleListUseCase(spaceId);
   return <DashboardScheduleContent upcoming={scheduleData.upcoming} slug={slug} />;
 };

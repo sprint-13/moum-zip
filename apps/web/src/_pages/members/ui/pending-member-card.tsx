@@ -74,15 +74,17 @@ export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCar
 
   const visible = pendingMembers.filter((m) => !rejectedIds.has(m.userId) && !acceptedIds.has(m.userId));
 
-  if (visible.length === 0) return null;
-
   return (
     <div className="rounded-lg border border-primary/20 bg-background p-5">
       <span className="mb-1 block font-semibold text-base text-foreground">참가를 요청한 사용자</span>
       <div className="flex flex-col gap-2">
-        {visible.map((member) => (
-          <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
-        ))}
+        {visible.length > 0 ? (
+          visible.map((member) => (
+            <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
+          ))
+        ) : (
+          <span className="py-4 text-center text-neutral-400 text-sm">참가 대기 중인 사용자가 없어요.</span>
+        )}
       </div>
     </div>
   );

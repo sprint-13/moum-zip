@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { memberQueries } from "@/entities/member";
 import type { PostCategory } from "@/entities/post";
+import { spaceQueries } from "@/entities/spaces";
 import { getBulletinPostsUseCase } from "@/features/space/use-cases/get-bulletin-posts";
 import { isAuth } from "@/shared/api/server";
-import { getSpaceBySlugQuery, getSpaceMembershipQuery } from "@/shared/db/queries";
 import { parsePaginationParams } from "@/shared/lib/pagination";
 
 const POST_CATEGORIES = ["notice", "discussion", "question", "material"] as const satisfies readonly PostCategory[];
@@ -22,10 +23,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   });
 
   try {
-    const space = await getSpaceBySlugQuery(slug);
+    const space = await spaceQueries.findBySlug(slug);
     if (!space) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const membership = await getSpaceMembershipQuery(space.id, auth.userId);
+    const membership = await memberQueries.getMember(space.id, auth.userId);
     if (!membership) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const data = await getBulletinPostsUseCase(space.id, { page, category });

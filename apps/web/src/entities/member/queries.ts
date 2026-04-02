@@ -1,7 +1,9 @@
 import { and, desc, eq, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import type { NewMember } from "@/shared/db/scheme";
 import { spaceMembers } from "@/shared/db/scheme";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 // TODO: spaceId를 curry function 형태로 넘겨도 될 듯
 
@@ -11,6 +13,9 @@ export const memberQueries = {
       desc(spaceMembers.role), // 관리자 우선
       sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
     );
+  },
+  findUserIdsBySpaceId: async (spaceId: string) => {
+    return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
   },
   findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
     return db
@@ -25,6 +30,9 @@ export const memberQueries = {
       .offset(opts?.offset ?? 0);
   },
   getMember: async (spaceId: string, userId: number) => {
+    "use cache";
+    cacheTag(CACHE_TAGS.member(spaceId, userId)); // profile 수정 시 멤버 정보 갱신 필요.
+    cacheLife("weeks");
     const [member] = await db
       .select()
       .from(spaceMembers)

@@ -1,16 +1,22 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { kstInputToDate } from "@/entities/schedule";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 import { checkAttendanceUseCase } from "./use-cases/check-attendance";
 import { createScheduleUseCase } from "./use-cases/create-schedule";
 import { deleteScheduleUseCase } from "./use-cases/delete-schedule";
 import { updateScheduleUseCase } from "./use-cases/update-schedule";
 
-function invalidate(spaceId: string, slug: string) {
-  revalidateTag(`schedules-${spaceId}`, "max");
-  revalidatePath(`/${slug}/schedule`);
+function invalidateSchedule(spaceId: string, slug: string) {
+  updateTag(CACHE_TAGS.schedule(spaceId));
+  revalidatePath(`/${slug}`); // 대시보드 일정 위젯 반영
+}
+
+function invalidateAttendance(spaceId: string, slug: string) {
+  updateTag(CACHE_TAGS.attendance(spaceId));
+  revalidatePath(`/${slug}`); // 대시보드 출석 현황 반영
 }
 
 /** 일정 추가 Server Action */
@@ -32,7 +38,7 @@ export async function createScheduleAction(slug: string, formData: FormData) {
     startAt: kstInputToDate(startAt),
   });
 
-  invalidate(space.spaceId, slug);
+  invalidateSchedule(space.spaceId, slug);
 }
 
 /** 일정 수정 Server Action */
@@ -49,19 +55,19 @@ export async function updateScheduleAction(slug: string, scheduleId: string, for
     startAt: typeof startAt === "string" && startAt ? kstInputToDate(startAt) : undefined,
   });
 
-  invalidate(space.spaceId, slug);
+  invalidateSchedule(space.spaceId, slug);
 }
 
 /** 일정 삭제 Server Action */
 export async function deleteScheduleAction(slug: string, scheduleId: string) {
   const { space } = await getSpaceContext(slug);
   await deleteScheduleUseCase(scheduleId);
-  invalidate(space.spaceId, slug);
+  invalidateSchedule(space.spaceId, slug);
 }
 
 /** 출석 체크 Server Action */
 export async function checkAttendanceAction(slug: string) {
   const { space, membership } = await getSpaceContext(slug);
   await checkAttendanceUseCase(space.spaceId, membership.userId);
-  invalidate(space.spaceId, slug);
+  invalidateAttendance(space.spaceId, slug);
 }

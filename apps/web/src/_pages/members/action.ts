@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 import { addSpaceMemberUseCase, type PendingUser } from "./use-cases/add-space-member";
 
 export async function addSpaceMemberAction(slug: string, pendingUser: PendingUser) {
@@ -12,5 +13,5 @@ export async function addSpaceMemberAction(slug: string, pendingUser: PendingUse
   }
 
   await addSpaceMemberUseCase(space.spaceId, pendingUser.userId, pendingUser.name, pendingUser.image);
-  revalidateTag(`members-${space.spaceId}`, "max");
+  updateTag(CACHE_TAGS.members(space.spaceId));
 }
