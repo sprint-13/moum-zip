@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSpaceMembersUseCase } from "@/_pages/members/use-cases/get-space-members";
+import { memberQueries } from "@/entities/member";
+import { spaceQueries } from "@/entities/spaces";
 import { isAuth } from "@/shared/api/server";
-import { getSpaceBySlugQuery, getSpaceMembershipQuery } from "@/shared/db/queries";
 import { parsePaginationParams } from "@/shared/lib/pagination";
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -16,10 +17,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const { page } = parsePaginationParams(rawParams);
 
   try {
-    const space = await getSpaceBySlugQuery(slug);
+    const space = await spaceQueries.findBySlug(slug);
     if (!space) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const membership = await getSpaceMembershipQuery(space.id, auth.userId);
+    const membership = await memberQueries.getMember(space.id, auth.userId);
     if (!membership) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const data = await getSpaceMembersUseCase(space.id, { page });
