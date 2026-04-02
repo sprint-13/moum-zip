@@ -66,7 +66,7 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items).toEqual([
         {
@@ -135,7 +135,7 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: "프로젝트",
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items[0]).toMatchObject({
         location: "offline",
@@ -160,7 +160,7 @@ describe("getSearchResults", () => {
           sortOrder: "desc",
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
     });
 
@@ -237,7 +237,7 @@ describe("getSearchResults", () => {
           sortOrder: undefined,
           type: undefined,
         },
-        { cache: "no-store" },
+        // { cache: "no-store" },
       );
       expect(result.items).toHaveLength(1);
       expect(result.items[0]).toMatchObject({
