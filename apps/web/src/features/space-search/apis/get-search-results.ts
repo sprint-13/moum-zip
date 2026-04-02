@@ -43,11 +43,7 @@ export const getSearchResults = async ({
 
   const queryString = searchParams.toString();
   const requestUrl = queryString ? `/api/search?${queryString}` : "/api/search";
-  const timerLabel = `[search] GET ${requestUrl}`;
-  console.time(timerLabel);
-  const response = await fetch(requestUrl).finally(() => {
-    console.timeEnd(timerLabel);
-  });
+  const response = await fetch(requestUrl);
 
   if (!response.ok) {
     const errorBody = await response.text();

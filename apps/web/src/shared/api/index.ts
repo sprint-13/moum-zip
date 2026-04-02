@@ -128,7 +128,10 @@ function buildApiShape(core: {
         query?: Parameters<typeof core.meetings.joinedList>[1],
         params?: Parameters<typeof core.meetings.joinedList>[2],
       ) => core.meetings.joinedList(teamId, query, params),
-      getCreated: () => core.meetings.getMeetings(teamId),
+      getCreated: (
+        query?: Parameters<typeof core.meetings.getMeetings>[1],
+        params?: Parameters<typeof core.meetings.getMeetings>[2],
+      ) => core.meetings.getMeetings(teamId, query, params),
       getList: (
         query?: Parameters<typeof core.meetings.meetingsList>[1],
         params?: Parameters<typeof core.meetings.meetingsList>[2],

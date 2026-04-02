@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@moum-zip/ui/components";
+import { useSpaceContext } from "../lib/space-context-provider";
 
 interface AlertModalProps {
   open: boolean;
@@ -18,9 +21,11 @@ interface AlertModalProps {
 }
 
 export const AlertModal = ({ open, message, description, onCancel, onAction }: AlertModalProps) => {
+  const { container } = useSpaceContext();
+
   return (
     <AlertDialog open={open} onOpenChange={(open) => !open && onCancel()}>
-      <AlertDialogContent size="sm">
+      <AlertDialogContent size="sm" container={container}>
         <AlertDialogHeader>
           <AlertDialogTitle>{message}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

@@ -13,6 +13,7 @@ export const useCreatedMeetings = (
     queryKey: ["mypage", "meetings", "created", createdFilter],
     queryFn: () => getCreatedMeetingCards(createdFilter),
     initialData,
+    staleTime: 0,
     enabled,
   });
 };
