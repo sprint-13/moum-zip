@@ -36,6 +36,7 @@ export default function Home() {
             width={812}
             height={628}
             priority
+            sizes="(max-width: 767px) 90vw, (max-width: 1280px) 50vw, 800px"
             className="w-[90vw] object-contain md:absolute md:top-[80%] md:-right-[24px] md:w-[50vw] lg:top-[60%] lg:right-[-10%] xl:top-[138px] xl:-right-[16%] xl:w-[58vw] xl:max-w-[800px]"
           />
         </div>
@@ -72,12 +73,20 @@ export default function Home() {
             </p>
           </div>
           <div className="lg:mr-[-4%] lg:w-[50vw] lg:shrink-0">
-            <Image src={spaceSm} alt="모임 스페이스 UI 화면" width={335} height={536} className="w-full md:hidden" />
+            <Image
+              src={spaceSm}
+              alt="모임 스페이스 UI 화면"
+              width={335}
+              height={536}
+              sizes="(max-width: 767px) min(100vw, 335px), 0px"
+              className="w-full md:hidden"
+            />
             <Image
               src={spaceMd}
               alt="모임 스페이스 UI 화면"
               width={680}
               height={705}
+              sizes="(min-width: 768px) and (max-width: 1023px) 100vw, 0px"
               className="hidden w-full md:block lg:hidden"
             />
             <Image
@@ -85,6 +94,7 @@ export default function Home() {
               alt="모임 스페이스 UI 화면"
               width={1010}
               height={625}
+              sizes="(min-width: 1024px) min(50vw, 1010px), 0px"
               className="hidden w-full lg:block"
             />
           </div>
