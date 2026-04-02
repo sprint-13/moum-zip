@@ -135,7 +135,7 @@ const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAut
     return;
   }
 
-  console.warn("[search] authenticated meetings response is missing isFavorited", { meetingIds });
+  console.warn("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", { meetingIds });
 };
 
 export const getSearchResults = async (
@@ -159,7 +159,7 @@ export const getSearchResults = async (
       sortOrder,
       type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
     },
-    { cache: "no-store" },
+    // { cache: "no-store" },
   );
   const searchResults = response.data as MeetingsListData;
   const meetings = searchResults.data as SearchMeetingWithUserState[];

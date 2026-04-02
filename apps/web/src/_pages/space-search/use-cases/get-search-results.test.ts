@@ -332,7 +332,7 @@ describe("getSearchResults", () => {
 
       await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
 
-      expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 모임 응답에 isFavorited 값이 없습니다", {
         meetingIds: [866],
       });
     });
@@ -376,7 +376,7 @@ describe("getSearchResults", () => {
 
       await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
 
-      expect(warnSpy).toHaveBeenCalledWith("[search] authenticated meetings response is missing isFavorited", {
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 모임 응답에 isFavorited 값이 없습니다", {
         meetingIds: [867],
       });
     });
