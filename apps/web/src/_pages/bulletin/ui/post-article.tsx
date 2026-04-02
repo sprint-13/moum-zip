@@ -6,6 +6,7 @@ import { CATEGORY_LABELS, type Post } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
+import { formatDate } from "@/shared/lib/date";
 import { deletePostAction } from "../actions";
 
 const CATEGORY_COLOR: Record<Post["category"], string> = {
@@ -48,11 +49,7 @@ export function PostArticle({ post, slug, currentUserId, currentUserRole }: Post
         </span>
         <div className="flex items-center gap-2">
           <time className="text-[12px] text-neutral-400">
-            {(post.updatedAt ?? post.createdAt)?.toLocaleDateString("ko-KR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            {formatDate(post.updatedAt ?? post.createdAt, "M월 d일")}
           </time>
           {canEdit && (
             <div className="flex items-center gap-1">
@@ -83,7 +80,7 @@ export function PostArticle({ post, slug, currentUserId, currentUserRole }: Post
       {/* 작성자 */}
       <div className="flex items-center gap-2 border-border border-b pb-4">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
-          {post.author.name[0]}
+          {post.author.name[0] ?? "-"}
         </div>
         <span className="font-medium text-neutral-700 text-sm">{post.author.name}</span>
       </div>

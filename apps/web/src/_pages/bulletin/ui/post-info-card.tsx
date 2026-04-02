@@ -23,7 +23,7 @@ export async function PostInfoCard({ postId }: PostInfoCardProps) {
       <h3 className="mb-4 font-bold text-base text-neutral-900">게시글 정보</h3>
       <dl className="flex flex-col gap-3 text-sm">
         <InfoRow label="카테고리">
-          <span className={`rounded-full border px-2 py-0.5 font-bold text-[11px] ${CATEGORY_COLOR[post.category]}`}>
+          <span className={`rounded-full border px-2.5 py-0.5 font-bold text-[11px] ${CATEGORY_COLOR[post.category]}`}>
             {CATEGORY_LABELS[post.category]}
           </span>
         </InfoRow>
