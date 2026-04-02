@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingIndicator } from "@moum-zip/ui/components";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 import { ROUTES } from "@/shared/config/routes";
@@ -54,12 +55,12 @@ function OAuthCallbackContent() {
     handleCallback();
   }, [searchParams, router]);
 
-  return <div>로그인 처리 중...</div>;
+  return <LoadingIndicator fullScreen text="로그인 처리 중" />;
 }
 
 export default function OAuthCallbackPage() {
   return (
-    <Suspense fallback={<div>로그인 처리 중...</div>}>
+    <Suspense fallback={<LoadingIndicator fullScreen text="로그인 처리 중" />}>
       <OAuthCallbackContent />
     </Suspense>
   );
