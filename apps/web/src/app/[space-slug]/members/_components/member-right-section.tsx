@@ -4,10 +4,11 @@ import { getPendingMembersRemote } from "@/_pages/members/use-cases/get-pending-
 import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
 import type { SpaceInfo } from "@/entities/spaces";
 import { hasPermission } from "@/features/space";
+import type { Requester } from "@/features/space/lib/assert-permission";
 
 interface MemberRightSectionProps {
   space: SpaceInfo;
-  membership: any;
+  membership: Requester;
 }
 
 export const MemberRightSection = async ({ space, membership }: MemberRightSectionProps) => {

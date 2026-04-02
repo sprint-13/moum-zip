@@ -2,10 +2,11 @@ import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-mem
 import { AttendanceCard } from "@/_pages/schedule";
 import { getSchedulesUseCase } from "@/_pages/schedule/use-cases/get-schedules";
 import type { SpaceInfo } from "@/entities/spaces";
+import type { Requester } from "@/features/space/lib/assert-permission";
 
 interface AttendanceCardSectionProps {
   space: SpaceInfo;
-  membership: any;
+  membership: Requester;
 }
 
 export const AttendanceCardSection = async ({ space, membership }: AttendanceCardSectionProps) => {

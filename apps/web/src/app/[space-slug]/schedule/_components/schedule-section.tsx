@@ -1,10 +1,11 @@
 import { ScheduleList } from "@/_pages/schedule";
 import { getSchedulesUseCase } from "@/_pages/schedule/use-cases/get-schedules";
 import type { SpaceInfo } from "@/entities/spaces";
+import type { Requester } from "@/features/space/lib/assert-permission";
 
 interface ScheduleSectionProps {
   space: SpaceInfo;
-  membership: any;
+  membership: Requester;
 }
 
 export const ScheduleSection = async ({ space, membership }: ScheduleSectionProps) => {
