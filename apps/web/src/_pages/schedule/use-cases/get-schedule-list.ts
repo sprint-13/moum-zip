@@ -12,7 +12,7 @@ export interface GetScheduleListResult {
 export async function getScheduleListUseCase(spaceId: string): Promise<GetScheduleListResult> {
   "use cache";
   cacheTag(CACHE_TAGS.schedule(spaceId));
-  cacheLife("hours");
+  cacheLife("days");
 
   const now = getNowKST();
   const rows = await scheduleQueries.findManyBySpaceId(spaceId);

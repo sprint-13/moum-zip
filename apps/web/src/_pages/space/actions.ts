@@ -12,7 +12,7 @@ export interface UpdateMemberProfileActionInput {
   nickname?: string;
 }
 
-const revalidateSpaceProfile = (spaceId: string, userId: number) => {
+const invalidateSpaceProfile = (spaceId: string, userId: number) => {
   updateTag(CACHE_TAGS.member(spaceId, userId));
   revalidateTag(CACHE_TAGS.bulletin(spaceId), "max"); // 게시글·댓글 작성자 닉네임/아바타 반영
 };
@@ -31,7 +31,7 @@ export async function updateMemberProfileAction(
     userId: membership.userId,
   });
 
-  revalidateSpaceProfile(space.spaceId, membership.userId);
+  invalidateSpaceProfile(space.spaceId, membership.userId);
 
   return { member };
 }

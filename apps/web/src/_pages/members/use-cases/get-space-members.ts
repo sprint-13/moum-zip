@@ -20,7 +20,7 @@ export interface GetSpaceMembersResult {
 export async function getSpaceMembersUseCase(spaceId: string, opts: { page?: number }): Promise<GetSpaceMembersResult> {
   "use cache";
   cacheTag(CACHE_TAGS.members(spaceId));
-  cacheLife("hours");
+  cacheLife("days");
 
   const page = opts.page ?? 1;
   const offset = (page - 1) * MEMBER_PAGE_SIZE;

@@ -5,7 +5,7 @@ import { CACHE_TAGS } from "@/shared/lib/cache";
 export async function queryAllMembersUseCase(spaceId: string) {
   "use cache";
   cacheTag(CACHE_TAGS.members(spaceId));
-  cacheLife("hours");
+  cacheLife("days");
 
   return memberQueries.findAllBySpaceId(spaceId);
 }

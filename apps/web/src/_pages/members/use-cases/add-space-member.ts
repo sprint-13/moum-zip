@@ -5,6 +5,7 @@ export type PendingUser = {
   name: string;
   image: string;
 };
+
 export const addSpaceMemberUseCase = async (
   spaceId: string,
   userId: number,

@@ -24,7 +24,7 @@ export async function getBulletinPostsUseCase(
 ): Promise<GetBulletinPostsResult> {
   "use cache";
   cacheTag(CACHE_TAGS.bulletin(spaceId));
-  cacheLife("minutes");
+  cacheLife("hours");
 
   const page = opts.page ?? 1;
   const offset = (page - 1) * PAGE_SIZE;
