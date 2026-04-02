@@ -12,6 +12,7 @@ import { Pencil, X } from "@moum-zip/ui/icons";
 import type { ChangeEvent } from "react";
 import { useRef } from "react";
 import { PROFILE_IMAGE_ACCEPT } from "@/_pages/space/use-cases/upload-profile-image";
+import { useSpaceContext } from "@/features/space";
 import { ProfileAvatar } from "./profile-avatar";
 
 interface ProfileEditModalProfile {
@@ -47,6 +48,7 @@ export const ProfileEditModal = ({
   onProfileChange,
   onSave,
 }: ProfileEditModalProps) => {
+  const { container } = useSpaceContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { avatarUrl, email, nickname } = profile;
 
@@ -70,7 +72,10 @@ export const ProfileEditModal = ({
         }
       }}
     >
-      <AlertDialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-120 gap-0 overflow-y-auto rounded-3xl border border-primary/20 bg-background p-5 shadow-xl sm:rounded-[1.75rem] sm:p-7">
+      <AlertDialogContent
+        container={container}
+        className="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-120 gap-0 overflow-y-auto rounded-3xl border border-primary/20 bg-background p-5 shadow-xl sm:rounded-[1.75rem] sm:p-7"
+      >
         <div className="flex items-start justify-between gap-3 sm:gap-4">
           <div className="min-w-0">
             <AlertDialogTitle className="text-left font-bold text-foreground text-lg sm:text-xl">
@@ -109,7 +114,7 @@ export const ProfileEditModal = ({
                   type="button"
                   variant="secondary"
                   size="small"
-                  className="w-full min-w-0 justify-center gap-1 px-3 sm:w-auto"
+                  className="w-full min-w-0 justify-center gap-1 px-3 text-primary sm:w-auto"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isSaving}
                   icon={<Pencil size={14} />}
@@ -166,9 +171,8 @@ export const ProfileEditModal = ({
             type="button"
             variant="secondary"
             size="small"
-            className="h-11 w-full min-w-0"
+            className="h-11 w-full min-w-0 text-primary"
             onClick={onCancel}
-            disabled={isSaving}
           >
             취소
           </Button>
