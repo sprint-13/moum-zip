@@ -3,11 +3,15 @@
 import { useRef, useTransition } from "react";
 import { createCommentAction } from "../actions";
 
+// import type { Comment } from "@/entities/post";
+// import type { OptimisticAction } from "./comment-list";
+
 interface CommentFormProps {
   slug: string;
   postId: string;
+  // optimisticUpdate: (action: OptimisticAction) => void;
 }
-
+// TODO: Optimstic하게 댓글 추가하려면 유저 정보 필요.
 export function CommentForm({ slug, postId }: CommentFormProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -18,6 +22,7 @@ export function CommentForm({ slug, postId }: CommentFormProps) {
     if (!content) return;
 
     startTransition(async () => {
+      // optimisticUpdate({type: "add", comment: });
       await createCommentAction(slug, postId, content);
       if (ref.current) ref.current.value = "";
     });
@@ -45,3 +50,16 @@ export function CommentForm({ slug, postId }: CommentFormProps) {
     </form>
   );
 }
+
+// function createOptimisticComment(content: string, postId: string, spaceId: string): Comment {
+//   return {
+//     id: crypto.randomUUID(),
+//     postId,
+//     spaceId,
+//     authorId: 1
+//     author: {id:1, name:'temp', image: null},
+//     content,
+//     createdAt: new Date(),
+//     updatedAt: null,
+//   };
+// }
