@@ -54,7 +54,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:gap-8 lg:pt-[1.6875rem] xl:max-w-6xl 2xl:max-w-7xl">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:max-w-6xl lg:gap-8 lg:pt-[1.6875rem] 2xl:max-w-7xl">
         <SpaceSearchHero />
         <HydrationBoundary state={dehydrate(queryClient)}>
           <SpaceSearchContentSection
@@ -66,7 +66,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
       </main>
 
       <div className="pointer-events-none fixed inset-x-0 bottom-6 z-20 sm:bottom-8">
-        <div className="mx-auto flex w-full max-w-7xl justify-end px-4 sm:px-6 xl:max-w-6xl 2xl:max-w-7xl">
+        <div className="mx-auto flex w-full max-w-7xl justify-end px-4 sm:px-6 lg:max-w-6xl 2xl:max-w-7xl">
           <SpaceSearchCreateButton
             aria-label="스페이스 만들기"
             className="pointer-events-auto sm:hidden"
@@ -74,7 +74,7 @@ export default async function SpacePage({ searchParams }: SpacePageProps) {
             variant="icon"
           />
           <SpaceSearchCreateButton
-            className="pointer-events-auto hidden sm:inline-flex xl:h-14 xl:min-w-[172px] xl:px-5 xl:text-lg 2xl:h-16 2xl:min-w-[188px] 2xl:px-6 2xl:text-xl"
+            className="pointer-events-auto hidden sm:inline-flex lg:h-14 lg:min-w-[172px] lg:px-5 lg:text-lg 2xl:h-16 2xl:min-w-[188px] 2xl:px-6 2xl:text-xl"
             isAuthenticated={isAuthenticatedRequest}
           >
             스페이스 만들기

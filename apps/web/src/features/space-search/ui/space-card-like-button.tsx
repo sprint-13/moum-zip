@@ -7,7 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import { createSearchFavoriteAction, deleteSearchFavoriteAction } from "@/_pages/space-search/actions";
 import type { SearchResultsResponse } from "@/entities/gathering";
-import { showAuthRequiredToast } from "@/shared/lib/auth-required-toast";
+import { showRequiredToast } from "@/shared/lib/toast-utils";
 
 import HeartIcon from "../assets/heart-default.svg";
 import { spaceSearchQueryKeys } from "../model/query-keys";
@@ -107,7 +107,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      showAuthRequiredToast();
+      showRequiredToast("로그인 후 이용할 수 있어요.");
       return;
     }
 
@@ -147,7 +147,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
           rollbackLikedState();
 
           if (result.error === "UNAUTHORIZED") {
-            showAuthRequiredToast();
+            showRequiredToast("로그인 후 이용할 수 있어요.");
             return;
           }
 
