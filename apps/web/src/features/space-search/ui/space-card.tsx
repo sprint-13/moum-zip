@@ -15,6 +15,15 @@ interface MetaChipProps {
   chip: SpaceCardMetaChip;
 }
 
+const deadlineTagClassName = cn(
+  "shrink-0",
+  "lg:min-h-[1.375rem] lg:gap-[0.125rem] lg:py-[0.125rem] lg:pr-[0.4375rem] lg:pl-[0.3125rem]",
+  "2xl:min-h-0 2xl:gap-1 2xl:py-[0.2rem] 2xl:pr-[0.8rem] 2xl:pl-[0.4rem]",
+  "lg:[&>span:last-child]:inline-flex lg:[&>span:last-child]:max-w-[6rem] lg:[&>span:last-child]:items-center lg:[&>span:last-child]:truncate lg:[&>span:last-child]:text-[0.75rem] lg:[&>span:last-child]:leading-[1rem]",
+  "2xl:[&>span:last-child]:max-w-none 2xl:[&>span:last-child]:overflow-visible 2xl:[&>span:last-child]:text-clip 2xl:[&>span:last-child]:text-xs 2xl:[&>span:last-child]:leading-4",
+  "lg:[&>svg]:size-[1.125rem] 2xl:[&>svg]:size-5",
+);
+
 const MetaChip = ({ chip }: MetaChipProps) => {
   return (
     <span className="inline-flex items-center justify-center rounded-lg border border-border bg-primary-foreground px-2 py-0.5 font-medium text-muted-foreground text-sm leading-5 lg:min-h-[1.375rem] lg:px-[0.4375rem] lg:py-[0.125rem] lg:text-[0.75rem] lg:leading-[1rem] 2xl:min-h-0 2xl:px-2 2xl:py-0.5 2xl:text-sm 2xl:leading-5">
@@ -94,11 +103,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
                   <MetaChip chip={chip} key={chip.id} />
                 ))}
               </div>
-              <Tag
-                size="small"
-                className="shrink-0 lg:min-h-[1.375rem] lg:gap-[0.125rem] lg:py-[0.125rem] lg:pr-[0.4375rem] lg:pl-[0.3125rem] 2xl:min-h-0 2xl:gap-1 2xl:py-[0.2rem] 2xl:pr-[0.8rem] 2xl:pl-[0.4rem] lg:[&>span:last-child]:inline-flex lg:[&>span:last-child]:max-w-[6rem] lg:[&>span:last-child]:items-center lg:[&>span:last-child]:truncate lg:[&>span:last-child]:text-[0.75rem] lg:[&>span:last-child]:leading-[1rem] 2xl:[&>span:last-child]:max-w-none 2xl:[&>span:last-child]:overflow-visible 2xl:[&>span:last-child]:text-clip 2xl:[&>span:last-child]:text-xs 2xl:[&>span:last-child]:leading-4 lg:[&>svg]:size-[1.125rem] 2xl:[&>svg]:size-5"
-                icon
-              >
+              <Tag size="small" className={deadlineTagClassName} icon>
                 {deadlineLabel}
               </Tag>
             </div>
