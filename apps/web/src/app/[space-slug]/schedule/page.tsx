@@ -15,7 +15,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ "spac
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<ScheduleListSkeleton />}>
-            <ScheduleSection space={space} membership={membership} />
+            <ScheduleSection space={space} />
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
