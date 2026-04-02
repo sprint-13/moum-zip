@@ -16,34 +16,40 @@ import { ProfileAvatar } from "./profile-avatar";
 
 interface ProfileEditModalProfile {
   avatarUrl?: string;
-  email: string | null;
+  email: string;
   nickname: string;
 }
 
 interface ProfileEditModalProps {
   isOpen: boolean;
+  isSaving: boolean;
+  errorMessage: string | null;
+  isSaveDisabled: boolean;
+  canResetAvatar: boolean;
   profile: ProfileEditModalProfile;
+  onAvatarReset: () => void;
   onCancel: () => void;
   onImageChange: (imageFile: File) => void;
-  onImageRemove: () => void;
   onProfileChange: (changes: Partial<ProfileEditModalProfile>) => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
 }
 
 export const ProfileEditModal = ({
   isOpen,
+  isSaving,
+  errorMessage,
+  isSaveDisabled,
+  canResetAvatar,
   profile,
+  onAvatarReset,
   onCancel,
   onImageChange,
-  onImageRemove,
   onProfileChange,
   onSave,
 }: ProfileEditModalProps) => {
   const { container } = useSpaceContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { avatarUrl, email, nickname } = profile;
-  const emailInputValue = email ?? "";
-  const isSaveDisabled = nickname.trim() === "";
 
   const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const imageFile = event.target.files?.[0];
@@ -60,7 +66,7 @@ export const ProfileEditModal = ({
     <AlertDialog
       open={isOpen}
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) {
+        if (!nextOpen && !isSaving) {
           onCancel();
         }
       }}
@@ -82,7 +88,8 @@ export const ProfileEditModal = ({
             type="button"
             onClick={onCancel}
             aria-label="프로필 수정 닫기"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            disabled={isSaving}
+            className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X className="size-4" />
           </button>
@@ -99,7 +106,7 @@ export const ProfileEditModal = ({
             <div className="min-w-0 flex-1">
               <p className="text-center font-semibold text-foreground text-sm sm:text-left">프로필 이미지</p>
               <p className="mt-1 text-center text-muted-foreground text-sm sm:text-left">
-                새 이미지를 선택하거나 현재 이미지를 삭제할 수 있어요.
+                새 이미지를 선택할 수 있어요.
               </p>
               <div className="mt-3 flex flex-col gap-1 sm:flex-row sm:justify-start">
                 <Button
@@ -108,19 +115,21 @@ export const ProfileEditModal = ({
                   size="small"
                   className="w-full min-w-0 justify-center gap-1 px-3 text-primary sm:w-auto"
                   onClick={() => fileInputRef.current?.click()}
+                  disabled={isSaving}
                   icon={<Pencil size={14} />}
                 >
                   이미지 변경
                 </Button>
-                {avatarUrl ? (
+                {canResetAvatar ? (
                   <Button
                     type="button"
                     variant="tertiary"
                     size="small"
                     className="w-full min-w-0 px-3 sm:w-auto"
-                    onClick={onImageRemove}
+                    onClick={onAvatarReset}
+                    disabled={isSaving}
                   >
-                    이미지 삭제
+                    되돌리기
                   </Button>
                 ) : null}
               </div>
@@ -129,7 +138,7 @@ export const ProfileEditModal = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept={PROFILE_IMAGE_ACCEPT}
             className="hidden"
             onChange={handleImageInputChange}
           />
@@ -147,14 +156,14 @@ export const ProfileEditModal = ({
           <InputField
             label="이메일"
             placeholder="이메일을 입력해주세요"
-            value={emailInputValue}
+            required
+            value={email}
             className="max-w-full bg-background max-md:max-w-full!"
-            onChange={(event) => {
-              const trimmedEmail = event.target.value.trim();
-              onProfileChange({ email: trimmedEmail === "" ? null : trimmedEmail });
-            }}
+            onChange={(event) => onProfileChange({ email: event.target.value })}
           />
         </div>
+
+        {errorMessage ? <p className="mt-4 text-destructive text-sm">{errorMessage}</p> : null}
 
         <div className="mt-5 grid grid-cols-1 gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-3">
           <Button
@@ -166,8 +175,14 @@ export const ProfileEditModal = ({
           >
             취소
           </Button>
-          <Button type="button" size="small" className="h-11 w-full min-w-0" onClick={onSave} disabled={isSaveDisabled}>
-            저장
+          <Button
+            type="button"
+            size="small"
+            className="h-11 w-full min-w-0"
+            onClick={onSave}
+            disabled={isSaveDisabled || isSaving}
+          >
+            {isSaving ? "저장 중..." : "저장"}
           </Button>
         </div>
       </AlertDialogContent>

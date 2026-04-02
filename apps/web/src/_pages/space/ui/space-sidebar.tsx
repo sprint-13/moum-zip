@@ -38,8 +38,9 @@ export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps)
         <SidebarContent navItems={NAV_ITEMS} />
         <div className="mt-auto">
           <SidebarFooter
+            slug={space.slug}
             name={membership.nickname}
-            email={membership.email}
+            email={membership.email ?? ""}
             avatarUrl={membership.avatarUrl ?? undefined}
           />
         </div>

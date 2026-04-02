@@ -11,6 +11,12 @@ export interface UpdateMemberProfileActionInput {
   nickname?: string;
 }
 
+const revalidateSpaceProfile = (spaceId: string, slug: string) => {
+  revalidateTag(`membership-${spaceId}`, "max");
+  revalidateTag(`members-${spaceId}`, "max");
+  revalidatePath(`/${slug}`);
+};
+
 export async function updateMemberProfileAction(
   slug: string,
   input: UpdateMemberProfileActionInput,
@@ -25,9 +31,7 @@ export async function updateMemberProfileAction(
     userId: membership.userId,
   });
 
-  revalidateTag(`membership-${space.spaceId}`, "max");
-  revalidateTag(`members-${space.spaceId}`, "max");
-  revalidatePath(`/${slug}`);
+  revalidateSpaceProfile(space.spaceId, slug);
 
   return { member };
 }
