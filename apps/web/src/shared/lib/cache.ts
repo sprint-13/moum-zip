@@ -7,8 +7,3 @@ export const CACHE_TAGS = {
   schedule: (spaceId: string) => `schedule-${spaceId}`,
   attendance: (spaceId: string) => `attendance-${spaceId}`,
 } as const;
-
-export const CACHE_KEYS = {
-  spaceBySlug: (slug: string) => ["space-by-slug", slug],
-  spaceMembership: (spaceId: string, userId: number) => ["space-membership", spaceId, String(userId)],
-} as const;
