@@ -28,8 +28,7 @@ interface GetSearchResultsDeps {
   meetingsApi?: Pick<typeof api.meetings, "getList">;
 }
 
-type SearchMeetingWithUserState = Omit<MeetingWithHost, "region"> & {
-  region: GatheringLocation;
+type SearchMeetingWithUserState = MeetingWithHost & {
   isCompleted?: boolean;
   isFavorited?: boolean | null;
   isJoined?: boolean;
@@ -37,6 +36,24 @@ type SearchMeetingWithUserState = Omit<MeetingWithHost, "region"> & {
 
 const normalizeMeetingType = (type: string): GatheringCategory => {
   return normalizeGatheringCategory(type) ?? "project";
+};
+
+const normalizeMeetingRegion = (region: string | null | undefined): GatheringLocation => {
+  if (typeof region !== "string") {
+    return "offline";
+  }
+
+  const normalizedRegion = region.trim().toLowerCase();
+
+  if (normalizedRegion === "online") {
+    return "online";
+  }
+
+  if (normalizedRegion === "offline") {
+    return "offline";
+  }
+
+  return "offline";
 };
 
 const resolveSortParams = ({
@@ -78,6 +95,8 @@ const resolveSortParams = ({
 };
 
 const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem => {
+  const normalizedRegion = normalizeMeetingRegion(meeting.region);
+
   return {
     address: meeting.address,
     capacity: meeting.capacity,
@@ -87,7 +106,7 @@ const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem
     id: String(meeting.id),
     image: meeting.image,
     isLiked: meeting.isFavorited ?? false,
-    location: meeting.region,
+    location: normalizedRegion,
     participantCount: meeting.participantCount,
     region: meeting.region,
     registrationEnd: meeting.registrationEnd,
@@ -116,7 +135,7 @@ const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAut
     return;
   }
 
-  console.warn("[search] authenticated meetings response is missing isFavorited", { meetingIds });
+  console.warn("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", { meetingIds });
 };
 
 export const getSearchResults = async (
@@ -131,23 +150,17 @@ export const getSearchResults = async (
   { isAuthenticatedRequest = false, meetingsApi = api.meetings }: GetSearchResultsDeps = {},
 ): Promise<SearchResultsResponse> => {
   const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
-  const timerLabel = `[search] GET /meetings category=${categoryId} location=${locationId} cursor=${cursor ?? "none"} size=${size}`;
-  console.time(timerLabel);
-  const response = await meetingsApi
-    .getList(
-      {
-        cursor: cursor ?? undefined,
-        region: locationId === "all" ? undefined : locationId,
-        size,
-        sortBy,
-        sortOrder,
-        type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
-      },
-      { cache: "no-store" },
-    )
-    .finally(() => {
-      console.timeEnd(timerLabel);
-    });
+  const response = await meetingsApi.getList(
+    {
+      cursor: cursor ?? undefined,
+      region: locationId === "all" ? undefined : locationId,
+      size,
+      sortBy,
+      sortOrder,
+      type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
+    },
+    // { cache: "no-store" },
+  );
   const searchResults = response.data as MeetingsListData;
   const meetings = searchResults.data as SearchMeetingWithUserState[];
   warnMissingFavoritedField(meetings, isAuthenticatedRequest);

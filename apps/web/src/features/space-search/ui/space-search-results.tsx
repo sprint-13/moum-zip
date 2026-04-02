@@ -31,7 +31,7 @@ export const SpaceSearchResults = ({
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {items.map((item) => (
           <SpaceCard isAuthenticated={isAuthenticated} item={item} key={item.id} />
         ))}

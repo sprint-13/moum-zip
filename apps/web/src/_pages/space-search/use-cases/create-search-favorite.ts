@@ -12,11 +12,7 @@ export const createSearchFavorite = async (
   { meetingId }: CreateSearchFavoriteInput,
   { favoritesApi }: CreateSearchFavoriteDeps,
 ) => {
-  const timerLabel = `[search] POST /favorites meetingId=${meetingId} requestId=${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  console.time(timerLabel);
-  await favoritesApi.create(meetingId).finally(() => {
-    console.timeEnd(timerLabel);
-  });
+  await favoritesApi.create(meetingId);
 
   return {
     meetingId,
