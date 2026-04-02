@@ -1,7 +1,7 @@
 "use client";
-import { Button, InputField, LoadingIndicator, SocialButton } from "@moum-zip/ui/components";
+import { Button, InputField, SocialButton } from "@moum-zip/ui/components";
 import Link from "next/link";
-import { startTransition, useActionState, useState } from "react";
+import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
 import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login-url";
@@ -24,7 +24,6 @@ const ERROR_MESSAGES = {
 export const SignupForm = () => {
   // 서버 액션 상태 관리
   const [state, formAction, isPending] = useActionState(signupAction, null);
-  const [isSocialLoading, setIsSocialLoading] = useState(false);
 
   const {
     register,
@@ -34,9 +33,6 @@ export const SignupForm = () => {
   } = useForm<SignupFormValues>({
     mode: "onBlur", // 필드 입력 완료 후 넘어갈 때 유효성 검사
   });
-
-  // 소셜 로그인 진행 중일 때 로딩 화면 표시
-  if (isSocialLoading) return <LoadingIndicator fullScreen text="로그인 중" />;
 
   // 유효성 검사 통과 후 → 서버 액션 호출
   const onSubmit = handleSubmit((data) => {
@@ -126,7 +122,6 @@ export const SignupForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
-            setIsSocialLoading(true);
             window.location.href = getGoogleLoginUrl();
           }}
         />
@@ -134,7 +129,6 @@ export const SignupForm = () => {
           provider="kakao"
           className="w-full md:w-[222px]"
           onClick={() => {
-            setIsSocialLoading(true);
             window.location.href = getKakaoLoginUrl();
           }}
         />
