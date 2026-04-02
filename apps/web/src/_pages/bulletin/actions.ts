@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag, updateTag } from "next/cache";
 import type { PostCategory } from "@/entities/post";
 import { likeQueries } from "@/entities/post/queries";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
@@ -10,6 +10,7 @@ import { deleteCommentUseCase } from "@/features/space/use-cases/delete-comment"
 import { deletePostUseCase } from "@/features/space/use-cases/delete-post";
 import { updateCommentUseCase } from "@/features/space/use-cases/update-comment";
 import { updatePostUseCase } from "@/features/space/use-cases/update-post";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 /**
  * 게시글 작성 Server Action.
@@ -35,8 +36,7 @@ export async function createPostAction(slug: string, formData: FormData) {
     image: typeof image === "string" && image ? image : undefined,
   });
 
-  revalidateTag(`bulletin-${space.spaceId}`, "max");
-  revalidatePath(`/${slug}/bulletin`);
+  updateTag(CACHE_TAGS.bulletin(space.spaceId));
   return { postId };
 }
 
@@ -59,9 +59,8 @@ export async function updatePostAction(slug: string, postId: string, formData: F
     { userId: membership.userId, role: membership.role },
   );
 
-  revalidateTag(`bulletin-${space.spaceId}`, "max");
-  revalidatePath(`/${slug}/bulletin`);
-  revalidatePath(`/${slug}/bulletin/${postId}`);
+  updateTag(CACHE_TAGS.bulletin(space.spaceId));
+  updateTag(CACHE_TAGS.post(postId));
   return { postId };
 }
 
@@ -73,8 +72,7 @@ export async function deletePostAction(slug: string, postId: string) {
 
   await deletePostUseCase(postId, { userId: membership.userId, role: membership.role });
 
-  revalidateTag(`bulletin-${space.spaceId}`, "max");
-  revalidatePath(`/${slug}/bulletin`);
+  updateTag(CACHE_TAGS.bulletin(space.spaceId));
 }
 
 /**
@@ -82,7 +80,7 @@ export async function deletePostAction(slug: string, postId: string) {
  * 서버에서 현재 상태를 확인 후 추가/취소한다.
  */
 export async function toggleLikeAction(slug: string, postId: string) {
-  const { membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug);
   const userId = membership.userId;
 
   const [existing] = await likeQueries.findByPostAndUser(postId, userId);
@@ -93,7 +91,7 @@ export async function toggleLikeAction(slug: string, postId: string) {
     await likeQueries.create({ id: crypto.randomUUID(), postId, userId });
   }
 
-  revalidatePath(`/${slug}/bulletin`);
+  revalidateTag(CACHE_TAGS.bulletin(space.spaceId), "max");
 }
 
 /**
@@ -104,8 +102,8 @@ export async function createCommentAction(slug: string, postId: string, content:
 
   await createCommentUseCase({ postId, spaceId: space.spaceId, authorId: membership.userId, content });
 
-  revalidatePath(`/${slug}/bulletin`);
-  revalidatePath(`/${slug}/bulletin/${postId}`);
+  revalidateTag(CACHE_TAGS.bulletin(space.spaceId), "max");
+  revalidateTag(CACHE_TAGS.post(postId), "max");
 }
 
 /**
@@ -116,17 +114,17 @@ export async function updateCommentAction(slug: string, commentId: string, postI
 
   await updateCommentUseCase(commentId, content, { userId: membership.userId, role: membership.role });
 
-  revalidatePath(`/${slug}/bulletin/${postId}`);
+  revalidateTag(CACHE_TAGS.post(postId), "max");
 }
 
 /**
  * 댓글 삭제 Server Action.
  */
 export async function deleteCommentAction(slug: string, commentId: string, postId: string) {
-  const { membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug);
 
   await deleteCommentUseCase(commentId, postId, { userId: membership.userId, role: membership.role });
 
-  revalidatePath(`/${slug}/bulletin`);
-  revalidatePath(`/${slug}/bulletin/${postId}`);
+  revalidateTag(CACHE_TAGS.bulletin(space.spaceId), "max");
+  revalidateTag(CACHE_TAGS.post(postId), "max");
 }

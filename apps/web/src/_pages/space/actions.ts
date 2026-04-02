@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag, updateTag } from "next/cache";
 import type { Member } from "@/entities/member";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 import { updateMemberProfileUseCase } from "./use-cases/update-member-profile";
 
 export interface UpdateMemberProfileActionInput {
@@ -11,10 +12,10 @@ export interface UpdateMemberProfileActionInput {
   nickname?: string;
 }
 
-const revalidateSpaceProfile = (spaceId: string, slug: string) => {
-  revalidateTag(`membership-${spaceId}`, "max");
-  revalidateTag(`members-${spaceId}`, "max");
-  revalidatePath(`/${slug}`);
+const revalidateSpaceProfile = (spaceId: string) => {
+  updateTag(CACHE_TAGS.membership(spaceId));
+  updateTag(CACHE_TAGS.members(spaceId));
+  revalidateTag(CACHE_TAGS.bulletin(spaceId), "max"); // 게시글·댓글 작성자 닉네임/아바타 반영
 };
 
 export async function updateMemberProfileAction(
@@ -31,7 +32,7 @@ export async function updateMemberProfileAction(
     userId: membership.userId,
   });
 
-  revalidateSpaceProfile(space.spaceId, slug);
+  revalidateSpaceProfile(space.spaceId);
 
   return { member };
 }
