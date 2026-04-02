@@ -1,7 +1,8 @@
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import type { AttendanceStatus, ScheduleWithStatus } from "@/entities/schedule";
 import { getNowKST, getTodayKST } from "@/entities/schedule/model/types";
 import { attendanceQueries, scheduleQueries } from "@/entities/schedule/queries";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 export interface GetSchedulesResult {
   upcoming: ScheduleWithStatus[];
@@ -9,7 +10,12 @@ export interface GetSchedulesResult {
   attendance: AttendanceStatus;
 }
 
-export const getSchedulesUseCase = cache(async (spaceId: string, userId: number): Promise<GetSchedulesResult> => {
+export async function getSchedulesUseCase(spaceId: string, userId: number): Promise<GetSchedulesResult> {
+  "use cache";
+  cacheTag(CACHE_TAGS.schedule(spaceId));
+  cacheTag(CACHE_TAGS.attendance(spaceId));
+  cacheLife("seconds");
+
   const today = getTodayKST();
   const now = getNowKST();
 
@@ -36,4 +42,4 @@ export const getSchedulesUseCase = cache(async (spaceId: string, userId: number)
       todayAttendeeIds: todayAttendances.map((a) => a.userId),
     },
   };
-});
+}

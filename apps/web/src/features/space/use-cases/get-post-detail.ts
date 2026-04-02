@@ -1,6 +1,7 @@
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import type { Comment, Post } from "@/entities/post";
 import { commentQueries, postQueries } from "@/entities/post/queries";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 export interface PostDetailResult {
   post: Post;
@@ -10,9 +11,11 @@ export interface PostDetailResult {
 /**
  * 게시글 단건 + 댓글 목록 조회.
  */
-export const getPostDetailUseCase = cache(async function getPostDetailUseCase(
-  postId: string,
-): Promise<PostDetailResult> {
+export async function getPostDetailUseCase(postId: string): Promise<PostDetailResult> {
+  "use cache";
+  cacheTag(CACHE_TAGS.post(postId));
+  cacheLife("minutes");
+
   const [postRows, commentRows] = await Promise.all([
     postQueries.findById(postId),
     commentQueries.findManyByPostId(postId),
@@ -25,4 +28,4 @@ export const getPostDetailUseCase = cache(async function getPostDetailUseCase(
   const comments: Comment[] = commentRows.map(({ comment, author }) => ({ ...comment, author }));
 
   return { post, comments };
-});
+}
