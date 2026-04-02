@@ -26,7 +26,16 @@ interface MoimDetailContentProps {
 
 async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
   const currentUserResult = await getCurrentUser();
-  const currentUserId = currentUserResult.ok ? currentUserResult.data.id : null;
+
+  const currentUser = currentUserResult.ok
+    ? currentUserResult.data
+    : {
+        id: null,
+        name: null,
+        image: null,
+      };
+
+  const currentUserId = currentUser.id;
 
   const apiClient = await getApi();
 
@@ -38,9 +47,7 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
     ]);
 
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
-
     const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;
-
     const meetingsList = "data" in meetingsResponse ? meetingsResponse.data : meetingsResponse;
 
     if (!meetingDetail || !participantsList || !meetingsList) {
@@ -73,7 +80,7 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
     return (
       <MoimDetailClient
         meetingId={meetingId}
-        currentUserId={currentUserId}
+        currentUser={currentUser}
         initialInformationData={informationData}
         initialDescription={description}
         initialPersonnelData={personnelData}

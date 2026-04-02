@@ -5,12 +5,18 @@ import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
-import type { InformationData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
+import type { InformationData, ParticipantData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
+
+interface CurrentUser {
+  id: number | null;
+  name: string | null;
+  image: string | null;
+}
 
 interface MoimDetailClientProps {
   meetingId: number;
-  currentUserId: number | null;
+  currentUser: CurrentUser;
   initialInformationData: InformationData;
   initialDescription: string;
   initialPersonnelData: PersonnelData;
@@ -20,7 +26,7 @@ interface MoimDetailClientProps {
 
 export function MoimDetailClient({
   meetingId,
-  currentUserId,
+  currentUser,
   initialInformationData,
   initialDescription,
   initialPersonnelData,
@@ -30,6 +36,7 @@ export function MoimDetailClient({
   const router = useRouter();
 
   const [informationData, setInformationData] = useState<InformationData>(initialInformationData);
+  const [personnelData, setPersonnelData] = useState<PersonnelData>(initialPersonnelData);
   const [recommendedMeetings, setRecommendedMeetings] = useState<RecommendedMeetingData[]>(initialRecommendedMeetings);
   const [isParticipating, setIsParticipating] = useState(initialIsParticipating);
 
@@ -47,7 +54,7 @@ export function MoimDetailClient({
       return false;
     }
 
-    if (!currentUserId) {
+    if (!currentUser.id) {
       router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
       return false;
     }
@@ -68,7 +75,7 @@ export function MoimDetailClient({
       }));
 
       return true;
-    } catch (error) {
+    } catch {
       alert("좋아요 처리 중 오류가 발생했습니다.");
       return false;
     } finally {
@@ -82,22 +89,58 @@ export function MoimDetailClient({
     }
 
     const previousIsJoined = isParticipating;
+    const previousPersonnelData = personnelData;
 
     setIsJoinPending(true);
+
+    // 낙관적 업데이트
     setIsParticipating(nextParticipating);
+    setPersonnelData((prev) => {
+      const nextCurrentParticipants = nextParticipating
+        ? prev.currentParticipants + 1
+        : Math.max(prev.currentParticipants - 1, 0);
+
+      let nextParticipants = prev.participants;
+
+      if (currentUser.id) {
+        if (nextParticipating) {
+          const optimisticParticipant: ParticipantData = {
+            id: currentUser.id,
+            name: currentUser.name ?? "나",
+            image: currentUser.image ?? null,
+          };
+
+          nextParticipants = [
+            optimisticParticipant,
+            ...prev.participants.filter((participant) => participant.id !== currentUser.id),
+          ];
+        } else {
+          nextParticipants = prev.participants.filter((participant) => participant.id !== currentUser.id);
+        }
+      }
+
+      return {
+        ...prev,
+        currentParticipants: nextCurrentParticipants,
+        participants: nextParticipants,
+        extraCount: Math.max(nextCurrentParticipants - nextParticipants.length, 0),
+      };
+    });
 
     try {
       const result = await joinMeetingAction(informationData.id, previousIsJoined);
 
       if (!result.ok) {
         setIsParticipating(previousIsJoined);
+        setPersonnelData(previousPersonnelData);
         alert(result.message);
         return;
       }
 
       setIsParticipating(result.data.isJoined);
-    } catch (error) {
+    } catch {
       setIsParticipating(previousIsJoined);
+      setPersonnelData(previousPersonnelData);
       alert("참여 처리 중 오류가 발생했습니다.");
     } finally {
       setIsJoinPending(false);
@@ -121,7 +164,7 @@ export function MoimDetailClient({
 
       await navigator.clipboard.writeText(shareUrl);
       alert("모임 링크가 복사되었습니다.");
-    } catch (error) {
+    } catch {
       alert("링크 복사에 실패했습니다.");
     }
   };
@@ -147,7 +190,7 @@ export function MoimDetailClient({
 
       alert("모임이 삭제되었습니다.");
       router.replace(ROUTES.search);
-    } catch (error) {
+    } catch {
       alert("모임 삭제 중 오류가 발생했습니다.");
     } finally {
       setIsDeletePending(false);
@@ -167,7 +210,7 @@ export function MoimDetailClient({
       return false;
     }
 
-    if (!currentUserId) {
+    if (!currentUser.id) {
       router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
       return false;
     }
@@ -200,7 +243,7 @@ export function MoimDetailClient({
       );
 
       return true;
-    } catch (error) {
+    } catch {
       alert("좋아요 처리 중 오류가 발생했습니다.");
       return false;
     } finally {
@@ -228,7 +271,7 @@ export function MoimDetailClient({
             <InformationContainer
               data={informationData}
               viewType={viewType}
-              isLoggedIn={!!currentUserId}
+              isLoggedIn={!!currentUser.id}
               isParticipating={isParticipating}
               onToggleLike={handleToggleMeetingLike}
               onParticipateToggle={handleParticipateToggle}
@@ -238,7 +281,7 @@ export function MoimDetailClient({
               onLoginAction={handleLoginAction}
             />
 
-            <PersonnelContainer data={initialPersonnelData} />
+            <PersonnelContainer data={personnelData} />
           </div>
         </section>
 
