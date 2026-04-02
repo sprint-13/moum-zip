@@ -50,9 +50,9 @@ export function CommentItem({
   }
 
   function handleDelete() {
-    closeModal();
     startTransition(async () => {
       optimisticUpdate({ type: "delete", id: comment.id });
+      closeModal();
       try {
         await deleteCommentAction(slug, comment.id, postId);
       } catch {
