@@ -6,7 +6,10 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
+import { getQueryClient } from "@/shared/lib/get-query-client";
 import { createPostAction, updatePostAction } from "../actions";
+import { fetchBulletinPosts } from "../hooks/use-bulletin-posts";
+import { bulletinQueryKeys } from "../model/query-keys";
 
 interface PostWriteFormProps {
   slug: string;
@@ -20,6 +23,7 @@ interface PostWriteFormValues {
 
 export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const router = useRouter();
+  const queryClient = getQueryClient();
   const [isPending, startTransition] = useTransition();
   const isEdit = !!initialPost;
 
@@ -30,6 +34,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
     setValue,
     formState: { errors },
     setError,
+    reset,
   } = useForm<PostWriteFormValues>({
     defaultValues: {
       category: initialPost?.category ?? "notice",
@@ -50,17 +55,29 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       try {
         if (isEdit && initialPost) {
           const { postId } = await updatePostAction(slug, initialPost.id, formData);
+          queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+          queryClient.prefetchQuery({
+            queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
+            queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
+          });
           router.push(`/${slug}/bulletin/${postId}`);
           return;
         }
 
         const { postId } = await createPostAction(slug, formData);
+        queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+        queryClient.prefetchQuery({
+          queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
+          queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
+        });
         router.push(`/${slug}/bulletin/${postId}`);
       } catch (err) {
         setError("root", {
           message: err instanceof Error ? err.message : "게시글 저장에 실패했습니다.",
         });
+        return;
       }
+      reset();
     });
   };
 
@@ -136,7 +153,10 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       <div className="flex justify-end gap-2 pt-4">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => {
+            reset();
+            router.back();
+          }}
           disabled={isPending}
           className="rounded-lg border border-border px-5 py-2 font-medium text-neutral-600 text-sm transition-colors hover:bg-muted disabled:opacity-50"
         >
