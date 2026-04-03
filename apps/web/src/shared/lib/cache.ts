@@ -5,5 +5,6 @@ export const CACHE_TAGS = {
   bulletin: (spaceId: string) => `bulletin-${spaceId}`,
   post: (postId: string) => `post-${postId}`,
   schedule: (spaceId: string) => `schedule-${spaceId}`,
-  attendance: (spaceId: string) => `attendance-${spaceId}`,
+  attendance: (spaceId: string, userId?: number) =>
+    userId ? `attendance-${spaceId}-${userId}` : `attendance-${spaceId}`,
 } as const;
