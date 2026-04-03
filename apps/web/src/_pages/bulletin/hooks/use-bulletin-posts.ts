@@ -21,6 +21,7 @@ async function fetchBulletinPosts(
 export function useBulletinPosts(slug: string, opts: { page: number; filter?: PostCategory }) {
   const queryClient = useQueryClient();
 
+  // TODO: 개선하기 (react-query에서 페이지네이션 쓰면 프리페치 지원되지 않나?)
   useEffect(() => {
     queryClient.prefetchQuery({
       queryKey: bulletinQueryKeys.list(slug, { page: opts.page + 1, filter: opts.filter }),

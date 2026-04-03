@@ -32,6 +32,7 @@ export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
     image: apiSpace.image,
     type: apiSpace.type === "study" ? "study" : "project",
     startDate: apiSpace.dateTime,
-    capacity: apiSpace.capacity,
+    capacity: apiSpace.participantCount,
+    isApproved: true, // getSpaceContext에서 멤버십 검증 후 호출되므로 항상 승인 상태
   };
 };

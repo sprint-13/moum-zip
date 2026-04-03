@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import type { NewMember } from "@/shared/db/scheme";
@@ -64,5 +64,23 @@ export const memberQueries = {
       .where(and(eq(spaceMembers.spaceId, spaceId), eq(spaceMembers.userId, userId)))
       .returning();
     return deletedMember; // 삭제된 데이터 확인용
+  },
+  getMembershipsBySpaceIds: async (spaceIds: string[], userId: number) => {
+    if (spaceIds.length === 0) return [];
+    return db
+      .select({ spaceId: spaceMembers.spaceId })
+      .from(spaceMembers)
+      .where(and(inArray(spaceMembers.spaceId, spaceIds), eq(spaceMembers.userId, userId)));
+  },
+  getMemberCountsBySpaceIds: async (spaceIds: string[]) => {
+    if (spaceIds.length === 0) return [];
+    return db
+      .select({
+        spaceId: spaceMembers.spaceId,
+        count: sql<number>`COUNT(*)`.mapWith(Number),
+      })
+      .from(spaceMembers)
+      .where(inArray(spaceMembers.spaceId, spaceIds))
+      .groupBy(spaceMembers.spaceId);
   },
 };
