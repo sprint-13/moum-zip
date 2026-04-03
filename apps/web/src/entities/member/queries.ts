@@ -12,6 +12,9 @@ export const memberQueries = {
       sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
     );
   },
+  findUserIdsBySpaceId: async (spaceId: string) => {
+    return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
+  },
   findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
     return db
       .select({
