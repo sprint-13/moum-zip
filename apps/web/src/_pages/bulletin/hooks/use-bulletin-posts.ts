@@ -6,7 +6,7 @@ import type { PostCategory } from "@/entities/post";
 import type { GetBulletinPostsResult } from "@/features/space/use-cases/get-bulletin-posts";
 import { bulletinQueryKeys } from "../model/query-keys";
 
-async function fetchBulletinPosts(
+export async function fetchBulletinPosts(
   slug: string,
   opts: { page: number; filter?: PostCategory },
 ): Promise<GetBulletinPostsResult> {

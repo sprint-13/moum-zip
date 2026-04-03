@@ -8,6 +8,7 @@ import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 import { createPostAction, updatePostAction } from "../actions";
+import { fetchBulletinPosts } from "../hooks/use-bulletin-posts";
 import { bulletinQueryKeys } from "../model/query-keys";
 
 interface PostWriteFormProps {
@@ -54,12 +55,20 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         if (isEdit && initialPost) {
           const { postId } = await updatePostAction(slug, initialPost.id, formData);
           queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+          queryClient.prefetchQuery({
+            queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
+            queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
+          });
           router.push(`/${slug}/bulletin/${postId}`);
           return;
         }
 
         const { postId } = await createPostAction(slug, formData);
         queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+        queryClient.prefetchQuery({
+          queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
+          queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
+        });
         router.push(`/${slug}/bulletin/${postId}`);
       } catch (err) {
         setError("root", {
