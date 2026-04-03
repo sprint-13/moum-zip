@@ -6,7 +6,9 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
+import { getQueryClient } from "@/shared/lib/get-query-client";
 import { createPostAction, updatePostAction } from "../actions";
+import { bulletinQueryKeys } from "../model/query-keys";
 
 interface PostWriteFormProps {
   slug: string;
@@ -20,6 +22,7 @@ interface PostWriteFormValues {
 
 export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const router = useRouter();
+  const queryClient = getQueryClient();
   const [isPending, startTransition] = useTransition();
   const isEdit = !!initialPost;
 
@@ -50,6 +53,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       try {
         if (isEdit && initialPost) {
           const { postId } = await updatePostAction(slug, initialPost.id, formData);
+          queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
           router.push(`/${slug}/bulletin/${postId}`);
           return;
         }
