@@ -34,6 +34,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
     setValue,
     formState: { errors },
     setError,
+    reset,
   } = useForm<PostWriteFormValues>({
     defaultValues: {
       category: initialPost?.category ?? "notice",
@@ -75,6 +76,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
           message: err instanceof Error ? err.message : "게시글 저장에 실패했습니다.",
         });
       }
+      reset();
     });
   };
 
@@ -150,7 +152,10 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
       <div className="flex justify-end gap-2 pt-4">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => {
+            reset();
+            router.back();
+          }}
           disabled={isPending}
           className="rounded-lg border border-border px-5 py-2 font-medium text-neutral-600 text-sm transition-colors hover:bg-muted disabled:opacity-50"
         >
