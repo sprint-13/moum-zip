@@ -5,6 +5,7 @@ const mockGetJoined = vi.fn();
 
 vi.mock("@/shared/api/server", () => ({
   getApi: vi.fn(),
+  isAuth: vi.fn().mockResolvedValue({ authenticated: true, userId: 1 }),
 }));
 
 vi.mock("@/entities/spaces/queries", () => ({
@@ -38,6 +39,7 @@ const mockSpaceInfo = {
   themeColor: "#FF0000",
   startDate: "2026-03-26T00:00:00.000Z",
   modules: ["bulletin"],
+  isApproved: true,
 };
 
 const mockJoinedMeetingList = {

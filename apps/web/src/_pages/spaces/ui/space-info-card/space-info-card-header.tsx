@@ -10,12 +10,12 @@ export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
       </h3>
 
       <div className="flex flex-wrap gap-2">
-        <Badge variant="completedGradient" container="default" className="px-2 py-0 text-muted-foreground">
+        <Badge variant="completedGradient" container="default" className="px-2 py-0 text-muted-foreground text-xs">
           {space.type === "project" ? "프로젝트" : "스터디"}
         </Badge>
         <Badge
           variant="completedGradient"
-          className={`font-semibold ${space.status === "ongoing" ? "text-primary" : "text-muted-foreground"}`}
+          className={`font-semibold text-xs ${space.status === "ongoing" ? "text-primary" : "text-muted-foreground"}`}
         >
           {space.status === "ongoing" ? "진행중" : "아카이브"}
         </Badge>

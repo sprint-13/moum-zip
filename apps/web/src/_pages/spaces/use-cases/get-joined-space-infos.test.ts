@@ -1,7 +1,19 @@
 import type { JoinedMeetingList } from "@moum-zip/api/data-contracts";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { SpaceDB } from "@/entities/spaces";
 import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
+
+vi.mock("@/entities/member/queries", () => ({
+  memberQueries: {
+    getMembershipsBySpaceIds: vi.fn().mockResolvedValue([]),
+    getMemberCountsBySpaceIds: vi.fn().mockResolvedValue([]),
+  },
+}));
+
+import { memberQueries } from "@/entities/member/queries";
+
+const mockGetMembershipsBySpaceIds = vi.mocked(memberQueries.getMembershipsBySpaceIds);
+const mockGetMemberCountsBySpaceIds = vi.mocked(memberQueries.getMemberCountsBySpaceIds);
 
 function makeApiSpace(
   id: number,
@@ -63,11 +75,17 @@ function makeApiList(
 }
 
 describe("getJoinedSpaceInfosUseCase", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetMembershipsBySpaceIds.mockResolvedValue([]);
+    mockGetMemberCountsBySpaceIds.mockResolvedValue([]);
+  });
+
   it("API와 DB 데이터를 meetingId 기준으로 결합하여 반환한다", async () => {
     const apiList = makeApiList([makeApiSpace(1), makeApiSpace(2)]);
     const dbSpaces = [makeDbSpace(1), makeDbSpace(2)];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result).toHaveLength(2);
     expect(result[0].spaceId).toBe("space-1");
@@ -79,7 +97,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([makeApiSpace(1), makeApiSpace(2)]);
     const dbSpaces = [makeDbSpace(1)]; // meetingId 2는 없음
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result).toHaveLength(1);
     expect(result[0].spaceId).toBe("space-1");
@@ -89,7 +107,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result).toHaveLength(0);
   });
@@ -98,7 +116,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([makeApiSpace(1, { type: "study" })]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result[0].type).toBe("study");
   });
@@ -107,7 +125,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([makeApiSpace(1, { type: "offline" })]);
     const dbSpaces = [makeDbSpace(1)];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result[0].type).toBe("project");
   });
@@ -116,7 +134,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([makeApiSpace(1)]);
     const dbSpaces = [makeDbSpace(1, { location: undefined })];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result[0].location).toBe("online");
   });
@@ -125,9 +143,49 @@ describe("getJoinedSpaceInfosUseCase", () => {
     const apiList = makeApiList([makeApiSpace(1)]);
     const dbSpaces = [makeDbSpace(1, { themeColor: undefined })];
 
-    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces);
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
 
     expect(result[0].themeColor).toBe("#000000");
+  });
+
+  it("space_members에 존재하면 isApproved가 true이다", async () => {
+    const apiList = makeApiList([makeApiSpace(1)]);
+    const dbSpaces = [makeDbSpace(1)];
+    mockGetMembershipsBySpaceIds.mockResolvedValue([{ spaceId: "space-1" }]);
+
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
+
+    expect(result[0].isApproved).toBe(true);
+  });
+
+  it("space_members에 없으면 isApproved가 false이다", async () => {
+    const apiList = makeApiList([makeApiSpace(1)]);
+    const dbSpaces = [makeDbSpace(1)];
+    mockGetMembershipsBySpaceIds.mockResolvedValue([]);
+
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
+
+    expect(result[0].isApproved).toBe(false);
+  });
+
+  it("capacity는 space_members 실제 멤버 수로 결정된다", async () => {
+    const apiList = makeApiList([makeApiSpace(1, { participantCount: 99 })]);
+    const dbSpaces = [makeDbSpace(1)];
+    mockGetMemberCountsBySpaceIds.mockResolvedValue([{ spaceId: "space-1", count: 5 }]);
+
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
+
+    expect(result[0].capacity).toBe(5);
+  });
+
+  it("space_members에 카운트가 없으면 capacity는 0이다", async () => {
+    const apiList = makeApiList([makeApiSpace(1)]);
+    const dbSpaces = [makeDbSpace(1)];
+    mockGetMemberCountsBySpaceIds.mockResolvedValue([]);
+
+    const result = await getJoinedSpaceInfosUseCase(apiList, dbSpaces, 1);
+
+    expect(result[0].capacity).toBe(0);
   });
 
   it("SpaceInfo의 모든 필드가 올바르게 매핑된다", async () => {
@@ -136,7 +194,6 @@ describe("getJoinedSpaceInfosUseCase", () => {
       image: "https://example.com/img.png",
       type: "study",
       dateTime: "2026-06-01T09:00:00.000Z",
-      capacity: 5,
     });
     const dbSpace = makeDbSpace(1, {
       id: "db-id-1",
@@ -145,8 +202,10 @@ describe("getJoinedSpaceInfosUseCase", () => {
       status: "archived",
       modules: ["bulletin", "calendar"],
     });
+    mockGetMembershipsBySpaceIds.mockResolvedValue([{ spaceId: "db-id-1" }]);
+    mockGetMemberCountsBySpaceIds.mockResolvedValue([{ spaceId: "db-id-1", count: 5 }]);
 
-    const result = await getJoinedSpaceInfosUseCase(makeApiList([apiSpace]), [dbSpace]);
+    const result = await getJoinedSpaceInfosUseCase(makeApiList([apiSpace]), [dbSpace], 1);
 
     expect(result[0]).toEqual({
       spaceId: "db-id-1",
@@ -160,6 +219,7 @@ describe("getJoinedSpaceInfosUseCase", () => {
       themeColor: "#123456",
       status: "archived",
       modules: ["bulletin", "calendar"],
+      isApproved: true,
     });
   });
 });
