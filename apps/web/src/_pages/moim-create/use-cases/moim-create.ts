@@ -1,13 +1,18 @@
 import { memberQueries } from "@/entities/member";
 import { spaceQueries } from "@/entities/spaces";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
-import { getApi, isAuth } from "@/shared/api/server";
+import type { ApiClient } from "@/shared/api";
 
-type Deps = {
-  getAuthApi?: () => ReturnType<typeof getApi>;
+// 모임 생성 API 호출 후, 로컬 space, 스페이스 멤버(매니저)까지 저장
+// API 클라이언트와 userId는 Server Action에서 주입
+
+export type CreateMoimDeps = {
+  userId: number;
+  meetingsApi: Pick<ApiClient["meetings"], "create">;
+  userApi: Pick<ApiClient["user"], "getUser">;
 };
 
-export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = getApi }: Deps = {}) {
+export async function createMoim(formData: MoimCreateFormValues, { userId, meetingsApi, userApi }: CreateMoimDeps) {
   const meetingPayload = {
     name: formData.name,
     type: formData.type === "study" ? "스터디" : "프로젝트",
@@ -15,25 +20,20 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
     description: formData.description,
     image: formData.image,
     region: formData.location,
-    dateTime: new Date(`${formData.date}T${formData.time}`).toISOString(), // date + time
-    registrationEnd: new Date(`${formData.deadlineDate}T${formData.deadlineTime}`).toISOString(), // deadlineDate
+    dateTime: new Date(`${formData.date}T${formData.time}`).toISOString(),
+    registrationEnd: new Date(`${formData.deadlineDate}T${formData.deadlineTime}`).toISOString(),
   };
 
-  // 인증
-  const authedApi = await getAuthApi();
-  const { userId } = await isAuth();
-  if (userId == null) throw new Error("로그인이 필요합니다.");
-
-  const userRes = await authedApi.user.getUser();
+  const userRes = await userApi.getUser();
   if (!userRes.ok || !userRes.data) throw new Error("유저 정보를 불러오지 못했습니다.");
   const me = userRes.data;
 
-  // 외부 API 호출 → MEETING 생성
-  const res = await authedApi.meetings.create(meetingPayload);
+  // 외부 API 호출 - 모임 생성
+  const res = await meetingsApi.create(meetingPayload);
   if (!res.ok) throw new Error("모임 생성에 실패했습니다.");
   const meeting = res.data as { id: number };
 
-  // SPACE DB 저장
+  // 로컬 DB - SPACE
   const space = await spaceQueries.create({
     id: String(meeting.id),
     slug: String(meeting.id),
@@ -44,7 +44,7 @@ export async function createMoim(formData: MoimCreateFormValues, { getAuthApi = 
     modules: formData.options ?? [],
   });
 
-  // 스페이스 멤버 등록
+  // 로컬 DB - SPACE 매니저 멤버 등록
   await memberQueries.create({
     id: crypto.randomUUID(),
     spaceId: space.id,

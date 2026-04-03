@@ -308,6 +308,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  /* 사용자 설정에서 애니메이션 감소 활성화 시 부드러운 스크롤 비활성화 */
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 @utility bg-personnel-gradient {
   background: linear-gradient(
     90deg,
