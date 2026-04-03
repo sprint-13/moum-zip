@@ -75,6 +75,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         setError("root", {
           message: err instanceof Error ? err.message : "게시글 저장에 실패했습니다.",
         });
+        return;
       }
       reset();
     });

@@ -105,7 +105,7 @@ export const postQueries = {
 
   /** 오늘 작성된 게시글 수 */
   countTodayBySpaceId: async (spaceId: string) => {
-    const todayStart = new Date();
+    const todayStart = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
     todayStart.setHours(0, 0, 0, 0);
     const result = await db
       .select({ count: count() })
