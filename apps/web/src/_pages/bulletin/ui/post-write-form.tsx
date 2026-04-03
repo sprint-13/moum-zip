@@ -59,6 +59,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         }
 
         const { postId } = await createPostAction(slug, formData);
+        queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
         router.push(`/${slug}/bulletin/${postId}`);
       } catch (err) {
         setError("root", {
