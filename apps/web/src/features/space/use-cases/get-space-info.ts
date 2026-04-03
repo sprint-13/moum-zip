@@ -1,21 +1,25 @@
-import type { SpaceInfo } from "@/entities/spaces";
+import { cache } from "react";
+import { type SpaceInfo, spaceQueries } from "@/entities/spaces";
 import { getApi } from "@/shared/api/server";
-import { getSpaceBySlugQuery } from "@/shared/db/queries";
 import { safe } from "@/shared/lib/safe";
 
-export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
-  const dbSpace = await safe(getSpaceBySlugQuery(slug), {
-    default: (err) => {
-      throw new Error("space by slug query error", { cause: err });
-    },
-  });
+const getCachedMeetingDetail = cache(async (meetingId: number) => {
   const api = await getApi();
-
-  const { data: apiSpace } = await safe(api.meetings.getDetail(dbSpace.meetingId), {
+  return safe(api.meetings.getDetail(meetingId), {
     default: (err) => {
       throw Error("Failed to verify space access", { cause: err });
     },
   });
+});
+
+export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
+  const dbSpace = await safe(spaceQueries.findBySlug(slug), {
+    default: (err) => {
+      throw new Error("space by slug query error", { cause: err });
+    },
+  });
+
+  const { data: apiSpace } = await getCachedMeetingDetail(dbSpace.meetingId);
 
   return {
     spaceId: dbSpace.id,

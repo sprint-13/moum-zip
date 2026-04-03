@@ -2,13 +2,13 @@ import { OnlineNowCard, PendingMemberCard, RolesOverviewCard } from "@/_pages/me
 import { addSpaceMemberAction } from "@/_pages/members/action";
 import { getPendingMembersUseCase } from "@/_pages/members/use-cases/get-pending-members";
 import { queryAllMembersUseCase } from "@/_pages/members/use-cases/query-all-members";
+import type { Member } from "@/entities/member";
 import type { SpaceInfo } from "@/entities/spaces";
 import { hasPermission } from "@/features/space";
-import type { Requester } from "@/features/space/lib/assert-permission";
 
 interface MemberRightSectionProps {
   space: SpaceInfo;
-  membership: Requester;
+  membership: Member;
 }
 
 export const MemberRightSection = async ({ space, membership }: MemberRightSectionProps) => {

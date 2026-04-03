@@ -1,13 +1,13 @@
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
+import { type Member, memberQueries } from "@/entities/member";
 import type { SpaceInfo } from "@/entities/spaces";
 import { isAuth } from "@/shared/api/server";
-import { getSpaceMembershipQuery } from "@/shared/db/queries";
 import { getSpaceInfoUseCase } from "../use-cases/get-space-info";
 
 export interface SpaceContext {
   space: SpaceInfo;
-  membership: NonNullable<Awaited<ReturnType<typeof getSpaceMembershipQuery>>>;
+  membership: Member;
 }
 
 export const getSpaceContext = cache(async (slug: string): Promise<SpaceContext> => {
@@ -17,7 +17,7 @@ export const getSpaceContext = cache(async (slug: string): Promise<SpaceContext>
   const space = await getSpaceInfoUseCase(slug);
   if (!space) notFound();
 
-  const membership = await getSpaceMembershipQuery(space.spaceId, auth.userId);
+  const membership = await memberQueries.getMember(space.spaceId, auth.userId);
   if (!membership) redirect("/spaces");
 
   return { space, membership };
