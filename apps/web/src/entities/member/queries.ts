@@ -5,8 +5,6 @@ import type { NewMember } from "@/shared/db/scheme";
 import { spaceMembers } from "@/shared/db/scheme";
 import { CACHE_TAGS } from "@/shared/lib/cache";
 
-// TODO: spaceId를 curry function 형태로 넘겨도 될 듯
-
 export const memberQueries = {
   findAllBySpaceId: async (spaceId: string) => {
     return db.select().from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId)).orderBy(

@@ -43,7 +43,9 @@ const getErrorMessage = async (error: unknown) => {
   return "요청 처리 중 오류가 발생했습니다.";
 };
 
-export async function getCurrentUser(): Promise<ActionResult<{ id: number | null }>> {
+export async function getCurrentUser(): Promise<
+  ActionResult<{ id: number | null; name: string | null; image: string | null }>
+> {
   const { authenticated } = await isAuth();
 
   if (!authenticated) {
@@ -51,6 +53,8 @@ export async function getCurrentUser(): Promise<ActionResult<{ id: number | null
       ok: true,
       data: {
         id: null,
+        name: null,
+        image: null,
       },
     };
   }
@@ -64,6 +68,8 @@ export async function getCurrentUser(): Promise<ActionResult<{ id: number | null
       ok: true,
       data: {
         id: user.id ?? null,
+        name: user.name ?? null,
+        image: user.image ?? null,
       },
     };
   } catch (error) {

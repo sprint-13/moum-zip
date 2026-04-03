@@ -6,7 +6,7 @@ import { CACHE_TAGS } from "@/shared/lib/cache";
 
 export async function getAttendanceStatusUseCase(spaceId: string, userId: number): Promise<AttendanceStatus> {
   "use cache";
-  cacheTag(CACHE_TAGS.attendance(spaceId));
+  cacheTag(CACHE_TAGS.attendance(spaceId, userId));
   cacheLife("hours");
 
   const today = getTodayKST();

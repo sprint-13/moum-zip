@@ -57,7 +57,7 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                 ))}
 
                 {hiddenCount > 0 && (
-                  <div className="-ml-2.5 flex size-7.25 items-center justify-center rounded-full border border-white bg-white font-semibold text-slate-700 text-sm leading-none max-sm:size-6.5 max-sm:text-[12px]">
+                  <div className="relative z-20 -ml-2.5 flex size-7.25 items-center justify-center rounded-full border border-white bg-white font-semibold text-slate-700 text-sm leading-none max-sm:size-6.5 max-sm:text-[12px]">
                     +{hiddenCount}
                   </div>
                 )}
