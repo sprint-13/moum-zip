@@ -4,7 +4,7 @@ import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
 import { logoutAction } from "@/_pages/auth/actions";
-import ProfileAvatar from "@/_pages/mypage/ui/profile-avatar";
+import { ProfileAvatar } from "@/_pages/mypage/ui/profile-avatar";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
 import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
 
