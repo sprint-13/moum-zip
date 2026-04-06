@@ -2,15 +2,10 @@
 
 import { CheckIcon } from "@moum-zip/ui/icons";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
-import { getQueryClient } from "@/shared/lib/get-query-client";
-
-import { createPostAction, updatePostAction } from "../actions";
-import { fetchBulletinPosts } from "../hooks/use-bulletin-posts";
-import { bulletinQueryKeys } from "../model/query-keys";
+import { useCreatePost, useUpdatePost } from "../hooks/use-post-mutations";
 
 interface PostWriteFormProps {
   slug: string;
@@ -24,9 +19,11 @@ interface PostWriteFormValues {
 
 export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const router = useRouter();
-  const queryClient = getQueryClient();
-  const [isPending, startTransition] = useTransition();
   const isEdit = !!initialPost;
+
+  const { mutate: createPost, isPending: isCreating } = useCreatePost(slug);
+  const { mutate: updatePost, isPending: isUpdating } = useUpdatePost(slug);
+  const isPending = isCreating || isUpdating;
 
   const {
     register,
@@ -47,38 +44,29 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const selectedCategory = watch("category");
 
   const onSubmit = (values: PostWriteFormValues) => {
-    const formData = new FormData();
-    formData.set("category", values.category);
-    formData.set("title", values.title);
-    formData.set("content", values.content);
+    if (isEdit && initialPost) {
+      updatePost(
+        { postId: initialPost.id, ...values },
+        {
+          onSuccess: ({ postId }) => {
+            router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
+          },
+          onError: (err) => {
+            setError("root", { message: err instanceof Error ? err.message : "게시글 수정에 실패했습니다." });
+          },
+        },
+      );
+      return;
+    }
 
-    startTransition(async () => {
-      try {
-        if (isEdit && initialPost) {
-          const { postId } = await updatePostAction(slug, initialPost.id, formData);
-          queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
-          queryClient.prefetchQuery({
-            queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
-            queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
-          });
-          router.push(`/${slug}/bulletin/${postId}`);
-          return;
-        }
-
-        const { postId } = await createPostAction(slug, formData);
-        queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
-        queryClient.prefetchQuery({
-          queryKey: bulletinQueryKeys.list(slug, { page: 1 }),
-          queryFn: () => fetchBulletinPosts(slug, { page: 1 }),
-        });
-        router.push(`/${slug}/bulletin/${postId}`);
-      } catch (err) {
-        setError("root", {
-          message: err instanceof Error ? err.message : "게시글 저장에 실패했습니다.",
-        });
-        return;
-      }
-      reset();
+    createPost(values, {
+      onSuccess: ({ postId }) => {
+        reset();
+        router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
+      },
+      onError: (err) => {
+        setError("root", { message: err instanceof Error ? err.message : "게시글 작성에 실패했습니다." });
+      },
     });
   };
 
