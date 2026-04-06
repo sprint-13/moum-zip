@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@ui/components";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
@@ -65,7 +66,7 @@ export function MoimDetailClient({
       const result = await favoriteMeetingAction(informationData.id, informationData.isLiked);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return false;
       }
 
@@ -76,7 +77,7 @@ export function MoimDetailClient({
 
       return true;
     } catch {
-      alert("좋아요 처리 중 오류가 발생했습니다.");
+      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
       return false;
     } finally {
       setIsFavoritePending(false);
@@ -133,7 +134,7 @@ export function MoimDetailClient({
       if (!result.ok) {
         setIsParticipating(previousIsJoined);
         setPersonnelData(previousPersonnelData);
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return;
       }
 
@@ -141,7 +142,7 @@ export function MoimDetailClient({
     } catch {
       setIsParticipating(previousIsJoined);
       setPersonnelData(previousPersonnelData);
-      alert("참여 처리 중 오류가 발생했습니다.");
+      toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
     } finally {
       setIsJoinPending(false);
     }
@@ -158,14 +159,31 @@ export function MoimDetailClient({
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
-        alert("모임 링크가 복사되었습니다.");
+
+        toast({
+          id: "share-link",
+          message: "모임 링크가 복사되었습니다.",
+          size: "small",
+          duration: 2000,
+        });
         return;
       }
 
       await navigator.clipboard.writeText(shareUrl);
-      alert("모임 링크가 복사되었습니다.");
+
+      toast({
+        id: "share-link",
+        message: "모임 링크가 복사되었습니다.",
+        size: "small",
+        duration: 2000,
+      });
     } catch {
-      alert("링크 복사에 실패했습니다.");
+      toast({
+        id: "share-link-error",
+        message: "링크 복사에 실패했습니다.",
+        size: "small",
+        duration: 2000,
+      });
     }
   };
 
@@ -184,14 +202,14 @@ export function MoimDetailClient({
       const result = await deleteMeetingAction(informationData.id);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message });
         return;
       }
 
-      alert("모임이 삭제되었습니다.");
+      toast({ message: "모임이 삭제되었습니다.", size: "small" });
       router.replace(ROUTES.search);
     } catch {
-      alert("모임 삭제 중 오류가 발생했습니다.");
+      toast({ message: "모임 삭제 중 오류가 발생했습니다.", size: "small" });
     } finally {
       setIsDeletePending(false);
     }
@@ -227,7 +245,7 @@ export function MoimDetailClient({
       const result = await favoriteMeetingAction(targetMeeting.id, targetMeeting.isLiked);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return false;
       }
 
@@ -244,7 +262,7 @@ export function MoimDetailClient({
 
       return true;
     } catch {
-      alert("좋아요 처리 중 오류가 발생했습니다.");
+      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
       return false;
     } finally {
       setPendingRecommendedLikeIds((prev) => prev.filter((id) => id !== targetMeetingId));
