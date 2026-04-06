@@ -192,12 +192,12 @@ function getMeetingStatus(params: {
     return "canceled";
   }
 
-  if (participantCount >= capacity || isDeadlinePassed(registrationEnd)) {
-    return "full";
-  }
-
   if (confirmedAt) {
     return "confirmed";
+  }
+
+  if (participantCount >= capacity || isDeadlinePassed(registrationEnd)) {
+    return "full";
   }
 
   return "recruiting";
