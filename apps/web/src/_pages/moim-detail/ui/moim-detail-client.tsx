@@ -94,7 +94,6 @@ export function MoimDetailClient({
 
     setIsJoinPending(true);
 
-    // 낙관적 업데이트
     setIsParticipating(nextParticipating);
     setPersonnelData((prev) => {
       const nextCurrentParticipants = nextParticipating
@@ -273,9 +272,9 @@ export function MoimDetailClient({
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-4 pt-6 pb-24 md:px-6 md:pt-10 xl:px-12">
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-stretch">
-          <div className="relative mx-auto aspect-[630/443] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pt-6 pb-20 sm:px-6 lg:pt-8">
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
+          <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
             {informationData.image ? (
               <img src={informationData.image} alt="모임 대표 이미지" className="h-full w-full object-cover" />
             ) : (
@@ -285,7 +284,7 @@ export function MoimDetailClient({
             )}
           </div>
 
-          <div className="flex h-full w-full flex-col gap-5">
+          <div className="flex h-full w-full flex-col gap-4">
             <InformationContainer
               data={informationData}
               viewType={viewType}
@@ -305,10 +304,10 @@ export function MoimDetailClient({
 
         <DescriptionSection description={initialDescription} />
 
-        <section className="flex flex-col gap-5">
-          <h2 className="font-semibold text-2xl text-black leading-[1.4]">이런 모임은 어때요?</h2>
+        <section className="flex flex-col gap-4">
+          <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
             {recommendedMeetings.map((meeting) => {
               const isRecommendedLikePending = pendingRecommendedLikeIds.includes(meeting.id);
 

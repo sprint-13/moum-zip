@@ -16,12 +16,13 @@ export function DescriptionSection({
   contentClassName,
 }: DescriptionSectionProps) {
   return (
-    <section className={cn("flex flex-col gap-5", className)}>
-      <h2 className="font-semibold text-2xl text-black leading-[1.4]">{title}</h2>
+    <section className={cn("flex flex-col gap-4", className)}>
+      <h2 className="font-semibold text-black text-xl leading-[1.4]">{title}</h2>
 
       <div
         className={cn(
-          "rounded-[32px] bg-white px-6 py-6 font-normal text-base text-gray-700 leading-7 md:px-12 md:text-lg",
+          "rounded-[1rem] bg-white px-6 py-5 font-normal text-base text-gray-700 leading-[1.6]",
+          "md:px-8 md:text-[1.0625rem]",
           contentClassName,
         )}
       >
