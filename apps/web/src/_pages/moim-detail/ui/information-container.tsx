@@ -34,7 +34,7 @@ interface ActionButtonProps {
   disabled?: boolean;
 }
 
-function ActionButton({ label, onClick, variant = "primary", disabled = false }: ActionButtonProps) {
+const ActionButton = ({ label, onClick, variant = "primary", disabled = false }: ActionButtonProps) => {
   const secondaryClassName =
     variant === "secondary" ? "border border-primary bg-white text-green-600 hover:bg-green-50" : "";
 
@@ -75,9 +75,9 @@ function ActionButton({ label, onClick, variant = "primary", disabled = false }:
       </Button>
     </>
   );
-}
+};
 
-export function InformationContainer({
+export const InformationContainer = ({
   data,
   className,
   viewType = "member",
@@ -89,7 +89,7 @@ export function InformationContainer({
   onEdit,
   onDelete,
   onLoginAction,
-}: InformationContainerProps) {
+}: InformationContainerProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -188,7 +188,7 @@ export function InformationContainer({
       : isClosedMeeting
         ? {
             label: data.status === "canceled" ? "모집 취소" : "모집 마감",
-            onClick: () => {},
+            onClick: () => undefined,
             variant: "primary",
             disabled: true,
           }
@@ -242,13 +242,7 @@ export function InformationContainer({
 
                   <Dropdown.Content align="end" sideOffset={8}>
                     <Dropdown.Item onSelect={() => onEdit?.(data.id)}>수정하기</Dropdown.Item>
-                    <Dropdown.Item
-                      onSelect={() => {
-                        setIsDeleteModalOpen(true);
-                      }}
-                    >
-                      삭제하기
-                    </Dropdown.Item>
+                    <Dropdown.Item onSelect={() => setIsDeleteModalOpen(true)}>삭제하기</Dropdown.Item>
                   </Dropdown.Content>
                 </Dropdown>
               ) : null}
@@ -274,7 +268,7 @@ export function InformationContainer({
 
           <div className="mt-auto w-full">
             <div className="flex w-full items-center gap-3 max-sm:gap-2">
-              <LikeButton isLiked={data.isLiked} onClick={handleLikeClick} />
+              <LikeButton isLiked={data.isLiked} onLike={handleLikeClick} />
               <div className="flex min-w-0 flex-1 items-center gap-3 max-sm:gap-2">
                 <ActionButton {...actionButtonProps} />
               </div>
@@ -303,4 +297,4 @@ export function InformationContainer({
       </AlertModal>
     </>
   );
-}
+};

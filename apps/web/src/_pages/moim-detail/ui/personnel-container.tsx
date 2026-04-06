@@ -10,10 +10,12 @@ interface PersonnelContainerProps {
   className?: string;
 }
 
-export function PersonnelContainer({ data, className }: PersonnelContainerProps) {
+const MAX_VISIBLE_PARTICIPANTS = 4;
+
+export const PersonnelContainer = ({ data, className }: PersonnelContainerProps) => {
   const { currentParticipants, maxParticipants, statusLabel, participants, extraCount = 0 } = data;
 
-  const visibleParticipants = participants.slice(0, 4);
+  const visibleParticipants = participants.slice(0, MAX_VISIBLE_PARTICIPANTS);
   const hiddenCount = Math.max(participants.length - visibleParticipants.length + extraCount, 0);
 
   return (
@@ -56,16 +58,18 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                   </div>
                 ))}
 
-                {hiddenCount > 0 && (
-                  <div className="max-sm:px- relative z-20 -ml-2 flex h-7 min-w-7 items-center justify-center rounded-full border border-white bg-white px-1.5 font-semibold text-[13px] text-slate-700 leading-none max-sm:h-6 max-sm:min-w-6 max-sm:text-[12px]">
+                {hiddenCount > 0 ? (
+                  <div className="relative z-20 -ml-2 flex h-7 min-w-7 items-center justify-center rounded-full border border-white bg-white px-1.5 font-semibold text-[13px] text-slate-700 leading-none max-sm:h-6 max-sm:min-w-6 max-sm:text-[12px]">
                     +{hiddenCount}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
             <Badge variant="confirmed" container="none">
-              {statusLabel === "개설확정" && <CheckCircleIcon className="h-4.5 w-4.5 max-sm:h-3.5 max-sm:w-3.5" />}
+              {statusLabel === "개설확정" ? (
+                <CheckCircleIcon className="h-4.5 w-4.5 max-sm:h-3.5 max-sm:w-3.5" />
+              ) : null}
               <span className="font-semibold text-[14px] max-sm:font-medium max-sm:text-[12px]">
                 {statusLabel || "모집중"}
               </span>
@@ -90,4 +94,4 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
       </div>
     </section>
   );
-}
+};

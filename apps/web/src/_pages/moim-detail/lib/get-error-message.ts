@@ -1,4 +1,4 @@
-export async function getErrorMessage(error: unknown) {
+export const getErrorMessage = async (error: unknown) => {
   if (error instanceof Error) {
     return error.message;
   }
@@ -32,4 +32,4 @@ export async function getErrorMessage(error: unknown) {
   }
 
   return "요청 처리 중 오류가 발생했습니다.";
-}
+};

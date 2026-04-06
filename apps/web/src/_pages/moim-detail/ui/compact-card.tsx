@@ -13,10 +13,10 @@ interface CompactCardProps {
   locationIcon?: ReactNode;
   locationText: string;
   isLiked?: boolean;
-  onLikeClick?: () => boolean | Promise<boolean>;
+  onLike?: () => boolean | Promise<boolean>;
 }
 
-export function CompactCard({
+export const CompactCard = ({
   className,
   image,
   deadlineLabel,
@@ -26,8 +26,8 @@ export function CompactCard({
   locationIcon,
   locationText,
   isLiked = false,
-  onLikeClick,
-}: CompactCardProps) {
+  onLike,
+}: CompactCardProps) => {
   return (
     <article
       className={cn(
@@ -39,7 +39,7 @@ export function CompactCard({
         {image}
 
         <div className="absolute right-3 bottom-3 max-sm:right-2.5 max-sm:bottom-2.5">
-          <LikeButton isLiked={isLiked} onClick={onLikeClick} className="h-8 w-8 scale-90 sm:h-9 sm:w-9" />
+          <LikeButton isLiked={isLiked} onLike={onLike} className="h-8 w-8 scale-90 sm:h-9 sm:w-9" />
         </div>
       </div>
 
@@ -93,4 +93,4 @@ export function CompactCard({
       </div>
     </article>
   );
-}
+};

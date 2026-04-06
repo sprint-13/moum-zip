@@ -50,74 +50,52 @@ const EMPTY_USER: CurrentUserData = {
   image: null,
 };
 
-function isRecommendedMeetingItem(value: unknown): value is RecommendedMeetingItem {
-  return !!value && typeof value === "object" && "id" in value;
-}
+const ERROR_FALLBACK = <div>모임 정보를 표시할 수 없습니다.</div>;
 
-function parseMeetingsPage<T>(response: unknown): MeetingsPageResponse<T> {
+const isRecommendedMeetingItem = (value: unknown): value is RecommendedMeetingItem => {
+  return !!value && typeof value === "object" && "id" in value;
+};
+
+const parseMeetingsPage = <T,>(response: unknown): MeetingsPageResponse<T> => {
   const resolved = response && typeof response === "object" && "data" in response ? response.data : response;
 
-  if (
-    resolved &&
-    typeof resolved === "object" &&
-    "data" in resolved &&
-    Array.isArray((resolved as { data: unknown }).data)
-  ) {
+  if (resolved && typeof resolved === "object" && "data" in resolved && Array.isArray((resolved as any).data)) {
     return {
-      data: (resolved as { data: T[] }).data,
-      nextCursor:
-        "nextCursor" in resolved && typeof (resolved as { nextCursor?: unknown }).nextCursor === "string"
-          ? (resolved as { nextCursor: string }).nextCursor
-          : null,
+      data: (resolved as any).data,
+      nextCursor: typeof (resolved as any).nextCursor === "string" ? (resolved as any).nextCursor : null,
     };
   }
 
   if (Array.isArray(resolved)) {
-    return {
-      data: resolved as T[],
-      nextCursor: null,
-    };
+    return { data: resolved as T[], nextCursor: null };
   }
 
-  return {
-    data: [],
-    nextCursor: null,
-  };
-}
+  return { data: [], nextCursor: null };
+};
 
-async function getAllMeetings(apiClient: Awaited<ReturnType<typeof getApi>>) {
+const getAllMeetings = async (apiClient: Awaited<ReturnType<typeof getApi>>) => {
   const allMeetings: RecommendedMeetingItem[] = [];
   let cursor: string | null = null;
 
   while (true) {
-    const response = await apiClient.meetings.getList(
-      cursor
-        ? {
-            cursor,
-          }
-        : undefined,
-    );
+    const response = await apiClient.meetings.getList(cursor ? { cursor } : undefined);
 
     const { data, nextCursor } = parseMeetingsPage<RecommendedMeetingItem>(response);
 
     allMeetings.push(...data.filter(isRecommendedMeetingItem));
 
-    if (!nextCursor) {
-      break;
-    }
+    if (!nextCursor) break;
 
     cursor = nextCursor;
   }
 
   return allMeetings;
-}
+};
 
-async function getCurrentUserOrEmpty(apiClient: Awaited<ReturnType<typeof getApi>>): Promise<CurrentUserData> {
+const getCurrentUserOrEmpty = async (apiClient: Awaited<ReturnType<typeof getApi>>): Promise<CurrentUserData> => {
   const { authenticated } = await isAuth();
 
-  if (!authenticated) {
-    return EMPTY_USER;
-  }
+  if (!authenticated) return EMPTY_USER;
 
   try {
     return await getCurrentUser({
@@ -129,12 +107,11 @@ async function getCurrentUserOrEmpty(apiClient: Awaited<ReturnType<typeof getApi
   } catch {
     return EMPTY_USER;
   }
-}
+};
 
-async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
+const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
   const apiClient = await getApi();
   const currentUser = await getCurrentUserOrEmpty(apiClient);
-  const currentUserId = currentUser.id;
 
   try {
     const [meetingDetailResponse, participantsResponse, allMeetings] = await Promise.all([
@@ -146,9 +123,27 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
     const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;
 
-    if (!meetingDetail || !participantsList || allMeetings.length === 0) {
-      return <div>모임 정보를 표시할 수 없습니다.</div>;
+    if (!meetingDetail || !participantsList) {
+      return ERROR_FALLBACK;
     }
+
+    const isJoined = getIsJoined(participantsList, currentUser.id);
+
+    const informationData = mapMeetingDetailToInformationData({
+      meeting: meetingDetail,
+      currentUserId: currentUser.id,
+      isJoined,
+    });
+
+    const description = mapMeetingDetailToDescription(meetingDetail);
+
+    const mappedParticipants = mapParticipantsToParticipantData(participantsList);
+
+    const personnelData = {
+      ...mapMeetingDetailToPersonnelBaseData(meetingDetail),
+      participants: mappedParticipants,
+      extraCount: Math.max(meetingDetail.participantCount - mappedParticipants.length, 0),
+    };
 
     const sortableMeetingDetail: CurrentMeetingSortable = {
       id: meetingDetail.id,
@@ -157,27 +152,8 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
       hostId: meetingDetail.hostId,
     };
 
-    const isJoined = getIsJoined(participantsList, currentUserId);
-
-    const informationData = mapMeetingDetailToInformationData({
-      meeting: meetingDetail,
-      currentUserId,
-      isJoined,
-    });
-
-    const description = mapMeetingDetailToDescription(meetingDetail);
-
-    const personnelBaseData = mapMeetingDetailToPersonnelBaseData(meetingDetail);
-    const mappedParticipants = mapParticipantsToParticipantData(participantsList);
-
-    const personnelData = {
-      ...personnelBaseData,
-      participants: mappedParticipants,
-      extraCount: Math.max(meetingDetail.participantCount - mappedParticipants.length, 0),
-    };
-
-    const recommendedMeetings = sortRecommendedMeetings(allMeetings, sortableMeetingDetail).map((meeting) =>
-      mapMeetingToRecommendedMeetingData(meeting),
+    const recommendedMeetings = sortRecommendedMeetings(allMeetings, sortableMeetingDetail).map(
+      mapMeetingToRecommendedMeetingData,
     );
 
     return (
@@ -192,9 +168,9 @@ async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
       />
     );
   } catch {
-    return <div>모임 정보를 표시할 수 없습니다.</div>;
+    return ERROR_FALLBACK;
   }
-}
+};
 
 export default async function MoimDetailPage({ params }: PageProps) {
   const { meetingId } = await params;

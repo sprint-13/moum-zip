@@ -1,24 +1,31 @@
-interface RecommendedMeetingBase {
+interface MeetingBase {
   id: number;
   type?: string | null;
   region?: string | null;
   hostId?: number | null;
+}
+
+interface RecommendedMeetingBase extends MeetingBase {
   registrationEnd?: string | null;
   participantCount?: number | null;
 }
 
-interface CurrentMeetingBase {
-  id: number;
-  type?: string | null;
-  region?: string | null;
-  hostId?: number | null;
-}
+interface CurrentMeetingBase extends MeetingBase {}
 
-function getDeadlineTime(date?: string | null) {
+const RECOMMEND_LIMIT = 4;
+
+const MATCH_PRIORITY = {
+  BOTH: 4,
+  TYPE_ONLY: 3,
+  REGION_ONLY: 2,
+  NONE: 1,
+} as const;
+
+const getDeadlineTime = (date?: string | null) => {
   return date ? new Date(date).getTime() : Number.MAX_SAFE_INTEGER;
-}
+};
 
-function normalizeType(type?: string | null) {
+const normalizeType = (type?: string | null) => {
   if (!type) {
     return "";
   }
@@ -34,9 +41,9 @@ function normalizeType(type?: string | null) {
   }
 
   return normalized;
-}
+};
 
-function normalizeRegion(region?: string | null) {
+const normalizeRegion = (region?: string | null) => {
   if (!region) {
     return "";
   }
@@ -52,9 +59,9 @@ function normalizeRegion(region?: string | null) {
   }
 
   return normalized;
-}
+};
 
-function getMatchPriority(meeting: RecommendedMeetingBase, currentMeeting: CurrentMeetingBase) {
+const getMatchPriority = (meeting: RecommendedMeetingBase, currentMeeting: CurrentMeetingBase) => {
   const meetingType = normalizeType(meeting.type);
   const currentType = normalizeType(currentMeeting.type);
 
@@ -64,29 +71,25 @@ function getMatchPriority(meeting: RecommendedMeetingBase, currentMeeting: Curre
   const isSameType = meetingType !== "" && meetingType === currentType;
   const isSameRegion = meetingRegion !== "" && meetingRegion === currentRegion;
 
-  // 1. type + region 둘 다 동일
   if (isSameType && isSameRegion) {
-    return 4;
+    return MATCH_PRIORITY.BOTH;
   }
 
-  // 2. type만 동일
   if (isSameType) {
-    return 3;
+    return MATCH_PRIORITY.TYPE_ONLY;
   }
 
-  // 3. region만 동일
   if (isSameRegion) {
-    return 2;
+    return MATCH_PRIORITY.REGION_ONLY;
   }
 
-  // 4. 둘 다 다름
-  return 1;
-}
+  return MATCH_PRIORITY.NONE;
+};
 
-export function sortRecommendedMeetings<T extends RecommendedMeetingBase>(
+export const sortRecommendedMeetings = <T extends RecommendedMeetingBase>(
   meetings: T[],
   currentMeeting: CurrentMeetingBase,
-) {
+) => {
   return [...meetings]
     .filter((meeting) => meeting.id !== currentMeeting.id)
     .sort((a, b) => {
@@ -98,7 +101,6 @@ export function sortRecommendedMeetings<T extends RecommendedMeetingBase>(
       }
 
       const aSameHost = a.hostId != null && currentMeeting.hostId != null && a.hostId === currentMeeting.hostId ? 1 : 0;
-
       const bSameHost = b.hostId != null && currentMeeting.hostId != null && b.hostId === currentMeeting.hostId ? 1 : 0;
 
       if (aSameHost !== bSameHost) {
@@ -114,5 +116,5 @@ export function sortRecommendedMeetings<T extends RecommendedMeetingBase>(
 
       return (b.participantCount ?? 0) - (a.participantCount ?? 0);
     })
-    .slice(0, 4);
-}
+    .slice(0, RECOMMEND_LIMIT);
+};

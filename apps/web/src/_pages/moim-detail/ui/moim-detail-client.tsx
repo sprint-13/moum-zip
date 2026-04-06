@@ -25,7 +25,7 @@ interface MoimDetailClientProps {
   initialIsParticipating: boolean;
 }
 
-export function MoimDetailClient({
+export const MoimDetailClient = ({
   meetingId,
   currentUser,
   initialInformationData,
@@ -33,8 +33,9 @@ export function MoimDetailClient({
   initialPersonnelData,
   initialRecommendedMeetings,
   initialIsParticipating,
-}: MoimDetailClientProps) {
+}: MoimDetailClientProps) => {
   const router = useRouter();
+  const loginRedirectPath = `/login?redirect=%2Fmoim-detail%2F${meetingId}`;
 
   const [informationData, setInformationData] = useState<InformationData>(initialInformationData);
   const [personnelData, setPersonnelData] = useState<PersonnelData>(initialPersonnelData);
@@ -56,7 +57,7 @@ export function MoimDetailClient({
     }
 
     if (!currentUser.id) {
-      router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
+      router.push(loginRedirectPath);
       return false;
     }
 
@@ -84,7 +85,7 @@ export function MoimDetailClient({
     }
   };
 
-  const handleParticipateToggle = async (_id: number, nextParticipating: boolean) => {
+  const handleParticipateToggle = async (targetMeetingId: number, nextParticipating: boolean) => {
     if (isJoinPending) {
       return;
     }
@@ -93,8 +94,8 @@ export function MoimDetailClient({
     const previousPersonnelData = personnelData;
 
     setIsJoinPending(true);
-
     setIsParticipating(nextParticipating);
+
     setPersonnelData((prev) => {
       const nextCurrentParticipants = nextParticipating
         ? prev.currentParticipants + 1
@@ -128,7 +129,7 @@ export function MoimDetailClient({
     });
 
     try {
-      const result = await joinMeetingAction(informationData.id, previousIsJoined);
+      const result = await joinMeetingAction(targetMeetingId, previousIsJoined);
 
       if (!result.ok) {
         setIsParticipating(previousIsJoined);
@@ -147,9 +148,9 @@ export function MoimDetailClient({
     }
   };
 
-  const handleShare = async (_id: number) => {
+  const handleShare = async (targetMeetingId: number) => {
     try {
-      const shareUrl = `${window.location.origin}/moim-detail/${meetingId}`;
+      const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
 
       if (!navigator.clipboard) {
         const textArea = document.createElement("textarea");
@@ -190,7 +191,7 @@ export function MoimDetailClient({
     router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
   };
 
-  const handleDelete = async (_id: number) => {
+  const handleDelete = async (targetMeetingId: number) => {
     if (isDeletePending) {
       return;
     }
@@ -198,10 +199,10 @@ export function MoimDetailClient({
     setIsDeletePending(true);
 
     try {
-      const result = await deleteMeetingAction(informationData.id);
+      const result = await deleteMeetingAction(targetMeetingId);
 
       if (!result.ok) {
-        toast({ message: result.message });
+        toast({ message: result.message, size: "small" });
         return;
       }
 
@@ -215,7 +216,7 @@ export function MoimDetailClient({
   };
 
   const handleLoginAction = () => {
-    router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
+    router.push(loginRedirectPath);
   };
 
   const handleMoveToMeetingDetail = (targetMeetingId: number) => {
@@ -228,7 +229,7 @@ export function MoimDetailClient({
     }
 
     if (!currentUser.id) {
-      router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
+      router.push(loginRedirectPath);
       return false;
     }
 
@@ -358,7 +359,7 @@ export function MoimDetailClient({
                     locationIcon={<LocationIcon />}
                     locationText={meeting.locationText}
                     isLiked={meeting.isLiked}
-                    onLikeClick={() => {
+                    onLike={() => {
                       if (isRecommendedLikePending) {
                         return false;
                       }
@@ -374,4 +375,4 @@ export function MoimDetailClient({
       </main>
     </div>
   );
-}
+};

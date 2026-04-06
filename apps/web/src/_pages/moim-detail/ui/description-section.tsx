@@ -9,12 +9,12 @@ interface DescriptionSectionProps {
   contentClassName?: string;
 }
 
-export function DescriptionSection({
+export const DescriptionSection = ({
   title = "모임 설명",
   description = "",
   className,
   contentClassName,
-}: DescriptionSectionProps) {
+}: DescriptionSectionProps) => {
   return (
     <section className={cn("flex flex-col gap-4", className)}>
       <h2 className="font-semibold text-black text-xl leading-[1.4]">{title}</h2>
@@ -22,7 +22,7 @@ export function DescriptionSection({
       <div
         className={cn(
           "rounded-[1rem] bg-white px-6 py-5 font-normal text-base text-gray-700 leading-[1.6]",
-          "md:px-8 md:text-[1.0625rem]",
+          "md:px-8 md:text-[17Px]",
           contentClassName,
         )}
       >
@@ -34,4 +34,4 @@ export function DescriptionSection({
       </div>
     </section>
   );
-}
+};
