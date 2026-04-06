@@ -2,7 +2,6 @@ import { LoadingIndicator } from "@ui/components";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MoimDetailClient } from "@/_pages/moim-detail";
-import { getCurrentUser } from "@/_pages/moim-detail/actions";
 import {
   getIsJoined,
   mapMeetingDetailToDescription,
@@ -12,7 +11,8 @@ import {
   mapParticipantsToParticipantData,
   sortRecommendedMeetings,
 } from "@/entities/moim-detail";
-import { getApi } from "@/shared/api/server";
+import { getCurrentUser } from "@/features/moim-detail/use-cases/get-current-user";
+import { getApi, isAuth } from "@/shared/api/server";
 
 interface PageProps {
   params: Promise<{
@@ -33,9 +33,21 @@ type CurrentMeetingSortable = {
   hostId?: number | null;
 };
 
+type CurrentUserData = {
+  id: number | null;
+  name: string | null;
+  image: string | null;
+};
+
 type MeetingsPageResponse<T> = {
   data: T[];
   nextCursor: string | null;
+};
+
+const EMPTY_USER: CurrentUserData = {
+  id: null,
+  name: null,
+  image: null,
 };
 
 function isRecommendedMeetingItem(value: unknown): value is RecommendedMeetingItem {
@@ -100,19 +112,29 @@ async function getAllMeetings(apiClient: Awaited<ReturnType<typeof getApi>>) {
   return allMeetings;
 }
 
+async function getCurrentUserOrEmpty(apiClient: Awaited<ReturnType<typeof getApi>>): Promise<CurrentUserData> {
+  const { authenticated } = await isAuth();
+
+  if (!authenticated) {
+    return EMPTY_USER;
+  }
+
+  try {
+    return await getCurrentUser({
+      getUser: async () => {
+        const response = await apiClient.user.getUser();
+        return response.data ?? response;
+      },
+    });
+  } catch {
+    return EMPTY_USER;
+  }
+}
+
 async function MoimDetailContent({ meetingId }: MoimDetailContentProps) {
-  const currentUserResult = await getCurrentUser();
-
-  const currentUser = currentUserResult.ok
-    ? currentUserResult.data
-    : {
-        id: null,
-        name: null,
-        image: null,
-      };
-
-  const currentUserId = currentUser.id;
   const apiClient = await getApi();
+  const currentUser = await getCurrentUserOrEmpty(apiClient);
+  const currentUserId = currentUser.id;
 
   try {
     const [meetingDetailResponse, participantsResponse, allMeetings] = await Promise.all([
