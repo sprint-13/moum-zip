@@ -17,6 +17,14 @@ interface MetaChipProps {
   chip: SpaceCardMetaChip;
 }
 
+const truncateTitle = (title: string, maxLength = 30) => {
+  if (title.length <= maxLength) {
+    return title;
+  }
+
+  return `${title.slice(0, maxLength)}...`;
+};
+
 const deadlineTagClassName = cn(
   "shrink-0",
   "lg:min-h-[1.375rem] lg:gap-[0.125rem] lg:py-[0.125rem] lg:pr-[0.4375rem] lg:pl-[0.3125rem]",
@@ -34,9 +42,9 @@ const MetaChip = ({ chip }: MetaChipProps) => {
   );
 };
 
-const SpaceCardStatus = ({ label }: { label: string }) => {
+const SpaceCardStatus = ({ className, label }: { className?: string; label: string }) => {
   return (
-    <span className="inline-flex items-center gap-0.5">
+    <span className={cn("inline-flex items-center gap-0.5", className)}>
       <CheckCircleIcon />
       <span className="font-medium text-primary text-sm leading-5">{label}</span>
     </span>
@@ -59,6 +67,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
     status,
     title,
   } = item;
+  const displayTitle = truncateTitle(title);
 
   const joinButtonClassName = cn(
     "h-12 min-w-26 shrink-0 rounded-xl px-6 font-semibold text-base leading-6 tracking-[-0.02em] lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
@@ -67,7 +76,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   );
 
   return (
-    <article className="flex flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_50px_rgba(17,17,17,0.04)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6">
+    <article className="flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_50px_rgba(17,17,17,0.04)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6">
       <div className="relative w-full shrink-0 sm:w-full md:w-auto">
         <Image
           alt={imageAlt}
@@ -85,11 +94,14 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
       <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 sm:p-0">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h2 className="truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em]">
-                {title}
+            <div className="flex min-w-0 items-center gap-2">
+              <h2
+                className="min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em]"
+                title={title}
+              >
+                {displayTitle}
               </h2>
-              {status ? <SpaceCardStatus label={status.label} /> : null}
+              {status ? <SpaceCardStatus className="shrink-0" label={status.label} /> : null}
             </div>
             <p className="mt-1.5 inline-flex items-center gap-1 font-medium text-muted-foreground text-sm leading-5 tracking-[-0.02em]">
               <LocationPinIcon aria-hidden="true" className="size-4 shrink-0" />
