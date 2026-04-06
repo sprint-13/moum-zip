@@ -7,19 +7,14 @@ import type { ComponentProps } from "react";
 import { ROUTES } from "@/shared/config/routes";
 import { showRequiredToast } from "@/shared/lib/toast-utils";
 
-interface SpaceSearchCreateButtonProps extends ComponentProps<typeof CreateButton> {
+interface SearchCreateButtonProps extends ComponentProps<typeof CreateButton> {
   isAuthenticated: boolean;
 }
 
-export const SpaceSearchCreateButton = ({
-  disabled,
-  isAuthenticated,
-  onClick,
-  ...props
-}: SpaceSearchCreateButtonProps) => {
+export const SearchCreateButton = ({ disabled, isAuthenticated, onClick, ...props }: SearchCreateButtonProps) => {
   const router = useRouter();
 
-  const handleClick: SpaceSearchCreateButtonProps["onClick"] = (event) => {
+  const handleClick: SearchCreateButtonProps["onClick"] = (event) => {
     onClick?.(event);
 
     if (event.defaultPrevented) {

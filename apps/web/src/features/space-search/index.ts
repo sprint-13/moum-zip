@@ -1,9 +1,9 @@
 export {
-  buildSpaceSearchHref,
-  createSpaceSearchStateKey,
+  buildSearchHref,
+  createSearchStateKey,
   normalizeSearchCategoryId,
   normalizeSearchQueryState,
-  parseSpaceSearchQueryState,
+  parseSearchQueryState,
 } from "./model/search-params";
-export type { SpaceSearchQueryState } from "./model/types";
-export { SpaceSearchContentSection } from "./ui/space-search-sections";
+export type { SearchQueryState } from "./model/types";
+export { SearchContentSection } from "./ui/space-search-sections";

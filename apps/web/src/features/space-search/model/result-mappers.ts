@@ -1,6 +1,6 @@
 import type { SearchResultItem } from "@/entities/gathering";
 
-import { SPACE_SEARCH_CATEGORIES } from "./constants";
+import { SEARCH_CATEGORIES } from "./constants";
 import type { SpaceCardItem } from "./types";
 
 const FALLBACK_SPACE_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
@@ -19,7 +19,7 @@ const timeFormatter = new Intl.DateTimeFormat("ko-KR", {
 });
 
 const categoryLabelById = Object.fromEntries(
-  SPACE_SEARCH_CATEGORIES.filter(({ id }) => id !== "all").map(({ id, label }) => [id, label]),
+  SEARCH_CATEGORIES.filter(({ id }) => id !== "all").map(({ id, label }) => [id, label]),
 ) as Record<string, string>;
 
 const formatChipLabel = (dateTime: string | null, formatter: Intl.DateTimeFormat, fallbackLabel: string) => {

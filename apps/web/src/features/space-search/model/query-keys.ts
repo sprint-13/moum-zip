@@ -1,7 +1,7 @@
 import type { SearchResultsQueryState } from "./search-params";
 
-export const spaceSearchQueryKeys = {
+export const searchQueryKeys = {
   all: ["search-results"] as const,
   list: (queryState: SearchResultsQueryState, isAuthenticated: boolean) =>
-    [...spaceSearchQueryKeys.all, queryState, { isAuthenticated }] as const,
+    [...searchQueryKeys.all, queryState, { isAuthenticated }] as const,
 };
