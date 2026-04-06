@@ -6,9 +6,10 @@ import Image from "next/image";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { icoProject, icoStudy } from "@/features/moim-create/assets";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { FormDateTimeRow } from "@/features/moim-create/ui/moim-form/form-date-time-row";
+import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
-import { DatePicker, TimePicker } from "@/shared/ui";
 
 interface MoimFormState {
   ok: false;
@@ -68,10 +69,7 @@ export const MoimFormFields = ({
                     onClick={() => field.onChange("project")}
                   />
                 </div>
-
-                {fieldState.error && (
-                  <p className="pt-2 font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                )}
+                <FieldError message={fieldState.error?.message} className="pt-2" />
               </div>
             )}
           />
@@ -120,10 +118,7 @@ export const MoimFormFields = ({
                     <label htmlFor="offline">오프라인</label>
                   </div>
                 </div>
-
-                {fieldState.error && (
-                  <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                )}
+                <FieldError message={fieldState.error?.message} />
               </RadioGroup>
             )}
           />
@@ -155,76 +150,13 @@ export const MoimFormFields = ({
                   showUploadButton={!field.value}
                 />
 
-                {fieldState.error && (
-                  <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                )}
+                <FieldError message={fieldState.error?.message} />
               </div>
             )}
           />
 
-          <div>
-            <FormLabel label="모임 일정" required className="pb-2" />
-
-            <div className="flex max-w-[456px] flex-col gap-4 md:flex-row">
-              <Controller
-                control={control}
-                name="date"
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-1 flex-col gap-2">
-                    <DatePicker value={field.value} onChange={field.onChange} />
-                    {fieldState.error && (
-                      <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="time"
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-1 flex-col gap-2">
-                    <TimePicker value={field.value} onChange={field.onChange} />
-                    {fieldState.error && (
-                      <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
-          </div>
-
-          <div>
-            <FormLabel label="모집 마감 날짜" required className="pb-2" />
-
-            <div className="flex max-w-[456px] flex-col gap-4 md:flex-row">
-              <Controller
-                control={control}
-                name="deadlineDate"
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-1 flex-col gap-2">
-                    <DatePicker value={field.value} onChange={field.onChange} />
-                    {fieldState.error && (
-                      <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="deadlineTime"
-                render={({ field, fieldState }) => (
-                  <div className="flex flex-1 flex-col gap-2">
-                    <TimePicker value={field.value} onChange={field.onChange} />
-                    {fieldState.error && (
-                      <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
-          </div>
+          <FormDateTimeRow control={control} dateName="date" timeName="time" label="모임 일정" />
+          <FormDateTimeRow control={control} dateName="deadlineDate" timeName="deadlineTime" label="모집 마감 날짜" />
         </div>
       </div>
 
@@ -241,19 +173,15 @@ export const MoimFormFields = ({
 
                 <ThemeColorSelect value={field.value} onValueChange={field.onChange} />
 
-                {fieldState.error && (
-                  <p className="font-medium text-destructive text-sm leading-[1.2]">{fieldState.error.message}</p>
-                )}
+                <FieldError message={fieldState.error?.message} />
               </div>
             )}
           />
         </div>
-
         <div className="flex-1" />
       </div>
 
-      {state?.error && <p className="font-medium text-destructive text-sm">{state.error}</p>}
-
+      <FieldError message={state?.error} />
       <div className="flex gap-4 pt-[80px] md:justify-end">
         <Button
           type="button"
