@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { spaceMembers, spacePostComments, spacePostLikes, spacePosts } from "@/shared/db/scheme";
 import type { PostCategory } from "./model/types";
@@ -102,6 +102,27 @@ export const postQueries = {
       .set({ ...fields, updatedAt: new Date() })
       .where(eq(spacePosts.id, postId))
       .returning(),
+
+  /** 오늘 작성된 게시글 수 */
+  countTodayBySpaceId: async (spaceId: string) => {
+    const todayStart = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    todayStart.setHours(0, 0, 0, 0);
+    const result = await db
+      .select({ count: count() })
+      .from(spacePosts)
+      .where(and(eq(spacePosts.spaceId, spaceId), gte(spacePosts.createdAt, todayStart)));
+    return result[0]?.count ?? 0;
+  },
+
+  /** 인기 게시글 (viewCount + likeCount*2 + commentCount*1.4 점수 내림차순) */
+  findPopularBySpaceId: async (spaceId: string, limit = 3) => {
+    return db
+      .select()
+      .from(spacePosts)
+      .where(eq(spacePosts.spaceId, spaceId))
+      .orderBy(desc(sql`${spacePosts.viewCount} + ${spacePosts.likeCount} * 2 + ${spacePosts.commentCount} * 1.4`))
+      .limit(limit);
+  },
 
   /** 조회수 증가 */
   incrementViewCount: (postId: string) =>
