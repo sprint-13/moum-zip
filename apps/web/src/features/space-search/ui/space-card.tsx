@@ -1,6 +1,8 @@
 import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
+
 import { cn } from "@/shared/lib/cn";
+
 import LocationPinIcon from "../assets/location-pin.svg";
 import type { SpaceCardItem, SpaceCardMetaChip } from "../model/types";
 import { SpaceCardJoinButton } from "./space-card-join-button";
@@ -47,15 +49,22 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
     currentParticipants,
     deadlineLabel,
     district,
+    id: meetingId,
     imageAlt,
     imageSrc,
     isLiked = false,
+    isRegistClosed,
     maxParticipants,
     metaChips,
     status,
     title,
-    id: meetingId,
   } = item;
+
+  const joinButtonClassName = cn(
+    "h-12 min-w-26 shrink-0 rounded-xl px-6 font-semibold text-base leading-6 tracking-[-0.02em] lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
+    isRegistClosed ? "cursor-not-allowed opacity-60 active:scale-100" : "border-[1.5px]",
+    "w-auto",
+  );
 
   return (
     <article className="flex flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_50px_rgba(17,17,17,0.04)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6">
@@ -69,7 +78,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           width={340}
         />
         <div className="absolute top-4 right-4 sm:hidden">
-          <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
+          <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
         </div>
       </div>
 
@@ -91,7 +100,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           </div>
 
           <div className="hidden sm:block">
-            <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={item.id} />
+            <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
           </div>
         </div>
 
@@ -116,17 +125,14 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           </div>
 
           <SpaceCardJoinButton
-            className={cn(
-              "h-12 min-w-26 shrink-0 rounded-xl border-[1.5px] px-6 font-semibold text-base leading-6 tracking-[-0.02em]",
-              "lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
-              "w-auto",
-            )}
+            className={joinButtonClassName}
+            disabled={isRegistClosed}
             size="small"
-            variant="secondary"
+            variant={isRegistClosed ? "primary" : "secondary"}
             isAuthenticated={isAuthenticated}
             meetingId={meetingId}
           >
-            참여하기
+            {isRegistClosed ? "모집 마감" : "참여하기"}
           </SpaceCardJoinButton>
         </div>
       </div>

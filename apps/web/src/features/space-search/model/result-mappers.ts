@@ -51,6 +51,14 @@ const formatDeadlineLabel = (registrationEnd: string | null) => {
   return `${remainingDays}일 후 마감`;
 };
 
+const isRegistClosed = (registrationEnd: string | null) => {
+  if (!registrationEnd) {
+    return false;
+  }
+
+  return new Date(registrationEnd).getTime() <= Date.now();
+};
+
 export const mapSearchResultItemToSpaceCardItem = (item: SearchResultItem): SpaceCardItem => {
   return {
     category: categoryLabelById[item.type] ?? item.type,
@@ -61,6 +69,7 @@ export const mapSearchResultItemToSpaceCardItem = (item: SearchResultItem): Spac
     id: item.id,
     imageAlt: `${item.title} thumbnail`,
     imageSrc: item.image ?? FALLBACK_SPACE_IMAGE,
+    isRegistClosed: isRegistClosed(item.registrationEnd),
     isLiked: item.isLiked,
     maxParticipants: item.capacity,
     metaChips: [
