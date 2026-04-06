@@ -12,6 +12,7 @@ const KST_TIME_ZONE = "Asia/Seoul";
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   day: "numeric",
   month: "numeric",
+  timeZone: KST_TIME_ZONE,
 });
 
 const timeFormatter = new Intl.DateTimeFormat("ko-KR", {
