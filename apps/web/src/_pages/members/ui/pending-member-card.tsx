@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { getQueryClient } from "@/shared/lib/get-query-client";
+import { addSpaceMemberAction } from "../action";
+import { memberQueryKeys } from "../model/query-keys";
 
 interface PendingMember {
   userId: number;
@@ -9,8 +12,8 @@ interface PendingMember {
 }
 
 interface PendingMemberCardProps {
+  slug: string;
   pendingMembers: PendingMember[];
-  onAccept: (member: { userId: number; name: string; image: string }) => Promise<void>;
 }
 
 const ParticipantRow = ({
@@ -58,12 +61,14 @@ const ParticipantRow = ({
   );
 };
 
-export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCardProps) {
+export function PendingMemberCard({ pendingMembers, slug }: PendingMemberCardProps) {
   const [rejectedIds, setRejectedIds] = useState<Set<number>>(new Set());
   const [acceptedIds, setAcceptedIds] = useState<Set<number>>(new Set());
+  const queryClient = getQueryClient();
 
   const handleAccept = async (member: { userId: number; name: string; image: string }) => {
-    await onAccept(member);
+    await addSpaceMemberAction(slug, member);
+    queryClient.invalidateQueries({ queryKey: memberQueryKeys.all(slug) });
     setAcceptedIds((prev) => new Set(prev).add(member.userId));
   };
 
@@ -74,15 +79,17 @@ export function PendingMemberCard({ pendingMembers, onAccept }: PendingMemberCar
 
   const visible = pendingMembers.filter((m) => !rejectedIds.has(m.userId) && !acceptedIds.has(m.userId));
 
-  if (visible.length === 0) return null;
-
   return (
     <div className="rounded-lg border border-primary/20 bg-background p-5">
       <span className="mb-1 block font-semibold text-base text-foreground">참가를 요청한 사용자</span>
       <div className="flex flex-col gap-2">
-        {visible.map((member) => (
-          <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
-        ))}
+        {visible.length > 0 ? (
+          visible.map((member) => (
+            <ParticipantRow key={member.userId} member={member} onAccept={handleAccept} onReject={handleReject} />
+          ))
+        ) : (
+          <span className="py-4 text-center text-neutral-400 text-sm">참가 대기 중인 사용자가 없어요.</span>
+        )}
       </div>
     </div>
   );

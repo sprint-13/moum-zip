@@ -1,21 +1,25 @@
-import type { SpaceInfo } from "@/entities/spaces";
+import { cache } from "react";
+import { type SpaceInfo, spaceQueries } from "@/entities/spaces";
 import { getApi } from "@/shared/api/server";
-import { getSpaceBySlugQuery } from "@/shared/db/queries";
 import { safe } from "@/shared/lib/safe";
 
-export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
-  const dbSpace = await safe(getSpaceBySlugQuery(slug), {
-    default: (err) => {
-      throw new Error("space by slug query error", { cause: err });
-    },
-  });
+const getCachedMeetingDetail = cache(async (meetingId: number) => {
   const api = await getApi();
-
-  const { data: apiSpace } = await safe(api.meetings.getDetail(dbSpace.meetingId), {
+  return safe(api.meetings.getDetail(meetingId), {
     default: (err) => {
       throw Error("Failed to verify space access", { cause: err });
     },
   });
+});
+
+export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
+  const dbSpace = await safe(spaceQueries.findBySlug(slug), {
+    default: (err) => {
+      throw new Error("space by slug query error", { cause: err });
+    },
+  });
+
+  const { data: apiSpace } = await getCachedMeetingDetail(dbSpace.meetingId);
 
   return {
     spaceId: dbSpace.id,
@@ -28,6 +32,7 @@ export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
     image: apiSpace.image,
     type: apiSpace.type === "study" ? "study" : "project",
     startDate: apiSpace.dateTime,
-    capacity: apiSpace.capacity,
+    capacity: apiSpace.participantCount,
+    isApproved: true, // getSpaceContext에서 멤버십 검증 후 호출되므로 항상 승인 상태
   };
 };

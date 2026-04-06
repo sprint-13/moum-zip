@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { BulletinInfoCard, BulletinPopularPostCard, BulletinTable } from "@/_pages/bulletin";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
+import { getSpaceContext } from "@/features/space/lib/get-space-context";
 
 export default async function BulletinPage({ params }: { params: Promise<{ "space-slug": string }> }) {
   const slug = (await params)["space-slug"];
+  const { space } = await getSpaceContext(slug);
 
   const WritePostButton = (
     <Link
@@ -31,8 +33,8 @@ export default async function BulletinPage({ params }: { params: Promise<{ "spac
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
-          <BulletinInfoCard />
-          <BulletinPopularPostCard />
+          <BulletinInfoCard spaceId={space.spaceId} memberCount={space.capacity} />
+          <BulletinPopularPostCard spaceId={space.spaceId} slug={slug} />
         </SpaceBodyRight>
       </SpaceBody>
     </>

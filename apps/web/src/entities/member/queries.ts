@@ -1,9 +1,9 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import type { NewMember } from "@/shared/db/scheme";
 import { spaceMembers } from "@/shared/db/scheme";
-
-// TODO: spaceId를 curry function 형태로 넘겨도 될 듯
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 export const memberQueries = {
   findAllBySpaceId: async (spaceId: string) => {
@@ -11,6 +11,9 @@ export const memberQueries = {
       desc(spaceMembers.role), // 관리자 우선
       sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
     );
+  },
+  findUserIdsBySpaceId: async (spaceId: string) => {
+    return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
   },
   findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
     return db
@@ -25,6 +28,9 @@ export const memberQueries = {
       .offset(opts?.offset ?? 0);
   },
   getMember: async (spaceId: string, userId: number) => {
+    "use cache";
+    cacheTag(CACHE_TAGS.member(spaceId, userId)); // profile 수정 시 멤버 정보 갱신 필요.
+    cacheLife("weeks");
     const [member] = await db
       .select()
       .from(spaceMembers)
@@ -56,5 +62,23 @@ export const memberQueries = {
       .where(and(eq(spaceMembers.spaceId, spaceId), eq(spaceMembers.userId, userId)))
       .returning();
     return deletedMember; // 삭제된 데이터 확인용
+  },
+  getMembershipsBySpaceIds: async (spaceIds: string[], userId: number) => {
+    if (spaceIds.length === 0) return [];
+    return db
+      .select({ spaceId: spaceMembers.spaceId })
+      .from(spaceMembers)
+      .where(and(inArray(spaceMembers.spaceId, spaceIds), eq(spaceMembers.userId, userId)));
+  },
+  getMemberCountsBySpaceIds: async (spaceIds: string[]) => {
+    if (spaceIds.length === 0) return [];
+    return db
+      .select({
+        spaceId: spaceMembers.spaceId,
+        count: sql<number>`COUNT(*)`.mapWith(Number),
+      })
+      .from(spaceMembers)
+      .where(inArray(spaceMembers.spaceId, spaceIds))
+      .groupBy(spaceMembers.spaceId);
   },
 };

@@ -1,9 +1,20 @@
 import { eq, inArray } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import { type NewSpaceDB, spaces } from "@/shared/db/scheme";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 // meetingId -> space 조회 -> location, themeColor, status, modules
 export const spaceQueries = {
+  findBySlug: async (slug: string) => {
+    "use cache";
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.space(slug));
+    const space = await db.query.spaces.findFirst({
+      where: eq(spaces.slug, slug),
+    });
+    return space;
+  },
   /** meetingId로 space 조회 */
   findByMeetingId: (meetingId: number) =>
     db.query.spaces.findFirst({

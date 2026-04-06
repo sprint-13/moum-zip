@@ -1,6 +1,7 @@
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import type { Post, PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 const PAGE_SIZE = 5;
 
@@ -12,10 +13,19 @@ export interface GetBulletinPostsResult {
   totalPages: number;
 }
 
-async function fetchBulletinPosts(
+/**
+ * 스페이스 게시판 목록 조회 (Next.js Data Cache 적용).
+ * 게시글 작성/삭제 시 updateTag(CACHE_TAGS.bulletin(spaceId))로 무효화한다.
+ * 글을 작성한 유저의 프로필 변경 시 revalidateTag(CACHE_TAGS.bulletin(spaceId), "max")로 무효화한다.
+ */
+export async function getBulletinPostsUseCase(
   spaceId: string,
-  opts: { category?: PostCategory; page?: number },
+  opts: { category?: PostCategory; page?: number } = {},
 ): Promise<GetBulletinPostsResult> {
+  "use cache";
+  cacheTag(CACHE_TAGS.bulletin(spaceId));
+  cacheLife("hours");
+
   const page = opts.page ?? 1;
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -36,15 +46,4 @@ async function fetchBulletinPosts(
     pageSize: PAGE_SIZE,
     totalPages: Math.ceil(total / PAGE_SIZE),
   };
-}
-
-/**
- * 스페이스 게시판 목록 조회 (Next.js Data Cache 적용).
- * 게시글 작성/삭제 시 revalidateTag(`bulletin-${spaceId}`)로 무효화한다.
- */
-export function getBulletinPostsUseCase(
-  spaceId: string,
-  opts: { category?: PostCategory; page?: number } = {},
-): Promise<GetBulletinPostsResult> {
-  return fetchBulletinPosts(spaceId, opts);
 }
