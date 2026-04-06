@@ -1,12 +1,13 @@
 "use client";
 
-import { CheckIcon } from "@ui/icons";
+import { CheckIcon } from "@moum-zip/ui/icons";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { getQueryClient } from "@/shared/lib/get-query-client";
+
 import { createPostAction, updatePostAction } from "../actions";
 import { fetchBulletinPosts } from "../hooks/use-bulletin-posts";
 import { bulletinQueryKeys } from "../model/query-keys";
