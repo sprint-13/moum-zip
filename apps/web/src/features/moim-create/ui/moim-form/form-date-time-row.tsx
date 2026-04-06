@@ -7,12 +7,12 @@ import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 import { DatePicker, TimePicker } from "@/shared/ui";
 
 // 모임 일정(date+time) / 마감(deadlineDate+deadlineTime)만 허용 — 유니온으로 고정
-type MoimDateTimeRowProps = {
+type FormDateTimeRowProps = {
   control: Control<MoimCreateFormValues>;
   label: string;
 } & ({ dateName: "date"; timeName: "time" } | { dateName: "deadlineDate"; timeName: "deadlineTime" });
 
-export const FormDateTimeRow = ({ control, dateName, timeName, label }: MoimDateTimeRowProps) => {
+export const FormDateTimeRow = ({ control, dateName, timeName, label }: FormDateTimeRowProps) => {
   return (
     <>
       <FormLabel label={label} required className="pb-2" />
