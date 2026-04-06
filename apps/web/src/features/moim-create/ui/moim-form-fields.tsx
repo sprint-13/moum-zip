@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { icoProject, icoStudy } from "@/features/moim-create/assets";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 import { ThemeColorSelect } from "@/features/moim-create/ui/theme-color-select";
 import { DatePicker, TimePicker } from "@/shared/ui";
 
@@ -51,10 +52,7 @@ export const MoimFormFields = ({
             name="type"
             render={({ field, fieldState }) => (
               <div>
-                <p className="pb-2 font-semibold text-foreground text-sm leading-[1.2]">
-                  이 모임은 어떤 종류인가요?
-                  <span className="pl-1 text-primary">*</span>
-                </p>
+                <FormLabel label="이 모임은 어떤 종류인가요?" required className="pb-2" />
 
                 <div className="flex gap-5">
                   <CategoryTab
@@ -109,9 +107,7 @@ export const MoimFormFields = ({
             name="location"
             render={({ field, fieldState }) => (
               <RadioGroup value={field.value} onValueChange={field.onChange}>
-                <p className="font-semibold text-foreground text-sm leading-[1.2]">
-                  장소<span className="pl-1 text-primary">*</span>
-                </p>
+                <FormLabel label="장소" required />
 
                 <div className="flex gap-10">
                   <div className="flex items-center gap-2">
@@ -148,10 +144,7 @@ export const MoimFormFields = ({
             name="image"
             render={({ field, fieldState }) => (
               <div className="flex flex-col gap-2">
-                <p className="font-semibold text-foreground text-sm leading-[1.2]">
-                  이미지<span className="pl-1 text-primary">*</span>
-                </p>
-
+                <FormLabel label="이미지" required />
                 <FileInput
                   onUploadClick={() => onImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
@@ -170,9 +163,7 @@ export const MoimFormFields = ({
           />
 
           <div>
-            <p className="pb-2 font-semibold text-foreground text-sm leading-[1.2]">
-              모임 일정<span className="pl-1 text-primary">*</span>
-            </p>
+            <FormLabel label="모임 일정" required className="pb-2" />
 
             <div className="flex max-w-[456px] flex-col gap-4 md:flex-row">
               <Controller
@@ -204,9 +195,7 @@ export const MoimFormFields = ({
           </div>
 
           <div>
-            <p className="pb-2 font-semibold text-foreground text-sm leading-[1.2]">
-              모집 마감 날짜<span className="pl-1 text-primary">*</span>
-            </p>
+            <FormLabel label="모집 마감 날짜" required className="pb-2" />
 
             <div className="flex max-w-[456px] flex-col gap-4 md:flex-row">
               <Controller
@@ -248,9 +237,7 @@ export const MoimFormFields = ({
             name="themeColor"
             render={({ field, fieldState }) => (
               <div className="flex flex-col gap-2">
-                <p className="font-semibold text-foreground text-sm leading-[1.2]">
-                  테마<span className="pl-1 text-primary">*</span>
-                </p>
+                <FormLabel label="테마" required />
 
                 <ThemeColorSelect value={field.value} onValueChange={field.onChange} />
 
