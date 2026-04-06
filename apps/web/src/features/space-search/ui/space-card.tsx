@@ -62,7 +62,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
 
   const joinButtonClassName = cn(
     "h-12 min-w-26 shrink-0 rounded-xl px-6 font-semibold text-base leading-6 tracking-[-0.02em] lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
-    isRegistClosed ? "cursor-not-allowed opacity-60 active:scale-100" : "border-[1.5px]",
+    isRegistClosed ? "cursor-not-allowed opacity-60 active:scale-100" : "border-[0.09375rem]",
     "w-auto",
   );
 
