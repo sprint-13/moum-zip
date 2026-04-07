@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { MoimEditForm } from "@/features/moim-edit/ui/moim-edit-form";
 import { getApi } from "@/shared/api/server";
 
