@@ -64,9 +64,6 @@ function MemberTableSkeleton() {
           <div className="flex-1 p-3">
             <div className="h-4 w-12 rounded bg-muted" />
           </div>
-          <div className="w-[120px] shrink-0 p-3">
-            <div className="h-4 w-14 rounded bg-muted" />
-          </div>
           <div className="w-20 shrink-0 p-3">
             <div className="mx-auto h-4 w-12 rounded bg-muted" />
           </div>

@@ -16,3 +16,21 @@ export function assertPermission(authorId: number, requester: Requester): void {
 export function hasPermission(requester: Requester, authorId?: number): boolean {
   return requester.userId === authorId || requester.role === "manager";
 }
+
+/**
+ * manager 또는 moderator만 멤버를 추방할 수 있다.
+ */
+export function assertCanKick(requester: Requester): void {
+  if (requester.role === "member") {
+    throw new Error("권한이 없습니다.");
+  }
+}
+
+/**
+ * manager만 역할을 변경할 수 있다.
+ */
+export function assertCanChangeRole(requester: Requester): void {
+  if (requester.role !== "manager") {
+    throw new Error("권한이 없습니다.");
+  }
+}
