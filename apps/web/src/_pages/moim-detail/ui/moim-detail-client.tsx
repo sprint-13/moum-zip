@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
@@ -201,10 +203,6 @@ export function MoimDetailClient({
     router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
   };
 
-  const handleMoveToMeetingDetail = (targetMeetingId: number) => {
-    router.push(`${ROUTES.moimDetail}/${targetMeetingId}`);
-  };
-
   const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
     if (pendingRecommendedLikeIds.includes(targetMeetingId)) {
       return false;
@@ -259,7 +257,7 @@ export function MoimDetailClient({
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-stretch">
           <div className="relative mx-auto aspect-[630/443] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
             {informationData.image ? (
-              <img src={informationData.image} alt="모임 대표 이미지" className="h-full w-full object-cover" />
+              <Image src={informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
                 이미지 영역
@@ -295,39 +293,22 @@ export function MoimDetailClient({
               const isRecommendedLikePending = pendingRecommendedLikeIds.includes(meeting.id);
 
               return (
-                <div
+                <Link
                   key={meeting.id}
-                  role="link"
-                  tabIndex={0}
-                  className="cursor-pointer"
+                  href={`${ROUTES.moimDetail}/${meeting.id}`}
+                  className="block cursor-pointer"
                   onClick={(event) => {
                     const target = event.target as HTMLElement;
 
                     if (target.closest("button")) {
-                      return;
+                      event.preventDefault();
                     }
-
-                    handleMoveToMeetingDetail(meeting.id);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key !== "Enter") {
-                      return;
-                    }
-
-                    const target = event.target as HTMLElement;
-
-                    if (target.closest("button")) {
-                      return;
-                    }
-
-                    event.preventDefault();
-                    handleMoveToMeetingDetail(meeting.id);
                   }}
                 >
                   <CompactCard
                     image={
                       meeting.image ? (
-                        <img src={meeting.image} alt={meeting.title} className="h-full w-full object-cover" />
+                        <Image src={meeting.image} alt={meeting.title} fill className="object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
                           이미지 영역
@@ -349,7 +330,7 @@ export function MoimDetailClient({
                       return handleToggleRecommendedLike(meeting.id);
                     }}
                   />
-                </div>
+                </Link>
               );
             })}
           </div>
