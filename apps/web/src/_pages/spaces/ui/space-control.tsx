@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "@ui/icons";
+import { Search } from "@moum-zip/ui/icons";
 
 interface SpaceControlProps {
   activeTab: "ongoing" | "archived";

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MemberTable } from "@/_pages/members";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { parsePaginationParams } from "@/shared/lib/pagination";
 import { MemberRightSection } from "./_components/member-right-section";
 
 const InviteButton = (
@@ -15,10 +16,17 @@ const InviteButton = (
   </button>
 );
 
-export default async function SpaceMembersPage({ params }: { params: Promise<{ "space-slug": string }> }) {
+export default async function SpaceMembersPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ "space-slug": string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const slug = (await params)["space-slug"];
 
   const { space, membership } = await getSpaceContext(slug);
+  const { page } = parsePaginationParams(await searchParams);
 
   return (
     <>
@@ -26,7 +34,7 @@ export default async function SpaceMembersPage({ params }: { params: Promise<{ "
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<MemberTableSkeleton />}>
-            <MemberTable />
+            <MemberTable spaceId={space.spaceId} page={page} />
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
