@@ -44,6 +44,11 @@ type MeetingsPageResponse<T> = {
   nextCursor: string | null;
 };
 
+type ResponseWithArrayData = {
+  data: unknown[];
+  nextCursor?: unknown;
+};
+
 const EMPTY_USER: CurrentUserData = {
   id: null,
   name: null,
@@ -52,25 +57,39 @@ const EMPTY_USER: CurrentUserData = {
 
 const ERROR_FALLBACK = <div>모임 정보를 표시할 수 없습니다.</div>;
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null;
+};
+
 const isRecommendedMeetingItem = (value: unknown): value is RecommendedMeetingItem => {
-  return !!value && typeof value === "object" && "id" in value;
+  return isRecord(value) && "id" in value;
+};
+
+const hasArrayData = (value: unknown): value is ResponseWithArrayData => {
+  return isRecord(value) && "data" in value && Array.isArray(value.data);
 };
 
 const parseMeetingsPage = <T,>(response: unknown): MeetingsPageResponse<T> => {
-  const resolved = response && typeof response === "object" && "data" in response ? response.data : response;
+  const resolved = isRecord(response) && "data" in response ? response.data : response;
 
-  if (resolved && typeof resolved === "object" && "data" in resolved && Array.isArray((resolved as any).data)) {
+  if (hasArrayData(resolved)) {
     return {
-      data: (resolved as any).data,
-      nextCursor: typeof (resolved as any).nextCursor === "string" ? (resolved as any).nextCursor : null,
+      data: resolved.data as T[],
+      nextCursor: typeof resolved.nextCursor === "string" ? resolved.nextCursor : null,
     };
   }
 
   if (Array.isArray(resolved)) {
-    return { data: resolved as T[], nextCursor: null };
+    return {
+      data: resolved as T[],
+      nextCursor: null,
+    };
   }
 
-  return { data: [], nextCursor: null };
+  return {
+    data: [],
+    nextCursor: null,
+  };
 };
 
 const getAllMeetings = async (apiClient: Awaited<ReturnType<typeof getApi>>) => {
@@ -79,12 +98,13 @@ const getAllMeetings = async (apiClient: Awaited<ReturnType<typeof getApi>>) => 
 
   while (true) {
     const response = await apiClient.meetings.getList(cursor ? { cursor } : undefined);
-
     const { data, nextCursor } = parseMeetingsPage<RecommendedMeetingItem>(response);
 
     allMeetings.push(...data.filter(isRecommendedMeetingItem));
 
-    if (!nextCursor) break;
+    if (!nextCursor) {
+      break;
+    }
 
     cursor = nextCursor;
   }
@@ -95,7 +115,9 @@ const getAllMeetings = async (apiClient: Awaited<ReturnType<typeof getApi>>) => 
 const getCurrentUserOrEmpty = async (apiClient: Awaited<ReturnType<typeof getApi>>): Promise<CurrentUserData> => {
   const { authenticated } = await isAuth();
 
-  if (!authenticated) return EMPTY_USER;
+  if (!authenticated) {
+    return EMPTY_USER;
+  }
 
   try {
     return await getCurrentUser({
@@ -136,7 +158,6 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
     });
 
     const description = mapMeetingDetailToDescription(meetingDetail);
-
     const mappedParticipants = mapParticipantsToParticipantData(participantsList);
 
     const personnelData = {

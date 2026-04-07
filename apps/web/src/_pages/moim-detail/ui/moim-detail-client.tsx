@@ -221,10 +221,6 @@ export const MoimDetailClient = ({
     router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
   };
 
-  const handleMoveToMeetingDetail = (targetMeetingId: number) => {
-    router.push(`${ROUTES.moimDetail}/${targetMeetingId}`);
-  };
-
   const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
     if (pendingRecommendedLikeIds.includes(targetMeetingId)) {
       return false;
