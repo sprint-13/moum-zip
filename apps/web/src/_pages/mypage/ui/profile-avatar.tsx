@@ -11,7 +11,7 @@ interface ProfileAvatarProps {
   alt?: string;
 }
 
-export default function ProfileAvatar({ className, iconClassName, src, alt = "프로필 이미지" }: ProfileAvatarProps) {
+export function ProfileAvatar({ className, iconClassName, src, alt = "프로필 이미지" }: ProfileAvatarProps) {
   if (src) {
     return (
       <div

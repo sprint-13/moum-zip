@@ -2,9 +2,9 @@
 
 import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
+import Image from "next/image";
 import Link from "next/link";
 import { logoutAction } from "@/_pages/auth/actions";
-import ProfileAvatar from "@/_pages/mypage/ui/profile-avatar";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
 import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
 
@@ -16,6 +16,45 @@ type NavigationMenuClientProps = {
     imageUrl?: string;
     name?: string;
   } | null;
+};
+
+interface NavigationProfileAvatarProps {
+  imageUrl?: string;
+  name?: string;
+}
+
+const NavigationProfileAvatar = ({ imageUrl, name }: NavigationProfileAvatarProps) => {
+  if (imageUrl) {
+    return (
+      <div className="relative flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-card">
+        <Image
+          src={imageUrl}
+          alt={name ? `${name} 프로필 이미지` : "프로필 이미지"}
+          fill
+          className="rounded-full object-cover"
+          sizes="44px"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-card"
+      role="img"
+      aria-label={name ? `${name} 프로필 이미지` : "프로필 이미지"}
+    >
+      <svg viewBox="0 0 24 24" className="size-6 text-muted-foreground" fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.25" fill="currentColor" opacity="0.5" />
+        <path
+          d="M6.75 18.25C6.75 15.9028 9.09779 14 12 14C14.9022 14 17.25 15.9028 17.25 18.25"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+  );
 };
 
 export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientProps) => {
@@ -53,11 +92,7 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
                     aria-label="마이페이지로 이동"
                     className="inline-flex shrink-0 rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-1"
                   >
-                    <ProfileAvatar
-                      className="size-11 border-border"
-                      src={user?.imageUrl}
-                      alt={user?.name ? `${user.name} 프로필 이미지` : "프로필 이미지"}
-                    />
+                    <NavigationProfileAvatar imageUrl={user?.imageUrl} name={user?.name} />
                   </Link>
                 </Gnb.Item>
               </>
