@@ -70,7 +70,12 @@ export const LoginForm = () => {
           error={errors.password}
         />
 
-        {state && !state.ok && <p className="text-red-500 text-xs">{ERROR_MESSAGES[state.error]}</p>}
+        {/* 서버에서 온 에러 메시지 표시 */}
+        {state && !state.ok && (
+          <p role="alert" aria-live="polite" className="text-red-500 text-xs">
+            {ERROR_MESSAGES[state.error] ?? ERROR_MESSAGES.SERVER_ERROR}
+          </p>
+        )}
 
         <Button
           variant="tertiary"
