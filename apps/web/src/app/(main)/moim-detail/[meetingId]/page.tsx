@@ -62,7 +62,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
 };
 
 const isRecommendedMeetingItem = (value: unknown): value is RecommendedMeetingItem => {
-  return isRecord(value) && "id" in value;
+  return isRecord(value) && "id" in value && typeof value.id === "number";
 };
 
 const hasArrayData = (value: unknown): value is ResponseWithArrayData => {
