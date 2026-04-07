@@ -73,8 +73,6 @@ export async function getCurrentUser(): Promise<
       },
     };
   } catch (error) {
-    console.error("[getCurrentUser] error:", error);
-
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -102,8 +100,6 @@ export async function favoriteMeetingAction(
       data: result,
     };
   } catch (error) {
-    console.error("[favoriteMeetingAction] error:", error);
-
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -131,8 +127,6 @@ export async function joinMeetingAction(
       data: result,
     };
   } catch (error) {
-    console.error("[joinMeetingAction] error:", error);
-
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -157,8 +151,6 @@ export async function deleteMeetingAction(meetingId: number): Promise<ActionResu
       data: result,
     };
   } catch (error) {
-    console.error("[deleteMeetingAction] error:", error);
-
     return {
       ok: false,
       message: await getErrorMessage(error),

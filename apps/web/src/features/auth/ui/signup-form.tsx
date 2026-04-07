@@ -46,14 +46,14 @@ export const SignupForm = () => {
   });
 
   return (
-    <div className="flex w-full flex-col">
-      <h1 className="text-center font-semibold text-base text-foreground md:text-2xl">회원가입</h1>
-      <form className="flex flex-col gap-6 pt-10" onSubmit={onSubmit}>
+    <div className="flex w-full flex-col pt-4">
+      <h1 className="text-center font-semibold text-foreground text-lg md:text-2xl">회원가입</h1>
+      <form className="flex flex-col gap-5 pt-7" onSubmit={onSubmit}>
         <InputField
           label="이름"
           placeholder="이름을 입력해주세요"
           required
-          className="bg-input-background font-normal text-sm shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-base"
+          className="bg-input-background font-normal text-xs shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-sm"
           isDestructive={!!errors.name}
           message={errors.name?.message}
           {...register("name", {
@@ -64,7 +64,7 @@ export const SignupForm = () => {
           label="아이디"
           placeholder="이메일을 입력해주세요"
           required
-          className="bg-input-background font-normal text-sm shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-base"
+          className="bg-input-background font-normal text-xs shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-sm"
           isDestructive={!!errors.email}
           message={errors.email?.message}
           {...register("email", {
@@ -101,18 +101,23 @@ export const SignupForm = () => {
         />
 
         {/* 서버에서 온 에러 메시지 표시 */}
-        {state && !state.ok && <p className="text-red-500 text-sm">{ERROR_MESSAGES[state.error]}</p>}
-
+        {state && !state.ok && (
+          <p role="alert" aria-live="polite" className="text-red-500 text-xs">
+            {ERROR_MESSAGES[state.error] ?? ERROR_MESSAGES.SERVER_ERROR}
+          </p>
+        )}
         <Button
           variant="tertiary"
           type="submit"
           disabled={isPending}
-          className="mt-2 bg-slate-100 text-base text-muted-foreground hover:bg-slate-200 md:text-xl"
+          className={`mt-2 mb-2 text-base transition-all md:text-lg ${
+            isPending ? "bg-green-500 text-white opacity-50" : "bg-green-500 text-white hover:bg-green-600"
+          }`}
         >
           {isPending ? "가입 중..." : "회원가입"}
         </Button>
       </form>
-      <div className="relative my-8 flex items-center gap-3">
+      <div className="relative my-6 flex items-center gap-3">
         <div className="flex-1 border-border border-t" />
         <span className="text-muted-foreground text-sm">SNS 계정으로 회원가입</span>
         <div className="flex-1 border-border border-t" />
@@ -133,7 +138,7 @@ export const SignupForm = () => {
           }}
         />
       </div>
-      <p className="mt-8 text-center text-foreground text-sm md:text-[15px]">
+      <p className="mt-8 text-center text-foreground text-xs md:text-sm">
         이미 회원이신가요?{" "}
         <Link href={ROUTES.login} className="font-semibold text-green-600 underline">
           로그인
