@@ -15,7 +15,7 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
   { key: "ended", label: "진행 종료" },
 ];
 
-interface MypagePageProps {
+interface MypageViewProps {
   initialFavoriteList: FavoriteList;
   profile: MypageProfile;
   tabs: Array<{ key: MypageTabKey; label: string }>;
@@ -31,7 +31,7 @@ export function MypageView({
   moims,
   createdMoims,
   enableRemoteFetch = true,
-}: MypagePageProps) {
+}: MypageViewProps) {
   const {
     createdFilter,
     joinedMeetings,
