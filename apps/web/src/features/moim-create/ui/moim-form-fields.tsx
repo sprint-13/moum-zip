@@ -2,14 +2,10 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import type { MoimFormState } from "@/features/moim-create/model/types";
 import { FormActions } from "@/features/moim-create/ui/moim-form/form-actions";
 import { FormMoimSection } from "@/features/moim-create/ui/moim-form/form-moim-section";
 import { FormSpaceSection } from "@/features/moim-create/ui/moim-form/form-space-section";
-
-interface MoimFormState {
-  ok: false;
-  error?: string;
-}
 
 interface MoimFormFieldsProps {
   form: UseFormReturn<MoimCreateFormValues>;

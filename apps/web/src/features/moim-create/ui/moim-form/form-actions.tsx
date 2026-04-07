@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@ui/components";
+import type { MoimFormState } from "@/features/moim-create/model/types";
 import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 
-type MoimFormState = { ok: false; error?: string };
 type MoimFormActionsProps = {
   state: MoimFormState | null;
   isPending: boolean;
