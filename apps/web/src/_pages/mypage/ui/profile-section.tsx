@@ -3,8 +3,8 @@
 import { Pencil } from "@ui/icons";
 import { useState } from "react";
 import type { MypageProfile } from "@/_pages/mypage/model/types";
-import { ProfileAvatar } from "@/_pages/mypage/ui/profile-avatar";
 import { ProfileEditModal } from "@/_pages/mypage/ui/profile-edit-modal";
+import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileSectionProps {
   profile: MypageProfile;

@@ -7,7 +7,7 @@ import { cn } from "@ui/lib/utils";
 import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
 import type { MypageProfile } from "@/_pages/mypage/model/types";
-import { ProfileAvatar } from "@/_pages/mypage/ui/profile-avatar";
+import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
