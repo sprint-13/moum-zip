@@ -31,8 +31,14 @@ export const getErrorMessage = async (error: unknown) => {
     return `${error.status} ${error.statusText}`;
   }
 
-  if (typeof error === "object" && error !== null && "error" in error && typeof error.error === "string") {
-    return error.error;
+  if (typeof error === "object" && error !== null) {
+    if ("error" in error && typeof error.error === "string") {
+      return error.error;
+    }
+
+    if ("message" in error && typeof error.message === "string") {
+      return error.message;
+    }
   }
 
   return "요청 처리 중 오류가 발생했습니다.";
