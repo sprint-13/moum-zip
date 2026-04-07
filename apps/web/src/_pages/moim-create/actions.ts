@@ -3,8 +3,8 @@
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 import { createMoim } from "@/_pages/moim-create/use-cases/moim-create";
-import { parseMoimFormData } from "@/features/moim-create/model/parse-moim-form-data";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import { parseMoimFormData } from "@/entities/moim/model/parse-moim-form-data";
+import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { getApi, isAuth } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
 

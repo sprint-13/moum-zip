@@ -1,7 +1,7 @@
 "use client";
 
 import { type Control, Controller } from "react-hook-form";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import type { MoimCreateFormValues } from "@/entities/moim";
 import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 import { DatePicker, TimePicker } from "@/shared/ui";

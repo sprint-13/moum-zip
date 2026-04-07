@@ -4,8 +4,8 @@ import { CategoryTab, FileInput, InputField, InputTextArea } from "@ui/component
 import { RadioGroup, RadioGroupItem } from "@ui/components/shadcn/radio-group";
 import Image from "next/image";
 import { Controller, type UseFormReturn } from "react-hook-form";
+import type { MoimCreateFormValues } from "@/entities/moim";
 import { icoProject, icoStudy } from "@/features/moim-create/assets";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { FormDateTimeRow } from "@/features/moim-create/ui/moim-form/form-date-time-row";
 import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";

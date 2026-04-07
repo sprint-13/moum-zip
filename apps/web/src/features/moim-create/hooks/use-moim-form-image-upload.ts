@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
+import type { MoimCreateFormValues } from "@/entities/moim";
 
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
 

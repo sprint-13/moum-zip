@@ -1,5 +1,5 @@
+import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { spaceQueries } from "@/entities/spaces";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { getApi, isAuth } from "@/shared/api/server";
 
 type UpdateMoimParams = {

@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { updateMoimAction } from "@/_pages/moim-edit/actions";
-import { type MoimCreateFormValues, moimCreateSchema } from "@/features/moim-create/model/schema";
+import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim";
 
 interface UseMoimEditFormParams {
   meetingId: number;

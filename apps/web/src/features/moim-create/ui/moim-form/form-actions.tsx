@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@ui/components";
-import type { MoimFormState } from "@/features/moim-create/model/types";
+import type { MoimFormState } from "@/entities/moim";
 import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 
 type MoimFormActionsProps = {
