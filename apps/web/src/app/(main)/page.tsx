@@ -125,7 +125,7 @@ export default function Home() {
             <span className="relative mt-2 block text-green-600">모음.zip에서 함께 해요</span>
           </h2>
           <LandingCtaButton size="medium" className="min-w-0 max-w-[140px] md:hidden" />
-          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:block" />
+          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:inline-flex" />
         </div>
       </section>
     </>

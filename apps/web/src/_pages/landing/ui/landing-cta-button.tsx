@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@ui/components";
-import { useRouter } from "next/navigation";
+import { cn } from "@ui/lib/utils";
+import Link from "next/link";
 import { ROUTES } from "@/shared/config/routes";
 
 type Props = {
@@ -10,12 +10,18 @@ type Props = {
 };
 
 export const LandingCtaButton = ({ size, className }: Props) => {
-  const router = useRouter();
-  const handleClick = () => router.push(ROUTES.search);
+  const sizeClass = size === "large" ? "h-[60px] min-w-[474px] px-6 text-xl" : "h-12 min-w-[311px] px-5 text-base";
 
   return (
-    <Button size={size} className={className} onClick={handleClick}>
+    <Link
+      href={ROUTES.search}
+      className={cn(
+        "inline-flex items-center justify-center rounded-xl bg-primary font-semibold text-white transition-colors hover:bg-green-600",
+        sizeClass,
+        className,
+      )}
+    >
       모임 찾아보기
-    </Button>
+    </Link>
   );
 };
