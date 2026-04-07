@@ -55,7 +55,15 @@ const EMPTY_USER: CurrentUserData = {
   image: null,
 };
 
-const ERROR_FALLBACK = <div>모임 정보를 표시할 수 없습니다.</div>;
+const ERROR_FALLBACK = (
+  <div className="flex h-full min-h-[60vh] items-center justify-center text-center">
+    <p className="text-muted-foreground text-sm leading-relaxed">
+      요청하신 모임을 찾을 수 없습니다.
+      <br />
+      이미 삭제되었거나 존재하지 않는 모임일 수 있어요.
+    </p>
+  </div>
+);
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null;
