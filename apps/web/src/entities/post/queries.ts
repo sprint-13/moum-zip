@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { spaceMembers, spacePostComments, spacePostLikes, spacePosts } from "@/shared/db/scheme";
 import type { PostCategory } from "./model/types";
@@ -145,7 +145,7 @@ export const commentQueries = {
         and(eq(spaceMembers.userId, spacePostComments.authorId), eq(spaceMembers.spaceId, spacePostComments.spaceId)),
       )
       .where(eq(spacePostComments.postId, postId))
-      .orderBy(desc(spacePostComments.createdAt)),
+      .orderBy(asc(spacePostComments.createdAt)),
 
   /** 댓글 단건 조회 */
   findById: (commentId: string) =>

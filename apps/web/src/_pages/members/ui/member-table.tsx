@@ -1,16 +1,14 @@
-"use client";
-
-import { Pagination } from "@moum-zip/ui/components";
-import { useSpaceContext } from "@/features/space";
-import { usePaginationUrl } from "@/shared/hooks/use-pagination-url";
-import { useMemberList } from "../hooks/use-member-list";
+import { getSpaceMembersUseCase } from "../use-cases/get-space-members";
+import { MemberPagination } from "./member-pagination";
 import { MemberRow } from "./member-row";
 
-export function MemberTable() {
-  const { space } = useSpaceContext();
-  const { page, setPage } = usePaginationUrl();
+interface MemberTableProps {
+  spaceId: string;
+  page: number;
+}
 
-  const { data } = useMemberList(space.slug, { page });
+export async function MemberTable({ spaceId, page }: MemberTableProps) {
+  const data = await getSpaceMembersUseCase(spaceId, { page });
 
   return (
     <div className="flex flex-col">
@@ -43,15 +41,7 @@ export function MemberTable() {
         {/* 페이지네이션 */}
         {data.totalPages > 1 && (
           <div className="flex justify-center pt-2">
-            <Pagination
-              ariaLabel="멤버 페이지네이션"
-              currentPage={data.page}
-              totalPages={data.totalPages}
-              onPageChange={setPage}
-              previousAriaLabel="이전 페이지"
-              nextAriaLabel="다음 페이지"
-              size="responsive"
-            />
+            <MemberPagination currentPage={data.page} totalPages={data.totalPages} />
           </div>
         )}
       </div>
