@@ -55,23 +55,6 @@ const isSearchLocationId = (value: string): value is SearchLocationId => {
   return locationIds.has(value as SearchLocationId);
 };
 
-export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchRequestCategoryId => {
-  if (categoryId === "study" || categoryId === "project") {
-    return categoryId;
-  }
-
-  return "all";
-};
-
-export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchRequestQueryState => {
-  return {
-    categoryId: normalizeSearchCategoryId(queryState.categoryId),
-    dateSortId: queryState.dateSortId,
-    deadlineSortId: queryState.deadlineSortId,
-    locationId: queryState.locationId,
-  };
-};
-
 export const parseSearchQueryState = (searchParams: SearchParamSource): SearchQueryState => {
   const categoryId = getSearchParamValue(searchParams, "category");
   const dateSortId = getSearchParamValue(searchParams, "dateSort");
@@ -86,6 +69,23 @@ export const parseSearchQueryState = (searchParams: SearchParamSource): SearchQu
         ? deadlineSortId
         : SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
     locationId: locationId && isSearchLocationId(locationId) ? locationId : SEARCH_INITIAL_QUERY_STATE.locationId,
+  };
+};
+
+export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchRequestCategoryId => {
+  if (categoryId === "study" || categoryId === "project") {
+    return categoryId;
+  }
+
+  return "all";
+};
+
+export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchRequestQueryState => {
+  return {
+    categoryId: normalizeSearchCategoryId(queryState.categoryId),
+    dateSortId: queryState.dateSortId,
+    deadlineSortId: queryState.deadlineSortId,
+    locationId: queryState.locationId,
   };
 };
 
@@ -112,15 +112,4 @@ export const buildSearchHref = (pathname: string, queryState: SearchQueryState) 
   const queryString = searchParams.toString();
 
   return queryString ? `${pathname}?${queryString}` : pathname;
-};
-
-export const createSearchStateKey = (queryState: SearchQueryState) => {
-  const normalizedQueryState = normalizeSearchQueryState(queryState);
-
-  return [
-    normalizedQueryState.categoryId,
-    normalizedQueryState.dateSortId,
-    normalizedQueryState.locationId,
-    normalizedQueryState.deadlineSortId,
-  ].join(":");
 };

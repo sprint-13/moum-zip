@@ -1,6 +1,5 @@
 export {
   buildSearchHref,
-  createSearchStateKey,
   normalizeSearchCategoryId,
   normalizeSearchQueryState,
   parseSearchQueryState,
