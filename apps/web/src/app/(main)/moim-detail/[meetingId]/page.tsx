@@ -58,9 +58,9 @@ const EMPTY_USER: CurrentUserData = {
 const ERROR_FALLBACK = (
   <div className="flex h-full min-h-[60vh] items-center justify-center text-center">
     <p className="text-muted-foreground text-sm leading-relaxed">
-      요청하신 모임을 찾을 수 없습니다.
+      모임 정보를 불러오지 못했습니다.
       <br />
-      이미 삭제되었거나 존재하지 않는 모임일 수 있어요.
+      잠시 후 다시 시도해 주세요.
     </p>
   </div>
 );
