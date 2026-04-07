@@ -13,16 +13,16 @@ export const SEARCH_CATEGORIES: SearchCategory[] = [
 export const SEARCH_FILTERS: SearchFilter[] = [
   {
     id: "date",
-    label: "날짜 전체",
+    label: "최신/오래된 순",
     options: [
-      { id: "default", label: "날짜 전체" },
+      { id: "default", label: "최신/오래된 순" },
       { id: "latest", label: "최신 순" },
       { id: "oldest", label: "오래된 순" },
     ],
   },
   {
     id: "location",
-    label: "지역 전체",
+    label: "온/오프라인",
     options: [
       { id: "all", label: "온/오프라인" },
       { id: "online", label: "온라인" },
@@ -31,9 +31,9 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   },
   {
     id: "deadline",
-    label: "마감 임박",
+    label: "마감 빠른/느린 순",
     options: [
-      { id: "default", label: "마감 임박" },
+      { id: "default", label: "마감 빠른/느린 순" },
       { id: "fast", label: "마감 빠른 순" },
       { id: "slow", label: "마감 느린 순" },
     ],

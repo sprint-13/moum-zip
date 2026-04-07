@@ -1,7 +1,7 @@
 import type { SearchResultItem } from "@/entities/gathering";
 import { getGatheringCategoryLabel } from "@/entities/gathering";
 
-import { formatSearchDateChipLabel, formatSearchDeadlineLabel, formatSearchTimeChipLabel } from "./result-formatters";
+import { formatSearchDateChipLabel, formatSearchTimeChipLabel, getSearchDeadlineMeta } from "./result-formatters";
 import type { SpaceCardItem } from "./types";
 
 const FALLBACK_SPACE_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
@@ -10,16 +10,18 @@ const FALLBACK_SPACE_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURICompon
 
 export const mapSearchResultItemToSpaceCardItem = (item: SearchResultItem): SpaceCardItem => {
   const now = Date.now();
+  const { deadlineLabel, isRegistClosed } = getSearchDeadlineMeta(item.registrationEnd, now);
 
   return {
     category: getGatheringCategoryLabel(item.type),
     categoryId: item.type,
     currentParticipants: item.participantCount,
-    deadlineLabel: formatSearchDeadlineLabel(item.registrationEnd, now),
+    deadlineLabel,
     district: item.location,
     id: item.id,
     imageAlt: `${item.title} thumbnail`,
     imageSrc: item.image ?? FALLBACK_SPACE_IMAGE,
+    isRegistClosed,
     isLiked: item.isLiked,
     maxParticipants: item.capacity,
     metaChips: [

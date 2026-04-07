@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import MypagePage, { getMypagePageData, mypageTabs } from "@/_pages/mypage";
+import { getMypagePageData, MypageView, mypageTabs } from "@/_pages/mypage";
 import { getMyJoinedMeetings } from "@/_pages/mypage/queries/server";
 import { getApi, isAuth } from "@/shared/api/server";
 
@@ -28,7 +28,7 @@ export default async function Page() {
     });
 
     return (
-      <MypagePage
+      <MypageView
         initialFavoriteList={initialFavoriteList}
         profile={profile}
         tabs={mypageTabs}

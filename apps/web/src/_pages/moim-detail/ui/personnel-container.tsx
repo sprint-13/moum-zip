@@ -2,7 +2,7 @@
 
 import { Badge, CheckCircleIcon, ProgressBar } from "@ui/components";
 import { cn } from "@ui/lib/utils";
-
+import Image from "next/image";
 import type { PersonnelData } from "@/entities/moim-detail";
 
 interface PersonnelContainerProps {
@@ -49,7 +49,13 @@ export function PersonnelContainer({ data, className }: PersonnelContainerProps)
                     title={participant.name}
                   >
                     {participant.image ? (
-                      <img src={participant.image} alt={participant.name} className="h-full w-full object-cover" />
+                      <Image
+                        src={participant.image}
+                        alt={participant.name}
+                        width={32}
+                        height={32}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <span>{participant.name.slice(0, 1) || "?"}</span>
                     )}

@@ -6,8 +6,8 @@ import { Pencil } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
-import type { MypageProfile } from "../model/types";
-import ProfileAvatar from "./profile-avatar";
+import type { MypageProfile } from "@/_pages/mypage/model/types";
+import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -24,7 +24,7 @@ const ERROR_MESSAGES = {
 
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
+export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
   const nameInputId = useId();
   const emailInputId = useId();
   const titleId = useId();

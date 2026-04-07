@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@ui/lib/utils";
 import Image from "next/image";
-import { ProfileIcon } from "@/_pages/mypage/ui/profile-icon";
+import { cn } from "@/shared/lib/cn";
+import { ProfileIcon } from "@/shared/ui/profile-icon";
 
 interface ProfileAvatarProps {
   className?: string;
@@ -11,7 +11,7 @@ interface ProfileAvatarProps {
   alt?: string;
 }
 
-export default function ProfileAvatar({ className, iconClassName, src, alt = "프로필 이미지" }: ProfileAvatarProps) {
+export const ProfileAvatar = ({ className, iconClassName, src, alt = "프로필 이미지" }: ProfileAvatarProps) => {
   if (src) {
     return (
       <div
@@ -40,4 +40,4 @@ export default function ProfileAvatar({ className, iconClassName, src, alt = "�
       <ProfileIcon className={cn("h-full w-full", iconClassName)} aria-hidden="true" />
     </div>
   );
-}
+};

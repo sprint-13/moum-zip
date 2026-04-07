@@ -55,6 +55,7 @@ export interface SpaceCardItem {
   id: string;
   imageAlt: string;
   imageSrc: string;
+  isRegistClosed: boolean;
   isLiked?: boolean;
   maxParticipants: number;
   metaChips: SpaceCardMetaChip[];
