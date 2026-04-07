@@ -53,6 +53,13 @@ export const MoimDetailClient = ({
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
+  useEffect(() => {
+    setInformationData(initialInformationData);
+    setPersonnelData(initialPersonnelData);
+    setRecommendedMeetings(initialRecommendedMeetings);
+    setIsParticipating(initialIsParticipating);
+  }, [initialInformationData, initialPersonnelData, initialRecommendedMeetings, initialIsParticipating]);
+
   const handleToggleMeetingLike = async (): Promise<boolean> => {
     if (isFavoritePending) {
       return false;
@@ -114,24 +121,23 @@ export const MoimDetailClient = ({
         ? prev.currentParticipants + 1
         : Math.max(prev.currentParticipants - 1, 0);
 
-      let nextParticipants = prev.participants;
-
-      if (currentUser.id) {
-        if (nextParticipating) {
-          const optimisticParticipant: ParticipantData = {
-            id: currentUser.id,
-            name: currentUser.name ?? "나",
-            image: currentUser.image ?? null,
-          };
-
-          nextParticipants = [
-            optimisticParticipant,
-            ...prev.participants.filter((participant) => participant.id !== currentUser.id),
-          ];
-        } else {
-          nextParticipants = prev.participants.filter((participant) => participant.id !== currentUser.id);
-        }
+      if (!currentUser.id) {
+        return {
+          ...prev,
+          currentParticipants: nextCurrentParticipants,
+          extraCount: Math.max(nextCurrentParticipants - prev.participants.length, 0),
+        };
       }
+
+      const optimisticParticipant: ParticipantData = {
+        id: currentUser.id,
+        name: currentUser.name ?? "나",
+        image: currentUser.image ?? null,
+      };
+
+      const nextParticipants = nextParticipating
+        ? [...prev.participants.filter((participant) => participant.id !== currentUser.id), optimisticParticipant]
+        : prev.participants.filter((participant) => participant.id !== currentUser.id);
 
       return {
         ...prev,
@@ -152,16 +158,7 @@ export const MoimDetailClient = ({
         return;
       }
 
-      setIsParticipating(result.data.isJoined);
-      setInformationData((prev) => ({
-        ...prev,
-        isJoined: result.data.isJoined,
-        actionState: {
-          ...prev.actionState,
-          canJoin: !result.data.isJoined,
-          canCancelJoin: result.data.isJoined,
-        },
-      }));
+      router.refresh();
     } catch {
       setIsParticipating(previousIsJoined);
       setInformationData(previousInformationData);
