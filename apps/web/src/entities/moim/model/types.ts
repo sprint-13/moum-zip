@@ -1,1 +1,1 @@
-export type MoimFormState = { ok: false; error?: string };
+export type MoimFormState = { ok: false; error: string };
