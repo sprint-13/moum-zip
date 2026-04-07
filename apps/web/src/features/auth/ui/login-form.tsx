@@ -14,7 +14,6 @@ interface LoginFormValues {
   password: string;
 }
 
-// 에러 메시지 한국어 변환
 const ERROR_MESSAGES = {
   INVALID_CREDENTIALS: "이메일 또는 비밀번호가 올바르지 않아요.",
   INVALID_TOKEN: "인증 중 오류가 발생했어요. 다시 시도해주세요.",
@@ -22,7 +21,6 @@ const ERROR_MESSAGES = {
 } as const;
 
 export const LoginForm = () => {
-  // 서버 액션 상태 관리
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
   const {
@@ -30,10 +28,9 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormValues>({
-    mode: "onBlur", // 필드 입력 완료 후 넘어갈 때 유효성 검사
+    mode: "onBlur",
   });
 
-  // 유효성 검사 통과 후 → 서버 액션 호출
   const onSubmit = handleSubmit((data) => {
     const formData = new FormData();
     formData.append("email", data.email);
@@ -44,14 +41,14 @@ export const LoginForm = () => {
   });
 
   return (
-    <div className="flex w-full flex-col">
-      <h1 className="text-center font-semibold text-base text-foreground md:text-2xl">로그인</h1>
-      <form className="flex flex-col gap-6 pt-10" onSubmit={onSubmit}>
+    <div className="flex w-full flex-col pt-4">
+      <h1 className="text-center font-semibold text-foreground text-lg md:text-2xl">로그인</h1>
+      <form className="flex flex-col gap-5 pt-7" onSubmit={onSubmit}>
         <InputField
           label="아이디"
           placeholder="이메일을 입력해주세요"
           required
-          className="bg-input-background font-normal text-sm shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-base"
+          className="bg-input-background font-normal text-xs shadow-none placeholder:text-slate-500 aria-invalid:shadow-none aria-invalid:ring-0 md:text-sm"
           isDestructive={!!errors.email}
           message={errors.email?.message}
           {...register("email", {
@@ -74,18 +71,24 @@ export const LoginForm = () => {
         />
 
         {/* 서버에서 온 에러 메시지 표시 */}
-        {state && !state.ok && <p className="text-red-500 text-sm">{ERROR_MESSAGES[state.error]}</p>}
+        {state && !state.ok && (
+          <p role="alert" aria-live="polite" className="text-red-500 text-xs">
+            {ERROR_MESSAGES[state.error] ?? ERROR_MESSAGES.SERVER_ERROR}
+          </p>
+        )}
 
         <Button
           variant="tertiary"
           type="submit"
           disabled={isPending}
-          className="mt-2 bg-slate-100 text-base text-muted-foreground hover:bg-slate-200 md:text-xl"
+          className={`mt-2 mb-2 text-base transition-all md:text-lg ${
+            isPending ? "bg-green-500 text-white opacity-50" : "bg-green-500 text-white hover:bg-green-600"
+          }`}
         >
           {isPending ? "로그인 중..." : "로그인"}
         </Button>
       </form>
-      <div className="relative my-8 flex items-center gap-3">
+      <div className="relative my-6 flex items-center gap-3">
         <div className="flex-1 border-border border-t" />
         <span className="text-muted-foreground text-sm">SNS 계정으로 로그인</span>
         <div className="flex-1 border-border border-t" />
@@ -106,7 +109,7 @@ export const LoginForm = () => {
           }}
         />
       </div>
-      <p className="mt-8 text-center text-foreground text-sm md:text-[15px]">
+      <p className="mt-8 text-center text-foreground text-xs md:text-sm">
         모음.zip이 처음이신가요?{" "}
         <Link href={ROUTES.signup} className="font-semibold text-green-600 underline">
           회원가입
