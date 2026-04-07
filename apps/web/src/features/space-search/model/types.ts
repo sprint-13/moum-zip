@@ -1,8 +1,11 @@
-export type SearchCategoryId = "all" | "hobby" | "study" | "project" | "business" | "health" | "family" | "etc";
+import type { GatheringCategory } from "@/entities/gathering";
+
+export type SearchCategoryId = "all" | GatheringCategory;
 export type SearchFilterId = "date" | "location" | "deadline";
 export type SearchDateSortId = "default" | "latest" | "oldest";
 export type SearchLocationId = "all" | "online" | "offline";
 export type SearchDeadlineSortId = "default" | "fast" | "slow";
+export type SearchRequestCategoryId = "all" | "study" | "project";
 
 export interface SearchCategory {
   id: SearchCategoryId;
@@ -22,6 +25,13 @@ export interface SearchFilter {
 
 export interface SearchQueryState {
   categoryId: SearchCategoryId;
+  dateSortId: SearchDateSortId;
+  deadlineSortId: SearchDeadlineSortId;
+  locationId: SearchLocationId;
+}
+
+export interface SearchRequestQueryState {
+  categoryId: SearchRequestCategoryId;
   dateSortId: SearchDateSortId;
   deadlineSortId: SearchDeadlineSortId;
   locationId: SearchLocationId;

@@ -5,16 +5,9 @@ import type {
   SearchDeadlineSortId,
   SearchLocationId,
   SearchQueryState,
+  SearchRequestCategoryId,
+  SearchRequestQueryState,
 } from "./types";
-
-export type SearchResultsCategoryId = "all" | "study" | "project";
-
-export interface SearchResultsQueryState {
-  categoryId: SearchResultsCategoryId;
-  dateSortId: SearchDateSortId;
-  deadlineSortId: SearchDeadlineSortId;
-  locationId: SearchLocationId;
-}
 
 type SearchParamRecord = Record<string, string | string[] | undefined>;
 type SearchParamSource = SearchParamRecord | { get(name: string): string | null } | undefined;
@@ -62,7 +55,7 @@ const isSearchLocationId = (value: string): value is SearchLocationId => {
   return locationIds.has(value as SearchLocationId);
 };
 
-export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchResultsCategoryId => {
+export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchRequestCategoryId => {
   if (categoryId === "study" || categoryId === "project") {
     return categoryId;
   }
@@ -70,7 +63,7 @@ export const normalizeSearchCategoryId = (categoryId: SearchQueryState["category
   return "all";
 };
 
-export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchResultsQueryState => {
+export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchRequestQueryState => {
   return {
     categoryId: normalizeSearchCategoryId(queryState.categoryId),
     dateSortId: queryState.dateSortId,

@@ -6,12 +6,12 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import type { SearchResultsResponse } from "@/entities/gathering";
 
 import { searchQueryKeys } from "../model/query-keys";
-import type { SearchResultsQueryState } from "../model/search-params";
+import type { SearchRequestQueryState } from "../model/types";
 import { getSearchResults } from "./get-search-results";
 
 interface UseGetSearchResultsProps {
   isAuthenticated: boolean;
-  queryState: SearchResultsQueryState;
+  queryState: SearchRequestQueryState;
 }
 
 export const useGetSearchResults = ({ isAuthenticated, queryState }: UseGetSearchResultsProps) => {

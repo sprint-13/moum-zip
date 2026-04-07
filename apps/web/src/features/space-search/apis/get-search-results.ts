@@ -1,8 +1,8 @@
 import type { SearchResultsResponse } from "@/entities/gathering";
 
-import type { SearchResultsQueryState } from "../model/search-params";
+import type { SearchRequestQueryState } from "../model/types";
 
-interface GetSearchResultsRequest extends SearchResultsQueryState {
+interface GetSearchResultsRequest extends SearchRequestQueryState {
   cursor?: string | null;
   size?: number;
 }
