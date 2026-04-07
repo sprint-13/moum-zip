@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useMoimCreateForm } from "@/features/moim-create/hooks/use-moim-create-form";
 import { useMoimFormImageUpload } from "@/features/moim-create/hooks/use-moim-form-image-upload";
-import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
 
 export const MoimCreateForm = () => {
