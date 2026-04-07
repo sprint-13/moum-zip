@@ -1,51 +1,34 @@
-import type { InfiniteData } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { SearchHero } from "@/_pages/space-search";
 import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
+import { getSearchPrefetchQueryOptions } from "@/_pages/space-search/lib/search-prefetch-query-options";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
-import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
-import type { SearchResultsResponse } from "@/entities/gathering";
 import { normalizeSearchQueryState, parseSearchQueryState, SearchContentSection } from "@/features/space-search";
-import { searchQueryKeys } from "@/features/space-search/model/query-keys";
 import { SearchCreateButton } from "@/features/space-search/ui/space-search-create-button";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-interface SpacePageProps {
+interface SearchPageProps {
   searchParams?: Promise<SearchParams> | SearchParams;
 }
 
-export default async function SpacePage({ searchParams }: SpacePageProps) {
+export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
   const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
   const queryClient = getQueryClient();
-  const initialPageParam: string | null = null;
+  const searchPrefetchQueryOptions = getSearchPrefetchQueryOptions({
+    isAuthenticatedRequest,
+    meetingsApi,
+    queryState: normalizedQueryState,
+  });
 
   const [categories] = await Promise.all([
     getSearchCategories(),
-    queryClient.prefetchInfiniteQuery<
-      SearchResultsResponse,
-      Error,
-      InfiniteData<SearchResultsResponse, string | null>,
-      ReturnType<typeof searchQueryKeys.list>,
-      string | null
-    >({
-      queryKey: searchQueryKeys.list(normalizedQueryState, isAuthenticatedRequest),
-      queryFn: ({ pageParam }) =>
-        getSearchResults(
-          {
-            ...normalizedQueryState,
-            cursor: pageParam,
-          },
-          { isAuthenticatedRequest, meetingsApi },
-        ),
-      initialPageParam,
-      getNextPageParam: (lastPage: SearchResultsResponse) => lastPage.nextCursor ?? undefined,
-    }),
+    queryClient.prefetchInfiniteQuery(searchPrefetchQueryOptions),
   ]);
 
   return (
