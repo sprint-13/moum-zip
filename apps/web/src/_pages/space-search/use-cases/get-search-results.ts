@@ -94,7 +94,7 @@ const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAut
     return;
   }
 
-  console.warn("[search] direct search response is missing isFavorited", { meetingIds });
+  console.warn("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", { meetingIds });
 };
 
 export const getSearchResults = async (
