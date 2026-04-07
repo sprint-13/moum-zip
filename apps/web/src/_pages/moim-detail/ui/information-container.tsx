@@ -11,7 +11,7 @@ import type { InformationData } from "@/entities/moim-detail";
 import { LikeButton } from "@/features/moim-detail/ui/like-button";
 
 type ViewType = "member" | "manager";
-type ActionButtonVariant = "primary" | "secondary";
+type ActionButtonVariant = "primary" | "secondary" | "success";
 
 interface InformationContainerProps {
   data: InformationData;
@@ -38,19 +38,29 @@ const ActionButton = ({ label, onClick, variant = "primary", disabled = false }:
   const secondaryClassName =
     variant === "secondary" ? "border border-primary bg-white text-green-600 hover:bg-green-50" : "";
 
+  const successClassName =
+    variant === "success"
+      ? "border border-sky-200 bg-sky-50 text-sky-700 shadow-none cursor-default hover:bg-sky-50"
+      : "";
+
+  const disabledClassName = disabled && variant !== "success" ? "cursor-not-allowed opacity-60 active:scale-100" : "";
+
+  const resolvedVariant = variant === "success" ? "secondary" : variant;
+
   return (
     <>
       <Button
         type="button"
-        variant={variant}
+        variant={resolvedVariant}
         size="large"
         disabled={disabled}
         className={cn(
           "min-w-0 flex-1 max-sm:hidden",
           "transition-all duration-200 active:scale-[0.985]",
           "h-12 px-4 text-[15px]",
-          disabled && "cursor-not-allowed opacity-60 active:scale-100",
+          disabledClassName,
           secondaryClassName,
+          successClassName,
         )}
         onClick={onClick}
       >
@@ -59,15 +69,16 @@ const ActionButton = ({ label, onClick, variant = "primary", disabled = false }:
 
       <Button
         type="button"
-        variant={variant}
+        variant={resolvedVariant}
         size="small"
         disabled={disabled}
         className={cn(
           "hidden min-w-0 flex-1 max-sm:inline-flex",
           "transition-all duration-200 active:scale-[0.985]",
           "h-10 px-3 text-sm",
-          disabled && "cursor-not-allowed opacity-60 active:scale-100",
+          disabledClassName,
           secondaryClassName,
+          successClassName,
         )}
         onClick={onClick}
       >
@@ -94,7 +105,9 @@ export const InformationContainer = ({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isManager = viewType === "manager";
-  const isClosedMeeting = data.status === "full" || data.status === "canceled";
+  const canJoin = data.actionState.canJoin;
+  const canCancelJoin = data.actionState.canCancelJoin;
+  const isCanceledMeeting = data.status === "canceled";
 
   const tagItems = [
     {
@@ -151,7 +164,7 @@ export const InformationContainer = ({
   };
 
   const handleMainButtonClick = () => {
-    if (isManager || (isClosedMeeting && !isParticipating)) {
+    if (isManager) {
       return;
     }
 
@@ -160,7 +173,14 @@ export const InformationContainer = ({
       return;
     }
 
-    onParticipateToggle?.(data.id, !isParticipating);
+    if (canJoin) {
+      onParticipateToggle?.(data.id, true);
+      return;
+    }
+
+    if (canCancelJoin) {
+      onParticipateToggle?.(data.id, false);
+    }
   };
 
   const handleDeleteConfirm = () => {
@@ -179,24 +199,31 @@ export const InformationContainer = ({
         onClick: () => onShare?.(data.id),
         variant: "secondary",
       }
-    : isParticipating
+    : canCancelJoin
       ? {
           label: "신청 취소하기",
           onClick: handleMainButtonClick,
           variant: "secondary",
         }
-      : isClosedMeeting
+      : canJoin
         ? {
-            label: data.status === "canceled" ? "모집 취소" : "모집 마감",
-            onClick: () => undefined,
-            variant: "primary",
-            disabled: true,
-          }
-        : {
             label: "신청하기",
             onClick: handleMainButtonClick,
             variant: "primary",
-          };
+          }
+        : isParticipating
+          ? {
+              label: "신청 완료",
+              onClick: () => undefined,
+              variant: "success",
+              disabled: true,
+            }
+          : {
+              label: isCanceledMeeting ? "모집 취소" : "모집 마감",
+              onClick: () => undefined,
+              variant: "primary",
+              disabled: true,
+            };
 
   return (
     <>

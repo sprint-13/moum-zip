@@ -250,18 +250,25 @@ function getMeetingActionState(params: {
   viewerRole: ViewerRole;
   isJoined: boolean;
   status: MeetingStatus;
+  deadlinePassed: boolean;
 }): MeetingActionState {
-  const { viewerRole, isJoined, status } = params;
+  const { viewerRole, isJoined, status, deadlinePassed } = params;
 
   const isGuest = viewerRole === "guest";
   const isManager = viewerRole === "manager";
   const isMember = viewerRole === "member";
-  const canJoinStatus = status === "recruiting" || status === "confirmed";
+
+  const isCanceled = status === "canceled";
+  const isFull = status === "full";
+  const isClosedByDeadline = deadlinePassed;
+
+  const canJoin = isMember && !isJoined && !isCanceled && !isFull && !isClosedByDeadline;
+  const canCancelJoin = isMember && isJoined && !isClosedByDeadline && !isCanceled;
 
   return {
     canFavorite: !isManager,
-    canJoin: isMember && !isJoined && canJoinStatus,
-    canCancelJoin: isMember && isJoined,
+    canJoin,
+    canCancelJoin,
     canEdit: isManager,
     canDelete: isManager,
     requiresAuth: isGuest,
@@ -284,6 +291,8 @@ export function mapMeetingDetailToInformationData(params: {
     registrationEnd: meeting.registrationEnd,
   });
 
+  const deadlinePassed = isDeadlinePassed(meeting.registrationEnd);
+
   return {
     id: meeting.id,
     teamId: meeting.teamId,
@@ -303,6 +312,7 @@ export function mapMeetingDetailToInformationData(params: {
       viewerRole,
       isJoined,
       status,
+      deadlinePassed,
     }),
   };
 }
