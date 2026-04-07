@@ -7,11 +7,18 @@ type MoimFormState = { ok: false; error?: string };
 type MoimFormActionsProps = {
   state: MoimFormState | null;
   isPending: boolean;
+  isImageUploading?: boolean;
   submitLabel: string;
   onCancel: () => void;
 };
 
-export const FormActions = ({ state, isPending, submitLabel, onCancel }: MoimFormActionsProps) => {
+export const FormActions = ({
+  state,
+  isPending,
+  isImageUploading = false,
+  submitLabel,
+  onCancel,
+}: MoimFormActionsProps) => {
   return (
     <>
       <FieldError message={state?.error} />
@@ -22,6 +29,7 @@ export const FormActions = ({ state, isPending, submitLabel, onCancel }: MoimFor
           size="medium"
           className="min-w-0 flex-1 md:max-w-[216px]"
           onClick={onCancel}
+          disabled={isPending}
         >
           취소
         </Button>
@@ -31,7 +39,7 @@ export const FormActions = ({ state, isPending, submitLabel, onCancel }: MoimFor
           variant="primary"
           size="medium"
           className="min-w-0 flex-1 md:w-auto md:max-w-[216px]"
-          disabled={isPending}
+          disabled={isPending || isImageUploading}
         >
           {submitLabel}
         </Button>

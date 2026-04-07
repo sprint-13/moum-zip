@@ -1,16 +1,10 @@
 "use client";
 
 import type { FavoriteList } from "@moum-zip/api";
-import { useQuery } from "@tanstack/react-query";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { getSpaceSlugAction } from "../actions";
-import { useCreatedMeetings } from "../hooks/use-created-meetings";
+import { useMypageViewState } from "../hooks/use-mypage-view-state";
 import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "../model";
-import { getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
-import { applyFavoriteState, buildFavoriteMeetingIds, buildLikedMeetings, useToggleFavorite } from "../use-cases";
 import MoimCardList from "./moim-card-list";
 import ProfileSection from "./profile-section";
 
@@ -38,88 +32,27 @@ export default function MypageView({
   createdMoims,
   enableRemoteFetch = true,
 }: MypagePageProps) {
-  const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
-  const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
-  const favoriteMutation = useToggleFavorite(enableRemoteFetch);
-
   const {
-    data: joinedMeetingCards = moims.joined,
-    isError: isJoinedError,
-    refetch: refetchJoinedMeetings,
-  } = useQuery({
-    ...getJoinedMeetingsQueryOptions(moims.joined),
-    enabled: enableRemoteFetch && selectedTab === "joined",
+    createdFilter,
+    joinedMeetings,
+    createdMeetings,
+    likedMeetings,
+    isJoinedError,
+    isCreatedError,
+    isLikedError,
+    handleTabChange,
+    handleToggleLike,
+    handleEnterSpace,
+    refetchJoinedMeetings,
+    refetchCreatedMeetings,
+    refetchLikedMeetings,
+    setCreatedFilter,
+  } = useMypageViewState({
+    initialFavoriteList,
+    moims,
+    createdMoims,
+    enableRemoteFetch,
   });
-
-  const {
-    data: createdMeetingCards = createdMoims[createdFilter],
-    isError: isCreatedError,
-    refetch: refetchCreatedMeetings,
-  } = useCreatedMeetings(createdFilter, createdMoims[createdFilter], enableRemoteFetch && selectedTab === "created");
-
-  const {
-    data: favoriteList,
-    isError: isLikedError,
-    refetch: refetchLikedMeetings,
-  } = useQuery({
-    ...getFavoritesQueryOptions(initialFavoriteList),
-    enabled: enableRemoteFetch,
-  });
-
-  const favoriteMeetingIds = useMemo(
-    () => buildFavoriteMeetingIds(enableRemoteFetch ? favoriteList : undefined, moims.liked),
-    [enableRemoteFetch, favoriteList, moims.liked],
-  );
-
-  const joinedMeetings = useMemo(
-    () => applyFavoriteState(joinedMeetingCards, favoriteMeetingIds),
-    [favoriteMeetingIds, joinedMeetingCards],
-  );
-  const createdMeetings = useMemo(
-    () => applyFavoriteState(createdMeetingCards, favoriteMeetingIds),
-    [createdMeetingCards, favoriteMeetingIds],
-  );
-  const likedMeetings = useMemo(
-    () => buildLikedMeetings(enableRemoteFetch ? favoriteList : undefined, moims.liked, enableRemoteFetch),
-    [enableRemoteFetch, favoriteList, moims.liked],
-  );
-
-  const findMeetingById = (meetingId: string) => {
-    return (
-      joinedMeetings.find((meeting) => meeting.id === meetingId) ??
-      createdMeetings.find((meeting) => meeting.id === meetingId) ??
-      likedMeetings.find((meeting) => meeting.id === meetingId)
-    );
-  };
-
-  const handleToggleLike = (meetingId: string) => {
-    if (!enableRemoteFetch) {
-      return;
-    }
-
-    const meeting = findMeetingById(meetingId);
-
-    if (!meeting) {
-      return;
-    }
-
-    favoriteMutation.mutate({
-      meetingId: Number(meetingId),
-      nextLiked: !meeting.liked,
-    });
-  };
-
-  const handleEnterSpace = async (meetingId: string) => {
-    // 클릭 시 meetingId에 연결된 space slug를 찾아 스페이스 메인으로 이동합니다.
-    const result = await getSpaceSlugAction(Number(meetingId));
-
-    if (!result.ok) {
-      return;
-    }
-
-    router.push(`/${result.slug}`);
-  };
 
   return (
     <main className="no-scrollbar h-dvh overflow-y-auto bg-background-secondary px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
@@ -132,12 +65,7 @@ export default function MypageView({
             </div>
           </div>
 
-          <Tabs
-            defaultTab="joined"
-            size="large"
-            className="w-full min-w-0"
-            onTabChange={(tab) => setSelectedTab(tab as MypageTabKey)}
-          >
+          <Tabs defaultTab="joined" size="large" className="w-full min-w-0" onTabChange={handleTabChange}>
             <Tabs.List className="no-scrollbar w-full min-w-0 overflow-x-auto">
               {tabs.map((tab) => (
                 <Tabs.Trigger

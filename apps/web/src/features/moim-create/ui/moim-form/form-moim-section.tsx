@@ -13,9 +13,10 @@ import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 type FormMoimSectionProps = {
   form: UseFormReturn<MoimCreateFormValues>;
   onImageUpload: (onChange: (url: string) => void) => Promise<void>;
+  isImageUploading?: boolean;
 };
 
-export const FormMoimSection = ({ form, onImageUpload }: FormMoimSectionProps) => {
+export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false }: FormMoimSectionProps) => {
   const {
     control,
     register,
@@ -131,6 +132,7 @@ export const FormMoimSection = ({ form, onImageUpload }: FormMoimSectionProps) =
                     clearErrors("image");
                   }}
                   showUploadButton={!field.value}
+                  disabled={isImageUploading}
                 />
 
                 <FieldError message={fieldState.error?.message} />

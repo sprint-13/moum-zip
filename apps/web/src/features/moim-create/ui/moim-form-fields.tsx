@@ -16,6 +16,7 @@ interface MoimFormFieldsProps {
   onSubmit: (event?: React.BaseSyntheticEvent) => void;
   state: MoimFormState | null;
   isPending: boolean;
+  isImageUploading?: boolean;
   submitLabel: string;
   onCancel: () => void;
   onImageUpload: (onChange: (url: string) => void) => Promise<void>;
@@ -26,15 +27,22 @@ export const MoimFormFields = ({
   onSubmit,
   state,
   isPending,
+  isImageUploading = false,
   submitLabel,
   onCancel,
   onImageUpload,
 }: MoimFormFieldsProps) => {
   return (
     <form className="flex flex-col gap-6 rounded-3xl bg-white p-8 md:rounded-[40px] md:p-[48px]" onSubmit={onSubmit}>
-      <FormMoimSection form={form} onImageUpload={onImageUpload} />
+      <FormMoimSection form={form} onImageUpload={onImageUpload} isImageUploading={isImageUploading} />
       <FormSpaceSection form={form} />
-      <FormActions state={state} isPending={isPending} submitLabel={submitLabel} onCancel={onCancel} />
+      <FormActions
+        state={state}
+        isPending={isPending}
+        submitLabel={submitLabel}
+        onCancel={onCancel}
+        isImageUploading={isImageUploading}
+      />
     </form>
   );
 };
