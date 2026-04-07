@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { CATEGORY_LABELS, type Post } from "@/entities/post";
+import type { Post } from "@/entities/post";
+import { CATEGORY_LABELS } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
-import { deletePostAction } from "../actions";
+import { usePostDetail } from "../hooks/use-post-detail";
+import { useDeletePost } from "../hooks/use-post-mutations";
 
 const CATEGORY_COLOR: Record<Post["category"], string> = {
   notice: "bg-blue-50 text-blue-600 border-blue-100",
@@ -17,24 +18,24 @@ const CATEGORY_COLOR: Record<Post["category"], string> = {
 };
 
 interface PostArticleProps {
-  post: Post;
+  postId: string;
   slug: string;
   currentUserId: number;
   currentUserRole: Requester["role"];
 }
 
-export function PostArticle({ post, slug, currentUserId, currentUserRole }: PostArticleProps) {
+export function PostArticle({ postId, slug, currentUserId, currentUserRole }: PostArticleProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { data: post } = usePostDetail(slug, postId);
   const { open, openModal, closeModal } = useAlertModal();
+  const { mutate: deletePost, isPending } = useDeletePost(slug);
 
   const canEdit = currentUserId === post.authorId || currentUserRole === "manager";
 
   function handleDelete() {
     closeModal();
-    startTransition(async () => {
-      await deletePostAction(slug, post.id);
-      router.push(`/${slug}/bulletin`);
+    deletePost(postId, {
+      onSuccess: () => router.push(`/${slug}/bulletin`),
     });
   }
 

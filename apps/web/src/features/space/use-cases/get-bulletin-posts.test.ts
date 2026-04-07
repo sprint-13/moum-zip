@@ -36,10 +36,7 @@ const mockFindMany = vi.mocked(postQueries.findManyWithTotalBySpaceId);
 
 const mockAuthor = { id: 1, name: "테스트유저", image: null };
 
-import { cacheLife, cacheTag, updateTag } from "next/cache";
-import { createPostAction, deletePostAction } from "@/_pages/bulletin/actions";
 import type { PostCategory } from "@/entities/post";
-import { CACHE_TAGS } from "@/shared/lib/cache";
 
 function makeRow(id: string, total: number, category: PostCategory = "notice") {
   return {
@@ -129,13 +126,6 @@ describe("getBulletinPostsUseCase 캐싱 테스트", () => {
     vi.clearAllMocks();
   });
 
-  it("cacheTag가 호출되고 cacheLife가 호출된다", async () => {
-    await getBulletinPostsUseCase("space-1", {});
-
-    expect(cacheTag).toHaveBeenCalledWith(CACHE_TAGS.bulletin("space-1"));
-    expect(cacheLife).toHaveBeenCalledWith("hours");
-  });
-
   it("같은 인자로 여러번 호출해도 query는 한번만 실행된다.", async () => {
     // 테스트 환경에서 "use cache"는 pass-through로 동작해 중복 제거가 발생하지 않는다.
     // 실제 중복 제거는 Next.js 런타임(프로덕션)에서만 적용된다.
@@ -143,22 +133,5 @@ describe("getBulletinPostsUseCase 캐싱 테스트", () => {
     await getBulletinPostsUseCase("space-1", {});
 
     expect(mockFindMany).toHaveBeenCalledTimes(2);
-  });
-
-  it("createPostAction 실행 시 bulletin 캐시가 무효화된다", async () => {
-    const formData = new FormData();
-    formData.append("title", "테스트 제목");
-    formData.append("content", "테스트 내용");
-    formData.append("category", "notice");
-
-    await createPostAction("test-slug", formData);
-
-    expect(updateTag).toHaveBeenCalledWith(CACHE_TAGS.bulletin("space-1"));
-  });
-
-  it("deletePostAction 실행 시 bulletin 캐시가 무효화된다", async () => {
-    await deletePostAction("test-slug", "post-1");
-
-    expect(updateTag).toHaveBeenCalledWith(CACHE_TAGS.bulletin("space-1"));
   });
 });

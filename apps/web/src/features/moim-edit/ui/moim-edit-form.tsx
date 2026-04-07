@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
 import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
@@ -13,6 +14,7 @@ interface MoimEditFormProps {
 
 export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) => {
   const router = useRouter();
+  const [isImageUploading, setIsImageUploading] = useState(false);
   const { form, onSubmit, state, isPending } = useMoimEditForm({
     meetingId,
     initialValues,
@@ -29,6 +31,7 @@ export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) =>
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
+      setIsImageUploading(true);
       try {
         const publicUrl = await uploadImage(file);
         onChange(publicUrl);
@@ -38,6 +41,8 @@ export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) =>
           type: "manual",
           message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
         });
+      } finally {
+        setIsImageUploading(false);
       }
     };
 
@@ -50,6 +55,7 @@ export const MoimEditForm = ({ meetingId, initialValues }: MoimEditFormProps) =>
       onSubmit={onSubmit}
       state={state}
       isPending={isPending}
+      isImageUploading={isImageUploading}
       submitLabel={isPending ? "수정 중" : "수정하기"}
       onCancel={() => router.back()}
       onImageUpload={handleImageUpload}

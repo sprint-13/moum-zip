@@ -1,30 +1,29 @@
 "use client";
 
-import { useRef, useTransition } from "react";
-import { createCommentAction } from "../actions";
-
-// import type { Comment } from "@/entities/post";
-// import type { OptimisticAction } from "./comment-list";
+import { useRef } from "react";
+import type { Author } from "@/entities/post";
+import { useCreateComment } from "../hooks/use-comment-mutations";
 
 interface CommentFormProps {
   slug: string;
   postId: string;
-  // optimisticUpdate: (action: OptimisticAction) => void;
+  spaceId: string;
+  currentAuthor: Author;
 }
-// TODO: Optimstic하게 댓글 추가하려면 유저 정보 필요.
-export function CommentForm({ slug, postId }: CommentFormProps) {
+
+export function CommentForm({ slug, postId, spaceId, currentAuthor }: CommentFormProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
-  const [isPending, startTransition] = useTransition();
+  const { mutate: createComment, isPending } = useCreateComment(slug, postId, spaceId, currentAuthor);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const content = ref.current?.value.trim();
     if (!content) return;
 
-    startTransition(async () => {
-      // optimisticUpdate({type: "add", comment: });
-      await createCommentAction(slug, postId, content);
-      if (ref.current) ref.current.value = "";
+    createComment(content, {
+      onSuccess: () => {
+        if (ref.current) ref.current.value = "";
+      },
     });
   }
 
@@ -32,7 +31,7 @@ export function CommentForm({ slug, postId }: CommentFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <textarea
         ref={ref}
-        ria-label="댓글 내용"
+        aria-label="댓글 내용"
         placeholder="댓글을 입력하세요..."
         rows={3}
         disabled={isPending}
@@ -50,16 +49,3 @@ export function CommentForm({ slug, postId }: CommentFormProps) {
     </form>
   );
 }
-
-// function createOptimisticComment(content: string, postId: string, spaceId: string): Comment {
-//   return {
-//     id: crypto.randomUUID(),
-//     postId,
-//     spaceId,
-//     authorId: 1
-//     author: {id:1, name:'temp', image: null},
-//     content,
-//     createdAt: new Date(),
-//     updatedAt: null,
-//   };
-// }
