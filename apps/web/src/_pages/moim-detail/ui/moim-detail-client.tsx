@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
+import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
 import type { InformationData, ParticipantData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -170,42 +171,16 @@ export const MoimDetailClient = ({
   };
 
   const handleShare = async (targetMeetingId: number) => {
-    try {
-      const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
+    const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
 
-      if (!navigator.clipboard) {
-        const textArea = document.createElement("textarea");
-        textArea.value = shareUrl;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
+    const success = await copyToClipboard(shareUrl);
 
-        toast({
-          id: "share-link",
-          message: "모임 링크가 복사되었습니다.",
-          size: "small",
-          duration: 2000,
-        });
-        return;
-      }
-
-      await navigator.clipboard.writeText(shareUrl);
-
-      toast({
-        id: "share-link",
-        message: "모임 링크가 복사되었습니다.",
-        size: "small",
-        duration: 2000,
-      });
-    } catch {
-      toast({
-        id: "share-link-error",
-        message: "링크 복사에 실패했습니다.",
-        size: "small",
-        duration: 2000,
-      });
-    }
+    toast({
+      id: success ? "share-link" : "share-link-error",
+      message: success ? "모임 링크가 복사되었습니다." : "링크 복사에 실패했습니다.",
+      size: "small",
+      duration: 2000,
+    });
   };
 
   const handleEdit = (targetMeetingId: number) => {
