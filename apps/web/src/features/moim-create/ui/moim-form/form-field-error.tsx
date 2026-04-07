@@ -8,5 +8,9 @@ type FieldErrorProps = {
 export const FieldError = ({ message, className }: FieldErrorProps) => {
   if (!message) return null;
 
-  return <p className={cn("font-medium text-destructive text-sm leading-[1.2]", className)}>{message}</p>;
+  return (
+    <p role="alert" aria-live="polite" className={cn("font-medium text-destructive text-sm leading-[1.2]", className)}>
+      {message}
+    </p>
+  );
 };
