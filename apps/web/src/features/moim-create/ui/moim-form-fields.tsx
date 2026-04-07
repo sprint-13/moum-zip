@@ -19,6 +19,7 @@ interface MoimFormFieldsProps {
   onSubmit: (event?: React.BaseSyntheticEvent) => void;
   state: MoimFormState | null;
   isPending: boolean;
+  isImageUploading?: boolean;
   submitLabel: string;
   onCancel: () => void;
   onImageUpload: (onChange: (url: string) => void) => Promise<void>;
@@ -29,6 +30,7 @@ export const MoimFormFields = ({
   onSubmit,
   state,
   isPending,
+  isImageUploading = false,
   submitLabel,
   onCancel,
   onImageUpload,
@@ -153,6 +155,8 @@ export const MoimFormFields = ({
                 </p>
 
                 <FileInput
+                  disabled={isPending || isImageUploading}
+                  helperText={isImageUploading ? "업로드 중" : "파일 첨부"}
                   onUploadClick={() => onImageUpload(field.onChange)}
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
                   onPreviewRemove={() => {
@@ -283,7 +287,7 @@ export const MoimFormFields = ({
           variant="primary"
           size="medium"
           className="min-w-0 flex-1 md:w-auto md:max-w-[216px]"
-          disabled={isPending}
+          disabled={isPending || isImageUploading}
         >
           {submitLabel}
         </Button>
