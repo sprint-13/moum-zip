@@ -20,7 +20,7 @@ export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false 
   const {
     control,
     register,
-    clearErrors,
+    trigger,
     formState: { errors },
   } = form;
   return (
@@ -129,7 +129,7 @@ export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false 
                   previewItems={field.value ? [{ id: "1", imageUrl: field.value }] : []}
                   onPreviewRemove={() => {
                     field.onChange("");
-                    clearErrors("image");
+                    void trigger("image");
                   }}
                   showUploadButton={!field.value}
                   disabled={isImageUploading}
