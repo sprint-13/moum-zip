@@ -3,7 +3,7 @@ import { PostCategoryGuideCard, PostWritingTipsCard } from "@/_pages/bulletin";
 import { PostWriteForm } from "@/_pages/bulletin/ui/post-write-form";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
-import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
+import { getPostInfo } from "@/features/space/use-cases/get-post-detail";
 import { safe } from "@/shared/lib/safe";
 
 export default async function PostEditPage({
@@ -15,7 +15,7 @@ export default async function PostEditPage({
 
   const { membership } = await getSpaceContext(slug);
 
-  const { post } = await safe(getPostDetailUseCase(postId));
+  const post = await safe(getPostInfo(postId));
 
   const canEdit = membership.userId === post.authorId || membership.role === "manager";
   if (!canEdit) notFound();

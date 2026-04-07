@@ -24,7 +24,7 @@ export function PostItem({ post, slug }: PostItemProps) {
   return (
     <div className={`relative`}>
       <Link
-        href={`/${slug}/bulletin/${post.id}`}
+        href={`/${slug}/bulletin/${post.id}?title=${encodeURIComponent(post.title)}&author=${encodeURIComponent(post.author.name)}`}
         className="group block w-full cursor-pointer rounded-xl border border-primary/20 bg-background p-4 py-2 shadow-xs transition-all hover:shadow-sm"
       >
         <div className="flex flex-col gap-2">

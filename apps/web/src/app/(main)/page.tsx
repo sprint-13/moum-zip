@@ -11,12 +11,18 @@ import {
   spaceMd,
   spaceSm,
 } from "@/_pages/landing";
-import "@/_pages/landing/landing.css";
+import styles from "@/_pages/landing/landing.module.css";
+import { cn } from "@/shared/lib/cn";
 
 export default function Home() {
   return (
     <>
-      <section className="landing-bg-gradient flex min-h-[calc(100vh-var(--gnb-height))] flex-col overflow-hidden px-5 md:px-[56px] xl:p-0">
+      <section
+        className={cn(
+          styles["landing-bg-gradient"],
+          "flex min-h-[calc(100vh-var(--gnb-height))] flex-col overflow-hidden px-5 md:px-[56px] xl:p-0",
+        )}
+      >
         <div className="relative mx-auto flex w-full max-w-[1280px] flex-col gap-10 pt-[72px] md:pt-[136px] lg:flex-row lg:gap-0 lg:pt-[138px] xl:pt-[244px]">
           <div className="flex max-w-[580px] flex-col gap-6 md:gap-8 lg:gap-10">
             <h2 className="flex flex-col gap-2 font-bold text-3xl tracking-tight md:gap-[10px] md:text-5xl md:leading-[60px] lg:text-[56px] lg:leading-[68px]">
@@ -101,7 +107,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="landing-bg-gradient relative overflow-hidden px-5 py-[124px] md:py-[200px]">
+      <section className={cn(styles["landing-bg-gradient"], "relative overflow-hidden px-5 py-[124px] md:py-[200px]")}>
         <div className="pointer-events-none absolute inset-0">
           <Image src={bgStar} alt="" width={44} height={47} className="absolute top-1/2 left-[10%]" />
           <Image src={bgDoubleOval} alt="" width={390} height={260} className="absolute right-0 bottom-0 md:w-[40vw]" />
@@ -119,7 +125,7 @@ export default function Home() {
             <span className="relative mt-2 block text-green-600">모음.zip에서 함께 해요</span>
           </h2>
           <LandingCtaButton size="medium" className="min-w-0 max-w-[140px] md:hidden" />
-          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:block" />
+          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:inline-flex" />
         </div>
       </section>
     </>

@@ -2,15 +2,15 @@
 
 import { Pencil } from "@ui/icons";
 import { useState } from "react";
-import type { MypageProfile } from "../model/types";
-import ProfileAvatar from "./profile-avatar";
-import ProfileEditModal from "./profile-edit-modal";
+import type { MypageProfile } from "@/_pages/mypage/model/types";
+import { ProfileEditModal } from "@/_pages/mypage/ui/profile-edit-modal";
+import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileSectionProps {
   profile: MypageProfile;
 }
 
-export default function ProfileSection({ profile }: ProfileSectionProps) {
+export function ProfileSection({ profile }: ProfileSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

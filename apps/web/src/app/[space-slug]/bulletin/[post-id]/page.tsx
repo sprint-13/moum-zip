@@ -1,36 +1,38 @@
 import { after } from "next/server";
 import { Suspense } from "react";
 import { PostInfoCard } from "@/_pages/bulletin";
+import { CommentList } from "@/_pages/bulletin/ui/comment-list";
+import { PostArticle } from "@/_pages/bulletin/ui/post-article";
 import { postQueries } from "@/entities/post/queries";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
-import { getPostDetailUseCase } from "@/features/space/use-cases/get-post-detail";
-import { safe } from "@/shared/lib/safe";
-import { CommentSection } from "./_components/comment-section";
-import { PostArticleSection } from "./_components/post-article-section";
 
 export default async function PostDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ "space-slug": string; "post-id": string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { "space-slug": slug, "post-id": postId } = await params;
+  const { title = "", author = "" } = await searchParams;
 
   const { membership } = await getSpaceContext(slug);
-  // TODO: 이거 지우고 title, author는 url query로 받기.
-  const { post } = await safe(getPostDetailUseCase(postId));
 
   after(async () => {
     await postQueries.incrementViewCount(postId);
   });
-  // TODO: membership prop 제거하고 각 컴포넌트에서 getSpaceContext로 가져오기 (캐싱됨)
+
   return (
     <>
-      <SpaceHeader title={post.title} description={post.author.name} />
+      <SpaceHeader
+        title={typeof title === "string" ? title : ""}
+        description={typeof author === "string" ? author : ""}
+      />
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<PostArticleSkeleton />}>
-            <PostArticleSection
+            <PostArticle
               postId={postId}
               slug={slug}
               currentUserId={membership.userId}
@@ -38,11 +40,13 @@ export default async function PostDetailPage({
             />
           </Suspense>
           <Suspense fallback={<CommentSkeleton />}>
-            <CommentSection
+            <CommentList
               postId={postId}
               slug={slug}
+              spaceId={membership.spaceId}
               currentUserId={membership.userId}
               currentUserRole={membership.role}
+              currentAuthor={{ id: membership.userId, name: membership.nickname, image: membership.avatarUrl ?? null }}
             />
           </Suspense>
         </SpaceBodyLeft>

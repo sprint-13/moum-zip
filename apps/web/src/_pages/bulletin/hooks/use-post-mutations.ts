@@ -1,0 +1,56 @@
+"use client";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { PostCategory } from "@/entities/post";
+import { bulletinQueryKeys } from "../model/query-keys";
+
+export function useCreatePost(slug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { category: PostCategory; title: string; content: string; image?: string }) => {
+      const res = await fetch(`/api/spaces/${slug}/bulletin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "게시글 작성에 실패했습니다.");
+      return res.json() as Promise<{ postId: string }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+    },
+  });
+}
+
+export function useUpdatePost(slug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { postId: string; category: PostCategory; title: string; content: string }) => {
+      const { postId, ...rest } = body;
+      const res = await fetch(`/api/spaces/${slug}/bulletin/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(rest),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "게시글 수정에 실패했습니다.");
+      return res.json() as Promise<{ postId: string }>;
+    },
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+      queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.detail(slug, postId) });
+    },
+  });
+}
+
+export function useDeletePost(slug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const res = await fetch(`/api/spaces/${slug}/bulletin/${postId}`, { method: "DELETE" });
+      if (!res.ok && res.status !== 204) throw new Error("게시글 삭제에 실패했습니다.");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
+    },
+  });
+}

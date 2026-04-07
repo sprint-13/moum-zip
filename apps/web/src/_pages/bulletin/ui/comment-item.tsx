@@ -1,67 +1,56 @@
 "use client";
 
 import { toast } from "@moum-zip/ui/components";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import type { Comment } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
-import { deleteCommentAction, updateCommentAction } from "../actions";
-import type { OptimisticAction } from "./comment-list";
+import { useDeleteComment, useUpdateComment } from "../hooks/use-comment-mutations";
 
 interface CommentItemProps {
   comment: Comment;
   slug: string;
   postId: string;
-  optimisticUpdate: (action: OptimisticAction) => void;
   currentUserId: number;
   currentUserRole: Requester["role"];
 }
 
-export function CommentItem({
-  comment,
-  slug,
-  optimisticUpdate,
-  postId,
-  currentUserId,
-  currentUserRole,
-}: CommentItemProps) {
+export function CommentItem({ comment, slug, postId, currentUserId, currentUserRole }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
-  const [isPending, startTransition] = useTransition();
   const { open, openModal, closeModal } = useAlertModal();
+
+  const { mutate: updateComment, isPending: isUpdating } = useUpdateComment(slug, postId);
+  const { mutate: deleteComment, isPending: isDeleting } = useDeleteComment(slug, postId);
+  const isPending = isUpdating || isDeleting;
 
   const canEdit = currentUserId === comment.authorId || currentUserRole === "manager";
 
   function handleSave() {
     if (!editContent.trim()) return;
-    startTransition(async () => {
-      optimisticUpdate({ type: "update", id: comment.id, content: editContent.trim() });
-      try {
-        await updateCommentAction(slug, comment.id, postId, editContent.trim());
-      } catch {
-        toast({
-          message: "댓글 수정에 실패했습니다.",
-          size: "small",
-        });
-      }
-      setIsEditing(false);
-    });
+    updateComment(
+      { commentId: comment.id, content: editContent.trim() },
+      {
+        onSuccess: () => setIsEditing(false),
+        onError: () =>
+          toast({
+            message: "댓글 수정에 실패했습니다.",
+            size: "small",
+          }),
+      },
+    );
   }
 
   function handleDelete() {
-    startTransition(async () => {
-      optimisticUpdate({ type: "delete", id: comment.id });
-      closeModal();
-      try {
-        await deleteCommentAction(slug, comment.id, postId);
-      } catch {
+    closeModal();
+    deleteComment(comment.id, {
+      onError: () =>
         toast({
           message: "댓글 삭제에 실패했습니다.",
           size: "small",
-        });
-      }
+        }),
     });
   }
 
@@ -111,7 +100,7 @@ export function CommentItem({
               disabled={isPending || !editContent.trim()}
               className="rounded-lg bg-primary px-4 py-1.5 font-medium text-primary-foreground text-xs transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {isPending ? "저장 중..." : "저장"}
+              {isUpdating ? "저장 중..." : "저장"}
             </button>
             <button
               type="button"
