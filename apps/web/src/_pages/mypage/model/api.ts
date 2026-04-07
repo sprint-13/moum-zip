@@ -3,7 +3,6 @@ import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
 type MyMeetingsType = "joined" | "created";
-type SearchParamsQuery = Record<string, string | number | undefined>;
 type MeetingByType<TType extends MyMeetingsType> = TType extends "joined" ? JoinedMeeting : MeetingWithHost;
 
 export interface MyMeetingsQuery<TType extends MyMeetingsType = MyMeetingsType> {
@@ -34,11 +33,15 @@ export interface MyFavoritesQuery {
   cursor?: string;
 }
 
-const toSearchParams = (query: SearchParamsQuery) => {
+const toSearchParams = <TQuery extends object>(query: TQuery) => {
   const searchParams = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === "") {
+      return;
+    }
+
+    if (typeof value !== "string" && typeof value !== "number") {
       return;
     }
 
