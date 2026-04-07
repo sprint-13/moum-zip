@@ -94,9 +94,20 @@ export const MoimDetailClient = ({
 
     const previousIsJoined = isParticipating;
     const previousPersonnelData = personnelData;
+    const previousInformationData = informationData;
 
     setIsJoinPending(true);
     setIsParticipating(nextParticipating);
+
+    setInformationData((prev) => ({
+      ...prev,
+      isJoined: nextParticipating,
+      actionState: {
+        ...prev.actionState,
+        canJoin: !nextParticipating,
+        canCancelJoin: nextParticipating,
+      },
+    }));
 
     setPersonnelData((prev) => {
       const nextCurrentParticipants = nextParticipating
@@ -135,14 +146,25 @@ export const MoimDetailClient = ({
 
       if (!result.ok) {
         setIsParticipating(previousIsJoined);
+        setInformationData(previousInformationData);
         setPersonnelData(previousPersonnelData);
         toast({ message: result.message, size: "small" });
         return;
       }
 
       setIsParticipating(result.data.isJoined);
+      setInformationData((prev) => ({
+        ...prev,
+        isJoined: result.data.isJoined,
+        actionState: {
+          ...prev.actionState,
+          canJoin: !result.data.isJoined,
+          canCancelJoin: result.data.isJoined,
+        },
+      }));
     } catch {
       setIsParticipating(previousIsJoined);
+      setInformationData(previousInformationData);
       setPersonnelData(previousPersonnelData);
       toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
     } finally {
