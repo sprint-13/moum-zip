@@ -1,6 +1,21 @@
+"use client";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@moum-zip/ui/components/shadcn/dropdown-menu";
 import { MoreHorizontal } from "@moum-zip/ui/icons";
 import Image from "next/image";
+import { useTransition } from "react";
+import { changeRoleAction, kickMemberAction } from "@/_pages/members/action";
 import type { Member, MemberRole } from "@/entities/member";
+import { useSpaceContext } from "@/features/space";
 import { cn } from "@/shared/lib/cn";
 
 const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
@@ -10,7 +25,25 @@ const ROLE_CONFIG: Record<MemberRole, { label: string; className: string }> = {
 };
 
 export function MemberRow({ member }: { member: Member }) {
+  const { space, membership } = useSpaceContext();
+  const [isPending, startTransition] = useTransition();
   const role = ROLE_CONFIG[member.role];
+
+  const canKick = membership.role === "manager" || membership.role === "moderator";
+  const canChangeRole = membership.role === "manager";
+  const showActions = canKick || canChangeRole;
+
+  const handleKick = () => {
+    startTransition(async () => {
+      await kickMemberAction(space.slug, member.userId);
+    });
+  };
+
+  const handleChangeRole = (newRole: MemberRole) => {
+    startTransition(async () => {
+      await changeRoleAction(space.slug, member.userId, newRole);
+    });
+  };
 
   return (
     <div className="flex items-center border-[#e5e5e5] border-b last:border-0">
@@ -40,21 +73,50 @@ export function MemberRow({ member }: { member: Member }) {
         <span className={cn("rounded-full px-2.5 py-0.5 font-medium text-xs", role.className)}>{role.label}</span>
       </div>
 
-      {/* Status */}
-      <div className="flex w-[120px] shrink-0 items-center gap-1.5 p-3">
-        {/* <span className={cn("size-2 rounded-full", member === "online" ? "bg-green-500" : "bg-neutral-400")} />
-        <span className="text-foreground text-sm">{member === "online" ? "Online" : "Offline"}</span> */}
-      </div>
-
       {/* Actions */}
       <div className="flex w-20 shrink-0 items-center justify-center p-3">
-        <button
-          type="button"
-          aria-label={`${member.nickname} 멤버 액션 열기`}
-          className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <MoreHorizontal className="size-4" />
-        </button>
+        {showActions && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label={`${member.nickname} 멤버 액션 열기`}
+                className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <MoreHorizontal className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {canChangeRole && (
+                <>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="text-xs">역할 변경</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {(["manager", "moderator", "member"] as MemberRole[])
+                        .filter((r) => r !== member.role)
+                        .map((r) => (
+                          <DropdownMenuItem
+                            key={r}
+                            className="text-xs"
+                            onSelect={() => handleChangeRole(r)}
+                            disabled={isPending}
+                          >
+                            {ROLE_CONFIG[r].label}
+                          </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              {canKick && (
+                <DropdownMenuItem className="text-xs" variant="destructive" onSelect={handleKick} disabled={isPending}>
+                  추방
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   );
