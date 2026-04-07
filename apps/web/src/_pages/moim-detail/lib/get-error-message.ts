@@ -4,25 +4,29 @@ export const getErrorMessage = async (error: unknown) => {
   }
 
   if (error instanceof Response) {
+    let parsedMessage: string | null = null;
+
     try {
       const data = await error.clone().json();
 
       if (typeof data === "object" && data !== null && "message" in data && typeof data.message === "string") {
-        return data.message;
+        parsedMessage = data.message;
+      } else if (typeof data === "object" && data !== null && "error" in data && typeof data.error === "string") {
+        parsedMessage = data.error;
       }
+    } catch {}
 
-      if (typeof data === "object" && data !== null && "error" in data && typeof data.error === "string") {
-        return data.error;
-      }
-    } catch {
-      try {
-        const text = await error.clone().text();
-
-        if (text) {
-          return text;
-        }
-      } catch {}
+    if (parsedMessage) {
+      return parsedMessage;
     }
+
+    try {
+      const text = await error.clone().text();
+
+      if (text) {
+        return text;
+      }
+    } catch {}
 
     return `${error.status} ${error.statusText}`;
   }

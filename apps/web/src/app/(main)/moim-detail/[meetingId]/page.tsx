@@ -70,14 +70,26 @@ const hasArrayData = (value: unknown): value is ResponseWithArrayData => {
 };
 
 const parseMeetingsPage = <T,>(response: unknown): MeetingsPageResponse<T> => {
-  const resolved = isRecord(response) && "data" in response ? response.data : response;
-
-  if (hasArrayData(resolved)) {
+  if (hasArrayData(response)) {
     return {
-      data: resolved.data as T[],
-      nextCursor: typeof resolved.nextCursor === "string" ? resolved.nextCursor : null,
+      data: response.data as T[],
+      nextCursor: typeof response.nextCursor === "string" ? response.nextCursor : null,
     };
   }
+
+  if (isRecord(response) && "data" in response && hasArrayData(response.data)) {
+    return {
+      data: response.data.data as T[],
+      nextCursor:
+        typeof response.data.nextCursor === "string"
+          ? response.data.nextCursor
+          : typeof response.nextCursor === "string"
+            ? response.nextCursor
+            : null,
+    };
+  }
+
+  const resolved = isRecord(response) && "data" in response ? response.data : response;
 
   if (Array.isArray(resolved)) {
     return {
@@ -136,11 +148,19 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
   const currentUser = await getCurrentUserOrEmpty(apiClient);
 
   try {
-    const [meetingDetailResponse, participantsResponse, allMeetings] = await Promise.all([
+    const [meetingDetailResult, participantsResult, allMeetingsResult] = await Promise.allSettled([
       apiClient.meetings.getDetail(meetingId),
       apiClient.meetings.participants.getList(meetingId),
       getAllMeetings(apiClient),
     ]);
+
+    if (meetingDetailResult.status !== "fulfilled" || participantsResult.status !== "fulfilled") {
+      return ERROR_FALLBACK;
+    }
+
+    const meetingDetailResponse = meetingDetailResult.value;
+    const participantsResponse = participantsResult.value;
+    const allMeetings = allMeetingsResult.status === "fulfilled" ? allMeetingsResult.value : [];
 
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
     const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;

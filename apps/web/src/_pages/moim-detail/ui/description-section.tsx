@@ -22,7 +22,7 @@ export const DescriptionSection = ({
       <div
         className={cn(
           "rounded-[1rem] bg-white px-6 py-5 font-normal text-base text-gray-700 leading-[1.6]",
-          "md:px-8 md:text-[17Px]",
+          "md:px-8 md:text-[17px]",
           contentClassName,
         )}
       >

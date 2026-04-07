@@ -22,7 +22,13 @@ const MATCH_PRIORITY = {
 } as const;
 
 const getDeadlineTime = (date?: string | null) => {
-  return date ? new Date(date).getTime() : Number.MAX_SAFE_INTEGER;
+  if (!date) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const time = new Date(date).getTime();
+
+  return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
 };
 
 const normalizeType = (type?: string | null) => {
