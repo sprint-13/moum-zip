@@ -1,21 +1,22 @@
 import { cache } from "react";
 import { type SpaceInfo, spaceQueries } from "@/entities/spaces";
 import { getApi } from "@/shared/api/server";
+import { AppError } from "@/shared/lib/error";
 import { safe } from "@/shared/lib/safe";
 
 const getCachedMeetingDetail = cache(async (meetingId: number) => {
   const api = await getApi();
   return safe(api.meetings.getDetail(meetingId), {
-    default: (err) => {
-      throw Error("Failed to verify space access", { cause: err });
+    401: (err) => {
+      throw new AppError("UNAUTHENTICATED", err);
     },
   });
 });
 
 export const getSpaceInfoUseCase = async (slug: string): Promise<SpaceInfo> => {
   const dbSpace = await safe(spaceQueries.findBySlug(slug), {
-    default: (err) => {
-      throw new Error("space by slug query error", { cause: err });
+    notFound: () => {
+      throw new AppError("SPACE_NOT_FOUND");
     },
   });
 
