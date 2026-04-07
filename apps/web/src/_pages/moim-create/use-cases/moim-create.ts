@@ -1,5 +1,5 @@
 import { memberQueries } from "@/entities/member";
-import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
+import type { MoimCreateFormValues } from "@/entities/moim";
 import { spaceQueries } from "@/entities/spaces";
 import type { ApiClient } from "@/shared/api";
 
