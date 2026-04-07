@@ -13,6 +13,8 @@ interface UseSearchQueryStateProps {
   queryState: SearchQueryState;
 }
 
+type QueryStateUpdater = (currentQueryState: SearchQueryState) => SearchQueryState;
+
 const updateBrowserQueryState = (pathname: string, nextQueryState: SearchQueryState, historyMode: HistoryMode) => {
   const nextHref = buildSearchHref(pathname, nextQueryState);
 
@@ -44,25 +46,41 @@ export const useSearchQueryState = ({ queryState }: UseSearchQueryStateProps) =>
     };
   }, []);
 
-  const updateQueryState = (nextQueryState: SearchQueryState, historyMode: HistoryMode) => {
-    setActiveQueryState(nextQueryState);
-    updateBrowserQueryState(pathname, nextQueryState, historyMode);
+  const updateQueryState = (updater: QueryStateUpdater, historyMode: HistoryMode) => {
+    setActiveQueryState((currentQueryState) => {
+      const nextQueryState = updater(currentQueryState);
+
+      updateBrowserQueryState(pathname, nextQueryState, historyMode);
+      return nextQueryState;
+    });
   };
 
   const handleCategoryChange = (categoryId: SearchQueryState["categoryId"]) => {
-    updateQueryState(applySearchFilter(activeQueryState, { type: "category", categoryId }), "push");
+    updateQueryState(
+      (currentQueryState) => applySearchFilter(currentQueryState, { type: "category", categoryId }),
+      "push",
+    );
   };
 
   const handleDateSortChange = (dateSortId: SearchDateSortId) => {
-    updateQueryState(applySearchFilter(activeQueryState, { type: "date-sort", dateSortId }), "replace");
+    updateQueryState(
+      (currentQueryState) => applySearchFilter(currentQueryState, { type: "date-sort", dateSortId }),
+      "replace",
+    );
   };
 
   const handleLocationChange = (locationId: SearchLocationId) => {
-    updateQueryState(applySearchFilter(activeQueryState, { type: "location", locationId }), "replace");
+    updateQueryState(
+      (currentQueryState) => applySearchFilter(currentQueryState, { type: "location", locationId }),
+      "replace",
+    );
   };
 
   const handleDeadlineSortChange = (deadlineSortId: SearchDeadlineSortId) => {
-    updateQueryState(applySearchFilter(activeQueryState, { type: "deadline-sort", deadlineSortId }), "replace");
+    updateQueryState(
+      (currentQueryState) => applySearchFilter(currentQueryState, { type: "deadline-sort", deadlineSortId }),
+      "replace",
+    );
   };
 
   return {

@@ -81,6 +81,24 @@ export const normalizeSearchCategoryId = (categoryId: SearchQueryState["category
 };
 
 export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchRequestQueryState => {
+  if (queryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
+    return {
+      categoryId: normalizeSearchCategoryId(queryState.categoryId),
+      dateSortId: SEARCH_INITIAL_QUERY_STATE.dateSortId,
+      deadlineSortId: queryState.deadlineSortId,
+      locationId: queryState.locationId,
+    };
+  }
+
+  if (queryState.dateSortId !== SEARCH_INITIAL_QUERY_STATE.dateSortId) {
+    return {
+      categoryId: normalizeSearchCategoryId(queryState.categoryId),
+      dateSortId: queryState.dateSortId,
+      deadlineSortId: SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+      locationId: queryState.locationId,
+    };
+  }
+
   return {
     categoryId: normalizeSearchCategoryId(queryState.categoryId),
     dateSortId: queryState.dateSortId,

@@ -9,8 +9,8 @@ interface ResolveSortParamsInput {
   deadlineSortId?: "default" | "fast" | "slow";
 }
 
-export const normalizeMeetingType = (type: string): GatheringCategory => {
-  return normalizeGatheringCategory(type) ?? "project";
+export const normalizeMeetingType = (type: string): GatheringCategory | null => {
+  return normalizeGatheringCategory(type);
 };
 
 export const normalizeMeetingRegion = (region: string | null | undefined): GatheringLocation => {

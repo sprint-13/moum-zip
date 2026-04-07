@@ -53,7 +53,13 @@ const createSearchRequestParams = ({
   };
 };
 
-const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem => {
+const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem | null => {
+  const type = normalizeMeetingType(meeting.type);
+
+  if (!type) {
+    return null;
+  }
+
   return {
     address: meeting.address,
     capacity: meeting.capacity,
@@ -69,7 +75,7 @@ const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResu
     registrationEnd: meeting.registrationEnd,
     slug: "",
     title: meeting.name,
-    type: normalizeMeetingType(meeting.type),
+    type,
   };
 };
 
@@ -79,6 +85,7 @@ const createSearchResultItems = (
 ) => {
   return meetings
     .map(mapSearchMeetingToItem)
+    .filter((item): item is SearchResultItem => item !== null)
     .filter((item) => (categoryId === "all" ? true : item.type === categoryId))
     .filter((item) => (!locationId || locationId === "all" ? true : item.location === locationId));
 };

@@ -1,4 +1,5 @@
 const KST_TIME_ZONE = "Asia/Seoul";
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
@@ -26,7 +27,13 @@ const formatChipLabel = (dateTime: string | null, formatter: Intl.DateTimeFormat
     return fallbackLabel;
   }
 
-  return formatter.format(new Date(dateTime));
+  const formattedDate = new Date(dateTime);
+
+  if (Number.isNaN(formattedDate.getTime())) {
+    return fallbackLabel;
+  }
+
+  return formatter.format(formattedDate);
 };
 
 const toDeadlineTime = (registrationEnd: string | null) => {
@@ -45,6 +52,10 @@ const toDeadlineTime = (registrationEnd: string | null) => {
 
 const isSameDayInKst = (a: number, b: number) => {
   return kstDateFormatter.format(new Date(a)) === kstDateFormatter.format(new Date(b));
+};
+
+const getKstDayIndex = (time: number) => {
+  return Math.floor((time + KST_OFFSET_MS) / MS_PER_DAY);
 };
 
 export const formatSearchDateChipLabel = (dateTime: string | null) => {
@@ -81,7 +92,7 @@ export const getSearchDeadlineMeta = (registrationEnd: string | null, now: numbe
     };
   }
 
-  const remainingDays = Math.ceil(remainingTime / MS_PER_DAY);
+  const remainingDays = getKstDayIndex(deadlineTime) - getKstDayIndex(now);
 
   return {
     deadlineLabel: `${remainingDays}일 후 마감`,
