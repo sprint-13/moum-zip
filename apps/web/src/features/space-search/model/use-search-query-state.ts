@@ -47,12 +47,10 @@ export const useSearchQueryState = ({ queryState }: UseSearchQueryStateProps) =>
   }, []);
 
   const updateQueryState = (updater: QueryStateUpdater, historyMode: HistoryMode) => {
-    setActiveQueryState((currentQueryState) => {
-      const nextQueryState = updater(currentQueryState);
+    const nextQueryState = updater(activeQueryState);
 
-      updateBrowserQueryState(pathname, nextQueryState, historyMode);
-      return nextQueryState;
-    });
+    setActiveQueryState(nextQueryState);
+    updateBrowserQueryState(pathname, nextQueryState, historyMode);
   };
 
   const handleCategoryChange = (categoryId: SearchQueryState["categoryId"]) => {
