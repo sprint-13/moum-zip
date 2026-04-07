@@ -48,7 +48,14 @@ export const SpaceCardJoinButton = ({
 
   if (!isAuthenticated || disabled) {
     return (
-      <Button {...props} className={className} disabled={disabled} onClick={handleClick} size={size} variant={variant}>
+      <Button
+        {...props}
+        className={className}
+        disabled={disabled}
+        onClick={disabled ? undefined : handleClick}
+        size={size}
+        variant={variant}
+      >
         {children}
       </Button>
     );
