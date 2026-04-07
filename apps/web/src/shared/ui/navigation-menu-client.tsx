@@ -24,8 +24,6 @@ interface NavigationProfileAvatarProps {
 }
 
 const NavigationProfileAvatar = ({ imageUrl, name }: NavigationProfileAvatarProps) => {
-  const initial = name?.trim().charAt(0) || "?";
-
   if (imageUrl) {
     return (
       <div className="relative flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-card">
@@ -42,11 +40,19 @@ const NavigationProfileAvatar = ({ imageUrl, name }: NavigationProfileAvatarProp
 
   return (
     <div
-      className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-card font-semibold text-foreground text-sm"
+      className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-card"
       role="img"
       aria-label={name ? `${name} 프로필 이미지` : "프로필 이미지"}
     >
-      {initial}
+      <svg viewBox="0 0 24 24" className="size-6 text-muted-foreground" fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.25" fill="currentColor" opacity="0.5" />
+        <path
+          d="M6.75 18.25C6.75 15.9028 9.09779 14 12 14C14.9022 14 17.25 15.9028 17.25 18.25"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
     </div>
   );
 };
