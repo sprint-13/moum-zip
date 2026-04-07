@@ -1,12 +1,15 @@
 "use client";
 
+import { toast } from "@ui/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
+import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
+import { createMoimDetailInitialState, moimDetailReducer } from "@/_pages/moim-detail/model/moim-detail-reducer";
 import type { InformationData, ParticipantData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -26,7 +29,7 @@ interface MoimDetailClientProps {
   initialIsParticipating: boolean;
 }
 
-export function MoimDetailClient({
+export const MoimDetailClient = ({
   meetingId,
   currentUser,
   initialInformationData,
@@ -34,168 +37,163 @@ export function MoimDetailClient({
   initialPersonnelData,
   initialRecommendedMeetings,
   initialIsParticipating,
-}: MoimDetailClientProps) {
+}: MoimDetailClientProps) => {
   const router = useRouter();
+  const loginRedirectPath = `/login?redirect=%2Fmoim-detail%2F${meetingId}`;
 
-  const [informationData, setInformationData] = useState<InformationData>(initialInformationData);
-  const [personnelData, setPersonnelData] = useState<PersonnelData>(initialPersonnelData);
-  const [recommendedMeetings, setRecommendedMeetings] = useState<RecommendedMeetingData[]>(initialRecommendedMeetings);
-  const [isParticipating, setIsParticipating] = useState(initialIsParticipating);
-
-  const [isFavoritePending, setIsFavoritePending] = useState(false);
-  const [isJoinPending, setIsJoinPending] = useState(false);
-  const [isDeletePending, setIsDeletePending] = useState(false);
-  const [pendingRecommendedLikeIds, setPendingRecommendedLikeIds] = useState<number[]>([]);
+  const [state, dispatch] = useReducer(
+    moimDetailReducer,
+    {
+      initialInformationData,
+      initialPersonnelData,
+      initialRecommendedMeetings,
+      initialIsParticipating,
+    },
+    createMoimDetailInitialState,
+  );
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
+  useEffect(() => {
+    dispatch({
+      type: "RESET",
+      payload: {
+        informationData: initialInformationData,
+        personnelData: initialPersonnelData,
+        recommendedMeetings: initialRecommendedMeetings,
+        isParticipating: initialIsParticipating,
+      },
+    });
+  }, [initialInformationData, initialPersonnelData, initialRecommendedMeetings, initialIsParticipating]);
+
   const handleToggleMeetingLike = async (): Promise<boolean> => {
-    if (isFavoritePending) {
+    if (state.pendingAction === "favorite") {
       return false;
     }
 
     if (!currentUser.id) {
-      router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
+      router.push(loginRedirectPath);
       return false;
     }
 
-    setIsFavoritePending(true);
+    dispatch({ type: "SET_PENDING_ACTION", payload: "favorite" });
 
     try {
-      const result = await favoriteMeetingAction(informationData.id, informationData.isLiked);
+      const result = await favoriteMeetingAction(state.informationData.id, state.informationData.isLiked);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return false;
       }
 
-      setInformationData((prev) => ({
-        ...prev,
-        isLiked: result.data.isLiked,
-      }));
+      dispatch({
+        type: "TOGGLE_MEETING_LIKE",
+        payload: result.data.isLiked,
+      });
 
       return true;
     } catch {
-      alert("좋아요 처리 중 오류가 발생했습니다.");
+      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
       return false;
     } finally {
-      setIsFavoritePending(false);
+      dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
   };
 
-  const handleParticipateToggle = async (_id: number, nextParticipating: boolean) => {
-    if (isJoinPending) {
+  const handleParticipateToggle = async (targetMeetingId: number, nextParticipating: boolean) => {
+    if (state.pendingAction === "join") {
       return;
     }
 
-    const previousIsJoined = isParticipating;
-    const previousPersonnelData = personnelData;
+    const previousState = {
+      informationData: state.informationData,
+      personnelData: state.personnelData,
+      isParticipating: state.isParticipating,
+    };
 
-    setIsJoinPending(true);
-
-    // 낙관적 업데이트
-    setIsParticipating(nextParticipating);
-    setPersonnelData((prev) => {
-      const nextCurrentParticipants = nextParticipating
-        ? prev.currentParticipants + 1
-        : Math.max(prev.currentParticipants - 1, 0);
-
-      let nextParticipants = prev.participants;
-
-      if (currentUser.id) {
-        if (nextParticipating) {
-          const optimisticParticipant: ParticipantData = {
-            id: currentUser.id,
-            name: currentUser.name ?? "나",
-            image: currentUser.image ?? null,
-          };
-
-          nextParticipants = [
-            optimisticParticipant,
-            ...prev.participants.filter((participant) => participant.id !== currentUser.id),
-          ];
-        } else {
-          nextParticipants = prev.participants.filter((participant) => participant.id !== currentUser.id);
+    const optimisticParticipant: ParticipantData | null = currentUser.id
+      ? {
+          id: currentUser.id,
+          name: currentUser.name ?? "나",
+          image: currentUser.image ?? null,
         }
-      }
+      : null;
 
-      return {
-        ...prev,
-        currentParticipants: nextCurrentParticipants,
-        participants: nextParticipants,
-        extraCount: Math.max(nextCurrentParticipants - nextParticipants.length, 0),
-      };
+    dispatch({ type: "SET_PENDING_ACTION", payload: "join" });
+
+    dispatch({
+      type: "OPTIMISTIC_PARTICIPATION",
+      payload: {
+        nextParticipating,
+        participant: optimisticParticipant,
+        userId: currentUser.id,
+      },
     });
 
     try {
-      const result = await joinMeetingAction(informationData.id, previousIsJoined);
+      const result = await joinMeetingAction(targetMeetingId, previousState.isParticipating);
 
       if (!result.ok) {
-        setIsParticipating(previousIsJoined);
-        setPersonnelData(previousPersonnelData);
-        alert(result.message);
+        dispatch({
+          type: "ROLLBACK_PARTICIPATION",
+          payload: previousState,
+        });
+        toast({ message: result.message, size: "small" });
         return;
       }
 
-      setIsParticipating(result.data.isJoined);
+      router.refresh();
     } catch {
-      setIsParticipating(previousIsJoined);
-      setPersonnelData(previousPersonnelData);
-      alert("참여 처리 중 오류가 발생했습니다.");
+      dispatch({
+        type: "ROLLBACK_PARTICIPATION",
+        payload: previousState,
+      });
+      toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
     } finally {
-      setIsJoinPending(false);
+      dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
   };
 
-  const handleShare = async (_id: number) => {
-    try {
-      const shareUrl = `${window.location.origin}/moim-detail/${meetingId}`;
+  const handleShare = async (targetMeetingId: number) => {
+    const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
 
-      if (!navigator.clipboard) {
-        const textArea = document.createElement("textarea");
-        textArea.value = shareUrl;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        alert("모임 링크가 복사되었습니다.");
-        return;
-      }
+    const success = await copyToClipboard(shareUrl);
 
-      await navigator.clipboard.writeText(shareUrl);
-      alert("모임 링크가 복사되었습니다.");
-    } catch {
-      alert("링크 복사에 실패했습니다.");
-    }
+    toast({
+      id: success ? "share-link" : "share-link-error",
+      message: success ? "모임 링크가 복사되었습니다." : "링크 복사에 실패했습니다.",
+      size: "small",
+      duration: 2000,
+    });
   };
 
   const handleEdit = (targetMeetingId: number) => {
     router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
   };
 
-  const handleDelete = async (_id: number) => {
-    if (isDeletePending) {
+  const handleDelete = async (targetMeetingId: number) => {
+    if (state.pendingAction === "delete") {
       return;
     }
 
-    setIsDeletePending(true);
+    dispatch({ type: "SET_PENDING_ACTION", payload: "delete" });
 
     try {
-      const result = await deleteMeetingAction(informationData.id);
+      const result = await deleteMeetingAction(targetMeetingId);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return;
       }
 
-      alert("모임이 삭제되었습니다.");
+      toast({ message: "모임이 삭제되었습니다.", size: "small" });
       router.replace(ROUTES.search);
     } catch {
-      alert("모임 삭제 중 오류가 발생했습니다.");
+      toast({ message: "모임 삭제 중 오류가 발생했습니다.", size: "small" });
     } finally {
-      setIsDeletePending(false);
+      dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
   };
 
@@ -204,60 +202,63 @@ export function MoimDetailClient({
   };
 
   const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
-    if (pendingRecommendedLikeIds.includes(targetMeetingId)) {
+    if (state.pendingRecommendedLikeIds.includes(targetMeetingId)) {
       return false;
     }
 
     if (!currentUser.id) {
-      router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
+      router.push(loginRedirectPath);
       return false;
     }
 
-    const targetMeeting = recommendedMeetings.find((meeting) => meeting.id === targetMeetingId);
+    const targetMeeting = state.recommendedMeetings.find((meeting) => meeting.id === targetMeetingId);
 
     if (!targetMeeting) {
       return false;
     }
 
-    setPendingRecommendedLikeIds((prev) => [...prev, targetMeetingId]);
+    dispatch({
+      type: "ADD_PENDING_RECOMMENDED_LIKE",
+      payload: targetMeetingId,
+    });
 
     try {
       const result = await favoriteMeetingAction(targetMeeting.id, targetMeeting.isLiked);
 
       if (!result.ok) {
-        alert(result.message);
+        toast({ message: result.message, size: "small" });
         return false;
       }
 
-      setRecommendedMeetings((prev) =>
-        prev.map((meeting) =>
-          meeting.id === targetMeetingId
-            ? {
-                ...meeting,
-                isLiked: result.data.isLiked,
-              }
-            : meeting,
-        ),
-      );
+      dispatch({
+        type: "UPDATE_RECOMMENDED_MEETING_LIKE",
+        payload: {
+          meetingId: targetMeetingId,
+          isLiked: result.data.isLiked,
+        },
+      });
 
       return true;
     } catch {
-      alert("좋아요 처리 중 오류가 발생했습니다.");
+      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
       return false;
     } finally {
-      setPendingRecommendedLikeIds((prev) => prev.filter((id) => id !== targetMeetingId));
+      dispatch({
+        type: "REMOVE_PENDING_RECOMMENDED_LIKE",
+        payload: targetMeetingId,
+      });
     }
   };
 
-  const viewType = informationData.viewerRole === "manager" ? "manager" : "member";
+  const viewType = state.informationData.viewerRole === "manager" ? "manager" : "member";
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-[1312px] flex-col gap-[78px] px-4 pt-6 pb-24 md:px-6 md:pt-10 xl:px-12">
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-stretch">
-          <div className="relative mx-auto aspect-[630/443] w-full max-w-[630px] overflow-hidden rounded-[20px] md:rounded-[32px]">
-            {informationData.image ? (
-              <Image src={informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pt-6 pb-20 sm:px-6 lg:pt-8">
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
+          <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
+            {state.informationData.image ? (
+              <Image src={state.informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
                 이미지 영역
@@ -265,12 +266,12 @@ export function MoimDetailClient({
             )}
           </div>
 
-          <div className="flex h-full w-full flex-col gap-5">
+          <div className="flex h-full w-full flex-col gap-4">
             <InformationContainer
-              data={informationData}
+              data={state.informationData}
               viewType={viewType}
               isLoggedIn={!!currentUser.id}
-              isParticipating={isParticipating}
+              isParticipating={state.isParticipating}
               onToggleLike={handleToggleMeetingLike}
               onParticipateToggle={handleParticipateToggle}
               onShare={handleShare}
@@ -279,18 +280,18 @@ export function MoimDetailClient({
               onLoginAction={handleLoginAction}
             />
 
-            <PersonnelContainer data={personnelData} />
+            <PersonnelContainer data={state.personnelData} />
           </div>
         </section>
 
         <DescriptionSection description={initialDescription} />
 
-        <section className="flex flex-col gap-5">
-          <h2 className="font-semibold text-2xl text-black leading-[1.4]">이런 모임은 어때요?</h2>
+        <section className="flex flex-col gap-4">
+          <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5 xl:grid-cols-4">
-            {recommendedMeetings.map((meeting) => {
-              const isRecommendedLikePending = pendingRecommendedLikeIds.includes(meeting.id);
+          <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
+            {state.recommendedMeetings.map((meeting) => {
+              const isRecommendedLikePending = state.pendingRecommendedLikeIds.includes(meeting.id);
 
               return (
                 <Link
@@ -322,7 +323,7 @@ export function MoimDetailClient({
                     locationIcon={<LocationIcon />}
                     locationText={meeting.locationText}
                     isLiked={meeting.isLiked}
-                    onLikeClick={() => {
+                    onLike={() => {
                       if (isRecommendedLikePending) {
                         return false;
                       }
@@ -338,4 +339,4 @@ export function MoimDetailClient({
       </main>
     </div>
   );
-}
+};

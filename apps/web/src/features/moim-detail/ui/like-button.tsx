@@ -10,10 +10,10 @@ import HeartDefaultIcon from "@/shared/assets/heart-default.svg";
 interface LikeButtonProps {
   isLiked?: boolean;
   className?: string;
-  onClick?: () => boolean | Promise<boolean>;
+  onLike?: () => boolean | Promise<boolean>;
 }
 
-export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonProps) => {
+export const LikeButton = ({ isLiked = false, className, onLike }: LikeButtonProps) => {
   const [optimisticIsLiked, setOptimisticIsLiked] = useState(isLiked);
   const [isPending, startTransition] = useTransition();
 
@@ -22,6 +22,10 @@ export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonPr
   }, [isLiked]);
 
   const handleClick = () => {
+    if (isPending) {
+      return;
+    }
+
     const previousIsLiked = optimisticIsLiked;
     const nextIsLiked = !previousIsLiked;
 
@@ -29,7 +33,8 @@ export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonPr
 
     startTransition(async () => {
       try {
-        const succeeded = (await onClick?.()) ?? true;
+        const succeeded = (await onLike?.()) ?? true;
+
         if (!succeeded) {
           setOptimisticIsLiked(previousIsLiked);
         }
@@ -47,7 +52,7 @@ export const LikeButton = ({ isLiked = false, className, onClick }: LikeButtonPr
       aria-label={optimisticIsLiked ? "좋아요 취소" : "좋아요 추가"}
       onClick={handleClick}
       disabled={isPending}
-      className={cn("h-10 w-10 shrink-0 sm:h-[60px] sm:w-[60px]", className)}
+      className={cn("h-10 w-10 shrink-0 sm:h-15 sm:w-15", className)}
       icon={() => (
         <span className="inline-flex items-center justify-center">
           <Icon aria-hidden="true" className="block h-5 w-5 sm:h-8 sm:w-8" />
