@@ -17,7 +17,7 @@ export const FormDateTimeRow = ({ control, dateName, timeName, label }: FormDate
     <>
       <FormLabel label={label} required className="pb-2" />
 
-      <div className="flex max-w-[456px] flex-col gap-4 md:flex-row">
+      <div className="flex flex-col gap-4 md:flex-row">
         <Controller
           control={control}
           name={dateName}

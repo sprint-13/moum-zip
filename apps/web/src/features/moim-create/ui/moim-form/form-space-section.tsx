@@ -18,7 +18,7 @@ export const FormSpaceSection = ({ form }: FormSpaceSectionProps) => {
       <h3 className="font-semibold text-foreground text-xl md:text-2xl">스페이스</h3>
 
       <div className="flex flex-col justify-between gap-[56px] md:flex-row">
-        <div className="max-w-[456px] flex-1">
+        <div className="flex-1">
           <Controller
             control={control}
             name="themeColor"

@@ -31,7 +31,7 @@ export const MoimFormFields = ({
   onImageUpload,
 }: MoimFormFieldsProps) => {
   return (
-    <form className="flex flex-col gap-6 rounded-[40px] bg-white p-8 md:p-[48px]" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-6 rounded-3xl bg-white p-8 md:rounded-[40px] md:p-[48px]" onSubmit={onSubmit}>
       <FormMoimSection form={form} onImageUpload={onImageUpload} />
       <FormSpaceSection form={form} />
       <FormActions state={state} isPending={isPending} submitLabel={submitLabel} onCancel={onCancel} />

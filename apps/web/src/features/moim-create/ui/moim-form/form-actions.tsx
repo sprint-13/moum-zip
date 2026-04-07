@@ -15,7 +15,7 @@ export const FormActions = ({ state, isPending, submitLabel, onCancel }: MoimFor
   return (
     <>
       <FieldError message={state?.error} />
-      <div className="flex gap-4 pt-[80px] md:justify-end">
+      <div className="flex gap-4 pt-5 md:justify-end md:pt-[80px]">
         <Button
           type="button"
           variant="tertiary"

@@ -61,6 +61,7 @@ export const FormMoimSection = ({ form, onImageUpload }: FormMoimSectionProps) =
             isDestructive={!!errors.name}
             message={errors.name?.message}
             {...register("name")}
+            className="w-full max-md:max-w-full"
           />
 
           <InputField
@@ -78,6 +79,7 @@ export const FormMoimSection = ({ form, onImageUpload }: FormMoimSectionProps) =
                 event.preventDefault();
               }
             }}
+            className="w-full max-md:max-w-full"
           />
 
           <Controller
@@ -112,6 +114,7 @@ export const FormMoimSection = ({ form, onImageUpload }: FormMoimSectionProps) =
             isDestructive={!!errors.description}
             message={errors.description?.message}
             {...register("description")}
+            className="w-full max-md:max-w-full"
           />
 
           <Controller
