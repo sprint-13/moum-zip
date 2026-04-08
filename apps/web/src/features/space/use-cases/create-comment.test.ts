@@ -5,11 +5,15 @@ vi.mock("@/entities/post/queries", () => ({
   commentQueries: {
     create: vi.fn(),
   },
+  postQueries: {
+    findById: vi.fn(),
+  },
 }));
 
-import { commentQueries } from "@/entities/post/queries";
+import { commentQueries, postQueries } from "@/entities/post/queries";
 
 const mockCreate = vi.mocked(commentQueries.create);
+const mockFindById = vi.mocked(postQueries.findById);
 
 const BASE_INPUT = {
   postId: "post-1",
@@ -22,6 +26,7 @@ describe("createCommentUseCase", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreate.mockResolvedValue({ id: "comment-uuid", ...BASE_INPUT, createdAt: new Date(), updatedAt: new Date() });
+    mockFindById.mockResolvedValue([{ post: { spaceId: BASE_INPUT.spaceId } } as never]);
   });
 
   it("commentQueries.create를 올바른 인자로 호출한다", async () => {

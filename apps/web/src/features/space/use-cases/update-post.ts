@@ -1,9 +1,11 @@
 import type { PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
+import { AppError } from "@/shared/lib/error";
 import { assertPermission, type Requester } from "../lib/assert-permission";
 
 export interface UpdatePostInput {
   postId: string;
+  spaceId: string;
   title: string;
   content: string;
   category: PostCategory;
@@ -20,7 +22,7 @@ export async function updatePostUseCase(input: UpdatePostInput, requester: Reque
 
   const rows = await postQueries.findById(input.postId);
   const post = rows[0]?.post;
-  if (!post) throw new Error("게시글을 찾을 수 없습니다.");
+  if (!post || post.spaceId !== input.spaceId) throw new AppError("POST_NOT_FOUND");
 
   assertPermission(post.authorId, requester);
 

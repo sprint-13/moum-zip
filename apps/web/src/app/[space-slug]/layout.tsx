@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { SpaceSidebar } from "@/_pages/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { SpaceProvider } from "@/features/space/lib/space-context-provider";
+import { handleAppError } from "@/shared/lib/handle-app-error";
 import { QueryProvider } from "@/shared/providers/query-client-provider";
 
 // layout에서 인증·스페이스·멤버십 검증을 수행한다.
@@ -18,7 +19,7 @@ async function SpaceLayoutContent({
 }) {
   const slug = (await params)["space-slug"];
 
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
 
   return (
     <SpaceProvider value={{ space, membership }}>
