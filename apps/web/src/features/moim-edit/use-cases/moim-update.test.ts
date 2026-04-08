@@ -16,11 +16,15 @@ vi.mock("@/entities/spaces");
 
 const mockUpdateSpace = vi.mocked(spaceQueries.updateByMeetingId);
 
+const mockGetDetail = vi.fn();
 const mockUpdate = vi.fn();
 
 type AuthedApi = ApiClient;
 const mockAuthedApi = {
-  meetings: { update: mockUpdate },
+  meetings: {
+    getDetail: mockGetDetail,
+    update: mockUpdate,
+  },
 } as unknown as AuthedApi;
 
 const mockDeps = {
@@ -59,6 +63,13 @@ const mockSpaceResult = {
 describe("updateMoim", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mockGetDetail.mockResolvedValue({
+      data: {
+        hostId: 1,
+      },
+    });
+
     mockUpdate.mockResolvedValue({ ok: true, data: { id: 20 } });
     mockUpdateSpace.mockResolvedValue(mockSpaceResult);
   });
@@ -71,6 +82,9 @@ describe("updateMoim", () => {
       },
       mockDeps,
     );
+
+    expect(mockGetDetail).toHaveBeenCalledOnce();
+    expect(mockGetDetail).toHaveBeenCalledWith(20);
 
     expect(mockUpdate).toHaveBeenCalledOnce();
     expect(mockUpdateSpace).toHaveBeenCalledOnce();
@@ -109,6 +123,8 @@ describe("updateMoim", () => {
       },
       mockDeps,
     );
+
+    expect(mockGetDetail).toHaveBeenCalledWith(5);
 
     expect(mockUpdate).toHaveBeenCalledWith(
       5,
@@ -150,7 +166,7 @@ describe("updateMoim", () => {
         },
         mockDeps,
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow("모임 수정에 실패했습니다.");
 
     expect(mockUpdateSpace).not.toHaveBeenCalled();
   });
@@ -172,8 +188,44 @@ describe("updateMoim", () => {
       ),
     ).rejects.toThrow("로그인이 필요합니다.");
 
+    expect(mockGetDetail).not.toHaveBeenCalled();
     expect(mockUpdate).not.toHaveBeenCalled();
     expect(mockUpdateSpace).not.toHaveBeenCalled();
+  });
+
+  it("작성자가 아닌 경우 에러를 던짐", async () => {
+    mockGetDetail.mockResolvedValue({
+      data: {
+        hostId: 999,
+      },
+    });
+
+    await expect(
+      updateMoim(
+        {
+          meetingId: 20,
+          data: baseInput,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow("수정 권한이 없습니다.");
+
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockUpdateSpace).not.toHaveBeenCalled();
+  });
+
+  it("모임 정보가 없으면 수정 권한 에러를 던짐", async () => {
+    mockGetDetail.mockResolvedValue(null);
+
+    await expect(
+      updateMoim(
+        {
+          meetingId: 20,
+          data: baseInput,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow();
   });
 
   it("SPACE DB 수정 실패 시 에러를 던짐", async () => {
