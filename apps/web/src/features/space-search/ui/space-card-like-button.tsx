@@ -175,7 +175,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
     <UtilityButton
       active={optimisticIsLiked}
       aria-label={optimisticIsLiked ? "좋아요 취소" : "좋아요 추가"}
-      className="shrink-0"
+      className="shrink-0 transition-transform duration-200 ease-out motion-reduce:transition-none lg:hover:scale-[1.03]"
       disabled={isPending}
       icon={optimisticIsLiked ? ActiveHeartIcon : DefaultHeartIcon}
       onClick={handleClick}
