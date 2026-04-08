@@ -2,10 +2,10 @@ import type { Comment, Post } from "@/entities/post";
 import { commentQueries, postQueries } from "@/entities/post/queries";
 import { AppError } from "@/shared/lib/error";
 
-export async function getPostInfo(postId: string): Promise<Post> {
+export async function getPostInfo(postId: string, spaceId: string): Promise<Post> {
   const postRows = await postQueries.findById(postId);
   const row = postRows[0];
-  if (!row) throw new AppError("POST_NOT_FOUND");
+  if (!row || row.post.spaceId !== spaceId) throw new AppError("POST_NOT_FOUND");
 
   const post: Post = { ...row.post, author: row.author };
 
