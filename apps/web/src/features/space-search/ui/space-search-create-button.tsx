@@ -1,38 +1,74 @@
 "use client";
 
+import { Plus } from "@moum-zip/ui/icons";
 import { CreateButton } from "@ui/components";
-import { useRouter } from "next/navigation";
-import type { ComponentProps } from "react";
+import Link from "next/link";
+import type { MouseEventHandler, ReactNode } from "react";
 
 import { ROUTES } from "@/shared/config/routes";
 import { showRequiredToast } from "@/shared/lib/toast-utils";
 
-interface SpaceSearchCreateButtonProps extends ComponentProps<typeof CreateButton> {
+interface SearchCreateButtonProps {
+  "aria-label"?: string;
+  children?: ReactNode;
+  className?: string;
+  disabled?: boolean;
   isAuthenticated: boolean;
+  onClick?: MouseEventHandler<HTMLElement>;
+  variant?: "full" | "icon";
 }
 
-export const SpaceSearchCreateButton = ({
+const renderCreateButtonContent = (children?: ReactNode) => {
+  return (
+    <>
+      <Plus aria-hidden="true" className="size-8" />
+      {children}
+    </>
+  );
+};
+
+export const SearchCreateButton = ({
+  "aria-label": ariaLabel,
+  children,
+  className,
   disabled,
   isAuthenticated,
   onClick,
-  ...props
-}: SpaceSearchCreateButtonProps) => {
-  const router = useRouter();
-
-  const handleClick: SpaceSearchCreateButtonProps["onClick"] = (event) => {
+  variant = "full",
+}: SearchCreateButtonProps) => {
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     onClick?.(event);
 
     if (event.defaultPrevented) {
       return;
     }
 
-    if (!isAuthenticated) {
-      showRequiredToast("로그인 후 이용할 수 있어요.");
-      return;
-    }
-
-    router.push(ROUTES.moimCreate);
+    showRequiredToast("로그인 후 이용할 수 있어요.");
   };
 
-  return <CreateButton {...props} disabled={disabled} onClick={handleClick} />;
+  if (!isAuthenticated || disabled) {
+    return (
+      <CreateButton
+        aria-label={ariaLabel}
+        className={className}
+        disabled={disabled}
+        onClick={handleClick}
+        variant={variant}
+      >
+        {children}
+      </CreateButton>
+    );
+  }
+
+  const handleLinkClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
+    onClick?.(event);
+  };
+
+  return (
+    <CreateButton aria-label={ariaLabel} asChild className={className} variant={variant}>
+      <Link href={ROUTES.moimCreate} onClick={handleLinkClick}>
+        {renderCreateButtonContent(children)}
+      </Link>
+    </CreateButton>
+  );
 };

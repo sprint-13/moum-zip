@@ -1,34 +1,34 @@
 import { Dropdown, Filter, TabButton } from "@ui/components";
 
 import type {
-  SpaceSearchCategory,
-  SpaceSearchDateSortId,
-  SpaceSearchDeadlineSortId,
-  SpaceSearchFilter,
-  SpaceSearchLocationId,
-  SpaceSearchQueryState,
+  SearchCategory,
+  SearchDateSortId,
+  SearchDeadlineSortId,
+  SearchFilter,
+  SearchLocationId,
+  SearchQueryState,
 } from "../model/types";
 
-interface SpaceSearchToolbarProps {
-  categories: SpaceSearchCategory[];
-  filters: SpaceSearchFilter[];
-  onCategoryChange: (categoryId: SpaceSearchCategory["id"]) => void;
-  onDateSortChange: (dateSortId: SpaceSearchDateSortId) => void;
-  onDeadlineSortChange: (deadlineSortId: SpaceSearchDeadlineSortId) => void;
-  onLocationChange: (locationId: SpaceSearchLocationId) => void;
-  selectedCategoryId: SpaceSearchQueryState["categoryId"];
-  selectedDateSortId: SpaceSearchQueryState["dateSortId"];
-  selectedDeadlineSortId: SpaceSearchQueryState["deadlineSortId"];
-  selectedLocationId: SpaceSearchQueryState["locationId"];
+interface SearchToolbarProps {
+  categories: SearchCategory[];
+  filters: SearchFilter[];
+  onCategoryChange: (categoryId: SearchCategory["id"]) => void;
+  onDateSortChange: (dateSortId: SearchDateSortId) => void;
+  onDeadlineSortChange: (deadlineSortId: SearchDeadlineSortId) => void;
+  onLocationChange: (locationId: SearchLocationId) => void;
+  selectedCategoryId: SearchQueryState["categoryId"];
+  selectedDateSortId: SearchQueryState["dateSortId"];
+  selectedDeadlineSortId: SearchQueryState["deadlineSortId"];
+  selectedLocationId: SearchQueryState["locationId"];
 }
 
 const getSelectedFilterOptionId = (
-  filterId: SpaceSearchFilter["id"],
+  filterId: SearchFilter["id"],
   {
     selectedDateSortId,
     selectedDeadlineSortId,
     selectedLocationId,
-  }: Pick<SpaceSearchToolbarProps, "selectedDateSortId" | "selectedDeadlineSortId" | "selectedLocationId">,
+  }: Pick<SearchToolbarProps, "selectedDateSortId" | "selectedDeadlineSortId" | "selectedLocationId">,
 ) => {
   if (filterId === "date") {
     return selectedDateSortId;
@@ -41,7 +41,7 @@ const getSelectedFilterOptionId = (
   return selectedDeadlineSortId;
 };
 
-export const SpaceSearchToolbar = ({
+export const SearchToolbar = ({
   categories,
   filters,
   onCategoryChange,
@@ -52,19 +52,19 @@ export const SpaceSearchToolbar = ({
   selectedDateSortId,
   selectedDeadlineSortId,
   selectedLocationId,
-}: SpaceSearchToolbarProps) => {
-  const handleFilterChange = (filterId: SpaceSearchFilter["id"], optionId: string) => {
+}: SearchToolbarProps) => {
+  const handleFilterChange = (filterId: SearchFilter["id"], optionId: string) => {
     if (filterId === "date") {
-      onDateSortChange(optionId as SpaceSearchDateSortId);
+      onDateSortChange(optionId as SearchDateSortId);
       return;
     }
 
     if (filterId === "location") {
-      onLocationChange(optionId as SpaceSearchLocationId);
+      onLocationChange(optionId as SearchLocationId);
       return;
     }
 
-    onDeadlineSortChange(optionId as SpaceSearchDeadlineSortId);
+    onDeadlineSortChange(optionId as SearchDeadlineSortId);
   };
 
   return (

@@ -1,4 +1,4 @@
-import type { MeetingsListData, MeetingWithHost } from "@moum-zip/api/data-contracts";
+import type { MeetingWithHost } from "@moum-zip/api/data-contracts";
 
 import type {
   GatheringCategory,
@@ -6,13 +6,12 @@ import type {
   SearchResultItem,
   SearchResultsResponse,
 } from "@/entities/gathering";
-import { getGatheringCategoryRequestType, normalizeGatheringCategory } from "@/entities/gathering";
+import { getGatheringCategoryRequestType } from "@/entities/gathering";
 import { api } from "@/shared/api";
 
-const DEFAULT_SEARCH_SIZE = 6;
+import { normalizeMeetingRegion, normalizeMeetingType, resolveSortParams } from "../lib/search-results-rules";
 
-type SearchSortBy = "dateTime" | "registrationEnd";
-type SearchSortOrder = "asc" | "desc";
+const DEFAULT_SEARCH_SIZE = 6;
 
 interface GetSearchResultsInput {
   categoryId?: "all" | GatheringCategory;
@@ -34,68 +33,32 @@ type SearchMeetingWithUserState = MeetingWithHost & {
   isJoined?: boolean;
 };
 
-const normalizeMeetingType = (type: string): GatheringCategory => {
-  return normalizeGatheringCategory(type) ?? "project";
-};
-
-const normalizeMeetingRegion = (region: string | null | undefined): GatheringLocation => {
-  if (typeof region !== "string") {
-    return "offline";
-  }
-
-  const normalizedRegion = region.trim().toLowerCase();
-
-  if (normalizedRegion === "online") {
-    return "online";
-  }
-
-  if (normalizedRegion === "offline") {
-    return "offline";
-  }
-
-  return "offline";
-};
-
-const resolveSortParams = ({
+const createSearchRequestParams = ({
+  categoryId,
+  cursor,
   dateSortId,
   deadlineSortId,
-}: Pick<GetSearchResultsInput, "dateSortId" | "deadlineSortId">): {
-  sortBy?: SearchSortBy;
-  sortOrder?: SearchSortOrder;
-} => {
-  if (deadlineSortId === "fast") {
-    return {
-      sortBy: "registrationEnd",
-      sortOrder: "asc",
-    };
-  }
+  locationId,
+  size,
+}: GetSearchResultsInput) => {
+  const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
 
-  if (deadlineSortId === "slow") {
-    return {
-      sortBy: "registrationEnd",
-      sortOrder: "desc",
-    };
-  }
-
-  if (dateSortId === "latest") {
-    return {
-      sortBy: "dateTime",
-      sortOrder: "desc",
-    };
-  }
-
-  if (dateSortId === "oldest") {
-    return {
-      sortBy: "dateTime",
-      sortOrder: "asc",
-    };
-  }
-
-  return {};
+  return {
+    cursor: cursor ?? undefined,
+    region: locationId === "all" ? undefined : locationId,
+    size,
+    sortBy,
+    sortOrder,
+    type: !categoryId || categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
+  };
 };
 
-const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem => {
-  const normalizedRegion = normalizeMeetingRegion(meeting.region);
+const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem | null => {
+  const type = normalizeMeetingType(meeting.type);
+
+  if (!type) {
+    return null;
+  }
 
   return {
     address: meeting.address,
@@ -106,22 +69,25 @@ const mapMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResultItem
     id: String(meeting.id),
     image: meeting.image,
     isLiked: meeting.isFavorited ?? false,
-    location: normalizedRegion,
+    location: normalizeMeetingRegion(meeting.region),
     participantCount: meeting.participantCount,
     region: meeting.region,
     registrationEnd: meeting.registrationEnd,
     slug: "",
     title: meeting.name,
-    type: normalizeMeetingType(meeting.type),
+    type,
   };
 };
 
-const matchesLocation = (item: SearchResultItem, locationId: GetSearchResultsInput["locationId"]) => {
-  if (!locationId || locationId === "all") {
-    return true;
-  }
-
-  return item.location === locationId;
+const createSearchResultItems = (
+  meetings: SearchMeetingWithUserState[],
+  { categoryId, locationId }: Pick<GetSearchResultsInput, "categoryId" | "locationId">,
+) => {
+  return meetings
+    .map(mapSearchMeetingToItem)
+    .filter((item): item is SearchResultItem => item !== null)
+    .filter((item) => (categoryId === "all" ? true : item.type === categoryId))
+    .filter((item) => (!locationId || locationId === "all" ? true : item.location === locationId));
 };
 
 const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAuthenticatedRequest: boolean) => {
@@ -149,30 +115,26 @@ export const getSearchResults = async (
   }: GetSearchResultsInput = {},
   { isAuthenticatedRequest = false, meetingsApi = api.meetings }: GetSearchResultsDeps = {},
 ): Promise<SearchResultsResponse> => {
-  const { sortBy, sortOrder } = resolveSortParams({ dateSortId, deadlineSortId });
+  const requestParams = createSearchRequestParams({
+    categoryId,
+    cursor,
+    dateSortId,
+    deadlineSortId,
+    locationId,
+    size,
+  });
   const response = await meetingsApi.getList(
-    {
-      cursor: cursor ?? undefined,
-      region: locationId === "all" ? undefined : locationId,
-      size,
-      sortBy,
-      sortOrder,
-      type: categoryId === "all" ? undefined : getGatheringCategoryRequestType(categoryId),
-    },
+    requestParams,
     // { cache: "no-store" },
   );
-  const searchResults = response.data as MeetingsListData;
-  const meetings = searchResults.data as SearchMeetingWithUserState[];
-  warnMissingFavoritedField(meetings, isAuthenticatedRequest);
+  const searchResults = response.data;
+  const meetings: SearchMeetingWithUserState[] = searchResults.data;
 
-  const items = meetings
-    .map((meeting) => mapMeetingToItem(meeting))
-    .filter((item) => (categoryId === "all" ? true : item.type === categoryId))
-    .filter((item) => matchesLocation(item, locationId));
+  warnMissingFavoritedField(meetings, isAuthenticatedRequest);
 
   return {
     hasMore: searchResults.hasMore,
-    items,
+    items: createSearchResultItems(meetings, { categoryId, locationId }),
     nextCursor: searchResults.nextCursor,
   };
 };

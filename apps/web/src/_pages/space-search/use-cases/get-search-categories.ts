@@ -1,10 +1,10 @@
 import type { MeetingTypesListData } from "@moum-zip/api/data-contracts";
 
 import { GATHERING_CATEGORY_SPECS, getGatheringCategoryLabel, normalizeGatheringCategory } from "@/entities/gathering";
-import type { SpaceSearchCategory } from "@/features/space-search/model/types";
+import type { SearchCategory } from "@/features/space-search/model/types";
 import { api } from "@/shared/api";
 
-const DEFAULT_SEARCH_CATEGORY: SpaceSearchCategory = { id: "all", label: "전체" };
+const DEFAULT_SEARCH_CATEGORY: SearchCategory = { id: "all", label: "전체" };
 const SEARCH_CATEGORY_ORDER = GATHERING_CATEGORY_SPECS.map(({ id }) => id);
 
 interface GetSearchCategoriesDeps {
@@ -13,7 +13,7 @@ interface GetSearchCategoriesDeps {
 
 export const getSearchCategories = async ({
   meetingTypesApi = api.meetingTypes,
-}: GetSearchCategoriesDeps = {}): Promise<SpaceSearchCategory[]> => {
+}: GetSearchCategoriesDeps = {}): Promise<SearchCategory[]> => {
   const startedAt = Date.now();
 
   try {

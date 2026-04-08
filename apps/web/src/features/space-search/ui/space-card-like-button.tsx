@@ -10,7 +10,7 @@ import type { SearchResultsResponse } from "@/entities/gathering";
 import { showRequiredToast } from "@/shared/lib/toast-utils";
 
 import HeartIcon from "../assets/heart-default.svg";
-import { spaceSearchQueryKeys } from "../model/query-keys";
+import { searchQueryKeys } from "../model/query-keys";
 
 interface SpaceCardLikeButtonProps {
   isAuthenticated: boolean;
@@ -90,7 +90,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
   const matchesSearchResultsQuery = (queryKey: readonly unknown[]) => {
     const authSegment = queryKey[2];
 
-    if (queryKey[0] !== spaceSearchQueryKeys.all[0]) {
+    if (queryKey[0] !== searchQueryKeys.all[0]) {
       return false;
     }
 

@@ -4,14 +4,13 @@ import type { InfiniteData } from "@tanstack/react-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import type { SearchResultsResponse } from "@/entities/gathering";
-
-import { spaceSearchQueryKeys } from "../model/query-keys";
-import type { SearchResultsQueryState } from "../model/search-params";
-import { getSearchResults } from "./get-search-results";
+import { getSearchResults } from "../apis/get-search-results";
+import { searchQueryKeys } from "../model/query-keys";
+import type { SearchRequestQueryState } from "../model/types";
 
 interface UseGetSearchResultsProps {
   isAuthenticated: boolean;
-  queryState: SearchResultsQueryState;
+  queryState: SearchRequestQueryState;
 }
 
 export const useGetSearchResults = ({ isAuthenticated, queryState }: UseGetSearchResultsProps) => {
@@ -21,10 +20,10 @@ export const useGetSearchResults = ({ isAuthenticated, queryState }: UseGetSearc
     SearchResultsResponse,
     Error,
     InfiniteData<SearchResultsResponse, string | null>,
-    ReturnType<typeof spaceSearchQueryKeys.list>,
+    ReturnType<typeof searchQueryKeys.list>,
     string | null
   >({
-    queryKey: spaceSearchQueryKeys.list(queryState, isAuthenticated),
+    queryKey: searchQueryKeys.list(queryState, isAuthenticated),
     queryFn: ({ pageParam }) =>
       getSearchResults({
         ...queryState,

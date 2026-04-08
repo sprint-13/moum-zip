@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 import type { SpaceCardItem } from "../model/types";
 import { SpaceCard } from "./space-card";
 
-interface SpaceSearchResultsProps {
+interface SearchResultsProps {
   errorMessage?: string;
   hasMore: boolean;
   isAuthenticated: boolean;
@@ -12,13 +12,7 @@ interface SpaceSearchResultsProps {
   loadMoreRef: RefObject<HTMLDivElement | null>;
 }
 
-export const SpaceSearchResults = ({
-  errorMessage,
-  hasMore,
-  isAuthenticated,
-  items,
-  loadMoreRef,
-}: SpaceSearchResultsProps) => {
+export const SearchResults = ({ errorMessage, hasMore, isAuthenticated, items, loadMoreRef }: SearchResultsProps) => {
   if (items.length === 0) {
     return (
       <section className="rounded-[2rem] px-6 py-16">

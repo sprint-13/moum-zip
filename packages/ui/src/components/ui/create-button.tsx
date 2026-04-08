@@ -28,6 +28,7 @@ interface CreateButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export function CreateButton({ variant = "full", children, className, asChild, type, ...props }: CreateButtonProps) {
   return (
     <ShadcnButton
+      className={cn(createButtonVariants({ variant }), className)}
       variant="default"
       asChild={asChild}
       type={asChild ? undefined : (type ?? "button")} // asChild가 아닐 때만 기본 type을 button으로 설정

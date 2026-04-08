@@ -1,6 +1,6 @@
-import { SPACE_SEARCH_HERO_CONTENT } from "../constants";
+import { SEARCH_HERO_CONTENT } from "../constants";
 
-export const SpaceSearchHero = () => {
+export const SearchHero = () => {
   return (
     <section className="relative bg-accent sm:overflow-hidden sm:rounded-[2rem]">
       <picture className="block aspect-375/192 w-full bg-muted sm:aspect-696/244 lg:aspect-1280/244">
@@ -21,10 +21,10 @@ export const SpaceSearchHero = () => {
         <div className="w-full px-4 py-8 sm:px-10 sm:py-10 lg:px-14">
           <div className="flex max-w-84 flex-col gap-2">
             <p className={`font-medium text-green-600 text-sm leading-6 tracking-[-0.02em]`}>
-              {SPACE_SEARCH_HERO_CONTENT.description}
+              {SEARCH_HERO_CONTENT.description}
             </p>
             <h1 className="font-semibold text-[2rem] text-foreground leading-[1.2] tracking-[-0.04em] sm:text-[2.25rem]">
-              {SPACE_SEARCH_HERO_CONTENT.title}
+              {SEARCH_HERO_CONTENT.title}
             </h1>
           </div>
         </div>

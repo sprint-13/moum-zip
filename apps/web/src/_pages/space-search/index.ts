@@ -1,1 +1,1 @@
-export { SpaceSearchHero } from "./ui/space-search-hero";
+export { SearchHero } from "./ui/space-search-hero";
