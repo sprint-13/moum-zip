@@ -1,5 +1,4 @@
 import { Badge } from "@moum-zip/ui/components";
-// import { MoreVertical } from "@moum-zip/ui/icons";
 import type { SpaceInfo } from "@/entities/spaces";
 
 export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
@@ -19,9 +18,6 @@ export const SpaceInfoCardHeader = ({ space }: { space: SpaceInfo }) => {
         >
           {space.status === "ongoing" ? "진행중" : "아카이브"}
         </Badge>
-        {/* <button type="button" className="p-1 text-slate-300 transition-colors hover:text-slate-600">
-          <MoreVertical className="h-5 w-5" />
-        </button> */}
       </div>
     </div>
   );
