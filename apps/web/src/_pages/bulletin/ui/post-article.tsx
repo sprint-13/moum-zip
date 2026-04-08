@@ -10,6 +10,7 @@ import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
 import { usePostDetail } from "../hooks/use-post-detail";
 import { useDeletePost } from "../hooks/use-post-mutations";
+import { TiptapViewer } from "./tiptap-viewer";
 
 const CATEGORY_COLOR: Record<Post["category"], string> = {
   notice: "bg-blue-50 text-blue-600 border-blue-100",
@@ -93,9 +94,7 @@ export function PostArticle({ postId, slug, currentUserId, currentUserRole }: Po
       </div>
 
       {/* 본문 */}
-      <div className="min-h-[200px] whitespace-pre-wrap text-[15px] text-neutral-800 leading-relaxed">
-        {post.content}
-      </div>
+      <TiptapViewer content={post.content} />
 
       <AlertModal
         open={open}
