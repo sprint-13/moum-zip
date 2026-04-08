@@ -24,7 +24,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
     handleDeadlineSortChange,
     handleLocationChange,
   } = useSearchQueryState({ queryState });
-  const { errorMessage, hasMore, items, loadMoreRef } = useInfiniteSearchResults({
+  const { errorMessage, hasMore, isFetchingNextPage, items, loadMoreRef } = useInfiniteSearchResults({
     isAuthenticated,
     queryState: activeQueryState,
   });
@@ -60,6 +60,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
         <SearchResults
           errorMessage={errorMessage}
           hasMore={hasMore}
+          isFetchingNextPage={isFetchingNextPage}
           isAuthenticated={isAuthenticated}
           items={items}
           loadMoreRef={loadMoreRef}
