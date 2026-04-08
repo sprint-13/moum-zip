@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import type { MoimCreateFormValues } from "@/entities/moim";
 import { useMoimFormImageUpload } from "@/features/moim-create/hooks/use-moim-form-image-upload";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
-import { useMoimEditForm } from "@/features/moim-edit/model/use-moim-edit-form";
+import { useMoimEditForm } from "@/features/moim-edit/hooks/use-moim-edit-form";
 
 interface MoimEditFormProps {
   meetingId: number;

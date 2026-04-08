@@ -30,6 +30,13 @@ export async function updateMoim({ meetingId, data }: UpdateMoimParams, { getAut
     throw new Error("로그인이 필요합니다.");
   }
 
+  const meeting = await authedApi.meetings.getDetail(meetingId);
+  const meetingDetail = "data" in meeting ? meeting.data : meeting;
+
+  if (!meetingDetail || meetingDetail.hostId !== userId) {
+    throw new Error("수정 권한이 없습니다.");
+  }
+
   const res = await authedApi.meetings.update(meetingId, meetingPayload);
 
   if (!res.ok) {
