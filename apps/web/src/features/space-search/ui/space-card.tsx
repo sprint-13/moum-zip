@@ -1,6 +1,8 @@
 import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
+import Link from "next/link";
 
+import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/cn";
 
 import LocationPinIcon from "../assets/location-pin.svg";
@@ -68,6 +70,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
     title,
   } = item;
   const displayTitle = truncateTitle(title);
+  const detailHref = `${ROUTES.moimDetail}/${meetingId}`;
 
   const joinButtonClassName = cn(
     "h-12 min-w-26 shrink-0 whitespace-nowrap px-6 text-base leading-6 tracking-[-0.02em] lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
@@ -78,7 +81,13 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   );
 
   return (
-    <article className="flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_50px_rgba(17,17,17,0.04)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6">
+    <article className="relative flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_20px_50px_rgba(17,17,17,0.04)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6">
+      <Link
+        aria-label={`${title} 상세 페이지 보기`}
+        className="absolute inset-0 z-10 rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        href={detailHref}
+        prefetch={false}
+      />
       <div className="relative w-full shrink-0 sm:w-full md:w-auto">
         <Image
           alt={imageAlt}
@@ -88,7 +97,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           unoptimized
           width={340}
         />
-        <div className="absolute top-4 right-4 sm:hidden">
+        <div className="absolute top-4 right-4 z-20 sm:hidden">
           <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
         </div>
       </div>
@@ -113,7 +122,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
             </p>
           </div>
 
-          <div className="hidden sm:block">
+          <div className="relative z-20 hidden sm:block">
             <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
           </div>
         </div>
@@ -143,8 +152,6 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
             disabled={isRegistClosed}
             size="small"
             variant={isRegistClosed ? "primary" : "secondary"}
-            isAuthenticated={isAuthenticated}
-            meetingId={meetingId}
           >
             {isRegistClosed ? "모집 마감" : "참여하기"}
           </SpaceCardJoinButton>

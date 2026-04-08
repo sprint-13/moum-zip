@@ -6,7 +6,6 @@ import Link from "next/link";
 import type { MouseEventHandler, ReactNode } from "react";
 
 import { ROUTES } from "@/shared/config/routes";
-import { cn } from "@/shared/lib/cn";
 import { showRequiredToast } from "@/shared/lib/toast-utils";
 
 interface SearchCreateButtonProps {
@@ -19,13 +18,14 @@ interface SearchCreateButtonProps {
   variant?: "full" | "icon";
 }
 
-const CREATE_BUTTON_BASE_CLASS_NAME =
-  "flex items-center justify-center bg-primary text-white transition-colors hover:bg-green-600";
-
-const CREATE_BUTTON_CLASS_NAME = {
-  full: "h-16 min-w-[188px] gap-2 rounded-[24px] px-6 font-bold text-xl",
-  icon: "h-12 w-12 rounded-full",
-} as const;
+const renderCreateButtonContent = (children?: ReactNode) => {
+  return (
+    <>
+      <Plus aria-hidden="true" className="size-8" />
+      {children}
+    </>
+  );
+};
 
 export const SearchCreateButton = ({
   "aria-label": ariaLabel,
@@ -65,14 +65,10 @@ export const SearchCreateButton = ({
   };
 
   return (
-    <Link
-      aria-label={ariaLabel}
-      className={cn(CREATE_BUTTON_BASE_CLASS_NAME, CREATE_BUTTON_CLASS_NAME[variant], className)}
-      href={ROUTES.moimCreate}
-      onClick={handleLinkClick}
-    >
-      <Plus size={32} aria-hidden="true" />
-      {children}
-    </Link>
+    <CreateButton aria-label={ariaLabel} asChild className={className} variant={variant}>
+      <Link href={ROUTES.moimCreate} onClick={handleLinkClick}>
+        {renderCreateButtonContent(children)}
+      </Link>
+    </CreateButton>
   );
 };
