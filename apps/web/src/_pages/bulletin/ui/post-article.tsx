@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@moum-zip/ui/components";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/entities/post";
 import { CATEGORY_LABELS } from "@/entities/post";
@@ -36,6 +37,11 @@ export function PostArticle({ postId, slug, currentUserId, currentUserRole }: Po
     closeModal();
     deletePost(postId, {
       onSuccess: () => router.push(`/${slug}/bulletin`),
+      onError: () =>
+        toast({
+          message: "게시글 삭제에 실패했습니다.",
+          size: "small",
+        }),
     });
   }
 
