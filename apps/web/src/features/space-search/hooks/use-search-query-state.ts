@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { applySearchFilter } from "./apply-search-filter";
-import { buildSearchHref, parseSearchQueryState } from "./search-params";
-import type { SearchDateSortId, SearchDeadlineSortId, SearchLocationId, SearchQueryState } from "./types";
+import { getNextSearchQueryState } from "../model/next-search-query-state";
+import { buildSearchHref, parseSearchQueryState } from "../model/search-params";
+import type { SearchDateSortId, SearchDeadlineSortId, SearchLocationId, SearchQueryState } from "../model/types";
 
 type HistoryMode = "push" | "replace";
 
@@ -55,28 +55,28 @@ export const useSearchQueryState = ({ queryState }: UseSearchQueryStateProps) =>
 
   const handleCategoryChange = (categoryId: SearchQueryState["categoryId"]) => {
     updateQueryState(
-      (currentQueryState) => applySearchFilter(currentQueryState, { type: "category", categoryId }),
+      (currentQueryState) => getNextSearchQueryState(currentQueryState, { type: "category", categoryId }),
       "push",
     );
   };
 
   const handleDateSortChange = (dateSortId: SearchDateSortId) => {
     updateQueryState(
-      (currentQueryState) => applySearchFilter(currentQueryState, { type: "date-sort", dateSortId }),
+      (currentQueryState) => getNextSearchQueryState(currentQueryState, { type: "date-sort", dateSortId }),
       "replace",
     );
   };
 
   const handleLocationChange = (locationId: SearchLocationId) => {
     updateQueryState(
-      (currentQueryState) => applySearchFilter(currentQueryState, { type: "location", locationId }),
+      (currentQueryState) => getNextSearchQueryState(currentQueryState, { type: "location", locationId }),
       "replace",
     );
   };
 
   const handleDeadlineSortChange = (deadlineSortId: SearchDeadlineSortId) => {
     updateQueryState(
-      (currentQueryState) => applySearchFilter(currentQueryState, { type: "deadline-sort", deadlineSortId }),
+      (currentQueryState) => getNextSearchQueryState(currentQueryState, { type: "deadline-sort", deadlineSortId }),
       "replace",
     );
   };

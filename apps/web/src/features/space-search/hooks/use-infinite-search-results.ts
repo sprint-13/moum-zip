@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 
 import type { SearchResultsResponse } from "@/entities/gathering";
 
-import { useGetSearchResults } from "../apis/use-get-search-results";
-import { mapSearchResultItemToSpaceCardItem } from "./result-mappers";
-import { normalizeSearchQueryState } from "./search-params";
-import type { SearchQueryState } from "./types";
+import { mapSearchResultItemToSpaceCardItem } from "../model/result-mappers";
+import { normalizeSearchQueryState } from "../model/search-params";
+import type { SearchQueryState } from "../model/types";
+import { useGetSearchResults } from "./use-get-search-results";
 
 interface UseInfiniteSearchProps {
   isAuthenticated: boolean;

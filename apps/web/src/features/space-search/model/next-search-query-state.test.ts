@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-
-import { applySearchFilter } from "./apply-search-filter";
 import { SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { getNextSearchQueryState } from "./next-search-query-state";
 
 const BASE_QUERY_STATE = {
   categoryId: "all",
@@ -10,9 +9,9 @@ const BASE_QUERY_STATE = {
   locationId: "all",
 } as const;
 
-describe("applySearchFilter", () => {
+describe("getNextSearchQueryState", () => {
   it("카테고리를 변경한다", () => {
-    const nextQueryState = applySearchFilter(BASE_QUERY_STATE, {
+    const nextQueryState = getNextSearchQueryState(BASE_QUERY_STATE, {
       type: "category",
       categoryId: "study",
     });
@@ -24,7 +23,7 @@ describe("applySearchFilter", () => {
   });
 
   it("날짜 정렬을 변경하면 마감 정렬을 초기화한다", () => {
-    const nextQueryState = applySearchFilter(
+    const nextQueryState = getNextSearchQueryState(
       {
         ...BASE_QUERY_STATE,
         deadlineSortId: "fast",
@@ -43,7 +42,7 @@ describe("applySearchFilter", () => {
   });
 
   it("마감 정렬을 변경하면 날짜 정렬을 초기화한다", () => {
-    const nextQueryState = applySearchFilter(
+    const nextQueryState = getNextSearchQueryState(
       {
         ...BASE_QUERY_STATE,
         dateSortId: "oldest",
@@ -62,7 +61,7 @@ describe("applySearchFilter", () => {
   });
 
   it("장소 필터를 변경한다", () => {
-    const nextQueryState = applySearchFilter(BASE_QUERY_STATE, {
+    const nextQueryState = getNextSearchQueryState(BASE_QUERY_STATE, {
       type: "location",
       locationId: "online",
     });

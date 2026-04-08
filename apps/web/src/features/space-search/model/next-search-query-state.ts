@@ -7,7 +7,7 @@ type SearchFilterChange =
   | { type: "location"; locationId: SearchLocationId }
   | { type: "deadline-sort"; deadlineSortId: SearchDeadlineSortId };
 
-export const applySearchFilter = (
+export const getNextSearchQueryState = (
   currentQueryState: SearchQueryState,
   change: SearchFilterChange,
 ): SearchQueryState => {

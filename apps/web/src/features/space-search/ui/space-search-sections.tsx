@@ -1,9 +1,9 @@
 "use client";
 
+import { useInfiniteSearchResults } from "../hooks/use-infinite-search-results";
+import { useSearchQueryState } from "../hooks/use-search-query-state";
 import { SEARCH_FILTERS } from "../model/constants";
 import type { SearchCategory, SearchQueryState } from "../model/types";
-import { useInfiniteSearchResults } from "../model/use-infinite-search-results";
-import { useSearchQueryState } from "../model/use-search-query-state";
 import { SearchResults } from "./space-search-results";
 import { SearchToolbar } from "./space-search-toolbar";
 

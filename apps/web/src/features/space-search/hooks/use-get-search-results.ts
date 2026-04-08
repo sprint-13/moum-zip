@@ -4,10 +4,9 @@ import type { InfiniteData } from "@tanstack/react-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import type { SearchResultsResponse } from "@/entities/gathering";
-
+import { getSearchResults } from "../apis/get-search-results";
 import { searchQueryKeys } from "../model/query-keys";
 import type { SearchRequestQueryState } from "../model/types";
-import { getSearchResults } from "./get-search-results";
 
 interface UseGetSearchResultsProps {
   isAuthenticated: boolean;
