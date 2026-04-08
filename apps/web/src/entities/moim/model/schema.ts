@@ -10,7 +10,7 @@ const isValidDate = (date: Date) => !Number.isNaN(date.getTime());
 
 // time field schema
 // 피커에서 "12:" / ":30" 같은 중간 입력 상태도 들어올 수 있어서 케이스별로 분기 처리
-function timeFieldSchema(requiredMessage: string) {
+const timeFieldSchema = (requiredMessage: string) => {
   return z
     .string()
     .min(1, requiredMessage)
@@ -45,7 +45,7 @@ function timeFieldSchema(requiredMessage: string) {
       // 둘 다 선택 안 된 경우
       ctx.addIssue({ code: "custom", message: "시와 분을 모두 선택해주세요." });
     });
-}
+};
 
 // main schema
 export const moimCreateSchema = z

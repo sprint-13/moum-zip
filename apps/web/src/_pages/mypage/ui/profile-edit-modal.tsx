@@ -6,13 +6,18 @@ import { Pencil } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
-import type { MypageProfile } from "../model/types";
-import ProfileAvatar from "./profile-avatar";
+import type { MypageProfile } from "@/_pages/mypage/model/types";
+import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   profile: MypageProfile;
+}
+
+interface PresignedImageResponse {
+  presignedUrl: string;
+  publicUrl: string;
 }
 
 const ERROR_MESSAGES = {
@@ -24,7 +29,7 @@ const ERROR_MESSAGES = {
 
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
+export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalProps) {
   const nameInputId = useId();
   const emailInputId = useId();
   const titleId = useId();
@@ -160,10 +165,7 @@ export default function ProfileEditModal({ isOpen, onClose, profile }: ProfileEd
         throw new Error("PRESIGNED_URL_REQUEST_FAILED");
       }
 
-      const { presignedUrl, publicUrl } = (await response.json()) as {
-        presignedUrl: string;
-        publicUrl: string;
-      };
+      const { presignedUrl, publicUrl }: PresignedImageResponse = await response.json();
 
       // 2) 발급받은 URL로 파일을 직접 업로드한 뒤 publicUrl을 저장 액션에 넘깁니다.
       const uploadResponse = await fetch(presignedUrl, {

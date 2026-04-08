@@ -3,10 +3,10 @@
 import type { FavoriteList } from "@moum-zip/api";
 import { Tabs } from "@ui/components";
 import { cn } from "@ui/lib/utils";
-import { useMypageViewState } from "../hooks/use-mypage-view-state";
-import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "../model";
-import MoimCardList from "./moim-card-list";
-import ProfileSection from "./profile-section";
+import { useMypageViewState } from "@/_pages/mypage/hooks/use-mypage-view-state";
+import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "@/_pages/mypage/model";
+import { MoimCardList } from "@/_pages/mypage/ui/moim-card-list";
+import { ProfileSection } from "@/_pages/mypage/ui/profile-section";
 
 type MoimTabKey = Exclude<MypageTabKey, "created">;
 
@@ -15,7 +15,7 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
   { key: "ended", label: "진행 종료" },
 ];
 
-interface MypagePageProps {
+interface MypageViewProps {
   initialFavoriteList: FavoriteList;
   profile: MypageProfile;
   tabs: Array<{ key: MypageTabKey; label: string }>;
@@ -24,14 +24,14 @@ interface MypagePageProps {
   enableRemoteFetch?: boolean;
 }
 
-export default function MypageView({
+export function MypageView({
   initialFavoriteList,
   profile,
   tabs,
   moims,
   createdMoims,
   enableRemoteFetch = true,
-}: MypagePageProps) {
+}: MypageViewProps) {
   const {
     createdFilter,
     joinedMeetings,

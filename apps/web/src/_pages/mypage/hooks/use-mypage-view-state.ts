@@ -4,11 +4,16 @@ import type { FavoriteList } from "@moum-zip/api";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { getSpaceSlugAction } from "../actions";
-import type { CreatedFilterKey, MypageMoimCard, MypageTabKey } from "../model";
-import { getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "../queries";
-import { applyFavoriteState, buildFavoriteMeetingIds, buildLikedMeetings, useToggleFavorite } from "../use-cases";
-import { useCreatedMeetings } from "./use-created-meetings";
+import { getSpaceSlugAction } from "@/_pages/mypage/actions";
+import { useCreatedMeetings } from "@/_pages/mypage/hooks/use-created-meetings";
+import type { CreatedFilterKey, MypageMoimCard, MypageTabKey } from "@/_pages/mypage/model";
+import { getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "@/_pages/mypage/queries";
+import {
+  applyFavoriteState,
+  buildFavoriteMeetingIds,
+  buildLikedMeetings,
+  useToggleFavorite,
+} from "@/_pages/mypage/use-cases";
 
 type MoimTabKey = Exclude<MypageTabKey, "created">;
 

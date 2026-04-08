@@ -76,7 +76,7 @@ const MoimPreview = ({ imageTone, imageUrl, className }: MoimPreviewProps) => {
   );
 };
 
-const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) => {
+export const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) => {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
 
   const handleToggleLike = () => {
@@ -151,5 +151,3 @@ const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) => {
     </article>
   );
 };
-
-export default MoimCard;
