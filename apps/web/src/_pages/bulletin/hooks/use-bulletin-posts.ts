@@ -1,7 +1,6 @@
 "use client";
 
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type { PostCategory } from "@/entities/post";
 import type { GetBulletinPostsResult } from "@/features/space/use-cases/get-bulletin-posts";
 import { bulletinQueryKeys } from "../model/query-keys";
@@ -19,16 +18,6 @@ export async function fetchBulletinPosts(
 }
 
 export function useBulletinPosts(slug: string, opts: { page: number; filter?: PostCategory }) {
-  const queryClient = useQueryClient();
-
-  // TODO: 개선하기 (react-query에서 페이지네이션 쓰면 프리페치 지원되지 않나?)
-  useEffect(() => {
-    queryClient.prefetchQuery({
-      queryKey: bulletinQueryKeys.list(slug, { page: opts.page + 1, filter: opts.filter }),
-      queryFn: () => fetchBulletinPosts(slug, { page: opts.page + 1, filter: opts.filter }),
-    });
-  }, [opts.page, opts.filter, slug, queryClient]);
-
   return useSuspenseQuery({
     queryKey: bulletinQueryKeys.list(slug, opts),
     queryFn: () => fetchBulletinPosts(slug, opts),
