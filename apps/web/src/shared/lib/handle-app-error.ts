@@ -19,6 +19,9 @@ export function handleAppError(error: unknown): never {
         break;
       case "SPACE_ACCESS_DENIED":
         notFound();
+        break;
+      case "POST_NOT_FOUND":
+        notFound();
     }
   }
   throw error;

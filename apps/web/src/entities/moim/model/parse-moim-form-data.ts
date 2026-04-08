@@ -1,6 +1,6 @@
-import { type MoimCreateFormValues, moimCreateSchema } from "@/features/moim-create/model/schema";
+import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim/model/schema";
 
-export function parseMoimFormData(formData: FormData): MoimCreateFormValues {
+export const parseMoimFormData = (formData: FormData): MoimCreateFormValues => {
   const raw = {
     type: formData.get("type"),
     name: formData.get("name"),
@@ -22,4 +22,4 @@ export function parseMoimFormData(formData: FormData): MoimCreateFormValues {
   }
 
   return parsed.data;
-}
+};

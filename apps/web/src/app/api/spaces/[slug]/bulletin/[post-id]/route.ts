@@ -8,6 +8,7 @@ import { getPostInfo } from "@/features/space/use-cases/get-post-detail";
 import { updatePostUseCase } from "@/features/space/use-cases/update-post";
 import { isAuth } from "@/shared/api/server";
 import { CACHE_TAGS } from "@/shared/lib/cache";
+import { AppError } from "@/shared/lib/error";
 
 async function getAuthAndSpace(slug: string) {
   const auth = await isAuth();
@@ -31,9 +32,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   }
 
   try {
-    const post = await getPostInfo(postId);
+    const post = await getPostInfo(postId, result.space.id);
     return NextResponse.json(post);
   } catch (err) {
+    if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
+      return NextResponse.json({ error: "NotFound" }, { status: 404 });
+    }
     console.error("[GET /api/.../bulletin/[post-id]]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -51,12 +55,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
   try {
     const { title, content, category } = await request.json();
     await updatePostUseCase(
-      { postId, title, content, category: category as PostCategory },
+      { postId, spaceId: space.id, title, content, category: category as PostCategory },
       { userId: membership.userId, role: membership.role },
     );
     updateTag(CACHE_TAGS.bulletin(space.id));
     return NextResponse.json({ postId });
   } catch (err) {
+    if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
+      return NextResponse.json({ error: "NotFound" }, { status: 404 });
+    }
     console.error("[PATCH /api/.../bulletin/[post-id]]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -72,10 +79,13 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
   const { space, membership } = result;
   try {
-    await deletePostUseCase(postId, { userId: membership.userId, role: membership.role });
+    await deletePostUseCase(postId, space.id, { userId: membership.userId, role: membership.role });
     updateTag(CACHE_TAGS.bulletin(space.id));
     return new NextResponse(null, { status: 204 });
   } catch (err) {
+    if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
+      return NextResponse.json({ error: "NotFound" }, { status: 404 });
+    }
     console.error("[DELETE /api/.../bulletin/[post-id]]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

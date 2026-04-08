@@ -33,8 +33,6 @@ export const updateProfile = async (
 
     return { ok: true };
   } catch (error) {
-    console.error("[updateProfile] 에러:", error);
-
     if (error instanceof Response && error.status === 401) {
       return { ok: false, error: "UNAUTHORIZED" };
     }

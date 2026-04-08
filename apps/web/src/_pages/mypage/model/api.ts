@@ -2,9 +2,11 @@ import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost 
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
+type MyMeetingsType = "joined" | "created";
+type MeetingByType<TType extends MyMeetingsType> = TType extends "joined" ? JoinedMeeting : MeetingWithHost;
 
-export interface MyMeetingsQuery {
-  type: "joined" | "created";
+export interface MyMeetingsQuery<TType extends MyMeetingsType = MyMeetingsType> {
+  type: TType;
   completed?: "true" | "false";
   reviewed?: "true" | "false";
   sortBy?: "dateTime" | "registrationEnd" | "joinedAt" | "participantCount";
@@ -13,8 +15,10 @@ export interface MyMeetingsQuery {
   cursor?: string;
 }
 
-export interface MyMeetingsResponse {
-  data: Array<JoinedMeeting | MeetingWithHost>;
+export interface MyMeetingsResponse<
+  TMeeting extends JoinedMeeting | MeetingWithHost = JoinedMeeting | MeetingWithHost,
+> {
+  data: TMeeting[];
   nextCursor: string | null;
   hasMore: boolean;
 }
@@ -29,11 +33,15 @@ export interface MyFavoritesQuery {
   cursor?: string;
 }
 
-const toSearchParams = (query: object) => {
+const toSearchParams = <TQuery extends object>(query: TQuery) => {
   const searchParams = new URLSearchParams();
 
-  Object.entries(query as Record<string, string | number | undefined>).forEach(([key, value]) => {
+  Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === "") {
+      return;
+    }
+
+    if (typeof value !== "string" && typeof value !== "number") {
       return;
     }
 
@@ -43,7 +51,9 @@ const toSearchParams = (query: object) => {
   return searchParams;
 };
 
-export const fetchMyMeetings = async (query: MyMeetingsQuery): Promise<MyMeetingsResponse> => {
+export const fetchMyMeetings = async <TType extends MyMeetingsType>(
+  query: MyMeetingsQuery<TType>,
+): Promise<MyMeetingsResponse<MeetingByType<TType>>> => {
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/meetings?${searchParams.toString()}`);
 
@@ -52,7 +62,7 @@ export const fetchMyMeetings = async (query: MyMeetingsQuery): Promise<MyMeeting
   }
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
-  const data = await response.json();
+  const data: MyMeetingsResponse<MeetingByType<TType>> = await response.json();
   return data;
 };
 
@@ -65,7 +75,7 @@ export const fetchMyFavorites = async (query: MyFavoritesQuery = {}): Promise<Fa
   }
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
-  const data = await response.json();
+  const data: FavoriteList = await response.json();
   return data;
 };
 
@@ -117,7 +127,7 @@ export const createFavorite = async (meetingId: number): Promise<FavoriteWithMee
   }
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
-  const data = await response.json();
+  const data: FavoriteWithMeeting = await response.json();
   return data;
 };
 
@@ -135,6 +145,6 @@ export const deleteFavorite = async (meetingId: number): Promise<{ ok: true }> =
   }
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
-  const data = await response.json();
+  const data: { ok: true } = await response.json();
   return data;
 };

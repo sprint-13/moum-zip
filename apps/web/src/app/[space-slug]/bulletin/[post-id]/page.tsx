@@ -52,7 +52,7 @@ export default async function PostDetailPage({
         </SpaceBodyLeft>
         <SpaceBodyRight>
           <Suspense fallback={<PostInfoSkeleton />}>
-            <PostInfoCard postId={postId} />
+            <PostInfoCard postId={postId} spaceId={membership.spaceId} />
           </Suspense>
         </SpaceBodyRight>
       </SpaceBody>

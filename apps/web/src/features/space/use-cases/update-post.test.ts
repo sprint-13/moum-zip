@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AppError } from "@/shared/lib/error";
 import { updatePostUseCase } from "./update-post";
 
 vi.mock("@/entities/post/queries", () => ({
@@ -31,6 +32,7 @@ const BASE_AUTHOR = { id: 1, name: "작성자", image: null };
 
 const BASE_INPUT = {
   postId: "post-1",
+  spaceId: "space-1",
   title: "수정된 제목",
   content: "수정된 내용",
   category: "discussion" as const,
@@ -64,11 +66,20 @@ describe("updatePostUseCase", () => {
     expect(result).toEqual({ postId: "post-1" });
   });
 
-  it("존재하지 않는 게시글 수정 시 에러를 던진다", async () => {
+  it("존재하지 않는 게시글 수정 시 AppError(POST_NOT_FOUND)를 던진다", async () => {
     mockFindById.mockResolvedValue([]);
 
     await expect(updatePostUseCase(BASE_INPUT, { userId: 1, role: "member" })).rejects.toThrow(
-      "게시글을 찾을 수 없습니다.",
+      new AppError("POST_NOT_FOUND"),
+    );
+    expect(mockUpdateById).not.toHaveBeenCalled();
+  });
+
+  it("다른 스페이스의 게시글 수정 시 AppError(POST_NOT_FOUND)를 던진다", async () => {
+    mockFindById.mockResolvedValue([{ post: { ...BASE_POST, spaceId: "other-space" }, author: BASE_AUTHOR }]);
+
+    await expect(updatePostUseCase(BASE_INPUT, { userId: 1, role: "manager" })).rejects.toThrow(
+      new AppError("POST_NOT_FOUND"),
     );
     expect(mockUpdateById).not.toHaveBeenCalled();
   });

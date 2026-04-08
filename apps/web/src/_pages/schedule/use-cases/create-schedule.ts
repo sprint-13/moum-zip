@@ -14,8 +14,6 @@ export interface CreateScheduleInput {
  * - 종료 시간이 시작 시간 이후인지 검사
  */
 export async function createScheduleUseCase(input: CreateScheduleInput): Promise<{ scheduleId: string }> {
-  if (!input.title.trim()) throw new Error("제목을 입력해주세요.");
-
   const [schedule] = await scheduleQueries.create({
     id: crypto.randomUUID(),
     spaceId: input.spaceId,

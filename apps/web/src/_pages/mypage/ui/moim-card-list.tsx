@@ -1,7 +1,7 @@
 import { Button, Empty } from "@ui/components";
 import type { ReactNode } from "react";
-import type { MypageMoimCard } from "../model/types";
-import MoimCard from "./moim-card";
+import type { MypageMoimCard } from "@/_pages/mypage/model/types";
+import { MoimCard } from "@/_pages/mypage/ui/moim-card";
 
 interface MoimCardListProps {
   moims: MypageMoimCard[];
@@ -12,7 +12,11 @@ interface MoimCardListProps {
   onEnterSpace?: (meetingId: string) => void;
 }
 
-const ListStatusContainer = ({ children }: { children: ReactNode }) => {
+interface ListStatusContainerProps {
+  children: ReactNode;
+}
+
+const ListStatusContainer = ({ children }: ListStatusContainerProps) => {
   return (
     <div className="flex min-h-[22rem] w-full items-center justify-center md:min-h-[20rem] xl:min-h-[24rem]">
       {children}
@@ -20,7 +24,7 @@ const ListStatusContainer = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const MoimCardList = ({
+export const MoimCardList = ({
   moims,
   emptyLabel = "아직 신청한 모임이 없어요",
   isError = false,
@@ -66,5 +70,3 @@ const MoimCardList = ({
     </ListStatusContainer>
   );
 };
-
-export default MoimCardList;

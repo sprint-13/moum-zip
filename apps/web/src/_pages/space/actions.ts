@@ -4,6 +4,7 @@ import { revalidateTag, updateTag } from "next/cache";
 import type { Member } from "@/entities/member";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { CACHE_TAGS } from "@/shared/lib/cache";
+import { handleAppError } from "@/shared/lib/handle-app-error";
 import { updateMemberProfileUseCase } from "./use-cases/update-member-profile";
 
 export interface UpdateMemberProfileActionInput {
@@ -21,7 +22,7 @@ export async function updateMemberProfileAction(
   slug: string,
   input: UpdateMemberProfileActionInput,
 ): Promise<{ member: Member }> {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
 
   const member = await updateMemberProfileUseCase({
     avatarUrl: input.avatarUrl,

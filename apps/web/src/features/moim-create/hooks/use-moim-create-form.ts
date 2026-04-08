@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { createMoimAction } from "@/_pages/moim-create/actions";
-import { type MoimCreateFormValues, moimCreateSchema } from "@/features/moim-create/model/schema";
+import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim";
 
 const MOIM_CREATE_DEFAULT_VALUES: Partial<MoimCreateFormValues> = {
   type: "study",

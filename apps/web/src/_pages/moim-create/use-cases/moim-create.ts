@@ -1,6 +1,6 @@
 import { memberQueries } from "@/entities/member";
+import type { MoimCreateFormValues } from "@/entities/moim";
 import { spaceQueries } from "@/entities/spaces";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
 import type { ApiClient } from "@/shared/api";
 
 // 모임 생성 API 호출 후, 로컬 space, 스페이스 멤버(매니저)까지 저장
