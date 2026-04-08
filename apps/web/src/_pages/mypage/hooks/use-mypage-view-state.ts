@@ -83,6 +83,16 @@ export const useMypageViewState = ({
     [enableRemoteFetch, favoriteList, moims.liked],
   );
 
+  const meetingMap = useMemo(() => {
+    return [...joinedMeetings, ...createdMeetings, ...likedMeetings].reduce((map, meeting) => {
+      if (!map.has(meeting.id)) {
+        map.set(meeting.id, meeting);
+      }
+
+      return map;
+    }, new Map<string, MypageMoimCard>());
+  }, [createdMeetings, joinedMeetings, likedMeetings]);
+
   const handleTabChange = (tab: string) => {
     if (!isMypageTabKey(tab)) {
       return;
@@ -92,11 +102,7 @@ export const useMypageViewState = ({
   };
 
   const findMeetingById = (meetingId: string) => {
-    return (
-      joinedMeetings.find((meeting) => meeting.id === meetingId) ??
-      createdMeetings.find((meeting) => meeting.id === meetingId) ??
-      likedMeetings.find((meeting) => meeting.id === meetingId)
-    );
+    return meetingMap.get(meetingId);
   };
 
   const handleToggleLike = (meetingId: string) => {
