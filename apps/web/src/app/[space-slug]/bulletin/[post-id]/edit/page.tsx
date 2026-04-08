@@ -13,9 +13,9 @@ export default async function PostEditPage({
 }) {
   const { "space-slug": slug, "post-id": postId } = await params;
 
-  const { membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug);
 
-  const post = await getPostInfo(postId).catch(handleAppError);
+  const post = await getPostInfo(postId, space.spaceId).catch(handleAppError);
 
   const canEdit = membership.userId === post.authorId || membership.role === "manager";
   if (!canEdit) notFound();
