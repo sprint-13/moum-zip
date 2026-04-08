@@ -3,6 +3,7 @@ import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { mapMeetingDetailToFormValues } from "@/features/moim-edit/model/mapper";
 import type { MeetingDetailForEdit } from "@/features/moim-edit/model/types";
 import type { ApiClient } from "@/shared/api";
+import { ROUTES } from "@/shared/config/routes";
 import { getMoimEdit } from "./get-moim-edit";
 
 vi.mock("next/navigation", () => ({
@@ -20,6 +21,7 @@ vi.mock("@/features/moim-edit/model/mapper", () => ({
 
 const mockGetDetail = vi.fn();
 const mockGetSession = vi.fn();
+const mockGetAuthApi = vi.fn();
 
 const mockAuthedApi = {
   meetings: {
@@ -28,13 +30,33 @@ const mockAuthedApi = {
 } as unknown as ApiClient;
 
 const mockDeps = {
-  getAuthApi: () => Promise.resolve(mockAuthedApi),
+  getAuthApi: mockGetAuthApi,
   getSession: mockGetSession,
 };
 
 describe("getMoimEdit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetAuthApi.mockResolvedValue(mockAuthedApi);
+  });
+
+  it("로그인하지 않은 경우 로그인 페이지로 리다이렉트한다", async () => {
+    mockGetSession.mockResolvedValue({
+      authenticated: false,
+      userId: null,
+    });
+
+    await expect(
+      getMoimEdit(
+        {
+          meetingId: 20,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow(`NEXT_REDIRECT:${ROUTES.login}`);
+
+    expect(mockGetAuthApi).not.toHaveBeenCalled();
+    expect(mockGetDetail).not.toHaveBeenCalled();
   });
 
   it("모임 정보가 없으면 notFound를 호출한다", async () => {
@@ -54,6 +76,32 @@ describe("getMoimEdit", () => {
       ),
     ).rejects.toThrow("NEXT_NOT_FOUND");
 
+    expect(mockGetAuthApi).toHaveBeenCalledTimes(1);
+    expect(mockGetDetail).toHaveBeenCalledWith(20);
+  });
+
+  it("작성자가 아닌 경우 모임 상세 페이지로 리다이렉트한다", async () => {
+    mockGetSession.mockResolvedValue({
+      authenticated: true,
+      userId: 1,
+    });
+
+    mockGetDetail.mockResolvedValue({
+      data: {
+        hostId: 999,
+      },
+    });
+
+    await expect(
+      getMoimEdit(
+        {
+          meetingId: 20,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow(`NEXT_REDIRECT:${ROUTES.moimDetail}/20`);
+
+    expect(mockGetAuthApi).toHaveBeenCalledTimes(1);
     expect(mockGetDetail).toHaveBeenCalledWith(20);
   });
 
@@ -104,6 +152,7 @@ describe("getMoimEdit", () => {
       mockDeps,
     );
 
+    expect(mockGetAuthApi).toHaveBeenCalledTimes(1);
     expect(mockGetDetail).toHaveBeenCalledWith(20);
     expect(mapMeetingDetailToFormValues).toHaveBeenCalledWith(meetingDetail);
     expect(result).toEqual({

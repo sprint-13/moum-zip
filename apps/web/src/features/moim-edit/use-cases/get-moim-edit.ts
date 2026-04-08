@@ -13,24 +13,47 @@ type Deps = {
   getSession?: typeof isAuth;
 };
 
+const isMeetingDetailForEdit = (meeting: unknown): meeting is MeetingDetailForEdit => {
+  if (!meeting || typeof meeting !== "object") {
+    return false;
+  }
+
+  if (!("hostId" in meeting)) {
+    return false;
+  }
+
+  const { hostId } = meeting as { hostId?: unknown };
+
+  return typeof hostId === "number" || hostId == null;
+};
+
+const parseMeetingDetail = (meeting: unknown): MeetingDetailForEdit | null => {
+  if (!meeting || typeof meeting !== "object") {
+    return null;
+  }
+
+  const resolvedMeeting = "data" in meeting ? meeting.data : meeting;
+
+  if (!isMeetingDetailForEdit(resolvedMeeting)) {
+    return null;
+  }
+
+  return resolvedMeeting;
+};
+
 export async function getMoimEdit(
   { meetingId }: GetMoimEditParams,
   { getAuthApi = getApi, getSession = isAuth }: Deps = {},
 ) {
-  const authedApi = await getAuthApi();
   const { userId } = await getSession();
 
   if (userId == null) {
     redirect(ROUTES.login);
   }
 
+  const authedApi = await getAuthApi();
   const meeting = await authedApi.meetings.getDetail(meetingId);
-
-  if (!meeting) {
-    notFound();
-  }
-
-  const meetingDetail = typeof meeting === "object" && meeting !== null && "data" in meeting ? meeting.data : meeting;
+  const meetingDetail = parseMeetingDetail(meeting);
 
   if (!meetingDetail) {
     notFound();
@@ -41,6 +64,6 @@ export async function getMoimEdit(
   }
 
   return {
-    initialValues: mapMeetingDetailToFormValues(meetingDetail as MeetingDetailForEdit),
+    initialValues: mapMeetingDetailToFormValues(meetingDetail),
   };
 }
