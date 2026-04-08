@@ -80,7 +80,7 @@ export function useDeleteComment(slug: string, postId: string) {
       const res = await fetch(`/api/spaces/${slug}/bulletin/${postId}/comments/${commentId}`, {
         method: "DELETE",
       });
-      if (!res.ok && res.status !== 204) throw new Error("댓글 삭제에 실패했습니다.");
+      if (!res.ok && res.status !== 204) throw new Error((await res.json()).error ?? "댓글 삭제에 실패했습니다.");
     },
     onMutate: async (commentId) => {
       await queryClient.cancelQueries({ queryKey: key });
