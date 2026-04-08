@@ -7,6 +7,11 @@ import { createFavorite, deleteFavorite } from "../model";
 import type { MypageMoimCard } from "../model/types";
 import { updateLikedState } from "./favorite-state";
 
+interface ToggleFavoriteMutationParams {
+  meetingId: number;
+  nextLiked: boolean;
+}
+
 const findMeetingLiked = (meetings: MypageMoimCard[] | undefined, meetingId: string) => {
   return meetings?.find((meeting) => meeting.id === meetingId)?.liked;
 };
@@ -64,7 +69,7 @@ export const useToggleFavorite = (enableRemoteFetch: boolean) => {
   const requestVersionRef = useRef(new Map<number, number>());
 
   return useMutation({
-    mutationFn: async ({ meetingId, nextLiked }: { meetingId: number; nextLiked: boolean }) => {
+    mutationFn: async ({ meetingId, nextLiked }: ToggleFavoriteMutationParams) => {
       if (nextLiked) {
         return createFavorite(meetingId);
       }

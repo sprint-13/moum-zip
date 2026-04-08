@@ -1,4 +1,3 @@
-import type { MeetingWithHost } from "@moum-zip/api";
 import { type CreatedFilterKey, fetchMyMeetings, type MypageMoimCard, mapCreatedMeeting } from "../model";
 
 const CREATED_MEETINGS_PAGE_SIZE = 100;
@@ -28,7 +27,7 @@ export const getCreatedMeetingCards = async (createdFilter: CreatedFilterKey): P
   });
 
   const isCreatedOngoing = createdFilter === "ongoing";
-  const filteredMeetings = (response.data as MeetingWithHost[])
+  const filteredMeetings = response.data
     .filter((meeting) =>
       isCreatedOngoing ? !isCompletedMeeting(meeting.dateTime) : isCompletedMeeting(meeting.dateTime),
     )
