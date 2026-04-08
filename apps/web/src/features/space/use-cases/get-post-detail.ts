@@ -12,8 +12,8 @@ export async function getPostInfo(postId: string): Promise<Post> {
   return post;
 }
 
-export async function getPostComments(postId: string): Promise<Comment[]> {
-  const commentRows = await commentQueries.findManyByPostId(postId);
+export async function getPostComments(postId: string, spaceId: string): Promise<Comment[]> {
+  const commentRows = await commentQueries.findManyByPostId(postId, spaceId);
   const comments: Comment[] = commentRows.map(({ comment, author }) => ({ ...comment, author }));
 
   return comments;
