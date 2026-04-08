@@ -3,11 +3,18 @@ import { spaceQueries } from "@/entities/spaces";
 import type { ApiClient } from "@/shared/api";
 import { updateMoim } from "./moim-update";
 
+const { mockIsAuth, mockGetDetail, mockUpdate } = vi.hoisted(() => ({
+  mockIsAuth: vi.fn(),
+  mockGetDetail: vi.fn(),
+  mockUpdate: vi.fn(),
+}));
+
 vi.mock("@/shared/api/server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/shared/api/server")>();
+
   return {
     ...actual,
-    isAuth: vi.fn().mockResolvedValue({ authenticated: true, userId: 1 }),
+    isAuth: mockIsAuth,
   };
 });
 
@@ -16,10 +23,8 @@ vi.mock("@/entities/spaces");
 
 const mockUpdateSpace = vi.mocked(spaceQueries.updateByMeetingId);
 
-const mockGetDetail = vi.fn();
-const mockUpdate = vi.fn();
-
 type AuthedApi = ApiClient;
+
 const mockAuthedApi = {
   meetings: {
     getDetail: mockGetDetail,
@@ -29,6 +34,7 @@ const mockAuthedApi = {
 
 const mockDeps = {
   getAuthApi: () => Promise.resolve(mockAuthedApi),
+  getSession: mockIsAuth,
 };
 
 const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24);
@@ -64,13 +70,22 @@ describe("updateMoim", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    mockIsAuth.mockResolvedValue({
+      authenticated: true,
+      userId: 1,
+    });
+
     mockGetDetail.mockResolvedValue({
       data: {
         hostId: 1,
       },
     });
 
-    mockUpdate.mockResolvedValue({ ok: true, data: { id: 20 } });
+    mockUpdate.mockResolvedValue({
+      ok: true,
+      data: { id: 20 },
+    });
+
     mockUpdateSpace.mockResolvedValue(mockSpaceResult);
   });
 
@@ -106,7 +121,9 @@ describe("updateMoim", () => {
       modules: [],
     });
 
-    expect(result.meeting.id).toBe(20);
+    expect(result).toEqual({
+      meeting: { id: 20 },
+    });
   });
 
   it("project 타입은 프로젝트로 변환한다", async () => {
@@ -172,8 +189,7 @@ describe("updateMoim", () => {
   });
 
   it("로그인하지 않은 경우 에러를 던짐", async () => {
-    const { isAuth } = await import("@/shared/api/server");
-    vi.mocked(isAuth).mockResolvedValueOnce({
+    mockIsAuth.mockResolvedValueOnce({
       authenticated: false,
       userId: null,
     });
@@ -225,7 +241,27 @@ describe("updateMoim", () => {
         },
         mockDeps,
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow("수정 권한이 없습니다.");
+
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockUpdateSpace).not.toHaveBeenCalled();
+  });
+
+  it("모임 상세 조회 실패 시 에러를 던짐", async () => {
+    mockGetDetail.mockRejectedValue(new Error("조회 실패"));
+
+    await expect(
+      updateMoim(
+        {
+          meetingId: 20,
+          data: baseInput,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow("모임 정보를 불러오지 못했습니다.");
+
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockUpdateSpace).not.toHaveBeenCalled();
   });
 
   it("SPACE DB 수정 실패 시 에러를 던짐", async () => {

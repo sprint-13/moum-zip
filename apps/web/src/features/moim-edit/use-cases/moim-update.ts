@@ -9,9 +9,13 @@ type UpdateMoimParams = {
 
 type Deps = {
   getAuthApi?: () => ReturnType<typeof getApi>;
+  getSession?: typeof isAuth;
 };
 
-export async function updateMoim({ meetingId, data }: UpdateMoimParams, { getAuthApi = getApi }: Deps = {}) {
+export async function updateMoim(
+  { meetingId, data }: UpdateMoimParams,
+  { getAuthApi = getApi, getSession = isAuth }: Deps = {},
+) {
   const meetingPayload = {
     name: data.name,
     type: data.type === "study" ? "스터디" : "프로젝트",
@@ -24,14 +28,24 @@ export async function updateMoim({ meetingId, data }: UpdateMoimParams, { getAut
   };
 
   const authedApi = await getAuthApi();
-  const { userId } = await isAuth();
+  const { userId } = await getSession();
 
   if (userId == null) {
     throw new Error("로그인이 필요합니다.");
   }
 
-  const meeting = await authedApi.meetings.getDetail(meetingId);
-  const meetingDetail = "data" in meeting ? meeting.data : meeting;
+  let meetingDetail: { hostId?: number | null } | null = null;
+
+  try {
+    const meeting = await authedApi.meetings.getDetail(meetingId);
+
+    meetingDetail =
+      meeting && typeof meeting === "object" && "data" in meeting
+        ? (meeting.data as { hostId?: number | null } | null)
+        : (meeting as { hostId?: number | null } | null);
+  } catch {
+    throw new Error("모임 정보를 불러오지 못했습니다.");
+  }
 
   if (!meetingDetail || meetingDetail.hostId !== userId) {
     throw new Error("수정 권한이 없습니다.");
