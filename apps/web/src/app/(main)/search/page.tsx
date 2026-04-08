@@ -1,8 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { SearchHero } from "@/_pages/space-search";
-import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
-import { getSearchPrefetchQueryOptions } from "@/_pages/space-search/lib/search-prefetch-query-options";
+import { getSearchPrefetchContext } from "@/_pages/space-search/lib/get-search-prefetch-context";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { normalizeSearchQueryState, parseSearchQueryState, SearchContentSection } from "@/features/space-search";
 import { SearchCreateButton } from "@/features/space-search/ui/space-search-create-button";
@@ -18,11 +17,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolvedSearchParams = await searchParams;
   const queryState = parseSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
-  const { isAuthenticatedRequest, meetingsApi } = await getSearchMeetingsApi();
   const queryClient = getQueryClient();
-  const searchPrefetchQueryOptions = getSearchPrefetchQueryOptions({
-    isAuthenticatedRequest,
-    meetingsApi,
+  const { isAuthenticatedRequest, searchPrefetchQueryOptions } = await getSearchPrefetchContext({
     queryState: normalizedQueryState,
   });
 
