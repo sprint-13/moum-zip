@@ -4,7 +4,7 @@ import { PostWriteForm } from "@/_pages/bulletin/ui/post-write-form";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { getPostInfo } from "@/features/space/use-cases/get-post-detail";
-import { safe } from "@/shared/lib/safe";
+import { handleAppError } from "@/shared/lib/handle-app-error";
 
 export default async function PostEditPage({
   params,
@@ -13,9 +13,9 @@ export default async function PostEditPage({
 }) {
   const { "space-slug": slug, "post-id": postId } = await params;
 
-  const { membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug);
 
-  const post = await safe(getPostInfo(postId));
+  const post = await getPostInfo(postId, space.spaceId).catch(handleAppError);
 
   const canEdit = membership.userId === post.authorId || membership.role === "manager";
   if (!canEdit) notFound();

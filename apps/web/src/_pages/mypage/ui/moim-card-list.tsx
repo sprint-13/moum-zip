@@ -12,7 +12,11 @@ interface MoimCardListProps {
   onEnterSpace?: (meetingId: string) => void;
 }
 
-const ListStatusContainer = ({ children }: { children: ReactNode }) => {
+interface ListStatusContainerProps {
+  children: ReactNode;
+}
+
+const ListStatusContainer = ({ children }: ListStatusContainerProps) => {
   return (
     <div className="flex min-h-[22rem] w-full items-center justify-center md:min-h-[20rem] xl:min-h-[24rem]">
       {children}

@@ -136,7 +136,7 @@ export const postQueries = {
 
 export const commentQueries = {
   /** 게시글 댓글 목록 (작성자 포함) */
-  findManyByPostId: (postId: string) =>
+  findManyByPostId: (postId: string, spaceId: string) =>
     db
       .select({ comment: spacePostComments, author: authorFields })
       .from(spacePostComments)
@@ -144,7 +144,7 @@ export const commentQueries = {
         spaceMembers,
         and(eq(spaceMembers.userId, spacePostComments.authorId), eq(spaceMembers.spaceId, spacePostComments.spaceId)),
       )
-      .where(eq(spacePostComments.postId, postId))
+      .where(and(eq(spacePostComments.postId, postId), eq(spacePostComments.spaceId, spaceId)))
       .orderBy(asc(spacePostComments.createdAt)),
 
   /** 댓글 단건 조회 */

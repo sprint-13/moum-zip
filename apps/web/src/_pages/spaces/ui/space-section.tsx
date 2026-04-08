@@ -12,7 +12,7 @@ interface SpaceSectionProps {
 }
 
 export const SpaceSection = ({ className }: SpaceSectionProps) => {
-  const [activeTab, setActiveTab] = useState<"ongoing" | "archived">("ongoing");
+  const [activeTab, setActiveTab] = useState<"ongoing" | "archived" | "pending">("ongoing");
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -37,8 +37,9 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const spaces = data.pages.flatMap((page) => page.data);
-  const ongoingSpaces = spaces.filter((space) => space.status === "ongoing");
+  const ongoingSpaces = spaces.filter((space) => space.status === "ongoing" && space.isApproved === true);
   const archivedSpaces = spaces.filter((space) => space.status === "archived");
+  const pendingSpaces = spaces.filter((space) => space.isApproved === false);
 
   const normalizedQuery = deferredQuery.trim().toLowerCase();
   const filterByQuery = (space: SpaceInfo) =>
@@ -46,15 +47,28 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
 
   const visibleOngoingSpaces = ongoingSpaces.filter(filterByQuery);
   const visibleArchivedSpaces = archivedSpaces.filter(filterByQuery);
+  const visiblePendingSpaces = pendingSpaces.filter(filterByQuery);
 
-  const displaySpaces = activeTab === "ongoing" ? visibleOngoingSpaces : visibleArchivedSpaces;
-  const isEmpty = (activeTab === "ongoing" ? ongoingSpaces : archivedSpaces).length === 0;
+  const displaySpaces =
+    activeTab === "ongoing"
+      ? visibleOngoingSpaces
+      : activeTab === "archived"
+        ? visibleArchivedSpaces
+        : visiblePendingSpaces;
+
+  const isEmpty =
+    (activeTab === "ongoing" ? ongoingSpaces : activeTab === "archived" ? archivedSpaces : pendingSpaces).length === 0;
   const isSearchEmpty = displaySpaces.length === 0 && normalizedQuery.length > 0;
 
   const getEmptyMessage = (): string | null => {
     if (isSearchEmpty) return "검색 결과가 없어요";
     if (!isEmpty) return null;
-    return activeTab === "ongoing" ? "참여 중인 스페이스가 없어요" : "아카이브된 스페이스가 없어요";
+
+    return activeTab === "ongoing"
+      ? "참여 중인 스페이스가 없어요"
+      : activeTab === "archived"
+        ? "아카이브된 스페이스가 없어요"
+        : "승인 대기 중인 스페이스가 없어요";
   };
   const emptyMessage = getEmptyMessage();
 
@@ -65,10 +79,11 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
         onTabChange={(tab) => setActiveTab(tab)}
         ongoingSpacesNumber={ongoingSpaces.length}
         archivedSpacesNumber={archivedSpaces.length}
+        pendingSpaceNumber={pendingSpaces.length}
         query={query}
         onQueryChange={setQuery}
       />
-      <div className="columns-1 gap-6 md:columns-2 lg:columns-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {displaySpaces.map((space) => (
           <SpaceInfoGridCard key={space.spaceId} space={space} />
         ))}

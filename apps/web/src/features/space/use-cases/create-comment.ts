@@ -1,4 +1,5 @@
-import { commentQueries } from "@/entities/post/queries";
+import { commentQueries, postQueries } from "@/entities/post/queries";
+import { AppError } from "@/shared/lib/error";
 
 export interface CreateCommentInput {
   postId: string;
@@ -14,6 +15,10 @@ export interface CreateCommentInput {
  */
 export async function createCommentUseCase(input: CreateCommentInput): Promise<{ commentId: string }> {
   if (!input.content.trim()) throw new Error("댓글 내용을 입력해주세요.");
+
+  const postRows = await postQueries.findById(input.postId);
+  const post = postRows[0];
+  if (!post || post.post.spaceId !== input.spaceId) throw new AppError("POST_NOT_FOUND");
 
   const comment = await commentQueries.create({
     id: crypto.randomUUID(),
