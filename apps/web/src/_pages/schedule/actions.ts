@@ -36,13 +36,17 @@ export async function createScheduleAction(
     return { ok: false, message: "입력 값을 확인해주세요" };
   }
 
-  await createScheduleUseCase({
-    spaceId: space.spaceId,
-    createdBy: membership.userId,
-    title: validatedFields.data.title,
-    description: validatedFields.data.description,
-    startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
-  });
+  try {
+    await createScheduleUseCase({
+      spaceId: space.spaceId,
+      createdBy: membership.userId,
+      title: validatedFields.data.title,
+      description: validatedFields.data.description,
+      startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
+    });
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "일정 생성 중 오류가 발생했습니다." };
+  }
 
   invalidateSchedule(space.spaceId, slug);
   return { ok: true, data: undefined };
@@ -61,11 +65,15 @@ export async function updateScheduleAction(
   const description = formData.get("description");
   const startAt = formData.get("startAt");
 
-  await updateScheduleUseCase(scheduleId, {
-    title: typeof title === "string" ? title : undefined,
-    description: typeof description === "string" ? description || null : undefined,
-    startAt: typeof startAt === "string" && startAt ? kstInputToDate(startAt) : undefined,
-  });
+  try {
+    await updateScheduleUseCase(scheduleId, {
+      title: typeof title === "string" ? title : undefined,
+      description: typeof description === "string" ? description || null : undefined,
+      startAt: typeof startAt === "string" && startAt ? kstInputToDate(startAt) : undefined,
+    });
+  } catch (err) {
+    return { ok: false, message: err instanceof Error ? err.message : "일정 수정 중 오류가 발생했습니다." };
+  }
 
   invalidateSchedule(space.spaceId, slug);
   return { ok: true, data: undefined };
