@@ -28,6 +28,15 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
     isAuthenticated,
     queryState: activeQueryState,
   });
+  const handleFilterOpenChange = (filterId: SearchFilter["id"], nextIsOpen: boolean) => {
+    setOpenedFilterId((prevOpenedFilterId) => {
+      if (nextIsOpen) {
+        return filterId;
+      }
+
+      return prevOpenedFilterId === filterId ? null : prevOpenedFilterId;
+    });
+  };
 
   return (
     <>
@@ -35,7 +44,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
         <SearchToolbar
           categories={categories}
           filters={SEARCH_FILTERS}
-          onFilterOpenChange={setOpenedFilterId}
+          onFilterOpenChange={handleFilterOpenChange}
           onCategoryChange={handleCategoryChange}
           onDateSortChange={handleDateSortChange}
           onDeadlineSortChange={handleDeadlineSortChange}

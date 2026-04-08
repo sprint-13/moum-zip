@@ -47,6 +47,12 @@ export const SearchCreateButton = ({
     "group/create pointer-events-auto -m-1 inline-flex",
     variant === "icon" ? "rounded-full" : "rounded-[1.75rem]",
   );
+  const isLinkButton = isAuthenticated && !disabled;
+  const createButtonProps = {
+    "aria-label": ariaLabel,
+    className: createButtonClassName,
+    variant,
+  } as const;
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     onClick?.(event);
@@ -58,33 +64,21 @@ export const SearchCreateButton = ({
     showRequiredToast("로그인 후 이용할 수 있어요.");
   };
 
-  if (!isAuthenticated || disabled) {
-    return (
-      <span className={createButtonWrapperClassName}>
-        <CreateButton
-          aria-label={ariaLabel}
-          className={createButtonClassName}
-          disabled={disabled}
-          onClick={handleClick}
-          variant={variant}
-        >
-          {children}
-        </CreateButton>
-      </span>
-    );
-  }
-
   const handleLinkClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
     onClick?.(event);
   };
 
-  return (
-    <span className={createButtonWrapperClassName}>
-      <CreateButton aria-label={ariaLabel} asChild className={createButtonClassName} variant={variant}>
-        <Link href={ROUTES.moimCreate} onClick={handleLinkClick}>
-          {renderCreateButtonContent(children)}
-        </Link>
-      </CreateButton>
-    </span>
+  const createButtonElement = isLinkButton ? (
+    <CreateButton {...createButtonProps} asChild>
+      <Link href={ROUTES.moimCreate} onClick={handleLinkClick}>
+        {renderCreateButtonContent(children)}
+      </Link>
+    </CreateButton>
+  ) : (
+    <CreateButton {...createButtonProps} disabled={disabled} onClick={handleClick}>
+      {children}
+    </CreateButton>
   );
+
+  return <span className={createButtonWrapperClassName}>{createButtonElement}</span>;
 };

@@ -35,6 +35,13 @@ const deadlineTagClassName = cn(
   "2xl:[&>span:last-child]:max-w-none 2xl:[&>span:last-child]:overflow-visible 2xl:[&>span:last-child]:text-clip 2xl:[&>span:last-child]:text-xs 2xl:[&>span:last-child]:leading-4",
   "lg:[&>svg]:size-[1.125rem] 2xl:[&>svg]:size-5",
 );
+const cardWrapperClassName = "group/card -m-1 rounded-[2.25rem] p-1";
+const cardClassName =
+  "relative flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 2xl:gap-6 2xl:p-6";
+const cardImageClassName =
+  "h-39 w-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100 2xl:size-42.5";
+const cardTitleClassName =
+  "min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em] transition-colors duration-300 motion-reduce:transition-none lg:group-hover/card:text-primary";
 
 const MetaChip = ({ chip }: MetaChipProps) => {
   return (
@@ -79,10 +86,11 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
       "cursor-not-allowed opacity-60 active:scale-100": isRegistClosed,
     },
   );
+  const likeButtonProps = { isAuthenticated, isLiked, meetingId };
 
   return (
-    <div className="group/card -m-1 rounded-[2.25rem] p-1">
-      <article className="relative flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 2xl:gap-6 2xl:p-6">
+    <div className={cardWrapperClassName}>
+      <article className={cardClassName}>
         <Link
           aria-label={`${title} 상세 페이지 보기`}
           className="absolute inset-0 z-10 rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -90,16 +98,9 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           prefetch={false}
         />
         <div className="relative w-full shrink-0 sm:w-full md:w-auto">
-          <Image
-            alt={imageAlt}
-            className="h-39 w-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100 2xl:size-42.5"
-            height={340}
-            src={imageSrc}
-            unoptimized
-            width={340}
-          />
+          <Image alt={imageAlt} className={cardImageClassName} height={340} src={imageSrc} unoptimized width={340} />
           <div className="absolute top-4 right-4 z-20 sm:hidden">
-            <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
+            <SpaceCardLikeButton {...likeButtonProps} />
           </div>
         </div>
 
@@ -107,10 +108,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-2">
-                <h2
-                  className="min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em] transition-colors duration-300 motion-reduce:transition-none lg:group-hover/card:text-primary"
-                  title={title}
-                >
+                <h2 className={cardTitleClassName} title={title}>
                   {displayTitle}
                 </h2>
                 {status ? <SpaceCardStatus className="shrink-0" label={status.label} /> : null}
@@ -124,7 +122,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
             </div>
 
             <div className="relative z-20 hidden sm:block">
-              <SpaceCardLikeButton isAuthenticated={isAuthenticated} isLiked={isLiked} meetingId={meetingId} />
+              <SpaceCardLikeButton {...likeButtonProps} />
             </div>
           </div>
 
