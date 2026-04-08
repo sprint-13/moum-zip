@@ -1,13 +1,16 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
-import { kstInputToDate } from "@/entities/schedule";
+import { kstInputToDate, scheduleSchema } from "@/entities/schedule";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { CACHE_TAGS } from "@/shared/lib/cache";
 import { checkAttendanceUseCase } from "./use-cases/check-attendance";
 import { createScheduleUseCase } from "./use-cases/create-schedule";
 import { deleteScheduleUseCase } from "./use-cases/delete-schedule";
 import { updateScheduleUseCase } from "./use-cases/update-schedule";
+
+type ActionResult<T> = { ok: true; data: T } | { ok: false; message: string };
+export type ScheduleActionState = ActionResult<void> | null;
 
 function invalidateSchedule(spaceId: string, slug: string) {
   updateTag(CACHE_TAGS.schedule(spaceId));
@@ -20,29 +23,38 @@ function invalidateAttendance(spaceId: string, slug: string) {
 }
 
 /** 일정 추가 Server Action */
-export async function createScheduleAction(slug: string, formData: FormData) {
+export async function createScheduleAction(
+  slug: string,
+  _: ScheduleActionState,
+  formData: FormData,
+): Promise<ScheduleActionState> {
   const { space, membership } = await getSpaceContext(slug);
+  const rawData = Object.fromEntries(formData.entries());
+  const validatedFields = scheduleSchema.safeParse(rawData);
 
-  const title = formData.get("title");
-  const description = formData.get("description");
-  const startAt = formData.get("startAt");
-
-  if (typeof title !== "string") throw new Error("제목을 입력해주세요.");
-  if (typeof startAt !== "string" || !startAt) throw new Error("날짜를 선택해주세요.");
+  if (!validatedFields.success) {
+    return { ok: false, message: "입력 값을 확인해주세요" };
+  }
 
   await createScheduleUseCase({
     spaceId: space.spaceId,
     createdBy: membership.userId,
-    title,
-    description: typeof description === "string" && description ? description : undefined,
-    startAt: kstInputToDate(startAt),
+    title: validatedFields.data.title,
+    description: validatedFields.data.description,
+    startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
   });
 
   invalidateSchedule(space.spaceId, slug);
+  return { ok: true, data: undefined };
 }
 
 /** 일정 수정 Server Action */
-export async function updateScheduleAction(slug: string, scheduleId: string, formData: FormData) {
+export async function updateScheduleAction(
+  slug: string,
+  scheduleId: string,
+  _: ScheduleActionState,
+  formData: FormData,
+): Promise<ScheduleActionState> {
   const { space } = await getSpaceContext(slug);
 
   const title = formData.get("title");
@@ -56,6 +68,7 @@ export async function updateScheduleAction(slug: string, scheduleId: string, for
   });
 
   invalidateSchedule(space.spaceId, slug);
+  return { ok: true, data: undefined };
 }
 
 /** 일정 삭제 Server Action */
