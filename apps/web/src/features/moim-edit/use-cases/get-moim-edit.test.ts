@@ -80,6 +80,27 @@ describe("getMoimEdit", () => {
     expect(mockGetDetail).toHaveBeenCalledWith(20);
   });
 
+  it("모임 상세 조회에 실패하면 notFound를 호출한다", async () => {
+    mockGetSession.mockResolvedValue({
+      authenticated: true,
+      userId: 1,
+    });
+
+    mockGetDetail.mockRejectedValue(new Error("조회 실패"));
+
+    await expect(
+      getMoimEdit(
+        {
+          meetingId: 20,
+        },
+        mockDeps,
+      ),
+    ).rejects.toThrow("NEXT_NOT_FOUND");
+
+    expect(mockGetAuthApi).toHaveBeenCalledTimes(1);
+    expect(mockGetDetail).toHaveBeenCalledWith(20);
+  });
+
   it("작성자가 아닌 경우 모임 상세 페이지로 리다이렉트한다", async () => {
     mockGetSession.mockResolvedValue({
       authenticated: true,

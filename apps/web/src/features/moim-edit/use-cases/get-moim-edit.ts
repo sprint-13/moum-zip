@@ -52,8 +52,15 @@ export async function getMoimEdit(
   }
 
   const authedApi = await getAuthApi();
-  const meeting = await authedApi.meetings.getDetail(meetingId);
-  const meetingDetail = parseMeetingDetail(meeting);
+
+  let meetingDetail: MeetingDetailForEdit | null = null;
+
+  try {
+    const meeting = await authedApi.meetings.getDetail(meetingId);
+    meetingDetail = parseMeetingDetail(meeting);
+  } catch {
+    notFound();
+  }
 
   if (!meetingDetail) {
     notFound();
