@@ -22,7 +22,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ slug: string; "post-id": string; "comment-id": string }> },
 ) {
-  const { slug, "post-id": postId, "comment-id": commentId } = await params;
+  const { slug, "comment-id": commentId } = await params;
   const result = await getAuthAndSpace(slug);
   if ("error" in result) {
     const status = result.error === "Unauthorized" ? 401 : result.error === "NotFound" ? 404 : 403;
@@ -32,6 +32,11 @@ export async function PATCH(
   const { membership } = result;
   try {
     const { content } = await request.json();
+
+    if (typeof content !== "string" || !content.trim()) {
+      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+    }
+
     await updateCommentUseCase(commentId, content, { userId: membership.userId, role: membership.role });
     return NextResponse.json({});
   } catch (err) {
