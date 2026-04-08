@@ -1,5 +1,6 @@
 import { Dropdown, Filter, TabButton } from "@ui/components";
 import { ChevronDown } from "@ui/icons";
+import type { Dispatch, SetStateAction } from "react";
 
 import { cn } from "@/shared/lib/cn";
 
@@ -15,7 +16,7 @@ import type {
 interface SearchToolbarProps {
   categories: SearchCategory[];
   filters: SearchFilter[];
-  onFilterOpenChange: (filterId: SearchFilter["id"] | null) => void;
+  onFilterOpenChange: Dispatch<SetStateAction<SearchFilter["id"] | null>>;
   onCategoryChange: (categoryId: SearchCategory["id"]) => void;
   onDateSortChange: (dateSortId: SearchDateSortId) => void;
   onDeadlineSortChange: (deadlineSortId: SearchDeadlineSortId) => void;
@@ -112,7 +113,13 @@ export const SearchToolbar = ({
             <Dropdown
               key={filter.id}
               onOpenChange={(nextIsOpen) => {
-                onFilterOpenChange(nextIsOpen ? filter.id : openedFilterId === filter.id ? null : openedFilterId);
+                onFilterOpenChange((prevOpenedFilterId) => {
+                  if (nextIsOpen) {
+                    return filter.id;
+                  }
+
+                  return prevOpenedFilterId === filter.id ? null : prevOpenedFilterId;
+                });
               }}
               open={isOpen}
             >
