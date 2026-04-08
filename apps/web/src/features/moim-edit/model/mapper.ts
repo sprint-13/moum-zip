@@ -8,6 +8,10 @@ const formatDate = (value?: string | null) => {
 
   const date = new Date(value);
 
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
   const formatter = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     year: "numeric",
@@ -30,6 +34,10 @@ const formatTime = (value?: string | null) => {
 
   const date = new Date(value);
 
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
   const formatter = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     hour: "2-digit",
@@ -45,7 +53,9 @@ const formatTime = (value?: string | null) => {
 };
 
 const mapMeetingTypeToFormType = (type?: string | null): "project" | "study" => {
-  if (type === "프로젝트" || type?.toLowerCase() === "project") {
+  const normalizedType = type?.trim().toLowerCase();
+
+  if (type === "프로젝트" || normalizedType === "project") {
     return "project";
   }
 
@@ -56,19 +66,43 @@ const mapFormTypeToMeetingType = (type: MoimCreateFormValues["type"]) => {
   return type === "study" ? "스터디" : "프로젝트";
 };
 
+const normalizeRegion = (region?: string | null) => {
+  if (!region) {
+    return "";
+  }
+
+  return region.trim().toLowerCase();
+};
+
 const mapMeetingRegionToLocation = (region?: string | null): "online" | "offline" => {
-  if (region === "offline") {
+  const normalizedRegion = normalizeRegion(region);
+
+  if (normalizedRegion === "offline" || normalizedRegion === "오프라인") {
     return "offline";
   }
 
+  if (normalizedRegion === "online" || normalizedRegion === "온라인") {
+    return "online";
+  }
+
   return "online";
+};
+
+const mapMeetingCapacity = (capacity?: number | string | null) => {
+  const parsedCapacity = Number(capacity);
+
+  if (Number.isNaN(parsedCapacity) || parsedCapacity < 1) {
+    return 1;
+  }
+
+  return parsedCapacity;
 };
 
 export const mapMeetingDetailToFormValues = (meetingDetail: MeetingDetailForEdit): MoimCreateFormValues => {
   return {
     type: mapMeetingTypeToFormType(meetingDetail.type),
     name: meetingDetail.name ?? "",
-    capacity: Number(meetingDetail.capacity ?? 1),
+    capacity: mapMeetingCapacity(meetingDetail.capacity),
     description: meetingDetail.description ?? "",
     image: meetingDetail.image ?? "",
     location: mapMeetingRegionToLocation(meetingDetail.region),
