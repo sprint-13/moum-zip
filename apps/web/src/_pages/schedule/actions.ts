@@ -4,6 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { kstInputToDate, scheduleSchema } from "@/entities/schedule";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { CACHE_TAGS } from "@/shared/lib/cache";
+import { handleAppError } from "@/shared/lib/handle-app-error";
 import { checkAttendanceUseCase } from "./use-cases/check-attendance";
 import { createScheduleUseCase } from "./use-cases/create-schedule";
 import { deleteScheduleUseCase } from "./use-cases/delete-schedule";
@@ -28,7 +29,7 @@ export async function createScheduleAction(
   _: ScheduleActionState,
   formData: FormData,
 ): Promise<ScheduleActionState> {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
   const rawData = Object.fromEntries(formData.entries());
   const validatedFields = scheduleSchema.safeParse(rawData);
 
@@ -59,17 +60,19 @@ export async function updateScheduleAction(
   _: ScheduleActionState,
   formData: FormData,
 ): Promise<ScheduleActionState> {
-  const { space } = await getSpaceContext(slug);
+  const { space } = await getSpaceContext(slug).catch(handleAppError);
+  const rawData = Object.fromEntries(formData.entries());
+  const validatedFields = scheduleSchema.safeParse(rawData);
 
-  const title = formData.get("title");
-  const description = formData.get("description");
-  const startAt = formData.get("startAt");
+  if (!validatedFields.success) {
+    return { ok: false, message: "입력 값을 확인해주세요" };
+  }
 
   try {
     await updateScheduleUseCase(scheduleId, {
-      title: typeof title === "string" ? title : undefined,
-      description: typeof description === "string" ? description || null : undefined,
-      startAt: typeof startAt === "string" && startAt ? kstInputToDate(startAt) : undefined,
+      title: validatedFields.data.title,
+      description: validatedFields.data.description,
+      startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
     });
   } catch (err) {
     return { ok: false, message: err instanceof Error ? err.message : "일정 수정 중 오류가 발생했습니다." };
@@ -81,14 +84,14 @@ export async function updateScheduleAction(
 
 /** 일정 삭제 Server Action */
 export async function deleteScheduleAction(slug: string, scheduleId: string) {
-  const { space } = await getSpaceContext(slug);
+  const { space } = await getSpaceContext(slug).catch(handleAppError);
   await deleteScheduleUseCase(scheduleId);
   invalidateSchedule(space.spaceId, slug);
 }
 
 /** 출석 체크 Server Action */
 export async function checkAttendanceAction(slug: string) {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
   await checkAttendanceUseCase(space.spaceId, membership.userId);
   invalidateAttendance(space.spaceId, slug);
 }
