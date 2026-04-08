@@ -47,8 +47,14 @@ export function Button({
       className={cn(sizeClassMap[size], variantOverrideMap[variant], className)}
       {...props}
     >
-      {icon}
-      {children}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {icon}
+          {children}
+        </>
+      )}
     </ShadcnButton>
   );
 }

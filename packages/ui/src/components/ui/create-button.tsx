@@ -29,13 +29,18 @@ export function CreateButton({ variant = "full", children, className, asChild, .
   return (
     <ShadcnButton
       variant="default"
-      size={null}
       asChild={asChild}
       className={cn(createButtonVariants({ variant }), className)}
       {...props}
     >
-      <Plus className="size-8" aria-hidden="true" />
-      {children}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          <Plus className="size-8" aria-hidden="true" />
+          {children}
+        </>
+      )}
     </ShadcnButton>
   );
 }
