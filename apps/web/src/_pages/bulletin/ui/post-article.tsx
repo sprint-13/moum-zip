@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "@moum-zip/ui/components";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/entities/post";
 import { CATEGORY_LABELS } from "@/entities/post";
@@ -87,9 +88,19 @@ export function PostArticle({ postId, slug, currentUserId, currentUserRole }: Po
 
       {/* 작성자 */}
       <div className="flex items-center gap-2 border-border border-b pb-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
-          {post.author.name[0] ?? "-"}
-        </div>
+        {post.author.image ? (
+          <Image
+            src={post.author.image}
+            alt={post.author.name}
+            width={32}
+            height={32}
+            className="shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
+            {post.author.name[0]}
+          </div>
+        )}
         <span className="font-medium text-neutral-700 text-sm">{post.author.name}</span>
       </div>
 
