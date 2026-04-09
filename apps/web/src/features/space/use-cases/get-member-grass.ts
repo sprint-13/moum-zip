@@ -172,23 +172,27 @@ const getRecentScore = (days: GrassDay[]) => {
 };
 
 const getGrassIntensity = (score: number) => {
-  if (score <= 0) {
-    return 0;
+  if (score >= 7) {
+    return 7;
   }
 
-  if (score === 1) {
-    return 1;
+  if (score >= 5) {
+    return 5;
   }
 
-  if (score <= 3) {
-    return 2;
-  }
-
-  if (score <= 5) {
+  if (score >= 3) {
     return 3;
   }
 
-  return 4;
+  if (score >= 2) {
+    return 2;
+  }
+
+  if (score >= 1) {
+    return 1;
+  }
+
+  return 0;
 };
 
 const normalizeWindowDays = (days?: number) => {

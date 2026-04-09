@@ -69,13 +69,45 @@ describe("getSpaceMemberGrassUseCase", () => {
       commentCount: 1,
       attendanceCount: 1,
       score: 6,
-      intensity: 4,
+      intensity: 5,
     });
     expect(result.summary).toEqual({
       currentStreak: 3,
       recentScore: 10,
       activeDays: 3,
     });
+  });
+
+  it("상위 점수 구간을 1, 2, 3, 5, 7 기준으로 나눈다", async () => {
+    repository.countPostsByDateRange.setRows([
+      { date: "2026-04-03", count: 1 },
+      { date: "2026-04-04", count: 1 },
+      { date: "2026-04-05", count: 1 },
+      { date: "2026-04-06", count: 2 },
+      { date: "2026-04-07", count: 3 },
+    ]);
+    repository.countCommentsByDateRange.setRows([
+      { date: "2026-04-04", count: 0 },
+      { date: "2026-04-05", count: 1 },
+      { date: "2026-04-06", count: 1 },
+      { date: "2026-04-07", count: 1 },
+    ]);
+    repository.countAttendancesByDateRange.setRows([
+      { date: "2026-04-03", count: 1 },
+      { date: "2026-04-06", count: 1 },
+    ]);
+
+    const useCase = createGetGrassUseCase({
+      repository,
+      getTodayDateKey: () => "2026-04-07",
+    });
+    const result = await useCase("space-1", 7, { days: 5 });
+
+    expect(result.days.find((day) => day.date === "2026-04-03")).toMatchObject({ score: 3, intensity: 3 });
+    expect(result.days.find((day) => day.date === "2026-04-04")).toMatchObject({ score: 2, intensity: 2 });
+    expect(result.days.find((day) => day.date === "2026-04-05")).toMatchObject({ score: 3, intensity: 3 });
+    expect(result.days.find((day) => day.date === "2026-04-06")).toMatchObject({ score: 6, intensity: 5 });
+    expect(result.days.find((day) => day.date === "2026-04-07")).toMatchObject({ score: 7, intensity: 7 });
   });
 
   it("days 옵션을 사용하면 더 짧은 기간으로 집계한다", async () => {

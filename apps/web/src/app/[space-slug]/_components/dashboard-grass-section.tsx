@@ -19,6 +19,14 @@ interface GrassDayLike {
 
 const WEEK_COLUMN_SIZE = 7;
 const WEEKDAY_LABEL_ROW_INDEXES = new Set([0, 2, 4]);
+const GRASS_LEGEND_ITEMS = [
+  { intensity: 0, label: "0" },
+  { intensity: 1, label: "1" },
+  { intensity: 2, label: "2" },
+  { intensity: 3, label: "3" },
+  { intensity: 5, label: "5" },
+  { intensity: 7, label: "7+" },
+] as const;
 
 export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassSectionProps) => {
   const grass = await getGrassUseCase(spaceId, userId);
@@ -30,9 +38,10 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
   return (
     <SpaceCard>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-1">
           <h3 className="font-bold text-base">활동 잔디</h3>
           <p className="text-muted-foreground text-sm">최근 12주 동안의 스페이스 활동이에요.</p>
+          <p className="text-[11px] text-muted-foreground">게시글 2점 · 댓글 1점 · 출석 1점</p>
         </div>
 
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -79,7 +88,7 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
                           title={getGrassCellLabel(day, isToday)}
                           aria-label={getGrassCellLabel(day, isToday)}
                           className={cn(
-                            "h-3.5 w-3.5 rounded-[4px] border transition-colors",
+                            "h-3.5 w-3.5 cursor-help rounded-[4px] border transition-colors transition-transform duration-150 motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-110",
                             getGrassCellClassName(day.intensity),
                             isToday && "ring-1 ring-primary/60 ring-offset-1 ring-offset-background",
                           )}
@@ -93,16 +102,26 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 text-muted-foreground text-xs md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 text-muted-foreground text-xs md:flex-row md:items-end md:justify-between">
           <span>활동한 날 {grass.summary.activeDays}일</span>
-          <div className="flex flex-wrap items-center gap-1.5 md:justify-end">
-            <div className="h-3 w-3 rounded-[3px] border border-primary/40 bg-muted/90 ring-1 ring-primary/60 ring-offset-1 ring-offset-background" />
-            <span className="pr-2">: 오늘</span>
-            <span>적음</span>
-            {[0, 1, 2, 3, 4].map((intensity) => (
-              <div key={intensity} className={cn("h-3 w-3 rounded-[3px] border", getGrassCellClassName(intensity))} />
-            ))}
-            <span>많음</span>
+
+          <div className="flex flex-col gap-1.5 md:items-end">
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-3 rounded-[3px] border border-primary/40 bg-muted/90 ring-1 ring-primary/60 ring-offset-1 ring-offset-background" />
+              <span>테두리: 오늘</span>
+            </div>
+
+            <div className="flex flex-col gap-1 md:items-end">
+              <span>활동 점수 기준</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 md:justify-end">
+                {GRASS_LEGEND_ITEMS.map(({ intensity, label }) => (
+                  <div key={label} className="flex items-center gap-1">
+                    <div className={cn("h-3 w-3 rounded-[3px] border", getGrassCellClassName(intensity))} />
+                    <span>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -154,8 +173,10 @@ const getWeekdayLabels = (weekColumns: Array<Array<{ date: string }>>) => {
 
 const getGrassCellClassName = (intensity: number) => {
   switch (intensity) {
-    case 4:
+    case 7:
       return "border-primary bg-primary";
+    case 5:
+      return "border-primary/90 bg-primary/85";
     case 3:
       return "border-primary/70 bg-primary/70";
     case 2:
