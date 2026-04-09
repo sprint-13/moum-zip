@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getSearchMeetingsApi } from "@/_pages/space-search/lib/get-search-meetings-api";
 import { getSearchResults } from "@/_pages/space-search/use-cases/get-search-results";
-import { normalizeSearchQueryState, parseSpaceSearchQueryState } from "@/features/space-search/model/search-params";
+import { normalizeSearchQueryState, parseSearchQueryState } from "@/features/space-search/model/search-params";
 
 const MAX_SEARCH_SIZE = 12;
 
@@ -22,7 +22,7 @@ const parsePositiveInteger = (value: string | null) => {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const queryState = normalizeSearchQueryState(parseSpaceSearchQueryState(searchParams));
+  const queryState = normalizeSearchQueryState(parseSearchQueryState(searchParams));
   const cursor = searchParams.get("cursor");
   const size = parsePositiveInteger(searchParams.get("size"));
   let isAuthenticatedRequest = false;

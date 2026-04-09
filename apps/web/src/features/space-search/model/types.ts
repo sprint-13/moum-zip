@@ -1,30 +1,40 @@
-export type SpaceSearchCategoryId = "all" | "hobby" | "study" | "project" | "business" | "health" | "family" | "etc";
-export type SpaceSearchFilterId = "date" | "location" | "deadline";
-export type SpaceSearchDateSortId = "default" | "latest" | "oldest";
-export type SpaceSearchLocationId = "all" | "online" | "offline";
-export type SpaceSearchDeadlineSortId = "default" | "fast" | "slow";
+import type { GatheringCategory } from "@/entities/gathering";
 
-export interface SpaceSearchCategory {
-  id: SpaceSearchCategoryId;
+export type SearchCategoryId = "all" | GatheringCategory;
+export type SearchFilterId = "date" | "location" | "deadline";
+export type SearchDateSortId = "default" | "latest" | "oldest";
+export type SearchLocationId = "all" | "online" | "offline";
+export type SearchDeadlineSortId = "default" | "fast" | "slow";
+export type SearchRequestCategoryId = "all" | "study" | "project";
+
+export interface SearchCategory {
+  id: SearchCategoryId;
   label: string;
 }
 
-export interface SpaceSearchFilterOption {
+export interface SearchFilterOption {
   id: string;
   label: string;
 }
 
-export interface SpaceSearchFilter {
-  id: SpaceSearchFilterId;
+export interface SearchFilter {
+  id: SearchFilterId;
   label: string;
-  options: [SpaceSearchFilterOption, ...SpaceSearchFilterOption[]];
+  options: [SearchFilterOption, ...SearchFilterOption[]];
 }
 
-export interface SpaceSearchQueryState {
-  categoryId: SpaceSearchCategoryId;
-  dateSortId: SpaceSearchDateSortId;
-  deadlineSortId: SpaceSearchDeadlineSortId;
-  locationId: SpaceSearchLocationId;
+export interface SearchQueryState {
+  categoryId: SearchCategoryId;
+  dateSortId: SearchDateSortId;
+  deadlineSortId: SearchDeadlineSortId;
+  locationId: SearchLocationId;
+}
+
+export interface SearchRequestQueryState {
+  categoryId: SearchRequestCategoryId;
+  dateSortId: SearchDateSortId;
+  deadlineSortId: SearchDeadlineSortId;
+  locationId: SearchLocationId;
 }
 
 export interface SpaceCardMetaChip {
@@ -38,7 +48,7 @@ export interface SpaceCardStatus {
 
 export interface SpaceCardItem {
   category: string;
-  categoryId: Exclude<SpaceSearchCategoryId, "all">;
+  categoryId: Exclude<SearchCategoryId, "all">;
   currentParticipants: number;
   deadlineLabel: string;
   district: string;

@@ -37,7 +37,7 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
               ))}
             </Gnb.Item>
           </Gnb.List>
-          <Gnb.List className="items-center gap-1">
+          <Gnb.List className="items-center gap-1 pr-4">
             {loggedIn ? (
               <>
                 <Gnb.Item>
