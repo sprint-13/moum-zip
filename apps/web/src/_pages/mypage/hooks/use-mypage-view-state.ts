@@ -50,16 +50,10 @@ export const useMypageViewState = ({
   });
 
   const {
-    data: ongoingCreatedMeetingCards = createdMoims.ongoing,
-    isError: isOngoingCreatedError,
-    refetch: refetchOngoingCreatedMeetings,
-  } = useCreatedMeetings("ongoing", createdMoims.ongoing, shouldFetchCreatedMeetings);
-
-  const {
-    data: endedCreatedMeetingCards = createdMoims.ended,
-    isError: isEndedCreatedError,
-    refetch: refetchEndedCreatedMeetings,
-  } = useCreatedMeetings("ended", createdMoims.ended, shouldFetchCreatedMeetings);
+    data: createdMeetingCards = createdMoims,
+    isError: isCreatedError,
+    refetch: refetchCreatedMeetings,
+  } = useCreatedMeetings(createdMoims, shouldFetchCreatedMeetings);
 
   const {
     data: favoriteList,
@@ -81,13 +75,13 @@ export const useMypageViewState = ({
   );
 
   const ongoingCreatedMeetings = useMemo(
-    () => applyFavoriteState(ongoingCreatedMeetingCards, favoriteMeetingIds),
-    [favoriteMeetingIds, ongoingCreatedMeetingCards],
+    () => applyFavoriteState(createdMeetingCards.ongoing, favoriteMeetingIds),
+    [createdMeetingCards.ongoing, favoriteMeetingIds],
   );
 
   const endedCreatedMeetings = useMemo(
-    () => applyFavoriteState(endedCreatedMeetingCards, favoriteMeetingIds),
-    [endedCreatedMeetingCards, favoriteMeetingIds],
+    () => applyFavoriteState(createdMeetingCards.ended, favoriteMeetingIds),
+    [createdMeetingCards.ended, favoriteMeetingIds],
   );
 
   const createdMeetings = createdFilter === "ongoing" ? ongoingCreatedMeetings : endedCreatedMeetings;
@@ -163,13 +157,13 @@ export const useMypageViewState = ({
     likedMeetings,
     enterableMeetingIds,
     isJoinedError,
-    isCreatedError: createdFilter === "ongoing" ? isOngoingCreatedError : isEndedCreatedError,
+    isCreatedError,
     isLikedError,
     handleTabChange,
     handleToggleLike,
     handleEnterSpace,
     refetchJoinedMeetings,
-    refetchCreatedMeetings: createdFilter === "ongoing" ? refetchOngoingCreatedMeetings : refetchEndedCreatedMeetings,
+    refetchCreatedMeetings,
     refetchLikedMeetings,
     setCreatedFilter,
   };
