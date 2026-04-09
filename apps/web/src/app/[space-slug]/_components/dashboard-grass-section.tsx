@@ -1,3 +1,4 @@
+import { getTodayKST } from "@/entities/schedule";
 import { SpaceCard } from "@/features/space";
 import { getGrassUseCase } from "@/features/space/use-cases/get-member-grass";
 import { cn } from "@/shared/lib/cn";
@@ -8,10 +9,14 @@ interface DashboardGrassSectionProps {
 }
 
 const WEEK_COLUMN_SIZE = 7;
+const WEEKDAY_LABEL_ROW_INDEXES = new Set([0, 2, 4]);
 
 export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassSectionProps) => {
   const grass = await getGrassUseCase(spaceId, userId);
+  const todayDateKey = getTodayKST();
   const weekColumns = chunkWeekColumns(grass.days);
+  const monthLabels = getMonthLabels(weekColumns);
+  const weekdayLabels = getWeekdayLabels(weekColumns);
 
   return (
     <SpaceCard>
@@ -33,29 +38,55 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
         </div>
 
         <div className="overflow-x-auto">
-          <div className="flex min-w-fit gap-1.5">
-            {weekColumns.map((week) => (
-              <div key={week[0]?.date ?? "empty-week"} className="grid grid-rows-7 gap-1">
-                {week.map((day) => (
-                  <div
-                    key={day.date}
-                    role="img"
-                    title={formatDayLabel(day)}
-                    aria-label={formatDayLabel(day)}
-                    className={cn(
-                      "h-3.5 w-3.5 rounded-[4px] border transition-colors",
-                      getGrassCellClassName(day.intensity),
-                    )}
-                  />
-                ))}
-              </div>
-            ))}
+          <div className="grid min-w-fit grid-cols-[auto_1fr] gap-x-2 gap-y-1.5">
+            <div />
+            <div className="flex gap-1.5 text-[10px] text-muted-foreground">
+              {monthLabels.map(({ label, key }) => (
+                <span key={key} className="w-3.5 whitespace-nowrap">
+                  {label}
+                </span>
+              ))}
+            </div>
+
+            <div className="grid grid-rows-7 gap-1 text-[10px] text-muted-foreground">
+              {weekdayLabels.map(({ key, label }) => (
+                <span key={key} className="flex h-3.5 items-center">
+                  {label}
+                </span>
+              ))}
+            </div>
+
+            <div className="flex gap-1.5 py-0.5">
+              {weekColumns.map((week) => (
+                <div key={week[0]?.date ?? "empty-week"} className="grid grid-rows-7 gap-1">
+                  {week.map((day) => {
+                    const isToday = day.date === todayDateKey;
+
+                    return (
+                      <div
+                        key={day.date}
+                        role="img"
+                        title={getGrassCellLabel(day, isToday)}
+                        aria-label={getGrassCellLabel(day, isToday)}
+                        className={cn(
+                          "h-3.5 w-3.5 rounded-[4px] border transition-colors",
+                          getGrassCellClassName(day.intensity),
+                          isToday && "ring-1 ring-primary/60 ring-offset-1 ring-offset-background",
+                        )}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="flex items-center justify-between text-muted-foreground text-xs">
           <span>활동일 {grass.summary.activeDays}일</span>
           <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded-[3px] border border-primary/40 bg-muted/90 ring-1 ring-primary/60 ring-offset-1 ring-offset-background" />
+            <span>오늘</span>
             <span>적음</span>
             {[0, 1, 2, 3, 4].map((intensity) => (
               <div key={intensity} className={cn("h-3 w-3 rounded-[3px] border", getGrassCellClassName(intensity))} />
@@ -72,6 +103,42 @@ const chunkWeekColumns = <T,>(items: T[]) => {
   return Array.from({ length: Math.ceil(items.length / WEEK_COLUMN_SIZE) }, (_, index) =>
     items.slice(index * WEEK_COLUMN_SIZE, (index + 1) * WEEK_COLUMN_SIZE),
   );
+};
+
+const getMonthLabels = (weekColumns: Array<Array<{ date: string }>>) => {
+  let previousMonth = "";
+
+  return weekColumns.map((week) => {
+    const date = week[0]?.date ?? "";
+    const month = date ? formatMonthLabel(date) : "";
+    const label = month !== previousMonth ? month : "";
+    previousMonth = month;
+
+    return {
+      key: date || month,
+      label,
+    };
+  });
+};
+
+const getWeekdayLabels = (weekColumns: Array<Array<{ date: string }>>) => {
+  const firstWeek = weekColumns[0] ?? [];
+
+  return Array.from({ length: WEEK_COLUMN_SIZE }, (_, index) => {
+    const date = firstWeek[index]?.date;
+
+    if (!date || !WEEKDAY_LABEL_ROW_INDEXES.has(index)) {
+      return {
+        key: `empty-${index}`,
+        label: "",
+      };
+    }
+
+    return {
+      key: date,
+      label: formatWeekdayLabel(date),
+    };
+  });
 };
 
 const getGrassCellClassName = (intensity: number) => {
@@ -100,3 +167,30 @@ const formatDayLabel = (day: {
 
   return `${day.date} · ${day.score}점 · 게시글 ${day.postCount}개 · 댓글 ${day.commentCount}개 · ${attendanceLabel}`;
 };
+
+const getGrassCellLabel = (
+  day: {
+    date: string;
+    score: number;
+    postCount: number;
+    commentCount: number;
+    attendanceCount: number;
+  },
+  isToday = false,
+) => {
+  const baseLabel = formatDayLabel(day);
+
+  return isToday ? `${baseLabel} · 오늘` : baseLabel;
+};
+
+const formatMonthLabel = (date: string) => {
+  const targetDate = parseDateKey(date);
+
+  return `${targetDate.getMonth() + 1}월`;
+};
+
+const formatWeekdayLabel = (date: string) => {
+  return new Intl.DateTimeFormat("ko-KR", { weekday: "short", timeZone: "Asia/Seoul" }).format(parseDateKey(date));
+};
+
+const parseDateKey = (date: string) => new Date(`${date}T00:00:00+09:00`);
