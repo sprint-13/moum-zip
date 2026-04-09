@@ -18,7 +18,6 @@ export function useMoimCreateAmplitudeTracking(state: MoimCreateState) {
     if (state?.ok !== false) return;
     trackMoimCreateEvent("moim_create_submit_result", {
       success: false,
-      error: state.error,
     });
   }, [state]);
 }

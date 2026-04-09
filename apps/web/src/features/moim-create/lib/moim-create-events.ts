@@ -15,7 +15,6 @@ type MoimCreateEventName =
 type BaseProps = {
   step?: Step;
   success?: boolean;
-  error?: string;
 };
 
 // 모임 생성 관련 Amplitude 이벤트를 한곳에서 전송
