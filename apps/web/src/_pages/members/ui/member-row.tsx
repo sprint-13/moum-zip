@@ -116,7 +116,7 @@ export function MemberRow({ member }: { member: Member }) {
                         ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
-                  <DropdownMenuSeparator />
+                  {canKick && <DropdownMenuSeparator />}
                 </>
               )}
               {canKick && (
