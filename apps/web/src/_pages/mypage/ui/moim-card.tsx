@@ -10,6 +10,7 @@ interface MoimCardProps {
   moim: MypageMoimCard;
   onToggleLike?: (meetingId: string) => void;
   onEnterSpace?: (meetingId: string) => void;
+  showActionButton?: boolean;
 }
 
 const imageToneClassName: Record<MoimImageTone, string> = {
@@ -76,7 +77,7 @@ const MoimPreview = ({ imageTone, imageUrl, className }: MoimPreviewProps) => {
   );
 };
 
-export const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) => {
+export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = true }: MoimCardProps) => {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
 
   const handleToggleLike = () => {
@@ -140,13 +141,13 @@ export const MoimCard = ({ moim, onToggleLike, onEnterSpace }: MoimCardProps) =>
           </div>
         </div>
 
-        {renderActionButton("mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden")}
+        {showActionButton ? renderActionButton("mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden") : null}
       </div>
 
       <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
         <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-card" />
 
-        {renderActionButton("h-12 min-w-[9.75rem] text-base")}
+        {showActionButton ? renderActionButton("h-12 min-w-[9.75rem] text-base") : null}
       </div>
     </article>
   );
