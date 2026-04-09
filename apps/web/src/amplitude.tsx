@@ -10,7 +10,7 @@ export function AmplitudeInit() {
 
     amplitude.initAll(apiKey, {
       analytics: { autocapture: true },
-      sessionReplay: { sampleRate: 1 },
+      sessionReplay: { sampleRate: 0.02 },
     });
   }, []);
 
