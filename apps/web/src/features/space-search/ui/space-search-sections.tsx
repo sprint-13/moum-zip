@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 import { useInfiniteSearchResults } from "../hooks/use-infinite-search-results";
 import { useSearchQueryState } from "../hooks/use-search-query-state";
 import { SEARCH_FILTERS } from "../model/constants";
-import type { SearchCategory, SearchQueryState } from "../model/types";
+import type { SearchCategory, SearchFilter, SearchQueryState } from "../model/types";
 import { SearchResults } from "./space-search-results";
 import { SearchToolbar } from "./space-search-toolbar";
 
@@ -14,6 +16,7 @@ interface SearchContentSectionProps {
 }
 
 export const SearchContentSection = ({ categories, isAuthenticated, queryState }: SearchContentSectionProps) => {
+  const [openedFilterId, setOpenedFilterId] = useState<SearchFilter["id"] | null>(null);
   const {
     activeQueryState,
     handleCategoryChange,
@@ -21,10 +24,19 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
     handleDeadlineSortChange,
     handleLocationChange,
   } = useSearchQueryState({ queryState });
-  const { errorMessage, hasMore, items, loadMoreRef } = useInfiniteSearchResults({
+  const { errorMessage, hasMore, isFetchingNextPage, items, loadMoreRef } = useInfiniteSearchResults({
     isAuthenticated,
     queryState: activeQueryState,
   });
+  const handleFilterOpenChange = (filterId: SearchFilter["id"], nextIsOpen: boolean) => {
+    setOpenedFilterId((prevOpenedFilterId) => {
+      if (nextIsOpen) {
+        return filterId;
+      }
+
+      return prevOpenedFilterId === filterId ? null : prevOpenedFilterId;
+    });
+  };
 
   return (
     <>
@@ -32,10 +44,12 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
         <SearchToolbar
           categories={categories}
           filters={SEARCH_FILTERS}
+          onFilterOpenChange={handleFilterOpenChange}
           onCategoryChange={handleCategoryChange}
           onDateSortChange={handleDateSortChange}
           onDeadlineSortChange={handleDeadlineSortChange}
           onLocationChange={handleLocationChange}
+          openedFilterId={openedFilterId}
           selectedCategoryId={activeQueryState.categoryId}
           selectedDateSortId={activeQueryState.dateSortId}
           selectedDeadlineSortId={activeQueryState.deadlineSortId}
@@ -46,6 +60,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
         <SearchResults
           errorMessage={errorMessage}
           hasMore={hasMore}
+          isFetchingNextPage={isFetchingNextPage}
           isAuthenticated={isAuthenticated}
           items={items}
           loadMoreRef={loadMoreRef}
