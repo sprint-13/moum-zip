@@ -97,7 +97,7 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
           <span>활동한 날 {grass.summary.activeDays}일</span>
           <div className="flex flex-wrap items-center gap-1.5 md:justify-end">
             <div className="h-3 w-3 rounded-[3px] border border-primary/40 bg-muted/90 ring-1 ring-primary/60 ring-offset-1 ring-offset-background" />
-            <span>오늘</span>
+            <span className="pr-2">: 오늘</span>
             <span>적음</span>
             {[0, 1, 2, 3, 4].map((intensity) => (
               <div key={intensity} className={cn("h-3 w-3 rounded-[3px] border", getGrassCellClassName(intensity))} />
