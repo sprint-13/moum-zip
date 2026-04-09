@@ -7,7 +7,7 @@ const skeletonBlockClassName = "rounded-full bg-muted";
 export const SpaceCardSkeleton = () => {
   return (
     <div className="rounded-[2.25rem]">
-      <article aria-hidden="true" className={`${skeletonCardClassName} animate-pulse`}>
+      <article aria-hidden="true" className={`${skeletonCardClassName} animate-pulse motion-reduce:animate-none`}>
         <div className="relative w-full shrink-0 sm:w-full md:w-auto">
           <div className={skeletonImageClassName} />
           <div className="absolute top-4 right-4 size-10 rounded-full bg-muted sm:hidden" />

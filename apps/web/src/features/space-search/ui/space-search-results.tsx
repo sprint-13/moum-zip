@@ -44,10 +44,15 @@ export const SearchResults = ({
       ) : null}
       {hasMore && !isFetchingNextPage ? <div aria-hidden="true" className="h-4 w-full" ref={loadMoreRef} /> : null}
       {isFetchingNextPage ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <SpaceCardSkeleton />
-          <SpaceCardSkeleton />
-        </div>
+        <>
+          <p aria-live="polite" className="sr-only">
+            검색 결과를 더 불러오는 중이에요.
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <SpaceCardSkeleton />
+            <SpaceCardSkeleton />
+          </div>
+        </>
       ) : null}
       {!hasMore && !errorMessage && !isFetchingNextPage ? (
         <p className="text-center font-medium text-muted-foreground text-sm leading-5">더 이상 스페이스가 없어요.</p>
