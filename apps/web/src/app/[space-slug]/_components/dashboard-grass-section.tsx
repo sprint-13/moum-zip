@@ -8,6 +8,15 @@ interface DashboardGrassSectionProps {
   userId: number;
 }
 
+interface GrassDayLike {
+  date: string;
+  score: number;
+  intensity: number;
+  postCount: number;
+  commentCount: number;
+  attendanceCount: number;
+}
+
 const WEEK_COLUMN_SIZE = 7;
 const WEEKDAY_LABEL_ROW_INDEXES = new Set([0, 2, 4]);
 
@@ -26,9 +35,9 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
           <p className="text-muted-foreground text-sm">최근 12주 동안의 스페이스 활동이에요.</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           <div className="rounded-lg bg-primary/10 px-3 py-2">
-            <p className="text-muted-foreground text-xs">연속 활동일</p>
+            <p className="text-muted-foreground text-xs">현재 연속 활동</p>
             <p className="font-semibold text-base">{grass.summary.currentStreak}일</p>
           </div>
           <div className="rounded-lg bg-primary/10 px-3 py-2">
@@ -38,53 +47,55 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
         </div>
 
         <div className="overflow-x-auto">
-          <div className="grid min-w-fit grid-cols-[auto_1fr] gap-x-2 gap-y-1.5">
-            <div />
-            <div className="flex gap-1.5 text-[10px] text-muted-foreground">
-              {monthLabels.map(({ label, key }) => (
-                <span key={key} className="w-3.5 whitespace-nowrap">
-                  {label}
-                </span>
-              ))}
-            </div>
+          <div className="flex min-w-fit justify-center">
+            <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5">
+              <div />
+              <div className="flex gap-1.5 text-[9px] text-muted-foreground">
+                {monthLabels.map(({ label, key }) => (
+                  <span key={key} className="w-3.5 whitespace-nowrap leading-none">
+                    {label}
+                  </span>
+                ))}
+              </div>
 
-            <div className="grid grid-rows-7 gap-1 text-[10px] text-muted-foreground">
-              {weekdayLabels.map(({ key, label }) => (
-                <span key={key} className="flex h-3.5 items-center">
-                  {label}
-                </span>
-              ))}
-            </div>
+              <div className="grid grid-rows-7 gap-1 text-[10px] text-muted-foreground">
+                {weekdayLabels.map(({ key, label }) => (
+                  <span key={key} className="flex h-3.5 items-center">
+                    {label}
+                  </span>
+                ))}
+              </div>
 
-            <div className="flex gap-1.5 py-0.5">
-              {weekColumns.map((week) => (
-                <div key={week[0]?.date ?? "empty-week"} className="grid grid-rows-7 gap-1">
-                  {week.map((day) => {
-                    const isToday = day.date === todayDateKey;
+              <div className="flex gap-1.5 py-0.5">
+                {weekColumns.map((week) => (
+                  <div key={week[0]?.date ?? "empty-week"} className="grid grid-rows-7 gap-1">
+                    {week.map((day) => {
+                      const isToday = day.date === todayDateKey;
 
-                    return (
-                      <div
-                        key={day.date}
-                        role="img"
-                        title={getGrassCellLabel(day, isToday)}
-                        aria-label={getGrassCellLabel(day, isToday)}
-                        className={cn(
-                          "h-3.5 w-3.5 rounded-[4px] border transition-colors",
-                          getGrassCellClassName(day.intensity),
-                          isToday && "ring-1 ring-primary/60 ring-offset-1 ring-offset-background",
-                        )}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
+                      return (
+                        <div
+                          key={day.date}
+                          role="img"
+                          title={getGrassCellLabel(day, isToday)}
+                          aria-label={getGrassCellLabel(day, isToday)}
+                          className={cn(
+                            "h-3.5 w-3.5 rounded-[4px] border transition-colors",
+                            getGrassCellClassName(day.intensity),
+                            isToday && "ring-1 ring-primary/60 ring-offset-1 ring-offset-background",
+                          )}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-muted-foreground text-xs">
-          <span>활동일 {grass.summary.activeDays}일</span>
-          <div className="flex items-center gap-1.5">
+        <div className="flex flex-col gap-2 text-muted-foreground text-xs md:flex-row md:items-center md:justify-between">
+          <span>활동한 날 {grass.summary.activeDays}일</span>
+          <div className="flex flex-wrap items-center gap-1.5 md:justify-end">
             <div className="h-3 w-3 rounded-[3px] border border-primary/40 bg-muted/90 ring-1 ring-primary/60 ring-offset-1 ring-offset-background" />
             <span>오늘</span>
             <span>적음</span>
@@ -156,28 +167,15 @@ const getGrassCellClassName = (intensity: number) => {
   }
 };
 
-const formatDayLabel = (day: {
-  date: string;
-  score: number;
-  postCount: number;
-  commentCount: number;
-  attendanceCount: number;
-}) => {
-  const attendanceLabel = day.attendanceCount > 0 ? "출석함" : "출석 없음";
+const formatDayLabel = (
+  day: Pick<GrassDayLike, "date" | "score" | "postCount" | "commentCount" | "attendanceCount">,
+) => {
+  const attendanceLabel = day.attendanceCount > 0 ? "출석함" : "출석 안 함";
 
   return `${day.date} · ${day.score}점 · 게시글 ${day.postCount}개 · 댓글 ${day.commentCount}개 · ${attendanceLabel}`;
 };
 
-const getGrassCellLabel = (
-  day: {
-    date: string;
-    score: number;
-    postCount: number;
-    commentCount: number;
-    attendanceCount: number;
-  },
-  isToday = false,
-) => {
+const getGrassCellLabel = (day: GrassDayLike, isToday = false) => {
   const baseLabel = formatDayLabel(day);
 
   return isToday ? `${baseLabel} · 오늘` : baseLabel;
