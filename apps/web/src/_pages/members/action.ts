@@ -39,4 +39,5 @@ export async function changeRoleAction(slug: string, targetUserId: number, newRo
   });
 
   updateTag(CACHE_TAGS.members(space.spaceId));
+  updateTag(CACHE_TAGS.member(space.spaceId, targetUserId));
 }
