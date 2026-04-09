@@ -30,11 +30,15 @@ export default async function SpaceMembersPage({
 
   return (
     <>
-      <SpaceHeader title="Members" buttonGroup={InviteButton} />
+      <SpaceHeader
+        title="멤버"
+        description="스페이스 멤버를 조회 및 관리하고 새로운 사용자를 승인해 보세요."
+        buttonGroup={InviteButton}
+      />
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<MemberTableSkeleton />}>
-            <MemberTable spaceId={space.spaceId} page={page} />
+            <MemberTable spaceId={space.spaceId} page={page} currentUserId={membership.userId} />
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>

@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@moum-zip/ui/components";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,19 +30,28 @@ export function MemberRow({ member }: { member: Member }) {
   const [isPending, startTransition] = useTransition();
   const role = ROLE_CONFIG[member.role];
 
-  const canKick = membership.role === "manager" || membership.role === "moderator";
+  const canKick =
+    (membership.role === "manager" || membership.role === "moderator") && membership.userId !== member.userId;
   const canChangeRole = membership.role === "manager";
   const showActions = canKick || canChangeRole;
 
   const handleKick = () => {
     startTransition(async () => {
-      await kickMemberAction(space.slug, member.userId);
+      try {
+        await kickMemberAction(space.slug, member.userId);
+      } catch (error) {
+        toast({ message: error instanceof Error ? error.message : "추방에 실패했습니다.", size: "small" });
+      }
     });
   };
 
   const handleChangeRole = (newRole: MemberRole) => {
     startTransition(async () => {
-      await changeRoleAction(space.slug, member.userId, newRole);
+      try {
+        await changeRoleAction(space.slug, member.userId, newRole);
+      } catch (error) {
+        toast({ message: error instanceof Error ? error.message : "역할 변경에 실패했습니다.", size: "small" });
+      }
     });
   };
 

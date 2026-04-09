@@ -16,13 +16,30 @@ export interface GetSpaceMembersResult {
 /**
  * 스페이스 멤버 목록 조회 (Next.js Data Cache 적용).
  * 멤버 추가/제거 시 updateTag(`members-${spaceId}`)로 무효화한다.
+ * currentUserId 전달 시 본인을 멤버 목록 최상단에 고정한다.
  */
-export async function getSpaceMembersUseCase(spaceId: string, opts: { page?: number }): Promise<GetSpaceMembersResult> {
+export async function getSpaceMembersUseCase(
+  spaceId: string,
+  opts: { page?: number; currentUserId?: number },
+): Promise<GetSpaceMembersResult> {
+  const { members, total, page, pageSize, totalPages } = await fetchMembers(spaceId, opts.page);
+
+  const sorted = opts.currentUserId
+    ? [
+        ...members.filter((m) => m.userId === opts.currentUserId),
+        ...members.filter((m) => m.userId !== opts.currentUserId),
+      ]
+    : members;
+
+  return { members: sorted, total, page, pageSize, totalPages };
+}
+
+async function fetchMembers(spaceId: string, currentPage?: number) {
   "use cache";
   cacheTag(CACHE_TAGS.members(spaceId));
   cacheLife("days");
 
-  const page = opts.page ?? 1;
+  const page = currentPage ?? 1;
   const offset = (page - 1) * MEMBER_PAGE_SIZE;
 
   const rows = await memberQueries.findManyBySpaceId(spaceId, {
@@ -33,11 +50,5 @@ export async function getSpaceMembersUseCase(spaceId: string, opts: { page?: num
   const total = rows[0]?.total ?? 0;
   const members: Member[] = rows.map((data) => data.member);
 
-  return {
-    members,
-    total,
-    page,
-    pageSize: MEMBER_PAGE_SIZE,
-    totalPages: Math.ceil(total / MEMBER_PAGE_SIZE),
-  };
+  return { members, total, page, pageSize: MEMBER_PAGE_SIZE, totalPages: Math.ceil(total / MEMBER_PAGE_SIZE) };
 }

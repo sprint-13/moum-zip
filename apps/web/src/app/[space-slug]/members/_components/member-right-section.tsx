@@ -18,7 +18,13 @@ export const MemberRightSection = async ({ space, membership }: MemberRightSecti
 
   return (
     <>
-      <OnlineNowCard members={allMembers} />
+      {/* 본인을 최상단에 고정 */}
+      <OnlineNowCard
+        members={[
+          ...allMembers.filter((m) => m.userId === membership.userId),
+          ...allMembers.filter((m) => m.userId !== membership.userId),
+        ]}
+      />
       <RolesOverviewCard members={allMembers} />
       {hasPermission({ userId: membership.userId, role: membership.role }) ? (
         <PendingMemberCard slug={space.slug} pendingMembers={pendingMembers} />
