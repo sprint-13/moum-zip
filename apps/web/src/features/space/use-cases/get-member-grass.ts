@@ -1,6 +1,8 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { commentQueries, postQueries } from "@/entities/post/queries";
 import { getTodayKST } from "@/entities/schedule";
 import { attendanceQueries } from "@/entities/schedule/queries";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 const DEFAULT_GRASS_DAYS = 84;
 const RECENT_SCORE_DAYS = 7;
@@ -74,7 +76,19 @@ export const createGetGrassUseCase =
     });
   };
 
-export const getGrassUseCase = createGetGrassUseCase();
+const getGrass = createGetGrassUseCase();
+
+export async function getGrassUseCase(
+  spaceId: string,
+  userId: number,
+  options: GetGrassOptions = {},
+): Promise<SpaceMemberGrass> {
+  "use cache";
+  cacheTag(CACHE_TAGS.grass(spaceId, userId));
+  cacheLife("hours");
+
+  return getGrass(spaceId, userId, options);
+}
 
 const buildGrass = (
   totalDays: number,

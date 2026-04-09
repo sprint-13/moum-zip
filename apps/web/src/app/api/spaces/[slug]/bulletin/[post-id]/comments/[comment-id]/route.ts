@@ -1,9 +1,11 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import { spaceQueries } from "@/entities/spaces";
 import { deleteCommentUseCase } from "@/features/space/use-cases/delete-comment";
 import { updateCommentUseCase } from "@/features/space/use-cases/update-comment";
 import { isAuth } from "@/shared/api/server";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 async function getAuthAndSpace(slug: string) {
   const auth = await isAuth();
@@ -58,7 +60,12 @@ export async function DELETE(
 
   const { membership } = result;
   try {
-    await deleteCommentUseCase(commentId, postId, { userId: membership.userId, role: membership.role });
+    const { authorId } = await deleteCommentUseCase(commentId, postId, {
+      userId: membership.userId,
+      role: membership.role,
+    });
+    revalidateTag(CACHE_TAGS.grass(result.space.id, authorId), { expire: 0 });
+    revalidatePath(`/${slug}`);
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     console.error("[DELETE /api/.../comments/[comment-id]]", err);

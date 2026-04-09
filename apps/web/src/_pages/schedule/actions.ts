@@ -18,8 +18,9 @@ function invalidateSchedule(spaceId: string, slug: string) {
   revalidatePath(`/${slug}`); // 대시보드 일정 위젯 반영
 }
 
-function invalidateAttendance(spaceId: string, slug: string) {
-  updateTag(CACHE_TAGS.attendance(spaceId));
+function invalidateAttendance(spaceId: string, userId: number, slug: string) {
+  updateTag(CACHE_TAGS.grass(spaceId, userId));
+  updateTag(CACHE_TAGS.attendance(spaceId, userId));
   revalidatePath(`/${slug}`); // 대시보드 출석 현황 반영
 }
 
@@ -93,5 +94,5 @@ export async function deleteScheduleAction(slug: string, scheduleId: string) {
 export async function checkAttendanceAction(slug: string) {
   const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
   await checkAttendanceUseCase(space.spaceId, membership.userId);
-  invalidateAttendance(space.spaceId, slug);
+  invalidateAttendance(space.spaceId, membership.userId, slug);
 }

@@ -1,4 +1,4 @@
-import { updateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import type { PostCategory } from "@/entities/post";
@@ -64,7 +64,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       category: category as PostCategory,
       image,
     });
-    updateTag(CACHE_TAGS.bulletin(space.id));
+    revalidateTag(CACHE_TAGS.grass(space.id, auth.userId), { expire: 0 });
+    revalidatePath(`/${slug}`);
     return NextResponse.json({ postId }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/spaces/[slug]/bulletin]", err);
