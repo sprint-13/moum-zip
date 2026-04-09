@@ -85,6 +85,7 @@ export const useInfiniteSearchResults = ({ isAuthenticated, queryState }: UseInf
   return {
     errorMessage,
     hasMore: Boolean(hasNextPage && !hasQueryError),
+    isFetchingNextPage,
     items,
     loadMoreRef,
   };
