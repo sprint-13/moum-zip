@@ -37,6 +37,7 @@ export function MypageView({
     joinedMeetings,
     createdMeetings,
     likedMeetings,
+    enterableMeetingIds,
     isJoinedError,
     isCreatedError,
     isLikedError,
@@ -53,8 +54,6 @@ export function MypageView({
     createdMoims,
     enableRemoteFetch,
   });
-
-  const enterableMeetingIds = new Set([...joinedMeetings, ...createdMeetings].map((meeting) => meeting.id));
 
   return (
     <main className="no-scrollbar h-dvh overflow-y-auto bg-background-secondary px-4 py-8 text-foreground md:px-9 md:py-10 lg:px-8">
