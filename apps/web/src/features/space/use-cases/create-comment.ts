@@ -1,4 +1,5 @@
 import { commentQueries, postQueries } from "@/entities/post/queries";
+import { createNotification } from "@/features/notification/use-cases/create-notification";
 import { AppError } from "@/shared/lib/error";
 
 export interface CreateCommentInput {
@@ -27,6 +28,22 @@ export async function createCommentUseCase(input: CreateCommentInput): Promise<{
     authorId: input.authorId,
     content: input.content.trim(),
   });
+
+  const postAuthorId = post.author.id;
+
+  if (postAuthorId && postAuthorId !== input.authorId) {
+    await createNotification({
+      teamId: input.spaceId,
+      userId: postAuthorId,
+      type: "COMMENT",
+      message: "내 게시글에 새 댓글이 달렸어요.",
+      data: {
+        postId: input.postId,
+        postTitle: post.post.title,
+        commentId: comment.id,
+      },
+    });
+  }
 
   return { commentId: comment.id };
 }

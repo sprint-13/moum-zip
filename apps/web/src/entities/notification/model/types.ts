@@ -2,16 +2,18 @@ export type NotificationType =
   | "MEETING_CONFIRMED"
   | "MEETING_CANCELED"
   | "MEETING_DELETED"
-  | "COMMENT"
   | "SPACE_MEMBER_ACCEPTED"
-  | "SPACE_MEMBER_REJECTED";
+  | "SPACE_MEMBER_REJECTED"
+  | "SPACE_POST_CREATED"
+  | "SPACE_SCHEDULE_CREATED"
+  | "COMMENT";
 
 export interface NotificationData {
   meetingId?: number;
   meetingName?: string;
-  postId?: number;
+  postId?: string;
   postTitle?: string;
-  commentId?: number;
+  commentId?: string;
   spaceSlug?: string;
   image?: string | null;
 }

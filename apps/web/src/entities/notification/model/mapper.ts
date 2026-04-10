@@ -13,9 +13,9 @@ export function mapNotification(raw: RawNotification): NotificationItem {
     data: {
       meetingId: raw.data?.meetingId,
       meetingName: raw.data?.meetingName,
-      postId: raw.data?.postId,
+      postId: raw.data?.postId != null ? String(raw.data.postId) : undefined,
       postTitle: raw.data?.postTitle,
-      commentId: raw.data?.commentId,
+      commentId: raw.data?.commentId != null ? String(raw.data.commentId) : undefined,
       image: raw.data?.image ?? null,
     },
     isRead: raw.isRead,

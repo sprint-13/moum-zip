@@ -1,4 +1,5 @@
 import { scheduleQueries } from "@/entities/schedule/queries";
+import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notifications";
 
 export interface CreateScheduleInput {
   spaceId: string;
@@ -24,6 +25,14 @@ export async function createScheduleUseCase(input: CreateScheduleInput): Promise
   });
 
   if (!schedule) throw new Error("일정 생성에 실패했습니다.");
+
+  await createSpaceMemberNotifications({
+    spaceId: input.spaceId,
+    actorId: input.createdBy,
+    type: "SPACE_SCHEDULE_CREATED",
+    message: `새 일정이 추가되었어요: ${schedule.title}`,
+    data: {},
+  });
 
   return { scheduleId: schedule.id };
 }

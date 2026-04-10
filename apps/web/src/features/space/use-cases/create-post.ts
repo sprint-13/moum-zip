@@ -1,5 +1,6 @@
 import type { PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
+import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notifications";
 
 export interface CreatePostInput {
   spaceId: string;
@@ -25,6 +26,18 @@ export async function createPostUseCase(input: CreatePostInput): Promise<{ postI
     title: input.title,
     content: input.content,
     image: input.image,
+  });
+
+  await createSpaceMemberNotifications({
+    spaceId: input.spaceId,
+    actorId: input.authorId,
+    type: "SPACE_POST_CREATED",
+    message: `새 게시글이 등록되었어요: ${input.title}`,
+    data: {
+      postId: id,
+      postTitle: input.title,
+      image: input.image ?? null,
+    },
   });
 
   return { postId: id };
