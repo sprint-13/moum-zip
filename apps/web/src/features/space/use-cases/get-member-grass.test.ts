@@ -72,6 +72,7 @@ describe("getSpaceMemberGrassUseCase", () => {
       intensity: 5,
     });
     expect(result.summary).toEqual({
+      todayScore: 6,
       currentStreak: 3,
       recentScore: 10,
       activeDays: 3,
@@ -126,9 +127,30 @@ describe("getSpaceMemberGrassUseCase", () => {
     });
     expect(result.days.map((day) => day.date)).toEqual(["2026-04-07", "2026-04-08", "2026-04-09"]);
     expect(result.summary).toEqual({
+      todayScore: 2,
       currentStreak: 1,
       recentScore: 2,
       activeDays: 1,
+    });
+  });
+
+  it("오늘 활동이 없어도 가장 최근까지 이어진 streak를 계산한다", async () => {
+    repository.countPostsByDateRange.setRows([
+      { date: "2026-04-07", count: 1 },
+      { date: "2026-04-08", count: 1 },
+    ]);
+
+    const useCase = createGetGrassUseCase({
+      repository,
+      getTodayDateKey: () => "2026-04-09",
+    });
+    const result = await useCase("space-1", 7, { days: 3 });
+
+    expect(result.summary).toEqual({
+      todayScore: 0,
+      currentStreak: 2,
+      recentScore: 4,
+      activeDays: 2,
     });
   });
 });

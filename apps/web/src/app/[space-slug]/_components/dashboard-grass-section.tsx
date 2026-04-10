@@ -18,7 +18,7 @@ interface GrassDayLike {
 }
 
 const WEEK_COLUMN_SIZE = 7;
-const WEEKDAY_LABEL_ROW_INDEXES = new Set([0, 2, 4]);
+const WEEKDAY_LABEL_ROW_INDEXES = new Set([0, 2, 4, 6]);
 const GRASS_LEGEND_ITEMS = [
   { intensity: 0, label: "0" },
   { intensity: 1, label: "1" },
@@ -44,7 +44,11 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
           <p className="text-[11px] text-muted-foreground">게시글 2점 · 댓글 1점 · 출석 1점</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+          <div className="rounded-lg bg-primary/15 px-3 py-2">
+            <p className="text-muted-foreground text-xs">오늘 점수</p>
+            <p className="font-semibold text-base">{grass.summary.todayScore}점</p>
+          </div>
           <div className="rounded-lg bg-primary/10 px-3 py-2">
             <p className="text-muted-foreground text-xs">현재 연속 활동</p>
             <p className="font-semibold text-base">{grass.summary.currentStreak}일</p>

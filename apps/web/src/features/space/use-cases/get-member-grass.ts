@@ -33,6 +33,7 @@ export interface GrassDay {
 }
 
 export interface GrassSummary {
+  todayScore: number;
   currentStreak: number;
   recentScore: number;
   activeDays: number;
@@ -131,6 +132,7 @@ const buildGrass = (
   return {
     days: normalizedDays,
     summary: {
+      todayScore: getTodayScore(normalizedDays),
       currentStreak: getCurrentStreak(normalizedDays),
       recentScore: getRecentScore(normalizedDays),
       activeDays: normalizedDays.filter((day) => day.score > 0).length,
@@ -154,9 +156,22 @@ const applyCounts = (
 };
 
 const getCurrentStreak = (days: GrassDay[]) => {
-  let streak = 0;
+  let latestActiveIndex = -1;
 
   for (let index = days.length - 1; index >= 0; index -= 1) {
+    if (days[index]?.score && days[index].score > 0) {
+      latestActiveIndex = index;
+      break;
+    }
+  }
+
+  if (latestActiveIndex < 0) {
+    return 0;
+  }
+
+  let streak = 0;
+
+  for (let index = latestActiveIndex; index >= 0; index -= 1) {
     if (days[index]?.score === 0) {
       break;
     }
@@ -165,6 +180,10 @@ const getCurrentStreak = (days: GrassDay[]) => {
   }
 
   return streak;
+};
+
+const getTodayScore = (days: GrassDay[]) => {
+  return days.at(-1)?.score ?? 0;
 };
 
 const getRecentScore = (days: GrassDay[]) => {
