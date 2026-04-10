@@ -8,7 +8,7 @@ interface NotificationPanelProps {
 
 export function NotificationPanel({ notifications, isMobile = false }: NotificationPanelProps) {
   return (
-    <section className="flex h-full flex-col overflow-hidden rounded-2xl bg-white">
+    <section className="flex h-full min-h-[204px] flex-col overflow-hidden rounded-2xl bg-white">
       <header className={["flex items-center justify-between px-5 py-4", isMobile ? "shrink-0" : ""].join(" ")}>
         <h2 className="font-semibold text-base text-foreground">알림 내역</h2>
 

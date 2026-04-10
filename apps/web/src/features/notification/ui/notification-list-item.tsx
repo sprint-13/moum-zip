@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getNotificationTitle, shouldShowConfirmedIcon } from "@/entities/notification/model/constants";
 import type { NotificationItem } from "@/entities/notification/model/types";
 import CheckCircleIcon from "@/features/notification/ui/icons/check-circle-icon.svg";
 
@@ -28,23 +29,9 @@ function formatRelativeTime(createdAt: string | null) {
   return `${Math.floor(diff / day)}일 전`;
 }
 
-function getNotificationTitle(type: NotificationItem["type"]) {
-  switch (type) {
-    case "MEETING_CONFIRMED":
-      return "모임 확정";
-    case "MEETING_CANCELED":
-      return "모임 취소";
-    case "MEETING_DELETED":
-      return "모임 삭제";
-    case "COMMENT":
-      return "새로운 댓글";
-    default:
-      return "알림";
-  }
-}
-
 export function NotificationListItem({ notification, isMobile = false }: NotificationListItemProps) {
   const title = getNotificationTitle(notification.type);
+  const showConfirmedIcon = shouldShowConfirmedIcon(notification.type);
 
   return (
     <button
@@ -68,7 +55,7 @@ export function NotificationListItem({ notification, isMobile = false }: Notific
         <div className="mb-1 flex items-center gap-1">
           <strong className="font-semibold text-foreground text-xs">{title}</strong>
 
-          {notification.type === "MEETING_CONFIRMED" ? <CheckCircleIcon /> : null}
+          {showConfirmedIcon ? <CheckCircleIcon /> : null}
         </div>
 
         <p className="whitespace-pre-line break-words text-muted-foreground text-sm leading-5">

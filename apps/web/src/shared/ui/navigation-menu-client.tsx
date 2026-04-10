@@ -4,6 +4,7 @@ import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
 import { logoutAction } from "@/_pages/auth/actions";
+import type { NotificationItem } from "@/entities/notification/model/types";
 import { NotificationMenu } from "@/features/notification/ui/notification-menu";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
 import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
@@ -11,31 +12,13 @@ import { ProfileAvatar } from "@/shared/ui";
 
 const logo = <Logo className="block h-8 w-auto" aria-hidden preserveAspectRatio="xMidYMid meet" />;
 
-type NavigationNotification = {
-  id: number;
-  teamId: string;
-  userId: number;
-  type: "MEETING_CONFIRMED" | "MEETING_CANCELED" | "COMMENT";
-  message: string;
-  data: {
-    meetingId?: number;
-    meetingName?: string;
-    postId?: number;
-    postTitle?: string;
-    commentId?: number;
-    image?: string | null;
-  };
-  isRead: boolean;
-  createdAt: string | null;
-};
-
 type NavigationMenuClientProps = {
   loggedIn: boolean;
   user?: {
     imageUrl?: string;
     name?: string;
   } | null;
-  notifications: NavigationNotification[];
+  notifications: NotificationItem[];
 };
 
 export const NavigationMenuClient = ({ loggedIn, user, notifications }: NavigationMenuClientProps) => {

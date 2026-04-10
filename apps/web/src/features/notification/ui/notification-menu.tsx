@@ -11,6 +11,7 @@ interface NotificationMenuProps {
 }
 
 export function NotificationMenu({ notifications }: NotificationMenuProps) {
+  console.log("NotificationMenu notifications 👉", notifications);
   const unreadCount = notifications.filter((item) => !item.isRead).length;
   const [isDesktop, setIsDesktop] = useState(false);
   const [open, setOpen] = useState(false);
