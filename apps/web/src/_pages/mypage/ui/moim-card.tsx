@@ -25,11 +25,11 @@ const imageToneClassName: Record<MoimImageTone, string> = {
 const metaLabelClassName = "text-muted-foreground";
 const cardWrapperClassName = "group/card -m-1 w-full rounded-[2rem] p-1";
 const cardClassName =
-  "relative flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-[0_10px_24px_rgba(17,17,17,0.09)] lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 xl:h-[14.75rem] xl:w-[59.875rem]";
+  "relative flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-[0_10px_24px_rgba(17,17,17,0.09)] md:group-hover/card:-translate-y-0.5 md:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:md:group-hover/card:translate-y-0 xl:h-[14.75rem] xl:w-[59.875rem]";
 const cardImageClassName =
-  "aspect-[343/156] rounded-t-3xl transition-transform duration-300 ease-out motion-reduce:transition-none md:aspect-square md:size-[11.75rem] md:rounded-3xl lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100";
+  "aspect-[343/156] rounded-t-3xl transition-transform duration-300 ease-out motion-reduce:transition-none md:aspect-square md:size-[11.75rem] md:rounded-3xl md:group-hover/card:scale-[1.015] motion-reduce:md:group-hover/card:scale-100";
 const cardTitleClassName =
-  "font-bold text-2xl text-foreground leading-tight transition-colors duration-300 motion-reduce:transition-none lg:group-hover/card:text-primary";
+  "font-bold text-2xl text-foreground leading-tight transition-colors duration-300 motion-reduce:transition-none md:group-hover/card:text-primary";
 
 interface HeartButtonProps {
   isLiked: boolean;
