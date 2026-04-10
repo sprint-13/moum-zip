@@ -135,13 +135,13 @@ const getMonthLabels = (weekColumns: Array<Array<{ date: string }>>) => {
   let previousMonth = "";
 
   return weekColumns.map((week) => {
-    const date = week[0]?.date ?? "";
-    const month = date ? formatMonthLabel(date) : "";
+    const anchorDate = week.find(({ date }) => date.endsWith("-01"))?.date ?? week[0]?.date ?? "";
+    const month = anchorDate ? formatMonthLabel(anchorDate) : "";
     const label = month !== previousMonth ? month : "";
     previousMonth = month;
 
     return {
-      key: date || month,
+      key: anchorDate || month,
       label,
     };
   });
