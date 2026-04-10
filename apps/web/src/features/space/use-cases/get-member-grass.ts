@@ -159,7 +159,8 @@ const getCurrentStreak = (days: GrassDay[]) => {
   let latestActiveIndex = -1;
 
   for (let index = days.length - 1; index >= 0; index -= 1) {
-    if (days[index]?.score && days[index].score > 0) {
+    const day = days[index];
+    if (day && day.score > 0) {
       latestActiveIndex = index;
       break;
     }
@@ -172,7 +173,8 @@ const getCurrentStreak = (days: GrassDay[]) => {
   let streak = 0;
 
   for (let index = latestActiveIndex; index >= 0; index -= 1) {
-    if (days[index]?.score === 0) {
+    const day = days[index];
+    if (!day || day.score === 0) {
       break;
     }
 

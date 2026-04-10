@@ -1,20 +1,11 @@
 import { getTodayKST } from "@/entities/schedule";
 import { SpaceCard } from "@/features/space";
-import { getGrassUseCase } from "@/features/space/use-cases/get-member-grass";
+import { type GrassDay, getGrassUseCase } from "@/features/space/use-cases/get-member-grass";
 import { cn } from "@/shared/lib/cn";
 
 interface DashboardGrassSectionProps {
   spaceId: string;
   userId: number;
-}
-
-interface GrassDayLike {
-  date: string;
-  score: number;
-  intensity: number;
-  postCount: number;
-  commentCount: number;
-  attendanceCount: number;
 }
 
 const WEEK_COLUMN_SIZE = 7;
@@ -27,6 +18,7 @@ const GRASS_LEGEND_ITEMS = [
   { intensity: 5, label: "5" },
   { intensity: 7, label: "7+" },
 ] as const;
+const weekdayFormatter = new Intl.DateTimeFormat("ko-KR", { weekday: "short", timeZone: "Asia/Seoul" });
 
 export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassSectionProps) => {
   const grass = await getGrassUseCase(spaceId, userId);
@@ -192,15 +184,13 @@ const getGrassCellClassName = (intensity: number) => {
   }
 };
 
-const formatDayLabel = (
-  day: Pick<GrassDayLike, "date" | "score" | "postCount" | "commentCount" | "attendanceCount">,
-) => {
+const formatDayLabel = (day: Pick<GrassDay, "date" | "score" | "postCount" | "commentCount" | "attendanceCount">) => {
   const attendanceLabel = day.attendanceCount > 0 ? "출석함" : "출석 안 함";
 
   return `${day.date} · ${day.score}점 · 게시글 ${day.postCount}개 · 댓글 ${day.commentCount}개 · ${attendanceLabel}`;
 };
 
-const getGrassCellLabel = (day: GrassDayLike, isToday = false) => {
+const getGrassCellLabel = (day: GrassDay, isToday = false) => {
   const baseLabel = formatDayLabel(day);
 
   return isToday ? `${baseLabel} · 오늘` : baseLabel;
@@ -213,7 +203,7 @@ const formatMonthLabel = (date: string) => {
 };
 
 const formatWeekdayLabel = (date: string) => {
-  return new Intl.DateTimeFormat("ko-KR", { weekday: "short", timeZone: "Asia/Seoul" }).format(parseDateKey(date));
+  return weekdayFormatter.format(parseDateKey(date));
 };
 
 const parseDateKey = (date: string) => new Date(`${date}T00:00:00+09:00`);

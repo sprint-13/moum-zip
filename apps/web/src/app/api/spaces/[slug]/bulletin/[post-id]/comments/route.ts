@@ -50,9 +50,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
   }
 
   const { auth, space } = result;
+  if (typeof auth.userId !== "number") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { content } = await request.json();
-    const authorId = auth.userId as number;
+    const authorId = auth.userId;
     const { commentId } = await createCommentUseCase({
       postId,
       spaceId: space.id,
