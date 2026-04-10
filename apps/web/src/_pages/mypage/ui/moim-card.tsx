@@ -4,6 +4,8 @@ import { Badge, Button, CheckCircleIcon, UtilityButton } from "@ui/components";
 import { Heart } from "@ui/icons";
 import { cn } from "@ui/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
+import { ROUTES } from "@/shared/config/routes";
 import type { MoimImageTone, MypageMoimCard } from "../model/types";
 
 interface MoimCardProps {
@@ -21,6 +23,13 @@ const imageToneClassName: Record<MoimImageTone, string> = {
 };
 
 const metaLabelClassName = "text-muted-foreground";
+const cardWrapperClassName = "group/card -m-1 w-full rounded-[2rem] p-1";
+const cardClassName =
+  "relative flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-[0_10px_24px_rgba(17,17,17,0.09)] lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 xl:h-[14.75rem] xl:w-[59.875rem]";
+const cardImageClassName =
+  "aspect-[343/156] rounded-t-3xl transition-transform duration-300 ease-out motion-reduce:transition-none md:aspect-square md:size-[11.75rem] md:rounded-3xl lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100";
+const cardTitleClassName =
+  "font-bold text-2xl text-foreground leading-tight transition-colors duration-300 motion-reduce:transition-none lg:group-hover/card:text-primary";
 
 interface HeartButtonProps {
   isLiked: boolean;
@@ -79,6 +88,7 @@ const MoimPreview = ({ imageTone, imageUrl, className }: MoimPreviewProps) => {
 
 export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = true }: MoimCardProps) => {
   const actionVariant = moim.actionVariant === "primary" ? "primary" : "secondary";
+  const detailHref = `${ROUTES.moimDetail}/${moim.id}`;
 
   const handleToggleLike = () => {
     onToggleLike?.(moim.id);
@@ -89,7 +99,7 @@ export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = 
       type="button"
       variant={actionVariant}
       size="small"
-      className={className}
+      className={cn("relative z-20", className)}
       onClick={() => onEnterSpace?.(moim.id)}
     >
       {moim.actionLabel}
@@ -97,58 +107,63 @@ export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = 
   );
 
   return (
-    <article className="flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-sm xl:h-[14.75rem] xl:w-[59.875rem]">
-      <div className="relative w-full md:w-[11.75rem] md:min-w-[11.75rem]">
-        <MoimPreview
-          imageTone={moim.imageTone}
-          imageUrl={moim.imageUrl}
-          className="aspect-[343/156] rounded-t-3xl md:aspect-square md:size-[11.75rem] md:rounded-3xl"
+    <div className={cardWrapperClassName}>
+      <article className={cardClassName}>
+        <Link
+          aria-label={`${moim.title} 상세 페이지 보기`}
+          className="absolute inset-0 z-10 rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          href={detailHref}
+          prefetch={false}
         />
-        <div className="absolute top-4 right-4 md:hidden">
-          <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-white shadow-sm" />
-        </div>
-      </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 md:p-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge>
-          {moim.secondaryBadge ? (
-            <Badge variant={moim.secondaryBadge.variant}>
-              {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
-              {moim.secondaryBadge.label}
-            </Badge>
-          ) : null}
-        </div>
-
-        <div className="space-y-5">
-          <h3 className="font-bold text-2xl text-foreground leading-tight">{moim.title}</h3>
-
-          <div className="space-y-2 text-base text-muted-foreground">
-            <div className="flex items-center gap-2 font-medium text-foreground">
-              <svg viewBox="0 0 20 20" className="size-4 fill-current text-muted-foreground" aria-hidden="true">
-                <path d="M10 10a3.75 3.75 0 1 0 0-7.5A3.75 3.75 0 0 0 10 10Zm0 1.875c-3.127 0-5.625 1.655-5.625 3.75A.625.625 0 0 0 5 16.25h10a.625.625 0 0 0 .625-.625c0-2.095-2.498-3.75-5.625-3.75Z" />
-              </svg>
-              <span>{moim.participantCount}</span>
-            </div>
-
-            <p className="leading-relaxed">
-              {moim.location}
-              <span className="mx-2 text-border">|</span>
-              <span className={metaLabelClassName}>날짜</span> {moim.date}
-              <span className="mx-2 text-border">|</span>
-              <span className={metaLabelClassName}>시간</span> {moim.time}
-            </p>
+        <div className="relative w-full md:w-[11.75rem] md:min-w-[11.75rem]">
+          <MoimPreview imageTone={moim.imageTone} imageUrl={moim.imageUrl} className={cardImageClassName} />
+          <div className="absolute top-4 right-4 z-20 md:hidden">
+            <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-white shadow-sm" />
           </div>
         </div>
 
-        {showActionButton ? renderActionButton("mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden") : null}
-      </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 md:p-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge>
+            {moim.secondaryBadge ? (
+              <Badge variant={moim.secondaryBadge.variant}>
+                {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
+                {moim.secondaryBadge.label}
+              </Badge>
+            ) : null}
+          </div>
 
-      <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
-        <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="bg-card" />
+          <div className="space-y-5">
+            <h3 className={cardTitleClassName}>{moim.title}</h3>
 
-        {showActionButton ? renderActionButton("h-12 min-w-[9.75rem] text-base") : null}
-      </div>
-    </article>
+            <div className="space-y-2 text-base text-muted-foreground">
+              <div className="flex items-center gap-2 font-medium text-foreground">
+                <svg viewBox="0 0 20 20" className="size-4 fill-current text-muted-foreground" aria-hidden="true">
+                  <path d="M10 10a3.75 3.75 0 1 0 0-7.5A3.75 3.75 0 0 0 10 10Zm0 1.875c-3.127 0-5.625 1.655-5.625 3.75A.625.625 0 0 0 5 16.25h10a.625.625 0 0 0 .625-.625c0-2.095-2.498-3.75-5.625-3.75Z" />
+                </svg>
+                <span>{moim.participantCount}</span>
+              </div>
+
+              <p className="leading-relaxed">
+                {moim.location}
+                <span className="mx-2 text-border">|</span>
+                <span className={metaLabelClassName}>날짜</span> {moim.date}
+                <span className="mx-2 text-border">|</span>
+                <span className={metaLabelClassName}>시간</span> {moim.time}
+              </p>
+            </div>
+          </div>
+
+          {showActionButton ? renderActionButton("mt-auto h-12 min-w-[9.75rem] self-end text-base md:hidden") : null}
+        </div>
+
+        <div className="hidden items-center justify-between gap-4 md:ml-auto md:flex md:w-[11rem] md:flex-col md:items-end md:self-stretch">
+          <HeartButton isLiked={moim.liked} onToggle={handleToggleLike} className="relative z-20 bg-card" />
+
+          {showActionButton ? renderActionButton("h-12 min-w-[9.75rem] text-base") : null}
+        </div>
+      </article>
+    </div>
   );
 };
