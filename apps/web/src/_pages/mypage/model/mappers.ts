@@ -86,7 +86,11 @@ export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = 
       label: status === "scheduled" ? "참여 예정" : status === "active" ? "참여 중" : "참여 완료",
       variant: status === "completed" ? "completed" : "scheduled",
     },
-    secondaryBadge: status === "completed" ? undefined : getConfirmationBadge(meeting.confirmedAt),
+    secondaryBadge: isConfirmed
+      ? getConfirmationBadge(meeting.confirmedAt)
+      : status === "completed"
+        ? undefined
+        : getConfirmationBadge(meeting.confirmedAt),
   };
 };
 
@@ -135,6 +139,10 @@ export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number)
       label: status === "scheduled" ? "참여 예정" : status === "active" ? "참여 중" : "참여 완료",
       variant: status === "completed" ? "completed" : "scheduled",
     },
-    secondaryBadge: status === "completed" ? undefined : getConfirmationBadge(meeting.confirmedAt),
+    secondaryBadge: isConfirmed
+      ? getConfirmationBadge(meeting.confirmedAt)
+      : status === "completed"
+        ? undefined
+        : getConfirmationBadge(meeting.confirmedAt),
   };
 };
