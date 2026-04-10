@@ -197,9 +197,9 @@ const getGrassCellLabel = (day: GrassDay, isToday = false) => {
 };
 
 const formatMonthLabel = (date: string) => {
-  const targetDate = parseDateKey(date);
+  const month = Number(date.slice(5, 7));
 
-  return `${targetDate.getMonth() + 1}월`;
+  return `${month}월`;
 };
 
 const formatWeekdayLabel = (date: string) => {
