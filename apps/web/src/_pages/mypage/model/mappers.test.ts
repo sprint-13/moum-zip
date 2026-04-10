@@ -75,7 +75,7 @@ describe("mypage mappers", () => {
       location: "강남",
       imageUrl: "https://example.com/meeting.png",
       imageTone: "daylight",
-      actionVariant: "primary",
+      actionVariant: "secondary",
       primaryBadge: {
         label: "참여 예정",
         variant: "scheduled",
@@ -84,6 +84,55 @@ describe("mypage mappers", () => {
         label: "개설대기",
         variant: "waiting",
         withIcon: false,
+      },
+    });
+  });
+
+  it("모집 마감 이후 모임 시작 전이고 개설 확정된 참여 모임은 참여 중 카드로 변환한다", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-05T00:00:00.000Z"));
+
+    const meeting: JoinedMeeting = {
+      id: 17,
+      teamId: "dallaem",
+      name: "개설 확정된 참여 모임",
+      type: "스터디",
+      dateTime: "2026-02-10T14:00:00.000Z",
+      region: "강남",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: "2026-02-03T14:00:00.000Z",
+      participantCount: 5,
+      capacity: 10,
+      image: null,
+      description: null,
+      canceledAt: null,
+      confirmedAt: "2026-02-03T15:00:00.000Z",
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
+      joinedAt: "2026-02-01T00:00:00.000Z",
+      isReviewed: false,
+      isCompleted: false,
+    };
+
+    expect(mapJoinedMeeting(meeting, 1)).toMatchObject({
+      actionVariant: "primary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "scheduled",
+      },
+      secondaryBadge: {
+        label: "개설확정",
+        variant: "confirmed",
+        withIcon: true,
       },
     });
   });
@@ -230,6 +279,7 @@ describe("mypage mappers", () => {
       liked: true,
       location: "성수",
       imageTone: "city",
+      actionVariant: "secondary",
       secondaryBadge: {
         label: "개설확정",
         variant: "confirmed",
