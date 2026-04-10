@@ -18,6 +18,7 @@ interface GetSearchResultsInput {
   cursor?: string | null;
   dateSortId?: "default" | "latest" | "oldest";
   deadlineSortId?: "default" | "fast" | "slow";
+  keyword?: string;
   locationId?: "all" | GatheringLocation;
   size?: number;
 }
@@ -38,6 +39,7 @@ const createSearchRequestParams = ({
   cursor,
   dateSortId,
   deadlineSortId,
+  keyword,
   locationId,
   size,
 }: GetSearchResultsInput) => {
@@ -45,6 +47,7 @@ const createSearchRequestParams = ({
 
   return {
     cursor: cursor ?? undefined,
+    keyword: keyword || undefined,
     region: locationId === "all" ? undefined : locationId,
     size,
     sortBy,
@@ -110,6 +113,7 @@ export const getSearchResults = async (
     cursor,
     dateSortId = "default",
     deadlineSortId = "default",
+    keyword = "",
     locationId = "all",
     size = DEFAULT_SEARCH_SIZE,
   }: GetSearchResultsInput = {},
@@ -120,6 +124,7 @@ export const getSearchResults = async (
     cursor,
     dateSortId,
     deadlineSortId,
+    keyword,
     locationId,
     size,
   });

@@ -46,6 +46,7 @@ export async function GET(request: Request) {
       error,
       isAuthenticatedRequest,
       categoryId: queryState.categoryId,
+      keyword: queryState.keyword,
       locationId: queryState.locationId,
     });
 

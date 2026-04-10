@@ -6,6 +6,7 @@ const BASE_QUERY_STATE = {
   categoryId: "all",
   dateSortId: "default",
   deadlineSortId: "default",
+  keyword: "",
   locationId: "all",
 } as const;
 

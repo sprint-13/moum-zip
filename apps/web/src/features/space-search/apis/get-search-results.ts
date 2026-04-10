@@ -12,6 +12,7 @@ export const getSearchResults = async ({
   cursor,
   dateSortId,
   deadlineSortId,
+  keyword,
   locationId,
   size,
 }: GetSearchResultsRequest): Promise<SearchResultsResponse> => {
@@ -31,6 +32,10 @@ export const getSearchResults = async ({
 
   if (deadlineSortId !== "default") {
     searchParams.set("deadlineSort", deadlineSortId);
+  }
+
+  if (keyword) {
+    searchParams.set("keyword", keyword);
   }
 
   if (cursor) {
