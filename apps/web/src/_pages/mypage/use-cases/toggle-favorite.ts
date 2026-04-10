@@ -12,8 +12,23 @@ interface ToggleFavoriteMutationParams {
   nextLiked: boolean;
 }
 
+interface CreatedMeetingsCache {
+  ended: MypageMoimCard[];
+  ongoing: MypageMoimCard[];
+}
+
 const findMeetingLiked = (meetings: MypageMoimCard[] | undefined, meetingId: string) => {
   return meetings?.find((meeting) => meeting.id === meetingId)?.liked;
+};
+
+const findCreatedMeetingLiked = (meetings: CreatedMeetingsCache | undefined, meetingId: string) => {
+  const ongoingLiked = findMeetingLiked(meetings?.ongoing, meetingId);
+
+  if (ongoingLiked !== undefined) {
+    return ongoingLiked;
+  }
+
+  return findMeetingLiked(meetings?.ended, meetingId);
 };
 
 const restoreLikedState = (
@@ -26,6 +41,36 @@ const restoreLikedState = (
   }
 
   return meetings?.map((meeting) => (meeting.id === meetingId ? { ...meeting, liked: previousLiked } : meeting));
+};
+
+const updateCreatedMeetingsLikedState = (
+  meetings: CreatedMeetingsCache | undefined,
+  meetingId: string,
+  nextLiked: boolean,
+) => {
+  if (!meetings) {
+    return meetings;
+  }
+
+  return {
+    ongoing: updateLikedState(meetings.ongoing, meetingId, nextLiked) ?? meetings.ongoing,
+    ended: updateLikedState(meetings.ended, meetingId, nextLiked) ?? meetings.ended,
+  };
+};
+
+const restoreCreatedMeetingsLikedState = (
+  meetings: CreatedMeetingsCache | undefined,
+  meetingId: string,
+  previousLiked: boolean | undefined,
+) => {
+  if (!meetings) {
+    return meetings;
+  }
+
+  return {
+    ongoing: restoreLikedState(meetings.ongoing, meetingId, previousLiked) ?? meetings.ongoing,
+    ended: restoreLikedState(meetings.ended, meetingId, previousLiked) ?? meetings.ended,
+  };
 };
 
 const restoreFavoriteItem = (
@@ -86,24 +131,12 @@ export const useToggleFavorite = (enableRemoteFetch: boolean) => {
       // 진행 중인 refetch 응답이 optimistic state를 덮어쓰지 않도록 먼저 취소합니다.
       await Promise.all([
         queryClient.cancelQueries({ queryKey: ["mypage", "meetings", "joined"] }),
-        queryClient.cancelQueries({ queryKey: ["mypage", "meetings", "created", "ongoing"] }),
-        queryClient.cancelQueries({ queryKey: ["mypage", "meetings", "created", "ended"] }),
+        queryClient.cancelQueries({ queryKey: ["mypage", "meetings", "created"] }),
         queryClient.cancelQueries({ queryKey: ["mypage", "favorites"] }),
       ]);
 
       const previousJoined = queryClient.getQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"]);
-      const previousCreatedOngoing = queryClient.getQueryData<MypageMoimCard[]>([
-        "mypage",
-        "meetings",
-        "created",
-        "ongoing",
-      ]);
-      const previousCreatedEnded = queryClient.getQueryData<MypageMoimCard[]>([
-        "mypage",
-        "meetings",
-        "created",
-        "ended",
-      ]);
+      const previousCreated = queryClient.getQueryData<CreatedMeetingsCache>(["mypage", "meetings", "created"]);
       const previousFavorites = queryClient.getQueryData<FavoriteList>(["mypage", "favorites"]);
       const previousFavoriteIndex =
         previousFavorites?.data.findIndex((favorite) => favorite.meetingId === meetingId) ?? -1;
@@ -112,11 +145,8 @@ export const useToggleFavorite = (enableRemoteFetch: boolean) => {
       queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"], (current) =>
         updateLikedState(current, meetingIdString, nextLiked),
       );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ongoing"], (current) =>
-        updateLikedState(current, meetingIdString, nextLiked),
-      );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ended"], (current) =>
-        updateLikedState(current, meetingIdString, nextLiked),
+      queryClient.setQueryData<CreatedMeetingsCache>(["mypage", "meetings", "created"], (current) =>
+        updateCreatedMeetingsLikedState(current, meetingIdString, nextLiked),
       );
 
       if (!nextLiked) {
@@ -133,8 +163,7 @@ export const useToggleFavorite = (enableRemoteFetch: boolean) => {
       return {
         requestVersion,
         previousJoinedLiked: findMeetingLiked(previousJoined, meetingIdString),
-        previousCreatedOngoingLiked: findMeetingLiked(previousCreatedOngoing, meetingIdString),
-        previousCreatedEndedLiked: findMeetingLiked(previousCreatedEnded, meetingIdString),
+        previousCreatedLiked: findCreatedMeetingLiked(previousCreated, meetingIdString),
         previousFavorite,
         previousFavoriteIndex,
       };
@@ -179,11 +208,8 @@ export const useToggleFavorite = (enableRemoteFetch: boolean) => {
       queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "joined"], (current) =>
         restoreLikedState(current, meetingIdString, context.previousJoinedLiked),
       );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ongoing"], (current) =>
-        restoreLikedState(current, meetingIdString, context.previousCreatedOngoingLiked),
-      );
-      queryClient.setQueryData<MypageMoimCard[]>(["mypage", "meetings", "created", "ended"], (current) =>
-        restoreLikedState(current, meetingIdString, context.previousCreatedEndedLiked),
+      queryClient.setQueryData<CreatedMeetingsCache>(["mypage", "meetings", "created"], (current) =>
+        restoreCreatedMeetingsLikedState(current, meetingIdString, context.previousCreatedLiked),
       );
       queryClient.setQueryData<FavoriteList>(["mypage", "favorites"], (current) =>
         restoreFavoriteItem(current, context.previousFavorite, context.previousFavoriteIndex, variables.meetingId),

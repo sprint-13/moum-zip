@@ -1,17 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { CreatedFilterKey, MypageMoimCard } from "../model";
+import type { MypageMoimCard } from "../model";
 import { getCreatedMeetingCards } from "../use-cases";
 
-export const useCreatedMeetings = (
-  createdFilter: CreatedFilterKey,
-  initialData: MypageMoimCard[],
-  enabled: boolean,
-) => {
+interface UseCreatedMeetingsInitialData {
+  ended: MypageMoimCard[];
+  ongoing: MypageMoimCard[];
+}
+
+export const useCreatedMeetings = (initialData: UseCreatedMeetingsInitialData, enabled: boolean) => {
   return useQuery({
-    queryKey: ["mypage", "meetings", "created", createdFilter],
-    queryFn: () => getCreatedMeetingCards(createdFilter),
+    queryKey: ["mypage", "meetings", "created"],
+    queryFn: () => getCreatedMeetingCards(),
     initialData,
     staleTime: 0,
     enabled,
