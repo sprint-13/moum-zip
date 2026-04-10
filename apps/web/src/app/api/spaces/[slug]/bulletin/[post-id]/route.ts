@@ -1,4 +1,4 @@
-import { updateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import type { PostCategory } from "@/entities/post";
@@ -58,7 +58,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
       { postId, spaceId: space.id, title, content, category: category as PostCategory },
       { userId: membership.userId, role: membership.role },
     );
-    updateTag(CACHE_TAGS.bulletin(space.id));
     return NextResponse.json({ postId });
   } catch (err) {
     if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
@@ -79,8 +78,12 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
   const { space, membership } = result;
   try {
-    await deletePostUseCase(postId, space.id, { userId: membership.userId, role: membership.role });
-    updateTag(CACHE_TAGS.bulletin(space.id));
+    const { authorId } = await deletePostUseCase(postId, space.id, {
+      userId: membership.userId,
+      role: membership.role,
+    });
+    revalidateTag(CACHE_TAGS.grass(space.id, authorId), { expire: 0 });
+    revalidatePath(`/${slug}`);
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
