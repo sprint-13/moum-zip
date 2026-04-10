@@ -1,4 +1,10 @@
-export type NotificationType = "MEETING_CONFIRMED" | "MEETING_CANCELED" | "MEETING_DELETED" | "COMMENT";
+export type NotificationType =
+  | "MEETING_CONFIRMED"
+  | "MEETING_CANCELED"
+  | "MEETING_DELETED"
+  | "COMMENT"
+  | "SPACE_MEMBER_ACCEPTED"
+  | "SPACE_MEMBER_REJECTED";
 
 export interface NotificationData {
   meetingId?: number;
@@ -6,11 +12,12 @@ export interface NotificationData {
   postId?: number;
   postTitle?: string;
   commentId?: number;
+  spaceSlug?: string;
   image?: string | null;
 }
 
 export interface NotificationItem {
-  id: number;
+  id: string | number;
   teamId: string;
   userId: number;
   type: NotificationType;
