@@ -3,6 +3,7 @@ import type { NotificationItem, NotificationType } from "@/entities/notification
 export const NOTIFICATION_LABEL_MAP: Record<NotificationType, string> = {
   MEETING_CONFIRMED: "모임 개설 확정",
   MEETING_CANCELED: "모임 취소",
+  MEETING_DELETED: "모임 삭제",
   COMMENT: "댓글",
 };
 
@@ -11,6 +12,9 @@ export function getNotificationHref(notification: NotificationItem) {
     case "MEETING_CONFIRMED":
     case "MEETING_CANCELED":
       return notification.data.meetingId ? `/moim-detail/${notification.data.meetingId}` : null;
+
+    case "MEETING_DELETED":
+      return "/search";
 
     case "COMMENT":
       return notification.data.postId ? `/posts/${notification.data.postId}` : null;

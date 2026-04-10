@@ -19,7 +19,7 @@ export function NotificationPanel({ notifications, isMobile = false }: Notificat
 
       {notifications.length === 0 ? (
         <div className="flex flex-1 items-center justify-center px-5 text-muted-foreground text-sm">
-          새로운 알림이 없습니다.
+          아직 알림이 없어요
         </div>
       ) : (
         <div

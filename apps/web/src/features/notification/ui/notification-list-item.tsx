@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckCircle2 } from "@moum-zip/ui/icons";
 import Image from "next/image";
 import type { NotificationItem } from "@/entities/notification/model/types";
+import CheckCircleIcon from "@/features/notification/ui/icons/check-circle-icon.svg";
 
 interface NotificationListItemProps {
   notification: NotificationItem;
@@ -34,6 +34,8 @@ function getNotificationTitle(type: NotificationItem["type"]) {
       return "모임 확정";
     case "MEETING_CANCELED":
       return "모임 취소";
+    case "MEETING_DELETED":
+      return "모임 삭제";
     case "COMMENT":
       return "새로운 댓글";
     default:
@@ -63,12 +65,10 @@ export function NotificationListItem({ notification, isMobile = false }: Notific
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center gap-1.5">
-          <strong className="font-semibold text-foreground text-sm">{title}</strong>
+        <div className="mb-1 flex items-center gap-1">
+          <strong className="font-semibold text-foreground text-xs">{title}</strong>
 
-          {notification.type === "MEETING_CONFIRMED" ? (
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
-          ) : null}
+          {notification.type === "MEETING_CONFIRMED" ? <CheckCircleIcon /> : null}
         </div>
 
         <p className="whitespace-pre-line break-words text-muted-foreground text-sm leading-5">

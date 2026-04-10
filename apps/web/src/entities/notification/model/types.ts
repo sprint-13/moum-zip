@@ -1,4 +1,4 @@
-export type NotificationType = "MEETING_CONFIRMED" | "MEETING_CANCELED" | "COMMENT";
+export type NotificationType = "MEETING_CONFIRMED" | "MEETING_CANCELED" | "MEETING_DELETED" | "COMMENT";
 
 export interface NotificationData {
   meetingId?: number;
