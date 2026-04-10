@@ -76,13 +76,14 @@ export const DashboardGrassSection = async ({ spaceId, userId }: DashboardGrassS
                   <div key={week[0]?.date ?? "empty-week"} className="grid grid-rows-7 gap-1">
                     {week.map((day) => {
                       const isToday = day.date === todayDateKey;
+                      const cellLabel = getGrassCellLabel(day, isToday);
 
                       return (
                         <div
                           key={day.date}
                           role="img"
-                          title={getGrassCellLabel(day, isToday)}
-                          aria-label={getGrassCellLabel(day, isToday)}
+                          title={cellLabel}
+                          aria-label={cellLabel}
                           className={cn(
                             "h-3.5 w-3.5 cursor-help rounded-[4px] border transition-colors transition-transform duration-150 motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-110",
                             getGrassCellClassName(day.intensity),
