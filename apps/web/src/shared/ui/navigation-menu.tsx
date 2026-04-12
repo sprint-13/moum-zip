@@ -25,7 +25,8 @@ async function getNavigationUser(): Promise<NavigationUser | null> {
 async function getNavigationNotifications(): Promise<NotificationItem[]> {
   try {
     const result = await getNotifications({ size: 10 });
-    return result.data;
+
+    return JSON.parse(JSON.stringify(result.data)) as NotificationItem[];
   } catch {
     return [];
   }

@@ -8,6 +8,7 @@ import CheckCircleIcon from "@/features/notification/ui/icons/check-circle-icon.
 interface NotificationListItemProps {
   notification: NotificationItem;
   isMobile?: boolean;
+  onClick?: (notification: NotificationItem) => void | Promise<void>;
 }
 
 function formatRelativeTime(createdAt: string | null) {
@@ -29,15 +30,17 @@ function formatRelativeTime(createdAt: string | null) {
   return `${Math.floor(diff / day)}일 전`;
 }
 
-export function NotificationListItem({ notification, isMobile = false }: NotificationListItemProps) {
+export function NotificationListItem({ notification, isMobile = false, onClick }: NotificationListItemProps) {
   const title = getNotificationTitle(notification.type);
   const showConfirmedIcon = shouldShowConfirmedIcon(notification.type);
 
   return (
     <button
       type="button"
+      onClick={() => onClick?.(notification)}
       className={[
-        "flex w-full items-start gap-3 text-left hover:bg-muted/30",
+        "flex w-full items-start gap-3 text-left transition-colors",
+        notification.isRead ? "bg-white hover:bg-muted/30" : "bg-slate-50 hover:bg-slate-100",
         isMobile ? "px-5 py-4" : "px-5 py-4",
       ].join(" ")}
     >
@@ -54,7 +57,6 @@ export function NotificationListItem({ notification, isMobile = false }: Notific
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-1">
           <strong className="font-semibold text-foreground text-xs">{title}</strong>
-
           {showConfirmedIcon ? <CheckCircleIcon /> : null}
         </div>
 
@@ -65,7 +67,6 @@ export function NotificationListItem({ notification, isMobile = false }: Notific
 
       <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
         {!notification.isRead ? <span className="h-1.5 w-1.5 rounded-full bg-primary" /> : null}
-
         <span className="text-muted-foreground text-xs">{formatRelativeTime(notification.createdAt)}</span>
       </div>
     </button>
