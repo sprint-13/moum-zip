@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { getNotificationHref } from "@/entities/notification/model/constants";
 import type { NotificationItem } from "@/entities/notification/model/types";
 import {
+  deleteAllNotificationsAction,
+  deleteAllSpaceNotificationsAction,
   readAllNotificationsAction,
   readAllSpaceNotificationsAction,
   readNotificationAction,
@@ -24,6 +26,7 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
   const [localNotifications, setLocalNotifications] = useState<NotificationItem[]>(notifications);
   const [isDesktop, setIsDesktop] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
   const prevIsDesktopRef = useRef<boolean | null>(null);
 
   useEffect(() => {
@@ -85,6 +88,35 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
     });
   };
 
+  const handleDeleteAll = () => {
+    if (localNotifications.length === 0 || isPending) return;
+    setIsDeleteConfirming(true);
+  };
+
+  const handleCancelDeleteAll = () => {
+    if (isPending) return;
+    setIsDeleteConfirming(false);
+  };
+
+  const handleConfirmDeleteAll = () => {
+    if (localNotifications.length === 0 || isPending) return;
+
+    const previous = localNotifications;
+
+    setIsDeleteConfirming(false);
+    setLocalNotifications([]);
+
+    startTransition(async () => {
+      try {
+        await deleteAllNotificationsAction();
+        await deleteAllSpaceNotificationsAction();
+      } catch (e) {
+        console.error("전체 삭제 실패", e);
+        setLocalNotifications(previous);
+      }
+    });
+  };
+
   const handleNotificationClick = (notification: NotificationItem) => {
     if (isPending) return;
 
@@ -118,6 +150,7 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
         }
 
         setOpen(false);
+        setIsDeleteConfirming(false);
 
         if (href) {
           router.push(href);
@@ -145,13 +178,26 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
 
   if (isDesktop) {
     return (
-      <Dropdown open={open} onOpenChange={setOpen} modal={false}>
+      <Dropdown
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (!nextOpen) {
+            setIsDeleteConfirming(false);
+          }
+        }}
+        modal={false}
+      >
         <Dropdown.Trigger asChild>{triggerButton}</Dropdown.Trigger>
 
         <Dropdown.Content align="end" sideOffset={10} className="w-[20rem] rounded-[24px] bg-white p-0 shadow-lg">
           <NotificationPanel
             notifications={localNotifications}
+            isDeleteConfirming={isDeleteConfirming}
             onReadAll={handleReadAll}
+            onDeleteAll={handleDeleteAll}
+            onCancelDeleteAll={handleCancelDeleteAll}
+            onConfirmDeleteAll={handleConfirmDeleteAll}
             onItemClick={handleNotificationClick}
           />
         </Dropdown.Content>
@@ -160,14 +206,26 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+          setIsDeleteConfirming(false);
+        }
+      }}
+    >
       <Sheet.Trigger asChild>{triggerButton}</Sheet.Trigger>
 
       <Sheet.Content side="right" className="h-dvh w-[min(100vw,20rem)] border-none p-0">
         <NotificationPanel
           notifications={localNotifications}
           isMobile
+          isDeleteConfirming={isDeleteConfirming}
           onReadAll={handleReadAll}
+          onDeleteAll={handleDeleteAll}
+          onCancelDeleteAll={handleCancelDeleteAll}
+          onConfirmDeleteAll={handleConfirmDeleteAll}
           onItemClick={handleNotificationClick}
         />
       </Sheet.Content>

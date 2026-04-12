@@ -4,29 +4,85 @@ import { NotificationListItem } from "@/features/notification/ui/notification-li
 interface NotificationPanelProps {
   notifications: NotificationItem[];
   isMobile?: boolean;
+  isDeleteConfirming?: boolean;
   onReadAll?: () => void | Promise<void>;
+  onDeleteAll?: () => void | Promise<void>;
+  onCancelDeleteAll?: () => void | Promise<void>;
+  onConfirmDeleteAll?: () => void | Promise<void>;
   onItemClick?: (notification: NotificationItem) => void | Promise<void>;
 }
 
-export function NotificationPanel({ notifications, isMobile = false, onReadAll, onItemClick }: NotificationPanelProps) {
+export function NotificationPanel({
+  notifications,
+  isMobile = false,
+  isDeleteConfirming = false,
+  onReadAll,
+  onDeleteAll,
+  onCancelDeleteAll,
+  onConfirmDeleteAll,
+  onItemClick,
+}: NotificationPanelProps) {
   const hasUnread = notifications.some((notification) => !notification.isRead);
+  const hasNotifications = notifications.length > 0;
 
   return (
     <section className="flex h-full min-h-[204px] flex-col overflow-hidden rounded-2xl bg-white">
       <header className={["flex items-center justify-between px-5 py-4", isMobile ? "shrink-0" : ""].join(" ")}>
-        <h2 className="font-semibold text-base text-foreground">알림 내역</h2>
+        {isDeleteConfirming ? (
+          <>
+            <p className="font-medium text-foreground text-sm">모든 알림을 삭제할까요?</p>
 
-        <button
-          type="button"
-          onClick={() => onReadAll?.()}
-          disabled={!hasUnread}
-          className={[
-            "font-medium text-xs transition-colors",
-            hasUnread ? "text-muted-foreground hover:text-foreground" : "cursor-default text-muted-foreground/40",
-          ].join(" ")}
-        >
-          모두 읽기
-        </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onCancelDeleteAll?.()}
+                className="font-medium text-muted-foreground text-xs transition-colors hover:text-foreground"
+              >
+                취소
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onConfirmDeleteAll?.()}
+                className="font-medium text-primary text-xs transition-opacity hover:opacity-80"
+              >
+                삭제
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="font-semibold text-base text-foreground">알림 내역</h2>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onReadAll?.()}
+                disabled={!hasUnread}
+                className={[
+                  "font-medium text-xs transition-colors",
+                  hasUnread ? "text-primary hover:opacity-80" : "cursor-default text-muted-foreground/40",
+                ].join(" ")}
+              >
+                모두 읽기
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onDeleteAll?.()}
+                disabled={!hasNotifications}
+                className={[
+                  "font-medium text-xs transition-colors",
+                  hasNotifications
+                    ? "text-muted-foreground hover:text-foreground"
+                    : "cursor-default text-muted-foreground/40",
+                ].join(" ")}
+              >
+                전체 삭제
+              </button>
+            </div>
+          </>
+        )}
       </header>
 
       {notifications.length === 0 ? (
@@ -48,7 +104,7 @@ export function NotificationPanel({ notifications, isMobile = false, onReadAll, 
           ].join(" ")}
         >
           {notifications.map((notification) => (
-            <div key={notification.id}>
+            <div key={`${notification.source}-${notification.id}`}>
               <NotificationListItem notification={notification} isMobile={isMobile} onClick={onItemClick} />
             </div>
           ))}
