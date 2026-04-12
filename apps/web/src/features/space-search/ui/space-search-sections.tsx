@@ -28,7 +28,16 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
     handleKeywordChange,
     handleLocationChange,
   } = useSearchQueryState({ queryState });
-  const { errorMessage, hasMore, isFetchingNextPage, items, loadMoreRef } = useInfiniteSearchResults({
+  const {
+    errorMessage,
+    hasMore,
+    hasSearchQueryError,
+    isFetched,
+    isFetchingFirstPage,
+    isFetchingNextPage,
+    items,
+    loadMoreRef,
+  } = useInfiniteSearchResults({
     isAuthenticated,
     queryState: activeQueryState,
   });
@@ -40,6 +49,17 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
   const handleKeywordSubmit = () => {
     handleKeywordChange(draftKeyword);
   };
+
+  const keywordSearchStatus =
+    activeQueryState.keyword.length === 0
+      ? "idle"
+      : isFetchingFirstPage
+        ? "loading"
+        : hasSearchQueryError
+          ? "error"
+          : isFetched
+            ? "success"
+            : "idle";
 
   const handleFilterOpenChange = (filterId: SearchFilter["id"], nextIsOpen: boolean) => {
     setOpenedFilterId((prevOpenedFilterId) => {
@@ -60,6 +80,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
             keyword={draftKeyword}
             onKeywordChange={setDraftKeyword}
             onSubmit={handleKeywordSubmit}
+            searchStatus={keywordSearchStatus}
             variant="hero"
           />
         }
@@ -73,6 +94,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
               keyword={draftKeyword}
               onKeywordChange={setDraftKeyword}
               onSubmit={handleKeywordSubmit}
+              searchStatus={keywordSearchStatus}
               variant="toolbar"
             />
           }

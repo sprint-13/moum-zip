@@ -1,19 +1,50 @@
 "use client";
 
-import { Search } from "@moum-zip/ui/icons";
+import { CircleAlert, CircleCheck, LoaderCircle, Search } from "@moum-zip/ui/icons";
 import type { FormEvent } from "react";
 
 import { cn } from "@/shared/lib/cn";
+
+type SearchKeywordStatus = "idle" | "loading" | "success" | "error";
 
 interface SearchKeywordBarProps {
   className?: string;
   keyword: string;
   onKeywordChange: (keyword: string) => void;
   onSubmit: () => void;
+  searchStatus: SearchKeywordStatus;
   variant: "hero" | "toolbar";
 }
 
-export const SearchKeywordBar = ({ className, keyword, onKeywordChange, onSubmit, variant }: SearchKeywordBarProps) => {
+interface SearchKeywordStatusIconProps {
+  className?: string;
+  searchStatus: SearchKeywordStatus;
+}
+
+const SearchKeywordStatusIcon = ({ className, searchStatus }: SearchKeywordStatusIconProps) => {
+  if (searchStatus === "idle") {
+    return null;
+  }
+
+  if (searchStatus === "loading") {
+    return <LoaderCircle aria-hidden="true" className={cn("animate-spin text-slate-400", className)} />;
+  }
+
+  if (searchStatus === "error") {
+    return <CircleAlert aria-hidden="true" className={cn("text-red-500", className)} />;
+  }
+
+  return <CircleCheck aria-hidden="true" className={cn("text-primary", className)} />;
+};
+
+export const SearchKeywordBar = ({
+  className,
+  keyword,
+  onKeywordChange,
+  onSubmit,
+  searchStatus,
+  variant,
+}: SearchKeywordBarProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit();
@@ -33,6 +64,7 @@ export const SearchKeywordBar = ({ className, keyword, onKeywordChange, onSubmit
               type="text"
               value={keyword}
             />
+            <SearchKeywordStatusIcon className="h-5 w-5 shrink-0" searchStatus={searchStatus} />
           </div>
 
           <button
@@ -59,6 +91,7 @@ export const SearchKeywordBar = ({ className, keyword, onKeywordChange, onSubmit
             type="text"
             value={keyword}
           />
+          <SearchKeywordStatusIcon className="h-4 w-4 shrink-0" searchStatus={searchStatus} />
         </div>
 
         <button
