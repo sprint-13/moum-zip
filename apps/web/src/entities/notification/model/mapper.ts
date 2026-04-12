@@ -20,6 +20,7 @@ export function mapNotification(raw: RawNotification): NotificationItem {
     },
     isRead: raw.isRead,
     createdAt: raw.createdAt ?? null,
+    source: "external",
   };
 }
 

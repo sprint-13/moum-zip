@@ -31,19 +31,14 @@ export async function getNotifications(
 
   const externalResult = mapNotificationsResponse(data);
 
-  console.log("session 👉", session);
-  console.log("externalResult 👉", externalResult);
-
   if (session.userId == null) {
-    return externalResult;
+    return serializeNotificationsResult(externalResult);
   }
 
   const internalNotifications = await getSpaceNotifications({
     userId: session.userId,
     size,
   });
-
-  console.log("internalNotifications 👉", internalNotifications);
 
   const filteredInternalNotifications =
     typeof isRead === "boolean"
@@ -54,13 +49,11 @@ export async function getNotifications(
     .sort((a, b) => getCreatedAtTime(b) - getCreatedAtTime(a))
     .slice(0, size);
 
-  console.log("mergedData 👉", mergedData);
-
-  return {
+  return serializeNotificationsResult({
     data: mergedData,
     nextCursor: externalResult.nextCursor,
     hasMore: externalResult.hasMore,
-  };
+  });
 }
 
 function getCreatedAtTime(notification: NotificationItem) {
@@ -69,4 +62,46 @@ function getCreatedAtTime(notification: NotificationItem) {
   }
 
   return new Date(notification.createdAt).getTime();
+}
+
+function serializeNotificationsResult(result: NotificationsResult): NotificationsResult {
+  return {
+    data: result.data.map(serializeNotificationItem),
+    nextCursor: typeof result.nextCursor === "string" ? result.nextCursor : null,
+    hasMore: Boolean(result.hasMore),
+  };
+}
+
+function serializeNotificationItem(notification: NotificationItem): NotificationItem {
+  return {
+    id: typeof notification.id === "number" ? notification.id : String(notification.id),
+    teamId: String(notification.teamId),
+    userId: Number(notification.userId),
+    type: notification.type,
+    message: String(notification.message),
+    data: {
+      meetingId: typeof notification.data.meetingId === "number" ? notification.data.meetingId : undefined,
+      meetingName: typeof notification.data.meetingName === "string" ? notification.data.meetingName : undefined,
+      postId:
+        typeof notification.data.postId === "string" || typeof notification.data.postId === "number"
+          ? String(notification.data.postId)
+          : undefined,
+      postTitle: typeof notification.data.postTitle === "string" ? notification.data.postTitle : undefined,
+      commentId:
+        typeof notification.data.commentId === "string" || typeof notification.data.commentId === "number"
+          ? String(notification.data.commentId)
+          : undefined,
+      spaceSlug:
+        typeof notification.data.spaceSlug === "string" || typeof notification.data.spaceSlug === "number"
+          ? String(notification.data.spaceSlug)
+          : undefined,
+      image:
+        typeof notification.data.image === "string" || notification.data.image === null
+          ? notification.data.image
+          : null,
+    },
+    isRead: Boolean(notification.isRead),
+    createdAt: typeof notification.createdAt === "string" ? notification.createdAt : null,
+    source: notification.source,
+  };
 }

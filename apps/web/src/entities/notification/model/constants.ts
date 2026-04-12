@@ -25,8 +25,10 @@ export function getNotificationHref(notification: NotificationItem) {
       return "/search";
 
     case "SPACE_MEMBER_ACCEPTED":
+      return notification.data.spaceSlug ? `/${notification.data.spaceSlug}` : null;
+
     case "SPACE_MEMBER_REJECTED":
-      return notification.data.spaceSlug ? `/spaces/${notification.data.spaceSlug}` : null;
+      return "/search";
 
     case "SPACE_POST_CREATED":
       return notification.teamId ? `/${notification.teamId}/bulletin` : null;

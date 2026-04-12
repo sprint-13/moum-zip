@@ -27,6 +27,7 @@ export interface NotificationItem {
   data: NotificationData;
   isRead: boolean;
   createdAt: string | null;
+  source: "external" | "internal";
 }
 
 export interface NotificationsResult {
