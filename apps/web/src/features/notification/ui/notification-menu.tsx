@@ -9,6 +9,7 @@ import type { NotificationItem } from "@/entities/notification/model/types";
 import {
   deleteAllNotificationsAction,
   deleteAllSpaceNotificationsAction,
+  getNotificationsAction,
   readAllNotificationsAction,
   readAllSpaceNotificationsAction,
   readNotificationAction,
@@ -18,12 +19,21 @@ import { NotificationPanel } from "./notification-panel";
 
 interface NotificationMenuProps {
   notifications: NotificationItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
 }
 
-export function NotificationMenu({ notifications }: NotificationMenuProps) {
+export function NotificationMenu({
+  notifications,
+  nextCursor: initialNextCursor,
+  hasMore: initialHasMore,
+}: NotificationMenuProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [localNotifications, setLocalNotifications] = useState<NotificationItem[]>(notifications);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [open, setOpen] = useState(false);
   const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
@@ -31,7 +41,9 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
 
   useEffect(() => {
     setLocalNotifications(notifications);
-  }, [notifications]);
+    setNextCursor(initialNextCursor);
+    setHasMore(initialHasMore);
+  }, [notifications, initialNextCursor, initialHasMore]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
@@ -70,6 +82,34 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
 
   const unreadCount = localNotifications.filter((item) => !item.isRead).length;
 
+  const handleLoadMore = async () => {
+    if (!open || !hasMore || !nextCursor || isFetchingMore || isPending) return;
+
+    setIsFetchingMore(true);
+
+    try {
+      const result = await getNotificationsAction({
+        cursor: nextCursor,
+        size: 10,
+      });
+
+      setLocalNotifications((prev) => {
+        const existingKeys = new Set(prev.map((item) => `${item.source}-${item.id}`));
+
+        const appended = result.data.filter((item) => !existingKeys.has(`${item.source}-${item.id}`));
+
+        return [...prev, ...appended];
+      });
+
+      setNextCursor(result.nextCursor);
+      setHasMore(result.hasMore);
+    } catch (e) {
+      console.error("추가 알림 로딩 실패", e);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  };
+
   const handleReadAll = () => {
     if (unreadCount === 0 || isPending) return;
 
@@ -105,6 +145,8 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
 
     setIsDeleteConfirming(false);
     setLocalNotifications([]);
+    setNextCursor(null);
+    setHasMore(false);
 
     startTransition(async () => {
       try {
@@ -113,6 +155,8 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
       } catch (e) {
         console.error("전체 삭제 실패", e);
         setLocalNotifications(previous);
+        setNextCursor(initialNextCursor);
+        setHasMore(initialHasMore);
       }
     });
   };
@@ -199,6 +243,9 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
             onCancelDeleteAll={handleCancelDeleteAll}
             onConfirmDeleteAll={handleConfirmDeleteAll}
             onItemClick={handleNotificationClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            isFetchingMore={isFetchingMore}
           />
         </Dropdown.Content>
       </Dropdown>
@@ -227,6 +274,9 @@ export function NotificationMenu({ notifications }: NotificationMenuProps) {
           onCancelDeleteAll={handleCancelDeleteAll}
           onConfirmDeleteAll={handleConfirmDeleteAll}
           onItemClick={handleNotificationClick}
+          onLoadMore={handleLoadMore}
+          hasMore={hasMore}
+          isFetchingMore={isFetchingMore}
         />
       </Sheet.Content>
     </Sheet>

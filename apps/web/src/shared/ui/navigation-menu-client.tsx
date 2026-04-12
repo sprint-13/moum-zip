@@ -19,9 +19,17 @@ type NavigationMenuClientProps = {
     name?: string;
   } | null;
   notifications: NotificationItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
 };
 
-export const NavigationMenuClient = ({ loggedIn, user, notifications }: NavigationMenuClientProps) => {
+export const NavigationMenuClient = ({
+  loggedIn,
+  user,
+  notifications,
+  nextCursor,
+  hasMore,
+}: NavigationMenuClientProps) => {
   return (
     <>
       <div className="hidden w-full py-2 md:block">
@@ -54,7 +62,7 @@ export const NavigationMenuClient = ({ loggedIn, user, notifications }: Navigati
                 </Gnb.Item>
 
                 <Gnb.Item>
-                  <NotificationMenu notifications={notifications} />
+                  <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
                 </Gnb.Item>
 
                 <Gnb.Item>
@@ -92,7 +100,9 @@ export const NavigationMenuClient = ({ loggedIn, user, notifications }: Navigati
         </Link>
 
         <div className="flex items-center gap-2">
-          {loggedIn ? <NotificationMenu notifications={notifications} /> : null}
+          {loggedIn ? (
+            <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
+          ) : null}
 
           <Sheet>
             <Sheet.Trigger asChild>

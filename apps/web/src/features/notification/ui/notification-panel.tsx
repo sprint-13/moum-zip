@@ -5,25 +5,40 @@ interface NotificationPanelProps {
   notifications: NotificationItem[];
   isMobile?: boolean;
   isDeleteConfirming?: boolean;
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
   onReadAll?: () => void | Promise<void>;
   onDeleteAll?: () => void | Promise<void>;
   onCancelDeleteAll?: () => void | Promise<void>;
   onConfirmDeleteAll?: () => void | Promise<void>;
   onItemClick?: (notification: NotificationItem) => void | Promise<void>;
+  onLoadMore?: () => void | Promise<void>;
 }
 
 export function NotificationPanel({
   notifications,
   isMobile = false,
   isDeleteConfirming = false,
+  hasMore = false,
+  isFetchingMore = false,
   onReadAll,
   onDeleteAll,
   onCancelDeleteAll,
   onConfirmDeleteAll,
   onItemClick,
+  onLoadMore,
 }: NotificationPanelProps) {
   const hasUnread = notifications.some((notification) => !notification.isRead);
   const hasNotifications = notifications.length > 0;
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const reachedBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 24;
+
+    if (reachedBottom && hasMore && !isFetchingMore) {
+      onLoadMore?.();
+    }
+  };
 
   return (
     <section className="flex h-full min-h-[204px] flex-col overflow-hidden rounded-2xl bg-white">
@@ -52,7 +67,7 @@ export function NotificationPanel({
           </>
         ) : (
           <>
-            <h2 className="font-semibold text-base text-foreground">알림 내역</h2>
+            <h2 className="font-semibold text-base text-foreground">알림</h2>
 
             <div className="flex items-center gap-3">
               <button
@@ -91,6 +106,7 @@ export function NotificationPanel({
         </div>
       ) : (
         <div
+          onScroll={handleScroll}
           className={[
             "overflow-y-auto",
             isMobile ? "flex-1" : "max-h-[22rem]",
@@ -108,6 +124,10 @@ export function NotificationPanel({
               <NotificationListItem notification={notification} isMobile={isMobile} onClick={onItemClick} />
             </div>
           ))}
+
+          {!hasMore ? (
+            <div className="px-5 py-3 text-center text-muted-foreground/70 text-xs">모든 알림을 확인했어요</div>
+          ) : null}
         </div>
       )}
     </section>
