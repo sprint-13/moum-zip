@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getNotificationTitle, shouldShowConfirmedIcon } from "@/entities/notification/model/constants";
 import type { NotificationItem } from "@/entities/notification/model/types";
 import CheckCircleIcon from "@/features/notification/ui/icons/check-circle-icon.svg";
+import Logo from "@/shared/assets/moum-zip-logo-sm.svg";
 
 interface NotificationListItemProps {
   notification: NotificationItem;
@@ -30,9 +31,27 @@ function formatRelativeTime(createdAt: string | null) {
   return `${Math.floor(diff / day)}일 전`;
 }
 
+function getNotificationDescription(notification: NotificationItem) {
+  if (notification.type === "COMMENT") {
+    const authorName = notification.data.commentAuthorName;
+    const commentContent = notification.data.commentContent;
+
+    if (authorName && commentContent) {
+      return `'${authorName}'님의 댓글: ${commentContent}`;
+    }
+
+    if (commentContent) {
+      return commentContent;
+    }
+  }
+
+  return notification.message;
+}
+
 export function NotificationListItem({ notification, isMobile = false, onClick }: NotificationListItemProps) {
   const title = getNotificationTitle(notification.type);
   const showConfirmedIcon = shouldShowConfirmedIcon(notification.type);
+  const description = getNotificationDescription(notification);
 
   return (
     <button
@@ -44,12 +63,12 @@ export function NotificationListItem({ notification, isMobile = false, onClick }
         isMobile ? "px-5 py-4" : "px-5 py-4",
       ].join(" ")}
     >
-      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-muted">
+      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-white">
         {notification.data.image ? (
           <Image src={notification.data.image} alt="" fill className="object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[0.6875rem] text-muted-foreground">
-            알림
+          <div className="flex h-full w-full items-center justify-center">
+            <Logo className="h-7 w-7 translate-y-[1px]" />
           </div>
         )}
       </div>
@@ -60,9 +79,7 @@ export function NotificationListItem({ notification, isMobile = false, onClick }
           {showConfirmedIcon ? <CheckCircleIcon /> : null}
         </div>
 
-        <p className="whitespace-pre-line break-words text-muted-foreground text-sm leading-5">
-          {notification.message}
-        </p>
+        <p className="line-clamp-2 break-all text-muted-foreground text-sm leading-5">{description}</p>
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5 pt-0.5">

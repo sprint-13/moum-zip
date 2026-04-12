@@ -20,7 +20,7 @@ export async function addSpaceMemberAction(slug: string, pendingUser: PendingUse
     teamId: slug,
     userId: pendingUser.userId,
     type: "SPACE_MEMBER_ACCEPTED",
-    message: `${space.name ?? "스페이스"} 가입이 승인되었어요.`,
+    message: `${space.name} 스페이스 가입이 승인되었어요.`,
     data: {
       spaceSlug: slug,
       image: pendingUser.image,

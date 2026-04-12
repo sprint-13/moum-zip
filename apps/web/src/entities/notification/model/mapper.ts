@@ -4,6 +4,8 @@ import type { NotificationItem, NotificationsResult } from "@/entities/notificat
 type RawNotification = NonNullable<NotificationsListData["data"]>[number];
 
 export function mapNotification(raw: RawNotification): NotificationItem {
+  const rawData = raw.data && typeof raw.data === "object" ? (raw.data as Record<string, unknown>) : null;
+
   return {
     id: raw.id,
     teamId: raw.teamId,
@@ -16,6 +18,8 @@ export function mapNotification(raw: RawNotification): NotificationItem {
       postId: raw.data?.postId != null ? String(raw.data.postId) : undefined,
       postTitle: raw.data?.postTitle,
       commentId: raw.data?.commentId != null ? String(raw.data.commentId) : undefined,
+      commentAuthorName: typeof rawData?.commentAuthorName === "string" ? rawData.commentAuthorName : undefined,
+      commentContent: typeof rawData?.commentContent === "string" ? rawData.commentContent : undefined,
       image: raw.data?.image ?? null,
     },
     isRead: raw.isRead,

@@ -47,13 +47,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     return NextResponse.json({ error: result.error }, { status });
   }
 
-  const { auth, space } = result;
+  const { auth, space, membership } = result;
   try {
     const { content } = await request.json();
     const { commentId } = await createCommentUseCase({
       postId,
       spaceId: space.id,
       authorId: auth.userId as number,
+      authorName: membership.nickname,
       content,
     });
     return NextResponse.json({ commentId }, { status: 201 });

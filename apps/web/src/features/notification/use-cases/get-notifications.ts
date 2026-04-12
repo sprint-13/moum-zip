@@ -115,6 +115,10 @@ function serializeNotificationItem(notification: NotificationItem): Notification
         typeof notification.data.commentId === "string" || typeof notification.data.commentId === "number"
           ? String(notification.data.commentId)
           : undefined,
+      commentAuthorName:
+        typeof notification.data.commentAuthorName === "string" ? notification.data.commentAuthorName : undefined,
+      commentContent:
+        typeof notification.data.commentContent === "string" ? notification.data.commentContent : undefined,
       spaceSlug:
         typeof notification.data.spaceSlug === "string" || typeof notification.data.spaceSlug === "number"
           ? String(notification.data.spaceSlug)

@@ -14,6 +14,8 @@ export interface NotificationData {
   postId?: string;
   postTitle?: string;
   commentId?: string;
+  commentAuthorName?: string;
+  commentContent?: string;
   spaceSlug?: string;
   image?: string | null;
 }

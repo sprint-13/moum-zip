@@ -6,6 +6,7 @@ export interface CreateCommentInput {
   postId: string;
   spaceId: string;
   authorId: number;
+  authorName: string;
   content: string;
 }
 
@@ -15,7 +16,9 @@ export interface CreateCommentInput {
  * - UUID 생성 후 DB 저장 (트랜잭션: commentCount 동시 증가)
  */
 export async function createCommentUseCase(input: CreateCommentInput): Promise<{ commentId: string }> {
-  if (!input.content.trim()) throw new Error("댓글 내용을 입력해주세요.");
+  const trimmedContent = input.content.trim();
+
+  if (!trimmedContent) throw new Error("댓글 내용을 입력해주세요.");
 
   const postRows = await postQueries.findById(input.postId);
   const post = postRows[0];
@@ -26,7 +29,7 @@ export async function createCommentUseCase(input: CreateCommentInput): Promise<{
     postId: input.postId,
     spaceId: input.spaceId,
     authorId: input.authorId,
-    content: input.content.trim(),
+    content: trimmedContent,
   });
 
   const postAuthorId = post.author.id;
@@ -41,6 +44,8 @@ export async function createCommentUseCase(input: CreateCommentInput): Promise<{
         postId: input.postId,
         postTitle: post.post.title,
         commentId: comment.id,
+        commentAuthorName: input.authorName,
+        commentContent: trimmedContent,
       },
     });
   }

@@ -87,6 +87,8 @@ function normalizeNotificationData(data: unknown): NotificationItem["data"] {
     postTitle: typeof value.postTitle === "string" ? value.postTitle : undefined,
     commentId:
       typeof value.commentId === "string" || typeof value.commentId === "number" ? String(value.commentId) : undefined,
+    commentAuthorName: typeof value.commentAuthorName === "string" ? value.commentAuthorName : undefined,
+    commentContent: typeof value.commentContent === "string" ? value.commentContent : undefined,
     spaceSlug: typeof value.spaceSlug === "string" ? value.spaceSlug : undefined,
     image: typeof value.image === "string" || value.image === null ? value.image : null,
   };

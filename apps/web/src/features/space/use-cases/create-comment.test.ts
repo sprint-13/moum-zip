@@ -25,6 +25,7 @@ const BASE_INPUT = {
   postId: "post-1",
   spaceId: "space-1",
   authorId: 42,
+  authorName: "댓글작성자",
   content: "좋은 게시글이네요.",
 };
 
@@ -34,10 +35,13 @@ describe("createCommentUseCase", () => {
 
     mockCreate.mockResolvedValue({
       id: "comment-uuid",
-      ...BASE_INPUT,
+      postId: BASE_INPUT.postId,
+      spaceId: BASE_INPUT.spaceId,
+      authorId: BASE_INPUT.authorId,
+      content: BASE_INPUT.content,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    } as never);
 
     mockFindById.mockResolvedValue([
       {
@@ -116,6 +120,29 @@ describe("createCommentUseCase", () => {
         postId: "post-1",
         postTitle: "테스트 게시글",
         commentId: "comment-uuid",
+        commentAuthorName: "댓글작성자",
+        commentContent: "좋은 게시글이네요.",
+      },
+    });
+  });
+
+  it("댓글 내용은 공백 제거된 값으로 알림에 포함한다", async () => {
+    await createCommentUseCase({
+      ...BASE_INPUT,
+      content: "  공백 포함 댓글  ",
+    });
+
+    expect(mockCreateNotification).toHaveBeenCalledWith({
+      teamId: "space-1",
+      userId: 7,
+      type: "COMMENT",
+      message: "내 게시글에 새 댓글이 달렸어요.",
+      data: {
+        postId: "post-1",
+        postTitle: "테스트 게시글",
+        commentId: "comment-uuid",
+        commentAuthorName: "댓글작성자",
+        commentContent: "공백 포함 댓글",
       },
     });
   });
