@@ -11,7 +11,7 @@ const FALLBACK_SPACE_IMAGE = `data:image/svg+xml;charset=UTF-8,${encodeURICompon
 export const mapSearchResultItemToSpaceCardItem = (item: SearchResultItem): SpaceCardItem => {
   const now = Date.now();
   const { deadlineLabel, isRegistClosed } = getSearchDeadlineMeta(item.registrationEnd, now);
-  const status = [
+  const statuses = [
     item.isJoined ? { label: "신청 완료" } : undefined,
     item.confirmedAt ? { label: "개설 확정" } : undefined,
   ].filter((status): status is NonNullable<typeof status> => status !== undefined);
@@ -38,7 +38,7 @@ export const mapSearchResultItemToSpaceCardItem = (item: SearchResultItem): Spac
         label: formatSearchTimeChipLabel(item.dateTime),
       },
     ],
-    status,
+    statuses: statuses.length > 0 ? statuses : undefined,
     title: item.title,
   };
 };

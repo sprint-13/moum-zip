@@ -73,7 +73,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
     isRegistClosed,
     maxParticipants,
     metaChips,
-    status,
+    statuses,
     title,
   } = item;
   const displayTitle = truncateTitle(title);
@@ -111,7 +111,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
                 <h2 className={cardTitleClassName} title={title}>
                   {displayTitle}
                 </h2>
-                {status?.map((status) => (
+                {statuses?.map((status) => (
                   <SpaceCardStatus className="shrink-0" key={status.label} label={status.label} />
                 ))}
               </div>
