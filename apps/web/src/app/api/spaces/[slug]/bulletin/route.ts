@@ -1,4 +1,3 @@
-import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import type { PostCategory } from "@/entities/post";
@@ -6,7 +5,6 @@ import { spaceQueries } from "@/entities/spaces";
 import { createPostUseCase } from "@/features/space/use-cases/create-post";
 import { getBulletinPostsUseCase } from "@/features/space/use-cases/get-bulletin-posts";
 import { isAuth } from "@/shared/api/server";
-import { CACHE_TAGS } from "@/shared/lib/cache";
 import { parsePaginationParams } from "@/shared/lib/pagination";
 
 const POST_CATEGORIES = ["notice", "discussion", "question", "material"] as const satisfies readonly PostCategory[];
@@ -64,8 +62,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       category: category as PostCategory,
       image,
     });
-    revalidateTag(CACHE_TAGS.grass(space.id, auth.userId), { expire: 0 });
-    revalidatePath(`/${slug}`);
+
     return NextResponse.json({ postId }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/spaces/[slug]/bulletin]", err);
