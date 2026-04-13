@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { SEARCH_FILTER_QUERY_STATE, SEARCH_INITIAL_QUERY_STATE } from "./constants";
 import { getNextSearchQueryState } from "./next-search-query-state";
 
 const BASE_QUERY_STATE = {
-  categoryId: "all",
-  dateSortId: "default",
-  deadlineSortId: "default",
-  locationId: "all",
+  ...SEARCH_INITIAL_QUERY_STATE,
 } as const;
 
 describe("getNextSearchQueryState", () => {
@@ -37,7 +34,7 @@ describe("getNextSearchQueryState", () => {
     expect(nextQueryState).toEqual({
       ...BASE_QUERY_STATE,
       dateSortId: "latest",
-      deadlineSortId: SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
     });
   });
 
@@ -55,7 +52,7 @@ describe("getNextSearchQueryState", () => {
 
     expect(nextQueryState).toEqual({
       ...BASE_QUERY_STATE,
-      dateSortId: SEARCH_INITIAL_QUERY_STATE.dateSortId,
+      dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
       deadlineSortId: "slow",
     });
   });

@@ -40,9 +40,14 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   },
 ];
 
-export const SEARCH_INITIAL_QUERY_STATE: SearchQueryState = {
+export const SEARCH_FILTER_QUERY_STATE: SearchQueryState = {
   categoryId: "all",
   dateSortId: "default",
   deadlineSortId: "default",
   locationId: "all",
+};
+
+export const SEARCH_INITIAL_QUERY_STATE: SearchQueryState = {
+  ...SEARCH_FILTER_QUERY_STATE,
+  dateSortId: "latest",
 };

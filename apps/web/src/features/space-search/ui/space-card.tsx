@@ -41,7 +41,7 @@ const cardClassName =
 const cardImageClassName =
   "h-39 w-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100 2xl:size-42.5";
 const cardTitleClassName =
-  "min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em] transition-colors duration-300 motion-reduce:transition-none lg:group-hover/card:text-primary";
+  "min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em] transition-colors duration-300 motion-reduce:transition-none";
 
 const MetaChip = ({ chip }: MetaChipProps) => {
   return (
@@ -90,7 +90,13 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
 
   return (
     <div className={cardWrapperClassName}>
-      <article className={cardClassName}>
+      <article
+        className={cn(
+          cardClassName,
+          isRegistClosed &&
+            "bg-card/90 opacity-90 shadow-[0_8px_18px_rgba(17,17,17,0.07)] lg:group-hover/card:translate-y-0 lg:group-hover/card:shadow-[0_10px_24px_rgba(17,17,17,0.09)]",
+        )}
+      >
         <Link
           aria-label={`${title} 상세 페이지 보기`}
           className="absolute inset-0 z-10 rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -98,7 +104,14 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           prefetch={false}
         />
         <div className="relative w-full shrink-0 sm:w-full md:w-auto">
-          <Image alt={imageAlt} className={cardImageClassName} height={340} src={imageSrc} unoptimized width={340} />
+          <Image
+            alt={imageAlt}
+            className={cn(cardImageClassName, isRegistClosed && "saturate-50 lg:group-hover/card:scale-100")}
+            height={340}
+            src={imageSrc}
+            unoptimized
+            width={340}
+          />
           <div className="absolute top-4 right-4 z-20 sm:hidden">
             <SpaceCardLikeButton {...likeButtonProps} />
           </div>
@@ -108,7 +121,10 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <h2 className={cardTitleClassName} title={title}>
+                <h2
+                  className={cn(cardTitleClassName, !isRegistClosed && "lg:group-hover/card:text-primary")}
+                  title={title}
+                >
                   {displayTitle}
                 </h2>
                 {statuses?.map((status) => (

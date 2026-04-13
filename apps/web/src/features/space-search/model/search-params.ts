@@ -1,4 +1,4 @@
-import { SEARCH_CATEGORIES, SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { SEARCH_CATEGORIES, SEARCH_FILTER_QUERY_STATE, SEARCH_INITIAL_QUERY_STATE } from "./constants";
 import type {
   SearchCategoryId,
   SearchDateSortId,
@@ -84,7 +84,7 @@ export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchR
   if (queryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
     return {
       categoryId: normalizeSearchCategoryId(queryState.categoryId),
-      dateSortId: SEARCH_INITIAL_QUERY_STATE.dateSortId,
+      dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
       deadlineSortId: queryState.deadlineSortId,
       locationId: queryState.locationId,
     };
@@ -94,7 +94,7 @@ export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchR
     return {
       categoryId: normalizeSearchCategoryId(queryState.categoryId),
       dateSortId: queryState.dateSortId,
-      deadlineSortId: SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
       locationId: queryState.locationId,
     };
   }
