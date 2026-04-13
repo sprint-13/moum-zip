@@ -3,19 +3,17 @@ import { Suspense } from "react";
 import { PostInfoCard } from "@/_pages/bulletin";
 import { CommentList } from "@/_pages/bulletin/ui/comment-list";
 import { PostArticle } from "@/_pages/bulletin/ui/post-article";
+import { PostDetailHeader } from "@/_pages/bulletin/ui/post-detail-header";
 import { postQueries } from "@/entities/post/queries";
-import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
+import { SpaceBody, SpaceBodyLeft, SpaceBodyRight } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 
 export default async function PostDetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ "space-slug": string; "post-id": string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { "space-slug": slug, "post-id": postId } = await params;
-  const { title = "", author = "" } = await searchParams;
 
   const { membership } = await getSpaceContext(slug);
 
@@ -25,10 +23,7 @@ export default async function PostDetailPage({
 
   return (
     <>
-      <SpaceHeader
-        title={typeof title === "string" ? title : ""}
-        description={typeof author === "string" ? author : ""}
-      />
+      <PostDetailHeader />
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<PostArticleSkeleton />}>
