@@ -107,11 +107,13 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
         <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 sm:p-0">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <h2 className={cardTitleClassName} title={title}>
                   {displayTitle}
                 </h2>
-                {status ? <SpaceCardStatus className="shrink-0" label={status.label} /> : null}
+                {status?.map((status) => (
+                  <SpaceCardStatus className="shrink-0" key={status.label} label={status.label} />
+                ))}
               </div>
               <p className="mt-1.5 inline-flex items-center gap-1 font-medium text-muted-foreground text-sm leading-5 tracking-[-0.02em]">
                 <LocationPinIcon aria-hidden="true" className="size-4 shrink-0" />
