@@ -35,7 +35,7 @@ describe("deleteCommentUseCase", () => {
     const result = await deleteCommentUseCase("comment-1", "post-1", { userId: 1, role: "member" });
 
     expect(mockDeleteById).toHaveBeenCalledWith("comment-1", "post-1");
-    expect(result).toEqual({ commentId: "comment-1" });
+    expect(result).toEqual({ commentId: "comment-1", authorId: 1 });
   });
 
   it("manager는 타인의 댓글을 삭제할 수 있다", async () => {
@@ -44,7 +44,7 @@ describe("deleteCommentUseCase", () => {
     const result = await deleteCommentUseCase("comment-1", "post-1", { userId: 1, role: "manager" });
 
     expect(mockDeleteById).toHaveBeenCalledWith("comment-1", "post-1");
-    expect(result).toEqual({ commentId: "comment-1" });
+    expect(result).toEqual({ commentId: "comment-1", authorId: 99 });
   });
 
   it("존재하지 않는 댓글 삭제 시 에러를 던진다", async () => {

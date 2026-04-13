@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMoimCreateForm } from "@/features/moim-create/hooks/use-moim-create-form";
 import { useMoimFormImageUpload } from "@/features/moim-create/hooks/use-moim-form-image-upload";
+import { trackMoimCreateCanceled } from "@/features/moim-create/lib/moim-create-events";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
 
 export const MoimCreateForm = () => {
@@ -18,7 +19,10 @@ export const MoimCreateForm = () => {
       isPending={isPending}
       isImageUploading={isImageUploading}
       submitLabel={isPending ? "생성 중" : "모임 만들기"}
-      onCancel={() => router.back()}
+      onCancel={() => {
+        trackMoimCreateCanceled();
+        router.back();
+      }}
       onImageUpload={handleImageUpload}
     />
   );

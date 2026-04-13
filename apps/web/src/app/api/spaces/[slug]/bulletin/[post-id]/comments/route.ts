@@ -1,9 +1,11 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import { spaceQueries } from "@/entities/spaces";
 import { createCommentUseCase } from "@/features/space/use-cases/create-comment";
 import { getPostComments } from "@/features/space/use-cases/get-post-detail";
 import { isAuth } from "@/shared/api/server";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 import { AppError } from "@/shared/lib/error";
 
 async function getAuthAndSpace(slug: string) {
@@ -48,14 +50,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
   }
 
   const { auth, space } = result;
+  if (typeof auth.userId !== "number") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { content } = await request.json();
+    const authorId = auth.userId;
     const { commentId } = await createCommentUseCase({
       postId,
       spaceId: space.id,
-      authorId: auth.userId as number,
+      authorId,
       content,
     });
+    revalidateTag(CACHE_TAGS.grass(space.id, authorId), { expire: 0 });
+    revalidatePath(`/${slug}`);
     return NextResponse.json({ commentId }, { status: 201 });
   } catch (err) {
     if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
