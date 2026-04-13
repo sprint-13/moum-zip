@@ -1,5 +1,5 @@
 import { ValidationError } from "./app-error";
-import { ERROR_CODES } from "./error-codes";
+import { ERROR_CODES, type ErrorCode } from "./error-codes";
 import { isAppError } from "./is-app-error";
 
 export type ErrorPresentationType = "boundary" | "inline" | "modal" | "toast";
@@ -13,7 +13,7 @@ export interface ErrorPresentation {
 
 const DEFAULT_ERROR_MESSAGE = "요청 처리 중 오류가 발생했습니다.";
 
-const BOUNDARY_CODES = new Set([
+const BOUNDARY_CODES: Set<ErrorCode> = new Set([
   ERROR_CODES.COMMENT_NOT_FOUND,
   ERROR_CODES.NOT_FOUND,
   ERROR_CODES.POST_NOT_FOUND,
