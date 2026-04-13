@@ -5,6 +5,7 @@ export type MoimImageTone = "beige" | "daylight" | "sunset" | "city";
 export type CreatedFilterKey = "ongoing" | "ended";
 
 export interface MypageProfile {
+  userId: number;
   name: string;
   email: string;
   imageUrl?: string;
@@ -28,6 +29,6 @@ export interface MypageMoimCard {
   imageTone: MoimImageTone;
   actionLabel: string;
   actionVariant: MypageActionVariant;
-  primaryBadge: MypageBadge;
+  primaryBadge?: MypageBadge;
   secondaryBadge?: MypageBadge;
 }

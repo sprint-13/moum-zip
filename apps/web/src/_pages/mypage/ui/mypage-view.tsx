@@ -53,6 +53,7 @@ export function MypageView({
     moims,
     createdMoims,
     enableRemoteFetch,
+    profile,
   });
 
   return (
