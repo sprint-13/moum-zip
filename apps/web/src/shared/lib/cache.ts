@@ -3,6 +3,7 @@ export const CACHE_TAGS = {
   members: (spaceId: string) => `members-${spaceId}`,
   member: (spaceId: string, userId: number) => `member-${spaceId}-${userId}`,
   bulletin: (spaceId: string) => `bulletin-${spaceId}`,
+  grass: (spaceId: string, userId: number) => `grass-${spaceId}-${userId}`,
   schedule: (spaceId: string) => `schedule-${spaceId}`,
   attendance: (spaceId: string, userId?: number) =>
     userId ? `attendance-${spaceId}-${userId}` : `attendance-${spaceId}`,

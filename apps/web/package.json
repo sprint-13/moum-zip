@@ -17,6 +17,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@amplitude/unified": "^1.0.15",
     "@hookform/resolvers": "^5.2.2",
     "@moum-zip/api": "workspace:*",
     "@moum-zip/ui": "workspace:*",
