@@ -3,14 +3,14 @@
 import { useRef } from "react";
 import { type Control, Controller, type UseFormTrigger } from "react-hook-form";
 import type { MoimCreateFormValues } from "@/entities/moim";
-import { trackMoimCreateEvent } from "@/features/moim-create/lib/moim-create-events";
+import { trackMoimCreateStepCompleted } from "@/features/moim-create/lib/moim-create-events";
 import { FieldError } from "@/features/moim-create/ui/moim-form/form-field-error";
 import { FormLabel } from "@/features/moim-create/ui/moim-form/form-label";
 import { DatePicker, TimePicker } from "@/shared/ui";
 
 type AmplitudeStep = "datetime" | "deadline_datetime";
 
-// 모임 일정(date+time) / 마감(deadlineDate+deadlineTime)만 허용 — 유니온으로 고정
+// 모임 일정(date+time) / 마감(deadlineDate+deadlineTime)만 허용
 type FormDateTimeRowProps = {
   control: Control<MoimCreateFormValues>;
   label: string;
@@ -37,7 +37,7 @@ export const FormDateTimeRow = ({
     if (!isValid) return;
 
     stepCompletedEventSent.current = true;
-    trackMoimCreateEvent("moim_create_step_completed", { step: amplitudeStep });
+    trackMoimCreateStepCompleted(amplitudeStep);
   };
 
   return (
