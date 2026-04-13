@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model/post-category-meta";
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { useCreatePost, useUpdatePost } from "../hooks/use-post-mutations";
 
 interface PostWriteFormProps {
@@ -52,7 +53,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
             router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
           },
           onError: (err) => {
-            setError("root", { message: err instanceof Error ? err.message : "게시글 수정에 실패했습니다." });
+            setError("root", { message: getErrorPresentation(err).message });
           },
         },
       );
@@ -65,7 +66,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
         router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
       },
       onError: (err) => {
-        setError("root", { message: err instanceof Error ? err.message : "게시글 작성에 실패했습니다." });
+        setError("root", { message: getErrorPresentation(err).message });
       },
     });
   };

@@ -7,6 +7,7 @@ import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import type { Requester } from "@/features/space/lib/assert-permission";
 import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { useDeleteComment, useUpdateComment } from "../hooks/use-comment-mutations";
 
 interface CommentItemProps {
@@ -34,9 +35,9 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
       { commentId: comment.id, content: editContent.trim() },
       {
         onSuccess: () => setIsEditing(false),
-        onError: () =>
+        onError: (error) =>
           toast({
-            message: "댓글 수정에 실패했습니다.",
+            message: getErrorPresentation(error).message,
             size: "small",
           }),
       },
@@ -46,9 +47,9 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
   function handleDelete() {
     closeModal();
     deleteComment(comment.id, {
-      onError: () =>
+      onError: (error) =>
         toast({
-          message: "댓글 삭제에 실패했습니다.",
+          message: getErrorPresentation(error).message,
           size: "small",
         }),
     });
