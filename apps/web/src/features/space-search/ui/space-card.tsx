@@ -94,7 +94,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
         className={cn(
           cardClassName,
           isRegistClosed &&
-            "bg-card/90 opacity-90 shadow-[0_8px_18px_rgba(17,17,17,0.07)] lg:group-hover/card:translate-y-0 lg:group-hover/card:shadow-[0_10px_24px_rgba(17,17,17,0.09)]",
+            "bg-card/83 opacity-83 shadow-[0_8px_18px_rgba(17,17,17,0.07)] lg:group-hover/card:translate-y-0 lg:group-hover/card:shadow-[0_10px_24px_rgba(17,17,17,0.09)]",
         )}
       >
         <Link
