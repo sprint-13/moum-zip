@@ -44,8 +44,10 @@ async function refreshTokens(refreshToken: string) {
 
     // 5xx(서버 문제) - Sentry로 전송
     if (!res.ok) {
-      const { captureException } = await import("@sentry/nextjs");
-      captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
+      if (res.status >= 500) {
+        const { captureException } = await import("@sentry/nextjs");
+        captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
+      }
       return null;
     }
 
