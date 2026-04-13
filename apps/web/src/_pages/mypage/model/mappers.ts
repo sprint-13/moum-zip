@@ -1,5 +1,5 @@
 import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "@moum-zip/api";
-import type { MoimImageTone, MypageBadge, MypageMoimCard, MypageProfile } from "./types";
+import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
@@ -42,12 +42,11 @@ export const mapProfile = (user: User): MypageProfile => {
 export const mapJoinedMeeting = (
   meeting: JoinedMeeting,
   index: number,
-  currentUserId: number,
+  _currentUserId: number,
   liked = false,
 ): MypageMoimCard => {
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
-  const isOwnedByCurrentUser = meeting.hostId === currentUserId;
 
   return {
     id: String(meeting.id),
@@ -62,7 +61,7 @@ export const mapJoinedMeeting = (
     actionLabel: "스페이스 입장",
     actionVariant: isConfirmed ? "primary" : "secondary",
     primaryBadge: {
-      label: isConfirmed || isOwnedByCurrentUser ? "참여 중" : "승인 대기 중",
+      label: isConfirmed ? "참여 중" : "승인 대기 중",
       variant: isConfirmed ? "scheduled" : "waiting",
     },
     secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
@@ -95,18 +94,11 @@ export const mapCreatedMeeting = (meeting: MeetingWithHost, index: number, liked
 export const mapFavoriteMeeting = (
   favorite: FavoriteWithMeeting,
   index: number,
-  currentUserId: number,
+  _currentUserId: number,
 ): MypageMoimCard => {
   const { meeting } = favorite;
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
-  const isOwnedByCurrentUser = meeting.hostId === currentUserId;
-  const primaryBadge: MypageBadge | undefined = isOwnedByCurrentUser
-    ? {
-        label: "참여 중",
-        variant: isConfirmed ? "scheduled" : "waiting",
-      }
-    : undefined;
 
   return {
     id: String(meeting.id),
@@ -119,8 +111,8 @@ export const mapFavoriteMeeting = (
     liked: true,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
-    actionVariant: isConfirmed ? "primary" : "secondary",
-    primaryBadge,
+    actionVariant: "secondary",
+    primaryBadge: undefined,
     secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };

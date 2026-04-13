@@ -231,7 +231,7 @@ describe("mypage mappers", () => {
     });
   });
 
-  it("호스트인 참여 모임은 개설 확정 전에도 참여 중으로 표시한다", () => {
+  it("호스트인 참여 모임도 개설 확정 전에는 승인 대기 중으로 표시한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
@@ -269,8 +269,57 @@ describe("mypage mappers", () => {
     expect(mapJoinedMeeting(meeting, 1, 1)).toMatchObject({
       actionVariant: "secondary",
       primaryBadge: {
-        label: "참여 중",
+        label: "승인 대기 중",
         variant: "waiting",
+      },
+    });
+  });
+
+  it("개설 확정되면 모집 마감 전이라도 참여 중과 초록 버튼으로 표시한다", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
+
+    const meeting: JoinedMeeting = {
+      id: 28,
+      teamId: "dallaem",
+      name: "조기 확정된 모임",
+      type: "스터디",
+      dateTime: "2026-02-10T14:00:00.000Z",
+      region: "강남",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: "2026-02-09T14:00:00.000Z",
+      participantCount: 5,
+      capacity: 10,
+      image: null,
+      description: null,
+      canceledAt: null,
+      confirmedAt: "2026-02-01T10:00:00.000Z",
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
+      joinedAt: "2026-02-01T00:00:00.000Z",
+      isReviewed: false,
+      isCompleted: false,
+    };
+
+    expect(mapJoinedMeeting(meeting, 0, 3)).toMatchObject({
+      actionVariant: "primary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "scheduled",
+      },
+      secondaryBadge: {
+        label: "개설확정",
+        variant: "confirmed",
+        withIcon: true,
       },
     });
   });
@@ -369,7 +418,7 @@ describe("mypage mappers", () => {
       liked: true,
       location: "성수",
       imageTone: "city",
-      actionVariant: "primary",
+      actionVariant: "secondary",
       secondaryBadge: {
         label: "개설확정",
         variant: "confirmed",
@@ -422,7 +471,7 @@ describe("mypage mappers", () => {
     expect(mapFavoriteMeeting(favorite, 0, 3).secondaryBadge).toBeUndefined();
   });
 
-  it("호스트가 찜한 자신의 모임은 개설 확정 전에도 참여 중으로 표시한다", () => {
+  it("호스트가 찜한 자신의 모임도 기본 찜 카드 형태를 유지한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
@@ -461,12 +510,6 @@ describe("mypage mappers", () => {
       },
     };
 
-    expect(mapFavoriteMeeting(favorite, 0, 1)).toMatchObject({
-      actionVariant: "secondary",
-      primaryBadge: {
-        label: "참여 중",
-        variant: "waiting",
-      },
-    });
+    expect(mapFavoriteMeeting(favorite, 0, 1).primaryBadge).toBeUndefined();
   });
 });
