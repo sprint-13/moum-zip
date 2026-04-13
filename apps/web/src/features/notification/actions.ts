@@ -53,23 +53,35 @@ function hasStatus(error: unknown, status: number) {
   return typeof error === "object" && error !== null && "status" in error && error.status === status;
 }
 
+function unauthorizedActionResult(): NotificationActionResult {
+  return {
+    ok: false,
+    error: "UNAUTHORIZED",
+    message: "로그인이 필요합니다.",
+  };
+}
+
+function unauthorizedGetNotificationsResult(): GetNotificationsActionResult {
+  return {
+    ok: false,
+    error: "UNAUTHORIZED",
+    message: "로그인이 필요합니다.",
+    data: [],
+    nextCursor: null,
+    hasMore: false,
+  };
+}
+
 export async function getNotificationsAction(
   params: GetNotificationsActionParams = {},
 ): Promise<GetNotificationsActionResult> {
-  const session = await isAuth();
-
-  if (session.userId == null) {
-    return {
-      ok: false,
-      error: "UNAUTHORIZED",
-      message: "로그인이 필요합니다.",
-      data: [],
-      nextCursor: null,
-      hasMore: false,
-    };
-  }
-
   try {
+    const session = await isAuth();
+
+    if (session.userId == null) {
+      return unauthorizedGetNotificationsResult();
+    }
+
     const result = await getNotifications(params);
 
     return {
@@ -95,14 +107,11 @@ export async function readNotificationAction({
 }: ReadNotificationActionParams): Promise<NotificationActionResult> {
   try {
     await readNotification({ notificationId });
+
     return { ok: true };
   } catch (error) {
     if (hasStatus(error, 401)) {
-      return {
-        ok: false,
-        error: "UNAUTHORIZED",
-        message: "로그인이 필요합니다.",
-      };
+      return unauthorizedActionResult();
     }
 
     if (hasStatus(error, 404)) {
@@ -124,21 +133,18 @@ export async function readNotificationAction({
 export async function readSpaceNotificationAction({
   notificationId,
 }: ReadSpaceNotificationActionParams): Promise<NotificationActionResult> {
-  const session = await isAuth();
-
-  if (session.userId == null) {
-    return {
-      ok: false,
-      error: "UNAUTHORIZED",
-      message: "로그인이 필요합니다.",
-    };
-  }
-
   try {
+    const session = await isAuth();
+
+    if (session.userId == null) {
+      return unauthorizedActionResult();
+    }
+
     await readSpaceNotification({
       userId: session.userId,
       notificationId,
     });
+
     return { ok: true };
   } catch {
     return {
@@ -152,14 +158,11 @@ export async function readSpaceNotificationAction({
 export async function readAllNotificationsAction(): Promise<NotificationActionResult> {
   try {
     await readAllNotifications();
+
     return { ok: true };
   } catch (error) {
     if (hasStatus(error, 401)) {
-      return {
-        ok: false,
-        error: "UNAUTHORIZED",
-        message: "로그인이 필요합니다.",
-      };
+      return unauthorizedActionResult();
     }
 
     return {
@@ -171,18 +174,15 @@ export async function readAllNotificationsAction(): Promise<NotificationActionRe
 }
 
 export async function readAllSpaceNotificationsAction(): Promise<NotificationActionResult> {
-  const session = await isAuth();
-
-  if (session.userId == null) {
-    return {
-      ok: false,
-      error: "UNAUTHORIZED",
-      message: "로그인이 필요합니다.",
-    };
-  }
-
   try {
+    const session = await isAuth();
+
+    if (session.userId == null) {
+      return unauthorizedActionResult();
+    }
+
     await readAllSpaceNotifications({ userId: session.userId });
+
     return { ok: true };
   } catch {
     return {
@@ -196,14 +196,11 @@ export async function readAllSpaceNotificationsAction(): Promise<NotificationAct
 export async function deleteAllNotificationsAction(): Promise<NotificationActionResult> {
   try {
     await deleteAllNotifications();
+
     return { ok: true };
   } catch (error) {
     if (hasStatus(error, 401)) {
-      return {
-        ok: false,
-        error: "UNAUTHORIZED",
-        message: "로그인이 필요합니다.",
-      };
+      return unauthorizedActionResult();
     }
 
     return {
@@ -215,18 +212,15 @@ export async function deleteAllNotificationsAction(): Promise<NotificationAction
 }
 
 export async function deleteAllSpaceNotificationsAction(): Promise<NotificationActionResult> {
-  const session = await isAuth();
-
-  if (session.userId == null) {
-    return {
-      ok: false,
-      error: "UNAUTHORIZED",
-      message: "로그인이 필요합니다.",
-    };
-  }
-
   try {
+    const session = await isAuth();
+
+    if (session.userId == null) {
+      return unauthorizedActionResult();
+    }
+
     await deleteAllSpaceNotifications({ userId: session.userId });
+
     return { ok: true };
   } catch {
     return {
