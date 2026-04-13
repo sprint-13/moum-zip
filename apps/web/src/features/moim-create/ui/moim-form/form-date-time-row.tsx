@@ -26,18 +26,26 @@ export const FormDateTimeRow = ({
   amplitudeStep,
   trigger,
 }: FormDateTimeRowProps) => {
-  // 같은 행에서 step_completed 이벤트는 최초 1회만 전송
-  // onChange가 반복되므로, 검증 통과 시 최초 1회만 전송
+  // date+time 유효성 통과 시 step_completed를 최초 1회만 전송
+  // 연속 입력으로 trigger가 중복 실행되는 경우도 방지
   const stepCompletedEventSent = useRef(false);
+  const stepValidationRunning = useRef(false);
 
   const trackStepOnceIfValid = async () => {
-    if (stepCompletedEventSent.current) return;
+    if (stepCompletedEventSent.current || stepValidationRunning.current) return;
 
-    const isValid = await trigger([dateName, timeName]);
-    if (!isValid) return;
+    stepValidationRunning.current = true;
+    try {
+      const isValid = await trigger([dateName, timeName]);
 
-    stepCompletedEventSent.current = true;
-    trackMoimCreateStepCompleted(amplitudeStep);
+      if (stepCompletedEventSent.current) return;
+      if (!isValid) return;
+
+      stepCompletedEventSent.current = true;
+      trackMoimCreateStepCompleted(amplitudeStep);
+    } finally {
+      stepValidationRunning.current = false;
+    }
   };
 
   return (
