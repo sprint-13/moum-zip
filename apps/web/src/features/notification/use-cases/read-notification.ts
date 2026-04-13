@@ -12,6 +12,9 @@ export async function readNotification({ notificationId }: ReadNotificationParam
   const authedApi = await getAuthApi();
 
   const numericId = typeof notificationId === "string" ? Number(notificationId) : notificationId;
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    throw new Error("Invalid notificationId");
+  }
 
   return authedApi.notifications.read(numericId);
 }

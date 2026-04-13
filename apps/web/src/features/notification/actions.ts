@@ -23,13 +23,71 @@ type ReadSpaceNotificationActionParams = {
   notificationId: string | number;
 };
 
-type NotificationActionResult = {
-  ok: boolean;
-  message?: string;
-};
+type NotificationActionError = "UNAUTHORIZED" | "NOT_FOUND" | "UNKNOWN";
 
-export async function getNotificationsAction(params: GetNotificationsActionParams = {}) {
-  return getNotifications(params);
+export type NotificationActionResult =
+  | { ok: true }
+  | {
+      ok: false;
+      error: NotificationActionError;
+      message: string;
+    };
+
+type GetNotificationsActionResult =
+  | {
+      ok: true;
+      data: Awaited<ReturnType<typeof getNotifications>>["data"];
+      nextCursor: Awaited<ReturnType<typeof getNotifications>>["nextCursor"];
+      hasMore: Awaited<ReturnType<typeof getNotifications>>["hasMore"];
+    }
+  | {
+      ok: false;
+      error: "UNAUTHORIZED" | "UNKNOWN";
+      message: string;
+      data: [];
+      nextCursor: null;
+      hasMore: false;
+    };
+
+function hasStatus(error: unknown, status: number) {
+  return typeof error === "object" && error !== null && "status" in error && error.status === status;
+}
+
+export async function getNotificationsAction(
+  params: GetNotificationsActionParams = {},
+): Promise<GetNotificationsActionResult> {
+  const session = await isAuth();
+
+  if (session.userId == null) {
+    return {
+      ok: false,
+      error: "UNAUTHORIZED",
+      message: "로그인이 필요합니다.",
+      data: [],
+      nextCursor: null,
+      hasMore: false,
+    };
+  }
+
+  try {
+    const result = await getNotifications(params);
+
+    return {
+      ok: true,
+      data: result.data,
+      nextCursor: result.nextCursor,
+      hasMore: result.hasMore,
+    };
+  } catch {
+    return {
+      ok: false,
+      error: "UNKNOWN",
+      message: "알림을 불러오지 못했습니다.",
+      data: [],
+      nextCursor: null,
+      hasMore: false,
+    };
+  }
 }
 
 export async function readNotificationAction({
@@ -37,13 +95,27 @@ export async function readNotificationAction({
 }: ReadNotificationActionParams): Promise<NotificationActionResult> {
   try {
     await readNotification({ notificationId });
-
     return { ok: true };
   } catch (error) {
-    console.error("readNotificationAction error:", error);
+    if (hasStatus(error, 401)) {
+      return {
+        ok: false,
+        error: "UNAUTHORIZED",
+        message: "로그인이 필요합니다.",
+      };
+    }
+
+    if (hasStatus(error, 404)) {
+      return {
+        ok: false,
+        error: "NOT_FOUND",
+        message: "알림을 찾을 수 없습니다.",
+      };
+    }
 
     return {
       ok: false,
+      error: "UNKNOWN",
       message: "알림 읽음 처리에 실패했습니다.",
     };
   }
@@ -52,15 +124,23 @@ export async function readNotificationAction({
 export async function readSpaceNotificationAction({
   notificationId,
 }: ReadSpaceNotificationActionParams): Promise<NotificationActionResult> {
-  try {
-    await readSpaceNotification({ notificationId });
+  const session = await isAuth();
 
-    return { ok: true };
-  } catch (error) {
-    console.error("readSpaceNotificationAction error:", error);
-
+  if (session.userId == null) {
     return {
       ok: false,
+      error: "UNAUTHORIZED",
+      message: "로그인이 필요합니다.",
+    };
+  }
+
+  try {
+    await readSpaceNotification({ notificationId });
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      error: "UNKNOWN",
       message: "스페이스 알림 읽음 처리에 실패했습니다.",
     };
   }
@@ -69,37 +149,42 @@ export async function readSpaceNotificationAction({
 export async function readAllNotificationsAction(): Promise<NotificationActionResult> {
   try {
     await readAllNotifications();
-
     return { ok: true };
   } catch (error) {
-    console.error("readAllNotificationsAction error:", error);
+    if (hasStatus(error, 401)) {
+      return {
+        ok: false,
+        error: "UNAUTHORIZED",
+        message: "로그인이 필요합니다.",
+      };
+    }
 
     return {
       ok: false,
+      error: "UNKNOWN",
       message: "전체 알림 읽음 처리에 실패했습니다.",
     };
   }
 }
 
 export async function readAllSpaceNotificationsAction(): Promise<NotificationActionResult> {
-  try {
-    const session = await isAuth();
+  const session = await isAuth();
 
-    if (session.userId == null) {
-      return {
-        ok: false,
-        message: "로그인이 필요합니다.",
-      };
-    }
-
-    await readAllSpaceNotifications({ userId: session.userId });
-
-    return { ok: true };
-  } catch (error) {
-    console.error("readAllSpaceNotificationsAction error:", error);
-
+  if (session.userId == null) {
     return {
       ok: false,
+      error: "UNAUTHORIZED",
+      message: "로그인이 필요합니다.",
+    };
+  }
+
+  try {
+    await readAllSpaceNotifications({ userId: session.userId });
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      error: "UNKNOWN",
       message: "스페이스 전체 알림 읽음 처리에 실패했습니다.",
     };
   }
@@ -108,37 +193,42 @@ export async function readAllSpaceNotificationsAction(): Promise<NotificationAct
 export async function deleteAllNotificationsAction(): Promise<NotificationActionResult> {
   try {
     await deleteAllNotifications();
-
     return { ok: true };
   } catch (error) {
-    console.error("deleteAllNotificationsAction error:", error);
+    if (hasStatus(error, 401)) {
+      return {
+        ok: false,
+        error: "UNAUTHORIZED",
+        message: "로그인이 필요합니다.",
+      };
+    }
 
     return {
       ok: false,
+      error: "UNKNOWN",
       message: "전체 알림 삭제에 실패했습니다.",
     };
   }
 }
 
 export async function deleteAllSpaceNotificationsAction(): Promise<NotificationActionResult> {
-  try {
-    const session = await isAuth();
+  const session = await isAuth();
 
-    if (session.userId == null) {
-      return {
-        ok: false,
-        message: "로그인이 필요합니다.",
-      };
-    }
-
-    await deleteAllSpaceNotifications({ userId: session.userId });
-
-    return { ok: true };
-  } catch (error) {
-    console.error("deleteAllSpaceNotificationsAction error:", error);
-
+  if (session.userId == null) {
     return {
       ok: false,
+      error: "UNAUTHORIZED",
+      message: "로그인이 필요합니다.",
+    };
+  }
+
+  try {
+    await deleteAllSpaceNotifications({ userId: session.userId });
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      error: "UNKNOWN",
       message: "스페이스 전체 알림 삭제에 실패했습니다.",
     };
   }

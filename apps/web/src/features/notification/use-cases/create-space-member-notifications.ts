@@ -21,7 +21,7 @@ export async function createSpaceMemberNotifications({
 
   const targetUserIds = members.map((member) => member.userId).filter((userId) => userId !== actorId);
 
-  await Promise.all(
+  await Promise.allSettled(
     targetUserIds.map((userId) =>
       createNotification({
         teamId: spaceId,

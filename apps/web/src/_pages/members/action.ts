@@ -16,16 +16,20 @@ export async function addSpaceMemberAction(slug: string, pendingUser: PendingUse
 
   await addSpaceMemberUseCase(space.spaceId, pendingUser.userId, pendingUser.name, pendingUser.image);
 
-  await createNotification({
-    teamId: slug,
-    userId: pendingUser.userId,
-    type: "SPACE_MEMBER_ACCEPTED",
-    message: `${space.name} 스페이스 가입이 승인되었어요.`,
-    data: {
-      spaceSlug: slug,
-      image: pendingUser.image,
-    },
-  });
+  try {
+    await createNotification({
+      teamId: slug,
+      userId: pendingUser.userId,
+      type: "SPACE_MEMBER_ACCEPTED",
+      message: `${space.name} 스페이스 가입이 승인되었어요.`,
+      data: {
+        spaceSlug: slug,
+        image: pendingUser.image,
+      },
+    });
+  } catch {
+    // 알림 생성 실패가 멤버 승인 실패로 전파되지 않도록 분리
+  }
 
   updateTag(CACHE_TAGS.members(space.spaceId));
 }

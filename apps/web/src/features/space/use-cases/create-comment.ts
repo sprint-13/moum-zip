@@ -35,19 +35,23 @@ export async function createCommentUseCase(input: CreateCommentInput): Promise<{
   const postAuthorId = post.author.id;
 
   if (postAuthorId && postAuthorId !== input.authorId) {
-    await createNotification({
-      teamId: input.spaceId,
-      userId: postAuthorId,
-      type: "COMMENT",
-      message: "내 게시글에 새 댓글이 달렸어요.",
-      data: {
-        postId: input.postId,
-        postTitle: post.post.title,
-        commentId: comment.id,
-        commentAuthorName: input.authorName,
-        commentContent: trimmedContent,
-      },
-    });
+    try {
+      await createNotification({
+        teamId: input.spaceId,
+        userId: postAuthorId,
+        type: "COMMENT",
+        message: "내 게시글에 새 댓글이 달렸어요.",
+        data: {
+          postId: input.postId,
+          postTitle: post.post.title,
+          commentId: comment.id,
+          commentAuthorName: input.authorName,
+          commentContent: trimmedContent,
+        },
+      });
+    } catch {
+      // 알림 생성 실패가 댓글 작성 실패로 전파되지 않도록 분리
+    }
   }
 
   return { commentId: comment.id };

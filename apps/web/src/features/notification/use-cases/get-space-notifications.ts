@@ -7,6 +7,7 @@ type GetSpaceNotificationsParams = {
   userId: number;
   cursor?: string;
   size?: number;
+  isRead?: boolean;
 };
 
 type Deps = {
@@ -18,11 +19,27 @@ type InternalNotificationCursor = {
   id: string;
 };
 
+const VALID_NOTIFICATION_TYPES = new Set<NotificationItem["type"]>([
+  "MEETING_CONFIRMED",
+  "MEETING_CANCELED",
+  "MEETING_DELETED",
+  "SPACE_MEMBER_ACCEPTED",
+  "SPACE_MEMBER_REJECTED",
+  "SPACE_POST_CREATED",
+  "SPACE_SCHEDULE_CREATED",
+  "COMMENT",
+]);
+
 export async function getSpaceNotifications(
-  { userId, cursor, size = 10 }: GetSpaceNotificationsParams,
+  { userId, cursor, size = 10, isRead }: GetSpaceNotificationsParams,
   { database = db }: Deps = {},
 ): Promise<NotificationsResult> {
   const parsedCursor = parseCursor(cursor);
+
+  const baseConditions = [
+    eq(notifications.userId, userId),
+    ...(typeof isRead === "boolean" ? [eq(notifications.isRead, isRead)] : []),
+  ];
 
   const rows = await database
     .select()
@@ -30,13 +47,13 @@ export async function getSpaceNotifications(
     .where(
       parsedCursor
         ? and(
-            eq(notifications.userId, userId),
+            ...baseConditions,
             or(
               lt(notifications.createdAt, new Date(parsedCursor.createdAt)),
               and(eq(notifications.createdAt, new Date(parsedCursor.createdAt)), lt(notifications.id, parsedCursor.id)),
             ),
           )
-        : eq(notifications.userId, userId),
+        : and(...baseConditions),
     )
     .orderBy(desc(notifications.createdAt), desc(notifications.id))
     .limit(size + 1);
@@ -49,7 +66,7 @@ export async function getSpaceNotifications(
       id: row.id,
       teamId: row.teamId,
       userId: row.userId,
-      type: row.type as NotificationItem["type"],
+      type: normalizeNotificationType(row.type),
       message: row.message,
       data: normalizeNotificationData(row.data),
       isRead: row.isRead,
@@ -71,6 +88,14 @@ export async function getSpaceNotifications(
         : null,
     hasMore,
   };
+}
+
+function normalizeNotificationType(type: string): NotificationItem["type"] {
+  if (VALID_NOTIFICATION_TYPES.has(type as NotificationItem["type"])) {
+    return type as NotificationItem["type"];
+  }
+
+  return "COMMENT";
 }
 
 function normalizeNotificationData(data: unknown): NotificationItem["data"] {

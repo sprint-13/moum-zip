@@ -26,7 +26,7 @@ export const SidebarHeader = ({ icon, title, description, notifications, nextCur
   if (!open) {
     return (
       <div className="hidden flex-col items-center gap-2 py-1 md:flex">
-        <button type="button" onClick={() => setOpen(true)} className="py-1">
+        <button type="button" onClick={() => setOpen(true)} className="py-1" aria-label="사이드바 열기">
           {iconEl}
         </button>
 

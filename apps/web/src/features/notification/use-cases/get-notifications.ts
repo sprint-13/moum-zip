@@ -53,14 +53,10 @@ export async function getNotifications(
     userId: session.userId,
     cursor: parsedCursor?.internalCursor ?? undefined,
     size,
+    isRead,
   });
 
-  const filteredInternalData =
-    typeof isRead === "boolean"
-      ? internalResult.data.filter((notification) => notification.isRead === isRead)
-      : internalResult.data;
-
-  const mergedData = [...externalResult.data, ...filteredInternalData]
+  const mergedData = [...externalResult.data, ...internalResult.data]
     .sort((a, b) => getCreatedAtTime(b) - getCreatedAtTime(a))
     .slice(0, size);
 
@@ -81,6 +77,7 @@ export async function getNotifications(
 }
 
 function getCreatedAtTime(notification: NotificationItem) {
+  // createdAt이 없는 알림은 정렬 우선순위를 가장 낮게 둡니다.
   if (!notification.createdAt) {
     return 0;
   }

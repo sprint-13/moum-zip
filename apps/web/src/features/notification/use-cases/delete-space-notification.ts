@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { notifications } from "@/shared/db/scheme";
 
 type DeleteSpaceNotificationParams = {
   notificationId: string | number;
+  userId: number;
 };
 
 type Deps = {
@@ -11,8 +12,10 @@ type Deps = {
 };
 
 export async function deleteSpaceNotification(
-  { notificationId }: DeleteSpaceNotificationParams,
+  { notificationId, userId }: DeleteSpaceNotificationParams,
   { database = db }: Deps = {},
 ) {
-  await database.delete(notifications).where(eq(notifications.id, String(notificationId)));
+  await database
+    .delete(notifications)
+    .where(and(eq(notifications.id, String(notificationId)), eq(notifications.userId, userId)));
 }

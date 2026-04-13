@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { getNotificationHref } from "@/entities/notification/model/constants";
 import type { NotificationItem } from "@/entities/notification/model/types";
+import type { NotificationActionResult } from "@/features/notification/actions";
 import {
   deleteAllNotificationsAction,
   deleteAllSpaceNotificationsAction,
@@ -23,6 +24,22 @@ interface NotificationMenuProps {
   hasMore: boolean;
   desktopSide?: "bottom" | "right";
   mobileVariant?: "sheet" | "dropdown";
+}
+
+function getActionErrorMessage(
+  externalResult: NotificationActionResult,
+  internalResult: NotificationActionResult,
+  fallbackMessage: string,
+) {
+  if (!externalResult.ok) {
+    return externalResult.message;
+  }
+
+  if (!internalResult.ok) {
+    return internalResult.message;
+  }
+
+  return fallbackMessage;
 }
 
 export function NotificationMenu({
@@ -61,6 +78,9 @@ export function NotificationMenu({
 
       if (modeChanged && open) {
         setOpen(false);
+
+        // Dropdown <-> Sheet / 방향 전환 시 Radix 레이어가 이전 DOM 상태를 참조하는 경우가 있어
+        // 한 프레임 닫고 다음 프레임에 다시 열어 레이어 위치를 안정적으로 재계산합니다.
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             setOpen(true);
@@ -99,9 +119,13 @@ export function NotificationMenu({
         size: 10,
       });
 
+      if (!result.ok) {
+        toast({ message: result.message });
+        return;
+      }
+
       setLocalNotifications((prev) => {
         const existingKeys = new Set(prev.map((item) => `${item.source}-${item.id}`));
-
         const appended = result.data.filter((item) => !existingKeys.has(`${item.source}-${item.id}`));
 
         return [...prev, ...appended];
@@ -127,8 +151,17 @@ export function NotificationMenu({
 
     startTransition(async () => {
       try {
-        await readAllNotificationsAction();
-        await readAllSpaceNotificationsAction();
+        const [externalResult, internalResult] = await Promise.all([
+          readAllNotificationsAction(),
+          readAllSpaceNotificationsAction(),
+        ]);
+
+        if (!externalResult.ok || !internalResult.ok) {
+          toast({
+            message: getActionErrorMessage(externalResult, internalResult, "알림 읽기 처리에 실패했어요"),
+          });
+          setLocalNotifications(previous);
+        }
       } catch {
         toast({ message: "알림 읽기 처리에 실패했어요" });
         setLocalNotifications(previous);
@@ -166,8 +199,19 @@ export function NotificationMenu({
 
     startTransition(async () => {
       try {
-        await deleteAllNotificationsAction();
-        await deleteAllSpaceNotificationsAction();
+        const [externalResult, internalResult] = await Promise.all([
+          deleteAllNotificationsAction(),
+          deleteAllSpaceNotificationsAction(),
+        ]);
+
+        if (!externalResult.ok || !internalResult.ok) {
+          toast({
+            message: getActionErrorMessage(externalResult, internalResult, "알림 삭제에 실패했어요"),
+          });
+          setLocalNotifications(previous);
+          setNextCursor(initialNextCursor);
+          setHasMore(initialHasMore);
+        }
       } catch {
         toast({ message: "알림 삭제에 실패했어요" });
         setLocalNotifications(previous);
@@ -197,15 +241,23 @@ export function NotificationMenu({
       try {
         if (!notification.isRead) {
           if (notification.source === "external" && typeof notification.id === "number") {
-            await readNotificationAction({
+            const result = await readNotificationAction({
               notificationId: notification.id,
             });
+
+            if (!result.ok) {
+              throw new Error(result.message);
+            }
           }
 
           if (notification.source === "internal") {
-            await readSpaceNotificationAction({
+            const result = await readSpaceNotificationAction({
               notificationId: notification.id,
             });
+
+            if (!result.ok) {
+              throw new Error(result.message);
+            }
           }
 
           router.refresh();
@@ -217,8 +269,10 @@ export function NotificationMenu({
         if (href) {
           router.push(href);
         }
-      } catch {
-        toast({ message: "알림 처리 중 오류가 발생했어요" });
+      } catch (error) {
+        toast({
+          message: error instanceof Error ? error.message : "알림 처리 중 오류가 발생했어요",
+        });
 
         if (!notification.isRead) {
           setLocalNotifications(previous);

@@ -37,7 +37,7 @@ export const SpaceSidebar = async ({ children, space, membership }: SpaceSidebar
     hasMore,
   } = await getNotifications({
     size: 10,
-  });
+  }).catch(() => ({ data: [], nextCursor: null, hasMore: false }));
 
   return (
     <SidebarProvider>

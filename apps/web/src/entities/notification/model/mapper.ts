@@ -20,7 +20,7 @@ export function mapNotification(raw: RawNotification): NotificationItem {
       commentId: raw.data?.commentId != null ? String(raw.data.commentId) : undefined,
       commentAuthorName: typeof rawData?.commentAuthorName === "string" ? rawData.commentAuthorName : undefined,
       commentContent: typeof rawData?.commentContent === "string" ? rawData.commentContent : undefined,
-      image: raw.data?.image ?? null,
+      image: typeof rawData?.image === "string" ? rawData.image : null,
     },
     isRead: raw.isRead,
     createdAt: raw.createdAt ?? null,

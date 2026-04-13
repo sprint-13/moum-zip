@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { notifications } from "@/shared/db/scheme";
 
 type ReadSpaceNotificationParams = {
   notificationId: string | number;
+  userId: number;
 };
 
 type Deps = {
@@ -11,13 +12,13 @@ type Deps = {
 };
 
 export async function readSpaceNotification(
-  { notificationId }: ReadSpaceNotificationParams,
+  { notificationId, userId }: ReadSpaceNotificationParams,
   { database = db }: Deps = {},
 ) {
   await database
     .update(notifications)
     .set({ isRead: true })
-    .where(eq(notifications.id, String(notificationId)));
+    .where(and(eq(notifications.id, String(notificationId)), eq(notifications.userId, userId)));
 
   return { success: true };
 }
