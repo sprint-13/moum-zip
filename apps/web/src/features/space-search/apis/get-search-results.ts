@@ -1,4 +1,5 @@
 import type { SearchResultsResponse } from "@/entities/gathering";
+import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 
 import type { SearchRequestQueryState } from "../model/types";
 
@@ -45,11 +46,9 @@ export const getSearchResults = async ({
   const requestUrl = queryString ? `/api/search?${queryString}` : "/api/search";
   const response = await fetch(requestUrl);
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-
-    throw new Error(`FAILED_TO_GET_SEARCH_RESULTS: ${response.status} ${errorBody}`);
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "검색 결과를 불러오지 못했습니다.",
+  });
 
   return response.json();
 };

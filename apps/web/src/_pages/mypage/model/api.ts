@@ -1,4 +1,5 @@
 import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost } from "@moum-zip/api";
+import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 
 const FAVORITES_PAGE_SIZE = 100;
 const MAX_FAVORITES_PAGE_COUNT = 20;
@@ -57,9 +58,9 @@ export const fetchMyMeetings = async <TType extends MyMeetingsType>(
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/meetings?${searchParams.toString()}`);
 
-  if (!response.ok) {
-    throw new Error("MY_MEETINGS_REQUEST_FAILED");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "내 모임 목록을 불러오지 못했습니다.",
+  });
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data: MyMeetingsResponse<MeetingByType<TType>> = await response.json();
@@ -70,9 +71,9 @@ export const fetchMyFavorites = async (query: MyFavoritesQuery = {}): Promise<Fa
   const searchParams = toSearchParams(query);
   const response = await fetch(`/api/mypage/favorites?${searchParams.toString()}`);
 
-  if (!response.ok) {
-    throw new Error("MY_FAVORITES_REQUEST_FAILED");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "즐겨찾기 목록을 불러오지 못했습니다.",
+  });
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data: FavoriteList = await response.json();
@@ -92,7 +93,7 @@ export const fetchAllMyFavorites = async (
 
     // 비정상적인 hasMore/cursor 응답으로 인한 무한 루프를 방지합니다.
     if (pageCount > MAX_FAVORITES_PAGE_COUNT) {
-      throw new Error("MY_FAVORITES_PAGINATION_LIMIT_EXCEEDED");
+      throw new Error("즐겨찾기 목록 페이지네이션 한도를 초과했습니다.");
     }
 
     const response = await fetchMyFavorites({
@@ -122,9 +123,9 @@ export const createFavorite = async (meetingId: number): Promise<FavoriteWithMee
     body: JSON.stringify({ meetingId }),
   });
 
-  if (!response.ok) {
-    throw new Error("CREATE_FAVORITE_REQUEST_FAILED");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "즐겨찾기 추가에 실패했습니다.",
+  });
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data: FavoriteWithMeeting = await response.json();
@@ -140,9 +141,9 @@ export const deleteFavorite = async (meetingId: number): Promise<{ ok: true }> =
     body: JSON.stringify({ meetingId }),
   });
 
-  if (!response.ok) {
-    throw new Error("DELETE_FAVORITE_REQUEST_FAILED");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "즐겨찾기 해제에 실패했습니다.",
+  });
 
   // JSON 파싱 에러가 나면 이 함수 컨텍스트에서 바로 확인할 수 있게 await로 처리합니다.
   const data: { ok: true } = await response.json();
