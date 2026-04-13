@@ -30,7 +30,7 @@ interface GetSearchResultsDeps {
 type SearchMeetingWithUserState = MeetingWithHost & {
   isCompleted?: boolean;
   isFavorited?: boolean | null;
-  isJoined?: boolean;
+  isJoined?: boolean | null;
 };
 
 const createSearchRequestParams = ({
@@ -68,6 +68,7 @@ const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResu
     description: meeting.description,
     id: String(meeting.id),
     image: meeting.image,
+    isJoined: meeting.isJoined === true ? true : undefined,
     isLiked: meeting.isFavorited ?? false,
     location: normalizeMeetingRegion(meeting.region),
     participantCount: meeting.participantCount,
@@ -104,6 +105,20 @@ const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAut
   console.warn("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", { meetingIds });
 };
 
+const warnMissingJoinedField = (meetings: SearchMeetingWithUserState[], isAuthenticatedRequest: boolean) => {
+  if (!isAuthenticatedRequest) {
+    return;
+  }
+
+  const meetingIds = meetings.filter((meeting) => meeting.isJoined == null).map((meeting) => meeting.id);
+
+  if (meetingIds.length === 0) {
+    return;
+  }
+
+  console.warn("[search] 인증된 스페이스 응답에 isJoined 값이 없습니다", { meetingIds });
+};
+
 export const getSearchResults = async (
   {
     categoryId = "all",
@@ -131,6 +146,7 @@ export const getSearchResults = async (
   const meetings: SearchMeetingWithUserState[] = searchResults.data;
 
   warnMissingFavoritedField(meetings, isAuthenticatedRequest);
+  warnMissingJoinedField(meetings, isAuthenticatedRequest);
 
   return {
     hasMore: searchResults.hasMore,
