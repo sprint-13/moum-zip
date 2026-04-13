@@ -1,5 +1,5 @@
 import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "@moum-zip/api";
-import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
+import type { MoimImageTone, MypageBadge, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
 
@@ -101,7 +101,7 @@ export const mapFavoriteMeeting = (
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
   const isOwnedByCurrentUser = meeting.hostId === currentUserId;
-  const primaryBadge = isOwnedByCurrentUser
+  const primaryBadge: MypageBadge | undefined = isOwnedByCurrentUser
     ? {
         label: "참여 중",
         variant: isConfirmed ? "scheduled" : "waiting",
