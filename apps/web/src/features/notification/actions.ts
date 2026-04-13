@@ -135,7 +135,10 @@ export async function readSpaceNotificationAction({
   }
 
   try {
-    await readSpaceNotification({ notificationId });
+    await readSpaceNotification({
+      userId: session.userId,
+      notificationId,
+    });
     return { ok: true };
   } catch {
     return {
