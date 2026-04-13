@@ -12,6 +12,7 @@ import {
   applyFavoriteState,
   buildFavoriteMeetingIds,
   buildLikedMeetings,
+  mergeEnterableLikedMeetings,
   useToggleFavorite,
 } from "@/_pages/mypage/use-cases";
 
@@ -90,8 +91,24 @@ export const useMypageViewState = ({
 
   const likedMeetings = useMemo(
     () =>
-      buildLikedMeetings(enableRemoteFetch ? favoriteList : undefined, moims.liked, enableRemoteFetch, profile.userId),
-    [enableRemoteFetch, favoriteList, moims.liked, profile.userId],
+      mergeEnterableLikedMeetings(
+        buildLikedMeetings(
+          enableRemoteFetch ? favoriteList : undefined,
+          moims.liked,
+          enableRemoteFetch,
+          profile.userId,
+        ),
+        [...joinedMeetings, ...ongoingCreatedMeetings, ...endedCreatedMeetings],
+      ),
+    [
+      enableRemoteFetch,
+      endedCreatedMeetings,
+      favoriteList,
+      joinedMeetings,
+      moims.liked,
+      ongoingCreatedMeetings,
+      profile.userId,
+    ],
   );
 
   const enterableMeetingIds = useMemo(() => {
@@ -139,6 +156,7 @@ export const useMypageViewState = ({
     favoriteMutation.mutate({
       meetingId: Number(meetingId),
       nextLiked: !meeting.liked,
+      currentUserId: profile.userId,
     });
   };
 

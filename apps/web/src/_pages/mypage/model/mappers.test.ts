@@ -325,7 +325,7 @@ describe("mypage mappers", () => {
     });
   });
 
-  it("찜한 모임 응답을 찜 카드 형태로 변환한다", () => {
+  it("찜만 한 모임은 참여 상태 없이 찜 카드 형태로 변환한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
@@ -370,16 +370,56 @@ describe("mypage mappers", () => {
       location: "성수",
       imageTone: "city",
       actionVariant: "primary",
-      primaryBadge: {
-        label: "참여 중",
-        variant: "scheduled",
-      },
       secondaryBadge: {
         label: "개설확정",
         variant: "confirmed",
         withIcon: true,
       },
     });
+    expect(mapFavoriteMeeting(favorite, 3, 3).primaryBadge).toBeUndefined();
+  });
+
+  it("개설 확정 전 찜만 한 모임은 승인 대기 중 상태를 노출하지 않는다", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
+
+    const favorite: FavoriteWithMeeting = {
+      id: 3,
+      teamId: "dallaem",
+      meetingId: 20,
+      userId: 3,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      meeting: {
+        id: 20,
+        teamId: "dallaem",
+        name: "찜만 한 개설 대기 모임",
+        type: "달램핏",
+        region: "성수",
+        address: null,
+        latitude: null,
+        longitude: null,
+        dateTime: "2026-02-10T14:00:00.000Z",
+        registrationEnd: "2026-02-09T14:00:00.000Z",
+        capacity: 10,
+        participantCount: 5,
+        image: null,
+        description: null,
+        canceledAt: null,
+        confirmedAt: null,
+        hostId: 1,
+        createdBy: 1,
+        createdAt: "2026-02-01T00:00:00.000Z",
+        updatedAt: "2026-02-01T00:00:00.000Z",
+        host: {
+          id: 1,
+          name: "호스트",
+          image: null,
+        },
+      },
+    };
+
+    expect(mapFavoriteMeeting(favorite, 0, 3).primaryBadge).toBeUndefined();
+    expect(mapFavoriteMeeting(favorite, 0, 3).secondaryBadge).toBeUndefined();
   });
 
   it("호스트가 찜한 자신의 모임은 개설 확정 전에도 참여 중으로 표시한다", () => {

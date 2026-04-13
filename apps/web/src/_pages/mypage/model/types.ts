@@ -29,6 +29,6 @@ export interface MypageMoimCard {
   imageTone: MoimImageTone;
   actionLabel: string;
   actionVariant: MypageActionVariant;
-  primaryBadge: MypageBadge;
+  primaryBadge?: MypageBadge;
   secondaryBadge?: MypageBadge;
 }

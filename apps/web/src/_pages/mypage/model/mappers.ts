@@ -101,6 +101,12 @@ export const mapFavoriteMeeting = (
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
   const isOwnedByCurrentUser = meeting.hostId === currentUserId;
+  const primaryBadge = isOwnedByCurrentUser
+    ? {
+        label: "참여 중",
+        variant: isConfirmed ? "scheduled" : "waiting",
+      }
+    : undefined;
 
   return {
     id: String(meeting.id),
@@ -114,10 +120,7 @@ export const mapFavoriteMeeting = (
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
     actionVariant: isConfirmed ? "primary" : "secondary",
-    primaryBadge: {
-      label: isConfirmed || isOwnedByCurrentUser ? "참여 중" : "승인 대기 중",
-      variant: isConfirmed ? "scheduled" : "waiting",
-    },
+    primaryBadge,
     secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };

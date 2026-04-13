@@ -32,6 +32,26 @@ export const buildLikedMeetings = (
   return favoriteList.data.map((favorite, index) => mapFavoriteMeeting(favorite, index, currentUserId));
 };
 
+export const mergeEnterableLikedMeetings = (
+  likedMeetings: MypageMoimCard[],
+  enterableMeetings: MypageMoimCard[],
+): MypageMoimCard[] => {
+  const enterableMeetingMap = new Map(enterableMeetings.map((meeting) => [meeting.id, meeting]));
+
+  return likedMeetings.map((meeting) => {
+    const enterableMeeting = enterableMeetingMap.get(meeting.id);
+
+    if (!enterableMeeting) {
+      return meeting;
+    }
+
+    return {
+      ...enterableMeeting,
+      liked: true,
+    };
+  });
+};
+
 export const updateLikedState = (moims: MypageMoimCard[] | undefined, meetingId: string, nextLiked: boolean) => {
   if (!moims) {
     return moims;

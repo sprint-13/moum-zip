@@ -110,15 +110,17 @@ export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = 
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 md:p-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge>
-          {moim.secondaryBadge ? (
-            <Badge variant={moim.secondaryBadge.variant}>
-              {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
-              {moim.secondaryBadge.label}
-            </Badge>
-          ) : null}
-        </div>
+        {moim.primaryBadge || moim.secondaryBadge ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {moim.primaryBadge ? <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge> : null}
+            {moim.secondaryBadge ? (
+              <Badge variant={moim.secondaryBadge.variant}>
+                {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
+                {moim.secondaryBadge.label}
+              </Badge>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="space-y-5">
           <h3 className="font-bold text-2xl text-foreground leading-tight">{moim.title}</h3>
