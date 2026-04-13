@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell } from "@moum-zip/ui/icons";
-import { Dropdown, Sheet } from "@ui/components";
+import { Dropdown, Sheet, toast } from "@ui/components";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { getNotificationHref } from "@/entities/notification/model/constants";
@@ -109,8 +109,8 @@ export function NotificationMenu({
 
       setNextCursor(result.nextCursor);
       setHasMore(result.hasMore);
-    } catch (error) {
-      console.error("추가 알림 로딩 실패", error);
+    } catch {
+      toast({ message: "알림을 불러오지 못했어요" });
     } finally {
       setIsFetchingMore(false);
     }
@@ -129,8 +129,8 @@ export function NotificationMenu({
       try {
         await readAllNotificationsAction();
         await readAllSpaceNotificationsAction();
-      } catch (error) {
-        console.error("모두 읽기 실패", error);
+      } catch {
+        toast({ message: "알림 읽기 처리에 실패했어요" });
         setLocalNotifications(previous);
       }
     });
@@ -168,8 +168,8 @@ export function NotificationMenu({
       try {
         await deleteAllNotificationsAction();
         await deleteAllSpaceNotificationsAction();
-      } catch (error) {
-        console.error("전체 삭제 실패", error);
+      } catch {
+        toast({ message: "알림 삭제에 실패했어요" });
         setLocalNotifications(previous);
         setNextCursor(initialNextCursor);
         setHasMore(initialHasMore);
@@ -217,8 +217,8 @@ export function NotificationMenu({
         if (href) {
           router.push(href);
         }
-      } catch (error) {
-        console.error("알림 클릭 실패", error);
+      } catch {
+        toast({ message: "알림 처리 중 오류가 발생했어요" });
 
         if (!notification.isRead) {
           setLocalNotifications(previous);
