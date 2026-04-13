@@ -53,7 +53,7 @@ export const SearchResults = ({
         <section className="rounded-[2rem] px-6 py-16">
           <div className="flex flex-col items-center gap-6">
             <Empty
-              label={`검색어와 현재 필터가 함께 적용되어 결과가 없어요.\n\n필터를 해제하고 "${queryState.keyword}"만 다시 검색해 보세요.`}
+              label={`조건에 맞는 스페이스가 없어요.\n\n필터를 해제하고 "${queryState.keyword}"만 다시 검색해 보세요.`}
             />
             <Button
               size="small"

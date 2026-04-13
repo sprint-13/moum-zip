@@ -11,7 +11,7 @@ const BASE_QUERY_STATE = {
 } as const;
 
 describe("hasSearchKeywordConflict", () => {
-  it("정확한 4개 충돌 케이스만 true를 반환한다", () => {
+  it("정확한 4개 충돌 케이스를 true로 판정한다", () => {
     expect(
       hasSearchKeywordConflict({
         ...BASE_QUERY_STATE,
@@ -45,22 +45,38 @@ describe("hasSearchKeywordConflict", () => {
     ).toBe(true);
   });
 
-  it("alias, 부분 일치, 일반 검색어는 충돌로 처리하지 않는다", () => {
+  it("CTA 판정용 alias와 영어 대소문자를 허용한다", () => {
+    expect(
+      hasSearchKeywordConflict({
+        ...BASE_QUERY_STATE,
+        keyword: "Online",
+        locationId: "offline",
+      }),
+    ).toBe(true);
+
+    expect(
+      hasSearchKeywordConflict({
+        ...BASE_QUERY_STATE,
+        keyword: "OFFLINE",
+        locationId: "online",
+      }),
+    ).toBe(true);
+
+    expect(
+      hasSearchKeywordConflict({
+        ...BASE_QUERY_STATE,
+        keyword: "프로젝트",
+        categoryId: "study",
+      }),
+    ).toBe(true);
+
     expect(
       hasSearchKeywordConflict({
         ...BASE_QUERY_STATE,
         keyword: "study",
         categoryId: "project",
       }),
-    ).toBe(false);
-
-    expect(
-      hasSearchKeywordConflict({
-        ...BASE_QUERY_STATE,
-        keyword: "project",
-        categoryId: "study",
-      }),
-    ).toBe(false);
+    ).toBe(true);
 
     expect(
       hasSearchKeywordConflict({
@@ -68,7 +84,7 @@ describe("hasSearchKeywordConflict", () => {
         keyword: "온라인",
         locationId: "offline",
       }),
-    ).toBe(false);
+    ).toBe(true);
 
     expect(
       hasSearchKeywordConflict({
@@ -76,8 +92,10 @@ describe("hasSearchKeywordConflict", () => {
         keyword: "오프라인",
         locationId: "online",
       }),
-    ).toBe(false);
+    ).toBe(true);
+  });
 
+  it("부분 일치나 일반 검색어는 충돌로 처리하지 않는다", () => {
     expect(
       hasSearchKeywordConflict({
         ...BASE_QUERY_STATE,
@@ -85,9 +103,25 @@ describe("hasSearchKeywordConflict", () => {
         locationId: "offline",
       }),
     ).toBe(false);
+
+    expect(
+      hasSearchKeywordConflict({
+        ...BASE_QUERY_STATE,
+        keyword: "project room",
+        categoryId: "study",
+      }),
+    ).toBe(false);
+
+    expect(
+      hasSearchKeywordConflict({
+        ...BASE_QUERY_STATE,
+        keyword: "같이 스터디해요",
+        categoryId: "project",
+      }),
+    ).toBe(false);
   });
 
-  it("keyword 앞뒤 공백은 무시하고 exact match로 판정한다", () => {
+  it("keyword 앞뒤 공백은 무시한다", () => {
     expect(
       hasSearchKeywordConflict({
         ...BASE_QUERY_STATE,

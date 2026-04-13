@@ -17,6 +17,7 @@ export const getSearchResults = async ({
   size,
 }: GetSearchResultsRequest): Promise<SearchResultsResponse> => {
   const searchParams = new URLSearchParams();
+  const normalizedKeyword = keyword?.trim();
 
   if (categoryId !== "all") {
     searchParams.set("category", categoryId);
@@ -34,8 +35,8 @@ export const getSearchResults = async ({
     searchParams.set("deadlineSort", deadlineSortId);
   }
 
-  if (keyword) {
-    searchParams.set("keyword", keyword);
+  if (normalizedKeyword) {
+    searchParams.set("keyword", normalizedKeyword);
   }
 
   if (cursor) {
