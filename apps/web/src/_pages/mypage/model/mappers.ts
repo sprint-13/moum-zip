@@ -2,7 +2,6 @@ import type { FavoriteWithMeeting, JoinedMeeting, MeetingWithHost, User } from "
 import type { MoimImageTone, MypageMoimCard, MypageProfile } from "./types";
 
 const imageTones: MoimImageTone[] = ["beige", "daylight", "sunset", "city"];
-type JoinedMeetingStatus = "scheduled" | "active" | "completed";
 
 const getConfirmationBadge = (confirmedAt: string | null | undefined) => {
   return {
@@ -31,44 +30,24 @@ export const formatMeetingDateTime = (dateTime: string | null) => {
   };
 };
 
-const getMeetingTimestamp = (dateTime: string | null) => {
-  if (!dateTime) {
-    return null;
-  }
-
-  const timestamp = new Date(dateTime).getTime();
-
-  return Number.isNaN(timestamp) ? null : timestamp;
-};
-
-const getJoinedMeetingStatus = (registrationEnd: string | null, dateTime: string | null): JoinedMeetingStatus => {
-  const now = Date.now();
-  const registrationEndTime = getMeetingTimestamp(registrationEnd);
-  const meetingTime = getMeetingTimestamp(dateTime);
-
-  if (meetingTime !== null && meetingTime <= now) {
-    return "completed";
-  }
-
-  if (registrationEndTime !== null && registrationEndTime <= now) {
-    return "active";
-  }
-
-  return "scheduled";
-};
-
 export const mapProfile = (user: User): MypageProfile => {
   return {
+    userId: user.id,
     name: user.name,
     email: user.email,
     imageUrl: user.image ?? undefined,
   };
 };
 
-export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard => {
+export const mapJoinedMeeting = (
+  meeting: JoinedMeeting,
+  index: number,
+  currentUserId: number,
+  liked = false,
+): MypageMoimCard => {
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
-  const status = getJoinedMeetingStatus(meeting.registrationEnd, meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
+  const isOwnedByCurrentUser = meeting.hostId === currentUserId;
 
   return {
     id: String(meeting.id),
@@ -81,16 +60,12 @@ export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = 
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
-    actionVariant: status === "active" && isConfirmed ? "primary" : "secondary",
+    actionVariant: isConfirmed ? "primary" : "secondary",
     primaryBadge: {
-      label: status === "scheduled" ? "참여 예정" : status === "active" ? "참여 중" : "참여 완료",
-      variant: status === "completed" ? "completed" : "scheduled",
+      label: isConfirmed || isOwnedByCurrentUser ? "참여 중" : "승인 대기 중",
+      variant: isConfirmed ? "scheduled" : "waiting",
     },
-    secondaryBadge: isConfirmed
-      ? getConfirmationBadge(meeting.confirmedAt)
-      : status === "completed"
-        ? undefined
-        : getConfirmationBadge(meeting.confirmedAt),
+    secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };
 
@@ -117,11 +92,15 @@ export const mapCreatedMeeting = (meeting: MeetingWithHost, index: number, liked
   };
 };
 
-export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number): MypageMoimCard => {
+export const mapFavoriteMeeting = (
+  favorite: FavoriteWithMeeting,
+  index: number,
+  currentUserId: number,
+): MypageMoimCard => {
   const { meeting } = favorite;
   const { date, time } = formatMeetingDateTime(meeting.dateTime);
-  const status = getJoinedMeetingStatus(meeting.registrationEnd, meeting.dateTime);
   const isConfirmed = Boolean(meeting.confirmedAt);
+  const isOwnedByCurrentUser = meeting.hostId === currentUserId;
 
   return {
     id: String(meeting.id),
@@ -134,15 +113,11 @@ export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number)
     liked: true,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
-    actionVariant: status === "active" && isConfirmed ? "primary" : "secondary",
+    actionVariant: isConfirmed ? "primary" : "secondary",
     primaryBadge: {
-      label: status === "scheduled" ? "참여 예정" : status === "active" ? "참여 중" : "참여 완료",
-      variant: status === "completed" ? "completed" : "scheduled",
+      label: isConfirmed || isOwnedByCurrentUser ? "참여 중" : "승인 대기 중",
+      variant: isConfirmed ? "scheduled" : "waiting",
     },
-    secondaryBadge: isConfirmed
-      ? getConfirmationBadge(meeting.confirmedAt)
-      : status === "completed"
-        ? undefined
-        : getConfirmationBadge(meeting.confirmedAt),
+    secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };

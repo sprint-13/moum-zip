@@ -19,6 +19,7 @@ export const buildLikedMeetings = (
   favoriteList: FavoriteList | undefined,
   fallbackMoims: MypageMoimCard[],
   enableRemoteFetch: boolean,
+  currentUserId: number,
 ) => {
   if (!enableRemoteFetch) {
     return fallbackMoims;
@@ -28,7 +29,7 @@ export const buildLikedMeetings = (
     return fallbackMoims;
   }
 
-  return favoriteList.data.map(mapFavoriteMeeting);
+  return favoriteList.data.map((favorite, index) => mapFavoriteMeeting(favorite, index, currentUserId));
 };
 
 export const updateLikedState = (moims: MypageMoimCard[] | undefined, meetingId: string, nextLiked: boolean) => {

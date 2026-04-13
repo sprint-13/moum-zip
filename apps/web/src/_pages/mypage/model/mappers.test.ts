@@ -20,6 +20,7 @@ describe("mypage mappers", () => {
     };
 
     expect(mapProfile(user)).toEqual({
+      userId: 1,
       name: "홍길동",
       email: "test@example.com",
       imageUrl: "https://example.com/profile.png",
@@ -33,7 +34,7 @@ describe("mypage mappers", () => {
     });
   });
 
-  it("다가오는 참여 모임은 참여 예정 카드로 변환한다", () => {
+  it("개설 확정 전 참여 모임은 승인 대기 중 카드로 변환한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
 
@@ -68,7 +69,7 @@ describe("mypage mappers", () => {
       isCompleted: false,
     };
 
-    expect(mapJoinedMeeting(meeting, 1)).toMatchObject({
+    expect(mapJoinedMeeting(meeting, 1, 3)).toMatchObject({
       id: "7",
       title: "달램핏 모임",
       participantCount: "5/10",
@@ -77,18 +78,14 @@ describe("mypage mappers", () => {
       imageTone: "daylight",
       actionVariant: "secondary",
       primaryBadge: {
-        label: "참여 예정",
-        variant: "scheduled",
-      },
-      secondaryBadge: {
-        label: "개설대기",
+        label: "승인 대기 중",
         variant: "waiting",
-        withIcon: false,
       },
     });
+    expect(mapJoinedMeeting(meeting, 1, 3).secondaryBadge).toBeUndefined();
   });
 
-  it("모집 마감 이후 모임 시작 전이고 개설 확정된 참여 모임은 참여 중 카드로 변환한다", () => {
+  it("개설 확정된 참여 모임은 참여 중 카드로 변환한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-05T00:00:00.000Z"));
 
@@ -123,7 +120,7 @@ describe("mypage mappers", () => {
       isCompleted: false,
     };
 
-    expect(mapJoinedMeeting(meeting, 1)).toMatchObject({
+    expect(mapJoinedMeeting(meeting, 1, 3)).toMatchObject({
       actionVariant: "primary",
       primaryBadge: {
         label: "참여 중",
@@ -137,7 +134,7 @@ describe("mypage mappers", () => {
     });
   });
 
-  it("지난 참여 모임은 참여 완료 카드로 변환한다", () => {
+  it("개설 확정 전 지난 참여 모임도 승인 대기 중 카드로 변환한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-01T00:00:00.000Z"));
 
@@ -172,20 +169,20 @@ describe("mypage mappers", () => {
       isCompleted: true,
     };
 
-    expect(mapJoinedMeeting(meeting, 2)).toMatchObject({
+    expect(mapJoinedMeeting(meeting, 2, 3)).toMatchObject({
       id: "8",
       location: "성수",
       imageTone: "sunset",
       actionVariant: "secondary",
       primaryBadge: {
-        label: "참여 완료",
-        variant: "completed",
+        label: "승인 대기 중",
+        variant: "waiting",
       },
     });
-    expect(mapJoinedMeeting(meeting, 2).secondaryBadge).toBeUndefined();
+    expect(mapJoinedMeeting(meeting, 2, 3).secondaryBadge).toBeUndefined();
   });
 
-  it("개설 확정된 지난 참여 모임은 참여 완료 상태에서도 개설확정 배지를 유지한다", () => {
+  it("개설 확정된 지난 참여 모임도 참여 중 상태와 개설확정 배지를 유지한다", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-01T00:00:00.000Z"));
 
@@ -220,10 +217,61 @@ describe("mypage mappers", () => {
       isCompleted: true,
     };
 
-    expect(mapJoinedMeeting(meeting, 2).secondaryBadge).toMatchObject({
-      label: "개설확정",
-      variant: "confirmed",
-      withIcon: true,
+    expect(mapJoinedMeeting(meeting, 2, 3)).toMatchObject({
+      actionVariant: "primary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "scheduled",
+      },
+      secondaryBadge: {
+        label: "개설확정",
+        variant: "confirmed",
+        withIcon: true,
+      },
+    });
+  });
+
+  it("호스트인 참여 모임은 개설 확정 전에도 참여 중으로 표시한다", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
+
+    const meeting: JoinedMeeting = {
+      id: 27,
+      teamId: "dallaem",
+      name: "내가 만든 모임이 joined에 보이는 경우",
+      type: "스터디",
+      dateTime: "2026-02-10T14:00:00.000Z",
+      region: "강남",
+      address: null,
+      latitude: null,
+      longitude: null,
+      registrationEnd: null,
+      participantCount: 1,
+      capacity: 10,
+      image: null,
+      description: null,
+      canceledAt: null,
+      confirmedAt: null,
+      hostId: 1,
+      createdBy: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+      host: {
+        id: 1,
+        name: "호스트",
+        image: null,
+      },
+      joinedAt: "2026-02-01T00:00:00.000Z",
+      isReviewed: false,
+      isCompleted: false,
+    };
+
+    expect(mapJoinedMeeting(meeting, 1, 1)).toMatchObject({
+      actionVariant: "secondary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "waiting",
+      },
     });
   });
 
@@ -316,16 +364,68 @@ describe("mypage mappers", () => {
       },
     };
 
-    expect(mapFavoriteMeeting(favorite, 3)).toMatchObject({
+    expect(mapFavoriteMeeting(favorite, 3, 3)).toMatchObject({
       id: "12",
       liked: true,
       location: "성수",
       imageTone: "city",
-      actionVariant: "secondary",
+      actionVariant: "primary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "scheduled",
+      },
       secondaryBadge: {
         label: "개설확정",
         variant: "confirmed",
         withIcon: true,
+      },
+    });
+  });
+
+  it("호스트가 찜한 자신의 모임은 개설 확정 전에도 참여 중으로 표시한다", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-01T00:00:00.000Z"));
+
+    const favorite: FavoriteWithMeeting = {
+      id: 2,
+      teamId: "dallaem",
+      meetingId: 19,
+      userId: 1,
+      createdAt: "2026-02-01T00:00:00.000Z",
+      meeting: {
+        id: 19,
+        teamId: "dallaem",
+        name: "내가 만든 찜 모임",
+        type: "달램핏",
+        region: "성수",
+        address: null,
+        latitude: null,
+        longitude: null,
+        dateTime: "2026-02-10T14:00:00.000Z",
+        registrationEnd: "2026-02-09T14:00:00.000Z",
+        capacity: 10,
+        participantCount: 1,
+        image: null,
+        description: null,
+        canceledAt: null,
+        confirmedAt: null,
+        hostId: 1,
+        createdBy: 1,
+        createdAt: "2026-02-01T00:00:00.000Z",
+        updatedAt: "2026-02-01T00:00:00.000Z",
+        host: {
+          id: 1,
+          name: "호스트",
+          image: null,
+        },
+      },
+    };
+
+    expect(mapFavoriteMeeting(favorite, 0, 1)).toMatchObject({
+      actionVariant: "secondary",
+      primaryBadge: {
+        label: "참여 중",
+        variant: "waiting",
       },
     });
   });

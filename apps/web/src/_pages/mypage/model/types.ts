@@ -5,6 +5,7 @@ export type MoimImageTone = "beige" | "daylight" | "sunset" | "city";
 export type CreatedFilterKey = "ongoing" | "ended";
 
 export interface MypageProfile {
+  userId: number;
   name: string;
   email: string;
   imageUrl?: string;

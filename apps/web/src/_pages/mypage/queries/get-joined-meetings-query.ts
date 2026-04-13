@@ -2,7 +2,7 @@
 
 import { fetchMyMeetings, type MypageMoimCard, mapJoinedMeeting } from "../model";
 
-export const getJoinedMeetingsQueryOptions = (initialData: MypageMoimCard[]) => {
+export const getJoinedMeetingsQueryOptions = (initialData: MypageMoimCard[], currentUserId: number) => {
   return {
     queryKey: ["mypage", "meetings", "joined"],
     queryFn: async () => {
@@ -13,7 +13,7 @@ export const getJoinedMeetingsQueryOptions = (initialData: MypageMoimCard[]) => 
         size: 10,
       });
 
-      return response.data.map((meeting, index) => mapJoinedMeeting(meeting, index));
+      return response.data.map((meeting, index) => mapJoinedMeeting(meeting, index, currentUserId));
     },
     initialData,
   } as const;
