@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "@moum-zip/ui/components";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/entities/post";
 import { CATEGORY_LABELS } from "@/entities/post";
@@ -10,6 +11,7 @@ import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
 import { usePostDetail } from "../hooks/use-post-detail";
 import { useDeletePost } from "../hooks/use-post-mutations";
+import { TiptapViewer } from "./tiptap-viewer";
 
 const CATEGORY_COLOR: Record<Post["category"], string> = {
   notice: "bg-blue-50 text-blue-600 border-blue-100",
@@ -86,16 +88,24 @@ export function PostArticle({ postId, slug, currentUserId, currentUserRole }: Po
 
       {/* 작성자 */}
       <div className="flex items-center gap-2 border-border border-b pb-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
-          {post.author.name[0] ?? "-"}
-        </div>
+        {post.author.image ? (
+          <Image
+            src={post.author.image}
+            alt={post.author.name}
+            width={32}
+            height={32}
+            className="shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
+            {post.author.name[0]}
+          </div>
+        )}
         <span className="font-medium text-neutral-700 text-sm">{post.author.name}</span>
       </div>
 
       {/* 본문 */}
-      <div className="min-h-[200px] whitespace-pre-wrap text-[15px] text-neutral-800 leading-relaxed">
-        {post.content}
-      </div>
+      <TiptapViewer content={post.content} />
 
       <AlertModal
         open={open}

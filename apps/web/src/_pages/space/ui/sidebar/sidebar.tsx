@@ -52,7 +52,7 @@ function SidebarPanel({ children, className }: SidebarPanelProps) {
   return (
     <aside
       className={cn(
-        "hidden h-svh flex-col border-r bg-sidebar py-4 transition-[width] duration-200 md:flex",
+        "sticky top-0 hidden h-svh flex-col border-r bg-sidebar py-4 transition-[width] duration-200 md:flex",
         open ? "w-(--sidebar-width) px-4" : "w-14 px-2",
         className,
       )}
