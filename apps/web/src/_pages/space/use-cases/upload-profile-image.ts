@@ -1,3 +1,7 @@
+import { ApiError, ValidationError } from "@/shared/lib/error";
+import { ERROR_CODES } from "@/shared/lib/errors/error-codes";
+import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
+
 const PROFILE_IMAGE_FOLDER = "users";
 
 export const ALLOWED_PROFILE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
@@ -20,13 +24,19 @@ const isNonEmptyString = (value: unknown): value is string => {
 
 const parseProfileImageUploadUrl = (value: unknown): ProfileImageUploadUrl => {
   if (!value || typeof value !== "object") {
-    throw new Error("프로필 이미지 업로드 URL 정보가 올바르지 않아요");
+    throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+      message: "프로필 이미지 업로드 URL 정보가 올바르지 않아요",
+      shouldReport: true,
+    });
   }
 
   const { presignedUrl, publicUrl } = value as Partial<ProfileImageUploadUrl>;
 
   if (!isNonEmptyString(presignedUrl) || !isNonEmptyString(publicUrl)) {
-    throw new Error("프로필 이미지 업로드 URL 정보가 올바르지 않아요");
+    throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+      message: "프로필 이미지 업로드 URL 정보가 올바르지 않아요",
+      shouldReport: true,
+    });
   }
 
   return { presignedUrl, publicUrl };
@@ -45,16 +55,19 @@ const getProfileImageUploadUrl = async (fileName: string, contentType: string): 
     }),
   });
 
-  if (!response.ok) {
-    throw new Error("프로필 이미지 업로드 URL 발급에 실패했어요.");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "프로필 이미지 업로드 URL 발급에 실패했어요.",
+    shouldReport: false,
+  });
 
   return parseProfileImageUploadUrl(await response.json());
 };
 
-export async function uploadProfileImage(file: File): Promise<string> {
+export const uploadProfileImage = async (file: File): Promise<string> => {
   if (!isAllowedProfileImageType(file.type)) {
-    throw new Error("JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.");
+    throw new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
+      message: "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
+    });
   }
 
   const { presignedUrl, publicUrl } = await getProfileImageUploadUrl(file.name, file.type);
@@ -66,9 +79,10 @@ export async function uploadProfileImage(file: File): Promise<string> {
     body: file,
   });
 
-  if (!response.ok) {
-    throw new Error("프로필 이미지 업로드에 실패했어요.");
-  }
+  await throwIfNotOk(response, {
+    fallbackMessage: "프로필 이미지 업로드에 실패했어요.",
+    shouldReport: false,
+  });
 
   return publicUrl;
-}
+};
