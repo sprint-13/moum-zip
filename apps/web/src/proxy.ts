@@ -45,8 +45,10 @@ async function refreshTokens(refreshToken: string) {
     // 5xx(서버 문제) - Sentry로 전송
     if (!res.ok) {
       if (res.status >= 500) {
-        const { captureException } = await import("@sentry/nextjs");
-        captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
+        try {
+          const { captureException } = await import("@sentry/nextjs");
+          captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
+        } catch {}
       }
       return null;
     }
@@ -58,8 +60,10 @@ async function refreshTokens(refreshToken: string) {
     return { accessToken, refreshToken: newRefreshToken };
   } catch (error) {
     // 네트워크 단절 - Sentry로 전송
-    const { captureException } = await import("@sentry/nextjs");
-    captureException(error);
+    try {
+      const { captureException } = await import("@sentry/nextjs");
+      captureException(error);
+    } catch {}
     return null;
   }
 }
