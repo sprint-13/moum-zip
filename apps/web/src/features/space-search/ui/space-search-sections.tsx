@@ -27,6 +27,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
     handleDeadlineSortChange,
     handleKeywordChange,
     handleLocationChange,
+    handleResetFiltersForKeyword,
   } = useSearchQueryState({ queryState });
   const {
     errorMessage,
@@ -76,7 +77,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
       <SearchHero
         desktopSearchBar={
           <SearchKeywordBar
-            className="w-[31rem]"
+            className="w-124"
             keyword={draftKeyword}
             onKeywordChange={setDraftKeyword}
             onSubmit={handleKeywordSubmit}
@@ -114,10 +115,13 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
         <SearchResults
           errorMessage={errorMessage}
           hasMore={hasMore}
+          isFetchingFirstPage={isFetchingFirstPage}
           isFetchingNextPage={isFetchingNextPage}
           isAuthenticated={isAuthenticated}
           items={items}
           loadMoreRef={loadMoreRef}
+          onResetFiltersForKeyword={handleResetFiltersForKeyword}
+          queryState={activeQueryState}
         />
       </div>
     </div>
