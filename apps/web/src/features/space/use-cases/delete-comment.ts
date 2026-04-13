@@ -11,7 +11,7 @@ export async function deleteCommentUseCase(
   commentId: string,
   postId: string,
   requester: Requester,
-): Promise<{ commentId: string }> {
+): Promise<{ commentId: string; authorId: number }> {
   const comment = await commentQueries.findById(commentId);
   if (!comment) throw new Error("댓글을 찾을 수 없습니다.");
 
@@ -20,5 +20,5 @@ export async function deleteCommentUseCase(
   if (comment.postId !== postId) throw new Error("유효하지 않은 요청입니다.");
 
   await commentQueries.deleteById(commentId, postId);
-  return { commentId };
+  return { commentId, authorId: comment.authorId };
 }

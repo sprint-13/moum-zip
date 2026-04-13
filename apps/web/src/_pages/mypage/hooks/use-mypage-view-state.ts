@@ -38,6 +38,7 @@ export const useMypageViewState = ({
   const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
   const [createdFilter, setCreatedFilter] = useState<CreatedFilterKey>("ongoing");
   const favoriteMutation = useToggleFavorite(enableRemoteFetch);
+  const shouldFetchCreatedMeetings = enableRemoteFetch && (selectedTab === "created" || selectedTab === "liked");
 
   const {
     data: joinedMeetingCards = moims.joined,
@@ -49,10 +50,10 @@ export const useMypageViewState = ({
   });
 
   const {
-    data: createdMeetingCards = createdMoims[createdFilter],
+    data: createdMeetingCards = createdMoims,
     isError: isCreatedError,
     refetch: refetchCreatedMeetings,
-  } = useCreatedMeetings(createdFilter, createdMoims[createdFilter], enableRemoteFetch && selectedTab === "created");
+  } = useCreatedMeetings(createdMoims, shouldFetchCreatedMeetings);
 
   const {
     data: favoriteList,
@@ -73,25 +74,41 @@ export const useMypageViewState = ({
     [favoriteMeetingIds, joinedMeetingCards],
   );
 
-  const createdMeetings = useMemo(
-    () => applyFavoriteState(createdMeetingCards, favoriteMeetingIds),
-    [createdMeetingCards, favoriteMeetingIds],
+  const ongoingCreatedMeetings = useMemo(
+    () => applyFavoriteState(createdMeetingCards.ongoing, favoriteMeetingIds),
+    [createdMeetingCards.ongoing, favoriteMeetingIds],
   );
+
+  const endedCreatedMeetings = useMemo(
+    () => applyFavoriteState(createdMeetingCards.ended, favoriteMeetingIds),
+    [createdMeetingCards.ended, favoriteMeetingIds],
+  );
+
+  const createdMeetings = createdFilter === "ongoing" ? ongoingCreatedMeetings : endedCreatedMeetings;
 
   const likedMeetings = useMemo(
     () => buildLikedMeetings(enableRemoteFetch ? favoriteList : undefined, moims.liked, enableRemoteFetch),
     [enableRemoteFetch, favoriteList, moims.liked],
   );
 
-  const meetingMap = useMemo(() => {
-    return [...joinedMeetings, ...createdMeetings, ...likedMeetings].reduce((map, meeting) => {
-      if (!map.has(meeting.id)) {
-        map.set(meeting.id, meeting);
-      }
+  const enterableMeetingIds = useMemo(() => {
+    return new Set(
+      [...joinedMeetings, ...ongoingCreatedMeetings, ...endedCreatedMeetings].map((meeting) => meeting.id),
+    );
+  }, [endedCreatedMeetings, joinedMeetings, ongoingCreatedMeetings]);
 
-      return map;
-    }, new Map<string, MypageMoimCard>());
-  }, [createdMeetings, joinedMeetings, likedMeetings]);
+  const meetingMap = useMemo(() => {
+    return [...joinedMeetings, ...ongoingCreatedMeetings, ...endedCreatedMeetings, ...likedMeetings].reduce(
+      (map, meeting) => {
+        if (!map.has(meeting.id)) {
+          map.set(meeting.id, meeting);
+        }
+
+        return map;
+      },
+      new Map<string, MypageMoimCard>(),
+    );
+  }, [endedCreatedMeetings, joinedMeetings, likedMeetings, ongoingCreatedMeetings]);
 
   const handleTabChange = (tab: string) => {
     if (!isMypageTabKey(tab)) {
@@ -138,6 +155,7 @@ export const useMypageViewState = ({
     joinedMeetings,
     createdMeetings,
     likedMeetings,
+    enterableMeetingIds,
     isJoinedError,
     isCreatedError,
     isLikedError,

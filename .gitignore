@@ -23,3 +23,7 @@ storybook-static
 .claude
 CLAUDE.md
 *.pen
+
+# Codex subagent artifacts
+subagent-runs/
+subagent-*

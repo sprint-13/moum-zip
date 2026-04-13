@@ -11,7 +11,7 @@ export async function deletePostUseCase(
   postId: string,
   spaceId: string,
   requester: Requester,
-): Promise<{ postId: string }> {
+): Promise<{ postId: string; authorId: number }> {
   const rows = await postQueries.findById(postId);
   const post = rows[0]?.post;
   if (!post || post.spaceId !== spaceId) throw new AppError("POST_NOT_FOUND");
@@ -19,5 +19,5 @@ export async function deletePostUseCase(
   assertPermission(post.authorId, requester);
 
   await postQueries.deleteById(postId);
-  return { postId };
+  return { postId, authorId: post.authorId };
 }

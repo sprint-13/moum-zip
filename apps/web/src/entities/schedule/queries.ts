@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, count, eq, gte } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { attendances, schedules } from "@/shared/db/scheme";
 
@@ -50,6 +50,18 @@ export const attendanceQueries = {
     db.query.attendances.findFirst({
       where: and(eq(attendances.spaceId, spaceId), eq(attendances.userId, userId), eq(attendances.date, date)),
     }),
+
+  /** 유저 기준 최근 활동 일자별 출석 수 집계 */
+  countByUserDateRange: (spaceId: string, userId: number, startDate: string) =>
+    db
+      .select({
+        date: attendances.date,
+        count: count().mapWith(Number),
+      })
+      .from(attendances)
+      .where(and(eq(attendances.spaceId, spaceId), eq(attendances.userId, userId), gte(attendances.date, startDate)))
+      .groupBy(attendances.date)
+      .orderBy(asc(attendances.date)),
 
   /** 출석 체크 등록 */
   create: (input: { id: string; spaceId: string; userId: number; date: string }) =>
