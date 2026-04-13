@@ -145,8 +145,6 @@ export function NotificationMenu({
       return;
     }
 
-    const previous = localNotifications;
-
     setLocalNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
 
     startTransition(async () => {
@@ -160,11 +158,11 @@ export function NotificationMenu({
           toast({
             message: getActionErrorMessage(externalResult, internalResult, "알림 읽기 처리에 실패했어요"),
           });
-          setLocalNotifications(previous);
+          router.refresh();
         }
       } catch {
         toast({ message: "알림 읽기 처리에 실패했어요" });
-        setLocalNotifications(previous);
+        router.refresh();
       }
     });
   };
@@ -190,8 +188,6 @@ export function NotificationMenu({
       return;
     }
 
-    const previous = localNotifications;
-
     setIsDeleteConfirming(false);
     setLocalNotifications([]);
     setNextCursor(null);
@@ -208,15 +204,11 @@ export function NotificationMenu({
           toast({
             message: getActionErrorMessage(externalResult, internalResult, "알림 삭제에 실패했어요"),
           });
-          setLocalNotifications(previous);
-          setNextCursor(initialNextCursor);
-          setHasMore(initialHasMore);
+          router.refresh();
         }
       } catch {
         toast({ message: "알림 삭제에 실패했어요" });
-        setLocalNotifications(previous);
-        setNextCursor(initialNextCursor);
-        setHasMore(initialHasMore);
+        router.refresh();
       }
     });
   };
