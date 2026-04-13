@@ -10,6 +10,8 @@ interface MoimCardListProps {
   onRetry?: () => void;
   onToggleLike?: (meetingId: string) => void;
   onEnterSpace?: (meetingId: string) => void;
+  showActionButton?: boolean;
+  canShowActionButton?: (moim: MypageMoimCard) => boolean;
 }
 
 interface ListStatusContainerProps {
@@ -31,12 +33,20 @@ export const MoimCardList = ({
   onRetry,
   onToggleLike,
   onEnterSpace,
+  showActionButton = true,
+  canShowActionButton,
 }: MoimCardListProps) => {
   if (moims.length > 0) {
     return (
       <div className="flex flex-col items-start gap-6">
         {moims.map((moim) => (
-          <MoimCard key={moim.id} moim={moim} onToggleLike={onToggleLike} onEnterSpace={onEnterSpace} />
+          <MoimCard
+            key={moim.id}
+            moim={moim}
+            onToggleLike={onToggleLike}
+            onEnterSpace={onEnterSpace}
+            showActionButton={canShowActionButton ? canShowActionButton(moim) : showActionButton}
+          />
         ))}
       </div>
     );

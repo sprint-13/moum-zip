@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "@moum-zip/ui/components";
+import Image from "next/image";
 import { useState } from "react";
 import type { Comment } from "@/entities/post";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
@@ -57,10 +58,25 @@ export function CommentItem({ comment, slug, postId, currentUserId, currentUserR
   return (
     <li className={`flex flex-col gap-1 py-4 ${isPending ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
-          {comment.author.name[0]}
-        </div>
-        <span className="font-medium text-neutral-700 text-sm">{comment.author.name}</span>
+        {comment.author.image ? (
+          <Image
+            src={comment.author.image}
+            alt={comment.author.name}
+            width={32}
+            height={32}
+            className="shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted font-bold text-muted-foreground text-xs">
+            {comment.author.name[0]}
+          </div>
+        )}
+
+        <span
+          className={`font-medium text-neutral-700 text-sm ${currentUserId === comment.authorId && "font-semibold text-neutral-800"}`}
+        >
+          {comment.author.name}
+        </span>
         <time className="ml-auto text-[11px] text-neutral-400">{formatDate(comment.createdAt, "M월 d일")}</time>
         {canEdit && !isEditing && (
           <div className="flex items-center gap-1">
