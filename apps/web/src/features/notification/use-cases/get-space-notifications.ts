@@ -135,6 +135,12 @@ function parseCursor(cursor?: string | null): InternalNotificationCursor | null 
       return null;
     }
 
+    const createdAtDate = new Date(parsed.createdAt);
+
+    if (Number.isNaN(createdAtDate.getTime())) {
+      return null;
+    }
+
     return {
       createdAt: parsed.createdAt,
       id: parsed.id,
