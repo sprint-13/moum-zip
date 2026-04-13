@@ -6,6 +6,7 @@ import { SearchHero } from "@/_pages/space-search";
 import { useInfiniteSearchResults } from "../hooks/use-infinite-search-results";
 import { useSearchQueryState } from "../hooks/use-search-query-state";
 import { SEARCH_FILTERS } from "../model/constants";
+import { normalizeSearchKeyword } from "../model/search-params";
 import type { SearchCategory, SearchFilter, SearchQueryState } from "../model/types";
 import { SearchKeywordBar } from "./space-search-keyword-bar";
 import { SearchResults } from "./space-search-results";
@@ -48,7 +49,10 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
   }, [activeQueryState.keyword]);
 
   const handleKeywordSubmit = () => {
-    handleKeywordChange(draftKeyword);
+    const normalizedKeyword = normalizeSearchKeyword(draftKeyword);
+
+    setDraftKeyword(normalizedKeyword);
+    handleKeywordChange(normalizedKeyword);
   };
 
   const keywordSearchStatus =
