@@ -1,5 +1,6 @@
 import { Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
 import type { ComponentType, ReactNode } from "react";
+import { getNotifications } from "@/features/notification/use-cases/get-notifications";
 import type { SpaceContext } from "@/features/space/lib/get-space-context";
 import { MobileHeader } from "./sidebar/mobile-header";
 import { MobileTabBar } from "./sidebar/mobile-tab-bar";
@@ -29,12 +30,27 @@ interface SpaceSidebarProps {
   membership: SpaceContext["membership"];
 }
 
-export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps) => {
+export const SpaceSidebar = async ({ children, space, membership }: SpaceSidebarProps) => {
+  const {
+    data: notifications,
+    nextCursor,
+    hasMore,
+  } = await getNotifications({
+    size: 10,
+  });
+
   return (
     <SidebarProvider>
       {/* 데스크탑: 고정 사이드바 */}
       <SidebarPanel>
-        <SidebarHeader icon={<Hexagon />} title={space.name} description={space.type} />
+        <SidebarHeader
+          icon={<Hexagon />}
+          title={space.name}
+          description={space.type}
+          notifications={notifications}
+          nextCursor={nextCursor}
+          hasMore={hasMore}
+        />
         <SidebarContent navItems={NAV_ITEMS} />
         <div className="mt-auto">
           <SidebarFooter
@@ -49,8 +65,8 @@ export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps)
       {/* 메인 콘텐츠 영역 */}
       <SidebarInset>
         {/* 모바일 전용: 상단 헤더 + 탭 네비게이션 */}
-        <div className="flex min-h-svh flex-1 flex-col overflow-hidden">
-          <MobileHeader navItems={NAV_ITEMS} />
+        <div className="flex min-h-svh flex-1 flex-col">
+          <MobileHeader navItems={NAV_ITEMS} notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
           <MobileTabBar navItems={NAV_ITEMS} />
           {children}
         </div>

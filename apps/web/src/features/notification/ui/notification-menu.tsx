@@ -21,12 +21,16 @@ interface NotificationMenuProps {
   notifications: NotificationItem[];
   nextCursor: string | null;
   hasMore: boolean;
+  desktopSide?: "bottom" | "right";
+  mobileVariant?: "sheet" | "dropdown";
 }
 
 export function NotificationMenu({
   notifications,
   nextCursor: initialNextCursor,
   hasMore: initialHasMore,
+  desktopSide = "bottom",
+  mobileVariant = "sheet",
 }: NotificationMenuProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -83,7 +87,9 @@ export function NotificationMenu({
   const unreadCount = localNotifications.filter((item) => !item.isRead).length;
 
   const handleLoadMore = async () => {
-    if (!open || !hasMore || !nextCursor || isFetchingMore || isPending) return;
+    if (!open || !hasMore || !nextCursor || isFetchingMore || isPending) {
+      return;
+    }
 
     setIsFetchingMore(true);
 
@@ -103,43 +109,53 @@ export function NotificationMenu({
 
       setNextCursor(result.nextCursor);
       setHasMore(result.hasMore);
-    } catch (e) {
-      console.error("추가 알림 로딩 실패", e);
+    } catch (error) {
+      console.error("추가 알림 로딩 실패", error);
     } finally {
       setIsFetchingMore(false);
     }
   };
 
   const handleReadAll = () => {
-    if (unreadCount === 0 || isPending) return;
+    if (unreadCount === 0 || isPending) {
+      return;
+    }
 
     const previous = localNotifications;
 
-    setLocalNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setLocalNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
 
     startTransition(async () => {
       try {
         await readAllNotificationsAction();
         await readAllSpaceNotificationsAction();
-      } catch (e) {
-        console.error("모두 읽기 실패", e);
+      } catch (error) {
+        console.error("모두 읽기 실패", error);
         setLocalNotifications(previous);
       }
     });
   };
 
   const handleDeleteAll = () => {
-    if (localNotifications.length === 0 || isPending) return;
+    if (localNotifications.length === 0 || isPending) {
+      return;
+    }
+
     setIsDeleteConfirming(true);
   };
 
   const handleCancelDeleteAll = () => {
-    if (isPending) return;
+    if (isPending) {
+      return;
+    }
+
     setIsDeleteConfirming(false);
   };
 
   const handleConfirmDeleteAll = () => {
-    if (localNotifications.length === 0 || isPending) return;
+    if (localNotifications.length === 0 || isPending) {
+      return;
+    }
 
     const previous = localNotifications;
 
@@ -152,8 +168,8 @@ export function NotificationMenu({
       try {
         await deleteAllNotificationsAction();
         await deleteAllSpaceNotificationsAction();
-      } catch (e) {
-        console.error("전체 삭제 실패", e);
+      } catch (error) {
+        console.error("전체 삭제 실패", error);
         setLocalNotifications(previous);
         setNextCursor(initialNextCursor);
         setHasMore(initialHasMore);
@@ -162,7 +178,9 @@ export function NotificationMenu({
   };
 
   const handleNotificationClick = (notification: NotificationItem) => {
-    if (isPending) return;
+    if (isPending) {
+      return;
+    }
 
     const href = getNotificationHref(notification);
     const previous = localNotifications;
@@ -199,8 +217,8 @@ export function NotificationMenu({
         if (href) {
           router.push(href);
         }
-      } catch (e) {
-        console.error("알림 클릭 실패", e);
+      } catch (error) {
+        console.error("알림 클릭 실패", error);
 
         if (!notification.isRead) {
           setLocalNotifications(previous);
@@ -220,21 +238,53 @@ export function NotificationMenu({
     </button>
   );
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setIsDeleteConfirming(false);
+    }
+  };
+
   if (isDesktop) {
     return (
-      <Dropdown
-        open={open}
-        onOpenChange={(nextOpen) => {
-          setOpen(nextOpen);
-          if (!nextOpen) {
-            setIsDeleteConfirming(false);
-          }
-        }}
-        modal={false}
-      >
+      <Dropdown open={open} onOpenChange={handleOpenChange} modal={false}>
         <Dropdown.Trigger asChild>{triggerButton}</Dropdown.Trigger>
 
-        <Dropdown.Content align="end" sideOffset={10} className="w-[20rem] rounded-[24px] bg-white p-0 shadow-lg">
+        <Dropdown.Content
+          side={desktopSide}
+          align={desktopSide === "right" ? "start" : "end"}
+          sideOffset={16}
+          className="w-[20rem] rounded-[24px] bg-white p-0 shadow-lg"
+        >
+          <NotificationPanel
+            notifications={localNotifications}
+            isDeleteConfirming={isDeleteConfirming}
+            onReadAll={handleReadAll}
+            onDeleteAll={handleDeleteAll}
+            onCancelDeleteAll={handleCancelDeleteAll}
+            onConfirmDeleteAll={handleConfirmDeleteAll}
+            onItemClick={handleNotificationClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            isFetchingMore={isFetchingMore}
+          />
+        </Dropdown.Content>
+      </Dropdown>
+    );
+  }
+
+  if (mobileVariant === "dropdown") {
+    return (
+      <Dropdown open={open} onOpenChange={handleOpenChange} modal={false}>
+        <Dropdown.Trigger asChild>{triggerButton}</Dropdown.Trigger>
+
+        <Dropdown.Content
+          side="bottom"
+          align="end"
+          sideOffset={8}
+          className="w-[min(calc(100vw-1rem),20rem)] rounded-[24px] bg-white p-0 shadow-lg"
+        >
           <NotificationPanel
             notifications={localNotifications}
             isDeleteConfirming={isDeleteConfirming}
@@ -253,15 +303,7 @@ export function NotificationMenu({
   }
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (!nextOpen) {
-          setIsDeleteConfirming(false);
-        }
-      }}
-    >
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <Sheet.Trigger asChild>{triggerButton}</Sheet.Trigger>
 
       <Sheet.Content side="right" className="h-dvh w-[min(100vw,20rem)] border-none p-0">
