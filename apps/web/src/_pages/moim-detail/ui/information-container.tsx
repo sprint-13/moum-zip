@@ -102,6 +102,7 @@ export const InformationContainer = ({
   onLoginAction,
 }: InformationContainerProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCancelJoinModalOpen, setIsCancelJoinModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isManager = viewType === "manager";
@@ -163,7 +164,7 @@ export const InformationContainer = ({
     return await onToggleLike();
   };
 
-  const handleMainButtonClick = () => {
+  const handleJoinClick = () => {
     if (isManager) {
       return;
     }
@@ -173,14 +174,25 @@ export const InformationContainer = ({
       return;
     }
 
-    if (canJoin) {
-      onParticipateToggle?.(data.id, true);
+    onParticipateToggle?.(data.id, true);
+  };
+
+  const handleCancelJoinClick = () => {
+    if (isManager) {
       return;
     }
 
-    if (canCancelJoin) {
-      onParticipateToggle?.(data.id, false);
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
     }
+
+    setIsCancelJoinModalOpen(true);
+  };
+
+  const handleCancelJoinConfirm = () => {
+    onParticipateToggle?.(data.id, false);
+    setIsCancelJoinModalOpen(false);
   };
 
   const handleDeleteConfirm = () => {
@@ -202,13 +214,13 @@ export const InformationContainer = ({
     : canCancelJoin
       ? {
           label: "신청 취소하기",
-          onClick: handleMainButtonClick,
+          onClick: handleCancelJoinClick,
           variant: "secondary",
         }
       : canJoin
         ? {
             label: "신청하기",
-            onClick: handleMainButtonClick,
+            onClick: handleJoinClick,
             variant: "primary",
           }
         : isParticipating
@@ -311,6 +323,16 @@ export const InformationContainer = ({
           cancelText="취소"
           actionText="확인"
           onAction={handleDeleteConfirm}
+        />
+      </AlertModal>
+
+      <AlertModal open={isCancelJoinModalOpen} onOpenChange={setIsCancelJoinModalOpen}>
+        <AlertModal.Content
+          title="모임 신청을 취소하시겠어요?"
+          description="신청 취소 후 다시 신청해야 참여할 수 있습니다."
+          cancelText="닫기"
+          actionText="신청 취소하기"
+          onAction={handleCancelJoinConfirm}
         />
       </AlertModal>
 
