@@ -49,9 +49,8 @@ export const FormDateTimeRow = ({
   };
 
   return (
-    <>
+    <div>
       <FormLabel label={label} required className="pb-2" />
-
       <div className="flex flex-col gap-4 md:flex-row">
         <Controller
           control={control}
@@ -87,6 +86,6 @@ export const FormDateTimeRow = ({
           )}
         />
       </div>
-    </>
+    </div>
   );
 };
