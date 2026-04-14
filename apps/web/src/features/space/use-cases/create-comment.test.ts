@@ -10,23 +10,55 @@ vi.mock("@/entities/post/queries", () => ({
   },
 }));
 
+vi.mock("@/features/notification/use-cases/create-notification", () => ({
+  createNotification: vi.fn(),
+}));
+
 import { commentQueries, postQueries } from "@/entities/post/queries";
+import { createNotification } from "@/features/notification/use-cases/create-notification";
 
 const mockCreate = vi.mocked(commentQueries.create);
 const mockFindById = vi.mocked(postQueries.findById);
+const mockCreateNotification = vi.mocked(createNotification);
 
 const BASE_INPUT = {
   postId: "post-1",
   spaceId: "space-1",
   authorId: 42,
+  authorName: "댓글작성자",
   content: "좋은 게시글이네요.",
 };
 
 describe("createCommentUseCase", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockCreate.mockResolvedValue({ id: "comment-uuid", ...BASE_INPUT, createdAt: new Date(), updatedAt: new Date() });
-    mockFindById.mockResolvedValue([{ post: { spaceId: BASE_INPUT.spaceId } } as never]);
+
+    mockCreate.mockResolvedValue({
+      id: "comment-uuid",
+      postId: BASE_INPUT.postId,
+      spaceId: BASE_INPUT.spaceId,
+      authorId: BASE_INPUT.authorId,
+      content: BASE_INPUT.content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as never);
+
+    mockFindById.mockResolvedValue([
+      {
+        post: {
+          id: BASE_INPUT.postId,
+          spaceId: BASE_INPUT.spaceId,
+          title: "테스트 게시글",
+        },
+        author: {
+          id: 7,
+          name: "작성자",
+          image: null,
+        },
+      } as never,
+    ]);
+
+    mockCreateNotification.mockResolvedValue({} as never);
   });
 
   it("commentQueries.create를 올바른 인자로 호출한다", async () => {
@@ -45,7 +77,11 @@ describe("createCommentUseCase", () => {
   it("content 앞뒤 공백을 제거한 후 저장한다", async () => {
     await createCommentUseCase({ ...BASE_INPUT, content: "  내용  " });
 
-    expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({ content: "내용" }));
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        content: "내용",
+      }),
+    );
   });
 
   it("생성된 commentId(UUID)를 반환한다", async () => {
@@ -70,5 +106,65 @@ describe("createCommentUseCase", () => {
   it("공백만 있는 content이면 에러를 던진다", async () => {
     await expect(createCommentUseCase({ ...BASE_INPUT, content: "   " })).rejects.toThrow("댓글 내용을 입력해주세요.");
     expect(mockCreate).not.toHaveBeenCalled();
+  });
+
+  it("게시글 작성자와 댓글 작성자가 다르면 알림을 생성한다", async () => {
+    await createCommentUseCase(BASE_INPUT);
+
+    expect(mockCreateNotification).toHaveBeenCalledWith({
+      teamId: "space-1",
+      userId: 7,
+      type: "COMMENT",
+      message: "내 게시글에 새 댓글이 달렸어요.",
+      data: {
+        postId: "post-1",
+        postTitle: "테스트 게시글",
+        commentId: "comment-uuid",
+        commentAuthorName: "댓글작성자",
+        commentContent: "좋은 게시글이네요.",
+      },
+    });
+  });
+
+  it("댓글 내용은 공백 제거된 값으로 알림에 포함한다", async () => {
+    await createCommentUseCase({
+      ...BASE_INPUT,
+      content: "  공백 포함 댓글  ",
+    });
+
+    expect(mockCreateNotification).toHaveBeenCalledWith({
+      teamId: "space-1",
+      userId: 7,
+      type: "COMMENT",
+      message: "내 게시글에 새 댓글이 달렸어요.",
+      data: {
+        postId: "post-1",
+        postTitle: "테스트 게시글",
+        commentId: "comment-uuid",
+        commentAuthorName: "댓글작성자",
+        commentContent: "공백 포함 댓글",
+      },
+    });
+  });
+
+  it("게시글 작성자와 댓글 작성자가 같으면 알림을 생성하지 않는다", async () => {
+    mockFindById.mockResolvedValue([
+      {
+        post: {
+          id: BASE_INPUT.postId,
+          spaceId: BASE_INPUT.spaceId,
+          title: "테스트 게시글",
+        },
+        author: {
+          id: BASE_INPUT.authorId,
+          name: "작성자",
+          image: null,
+        },
+      } as never,
+    ]);
+
+    await createCommentUseCase(BASE_INPUT);
+
+    expect(mockCreateNotification).not.toHaveBeenCalled();
   });
 });
