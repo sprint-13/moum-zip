@@ -11,6 +11,10 @@ const authorFields = {
   image: spaceMembers.avatarUrl,
 };
 
+/** UTC timestamp를 KST 일자 문자열로 변환 */
+const createKstDateExpr = (column: typeof spacePosts.createdAt | typeof spacePostComments.createdAt) =>
+  sql<string>`to_char(timezone('Asia/Seoul', timezone('UTC', ${column})), 'YYYY-MM-DD')`;
+
 export const postQueries = {
   /** 게시글 목록 (작성자 포함) */
   findManyBySpaceId: (spaceId: string, opts?: { category?: PostCategory; limit?: number; offset?: number }) =>
@@ -114,6 +118,27 @@ export const postQueries = {
     return result[0]?.count ?? 0;
   },
 
+  /** 작성자 기준 최근 활동 일자별 게시글 수 집계 */
+  countByAuthorDateRange: async (
+    spaceId: string,
+    authorId: number,
+    startAt: Date,
+  ): Promise<Array<{ date: string; count: number }>> => {
+    const dateExpr = createKstDateExpr(spacePosts.createdAt);
+
+    return db
+      .select({
+        date: dateExpr,
+        count: count().mapWith(Number),
+      })
+      .from(spacePosts)
+      .where(
+        and(eq(spacePosts.spaceId, spaceId), eq(spacePosts.authorId, authorId), gte(spacePosts.createdAt, startAt)),
+      )
+      .groupBy(dateExpr)
+      .orderBy(dateExpr);
+  },
+
   /** 인기 게시글 (viewCount + likeCount*2 + commentCount*1.4 점수 내림차순) */
   findPopularBySpaceId: async (spaceId: string, limit = 3) => {
     return db
@@ -136,7 +161,7 @@ export const postQueries = {
 
 export const commentQueries = {
   /** 게시글 댓글 목록 (작성자 포함) */
-  findManyByPostId: (postId: string) =>
+  findManyByPostId: (postId: string, spaceId: string) =>
     db
       .select({ comment: spacePostComments, author: authorFields })
       .from(spacePostComments)
@@ -144,7 +169,7 @@ export const commentQueries = {
         spaceMembers,
         and(eq(spaceMembers.userId, spacePostComments.authorId), eq(spaceMembers.spaceId, spacePostComments.spaceId)),
       )
-      .where(eq(spacePostComments.postId, postId))
+      .where(and(eq(spacePostComments.postId, postId), eq(spacePostComments.spaceId, spaceId)))
       .orderBy(asc(spacePostComments.createdAt)),
 
   /** 댓글 단건 조회 */
@@ -164,6 +189,31 @@ export const commentQueries = {
       .where(eq(spacePostComments.id, commentId))
       .returning()
       .then((rows) => rows[0]),
+
+  /** 작성자 기준 최근 활동 일자별 댓글 수 집계 */
+  countByAuthorDateRange: async (
+    spaceId: string,
+    authorId: number,
+    startAt: Date,
+  ): Promise<Array<{ date: string; count: number }>> => {
+    const dateExpr = createKstDateExpr(spacePostComments.createdAt);
+
+    return db
+      .select({
+        date: dateExpr,
+        count: count().mapWith(Number),
+      })
+      .from(spacePostComments)
+      .where(
+        and(
+          eq(spacePostComments.spaceId, spaceId),
+          eq(spacePostComments.authorId, authorId),
+          gte(spacePostComments.createdAt, startAt),
+        ),
+      )
+      .groupBy(dateExpr)
+      .orderBy(dateExpr);
+  },
 
   /** 댓글 생성 + 게시글 commentCount 증가 (트랜잭션) */
   create: async (input: { id: string; postId: string; spaceId: string; authorId: number; content: string }) => {

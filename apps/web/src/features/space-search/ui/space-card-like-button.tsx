@@ -10,7 +10,7 @@ import type { SearchResultsResponse } from "@/entities/gathering";
 import { showRequiredToast } from "@/shared/lib/toast-utils";
 
 import HeartIcon from "../assets/heart-default.svg";
-import { spaceSearchQueryKeys } from "../model/query-keys";
+import { searchQueryKeys } from "../model/query-keys";
 
 interface SpaceCardLikeButtonProps {
   isAuthenticated: boolean;
@@ -90,7 +90,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
   const matchesSearchResultsQuery = (queryKey: readonly unknown[]) => {
     const authSegment = queryKey[2];
 
-    if (queryKey[0] !== spaceSearchQueryKeys.all[0]) {
+    if (queryKey[0] !== searchQueryKeys.all[0]) {
       return false;
     }
 
@@ -175,7 +175,7 @@ export const SpaceCardLikeButton = ({ isAuthenticated, isLiked = false, meetingI
     <UtilityButton
       active={optimisticIsLiked}
       aria-label={optimisticIsLiked ? "좋아요 취소" : "좋아요 추가"}
-      className="shrink-0"
+      className="shrink-0 transition-transform duration-200 ease-out motion-reduce:transition-none lg:hover:scale-[1.03]"
       disabled={isPending}
       icon={optimisticIsLiked ? ActiveHeartIcon : DefaultHeartIcon}
       onClick={handleClick}

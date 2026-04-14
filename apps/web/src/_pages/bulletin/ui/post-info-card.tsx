@@ -13,10 +13,11 @@ const CATEGORY_COLOR: Record<Post["category"], string> = {
 
 interface PostInfoCardProps {
   postId: string;
+  spaceId: string;
 }
 
-export async function PostInfoCard({ postId }: PostInfoCardProps) {
-  const post = await getPostInfo(postId);
+export async function PostInfoCard({ postId, spaceId }: PostInfoCardProps) {
+  const post = await getPostInfo(postId, spaceId);
 
   return (
     <SpaceCard>

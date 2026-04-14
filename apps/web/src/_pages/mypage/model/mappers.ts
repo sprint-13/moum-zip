@@ -32,14 +32,21 @@ export const formatMeetingDateTime = (dateTime: string | null) => {
 
 export const mapProfile = (user: User): MypageProfile => {
   return {
+    userId: user.id,
     name: user.name,
     email: user.email,
     imageUrl: user.image ?? undefined,
   };
 };
 
-export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = false): MypageMoimCard => {
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
+export const mapJoinedMeeting = (
+  meeting: JoinedMeeting,
+  index: number,
+  _currentUserId: number,
+  liked = false,
+): MypageMoimCard => {
+  const { date, time } = formatMeetingDateTime(meeting.dateTime);
+  const isConfirmed = Boolean(meeting.confirmedAt);
 
   return {
     id: String(meeting.id),
@@ -52,12 +59,12 @@ export const mapJoinedMeeting = (meeting: JoinedMeeting, index: number, liked = 
     liked,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
-    actionVariant: isCompleted ? "secondary" : "primary",
+    actionVariant: isConfirmed ? "primary" : "secondary",
     primaryBadge: {
-      label: isCompleted ? "참여 완료" : "참여 예정",
-      variant: isCompleted ? "completed" : "scheduled",
+      label: isConfirmed ? "참여 중" : "승인 대기 중",
+      variant: isConfirmed ? "scheduled" : "waiting",
     },
-    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
+    secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };
 
@@ -84,9 +91,14 @@ export const mapCreatedMeeting = (meeting: MeetingWithHost, index: number, liked
   };
 };
 
-export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number): MypageMoimCard => {
+export const mapFavoriteMeeting = (
+  favorite: FavoriteWithMeeting,
+  index: number,
+  _currentUserId: number,
+): MypageMoimCard => {
   const { meeting } = favorite;
-  const { date, time, isCompleted } = formatMeetingDateTime(meeting.dateTime);
+  const { date, time } = formatMeetingDateTime(meeting.dateTime);
+  const isConfirmed = Boolean(meeting.confirmedAt);
 
   return {
     id: String(meeting.id),
@@ -99,11 +111,8 @@ export const mapFavoriteMeeting = (favorite: FavoriteWithMeeting, index: number)
     liked: true,
     imageTone: imageTones[index % imageTones.length],
     actionLabel: "스페이스 입장",
-    actionVariant: isCompleted ? "secondary" : "primary",
-    primaryBadge: {
-      label: isCompleted ? "참여 완료" : "참여 예정",
-      variant: isCompleted ? "completed" : "scheduled",
-    },
-    secondaryBadge: isCompleted ? undefined : getConfirmationBadge(meeting.confirmedAt),
+    actionVariant: "secondary",
+    primaryBadge: undefined,
+    secondaryBadge: isConfirmed ? getConfirmationBadge(meeting.confirmedAt) : undefined,
   };
 };

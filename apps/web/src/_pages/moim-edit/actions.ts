@@ -2,10 +2,9 @@
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
-import { updateMoim } from "@/_pages/moim-edit/use-cases/moim-update";
-import { parseMoimFormData } from "@/features/moim-create/model/parse-moim-form-data";
-import type { MoimCreateFormValues } from "@/features/moim-create/model/schema";
-import { isAuth } from "@/shared/api/server";
+import { parseMoimFormData } from "@/entities/moim/model/parse-moim-form-data";
+import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
+import { updateMoim } from "@/features/moim-edit/use-cases/moim-update";
 import { ROUTES } from "@/shared/config/routes";
 
 export type UpdateMoimActionState = {
@@ -14,24 +13,17 @@ export type UpdateMoimActionState = {
 } | null;
 
 export async function updateMoimAction(_: UpdateMoimActionState, formData: FormData): Promise<UpdateMoimActionState> {
-  // 1. 로그인 체크
-  const { authenticated } = await isAuth();
-
-  if (!authenticated) {
-    redirect(ROUTES.login);
-  }
-
-  // 2. meetingId 꺼내기 (없으면 에러)
+  // 1. meetingId 꺼내기 (없으면 에러)
   const meetingId = Number(formData.get("meetingId"));
 
   if (!meetingId || meetingId < 1 || !Number.isInteger(meetingId)) {
     return {
       ok: false,
-      error: "잘못된 요청입니다. (meetingId 없음)",
+      error: "잘못된 요청입니다.",
     };
   }
 
-  // 3. FormData → MoimCreateFormValues로 파싱 (실패하면 에러 메시지 반환)
+  // 2. FormData → MoimCreateFormValues로 파싱 (실패하면 에러 메시지 반환)
   let parsed: MoimCreateFormValues;
 
   try {
@@ -43,14 +35,14 @@ export async function updateMoimAction(_: UpdateMoimActionState, formData: FormD
     };
   }
 
-  // 4. use-case 호출
+  // 3. use-case 호출
   try {
     await updateMoim({
       meetingId,
       data: parsed,
     });
 
-    // 5. 성공 시 상세 페이지로 이동
+    // 4. 성공 시 상세 페이지로 이동
     redirect(`${ROUTES.moimDetail}/${meetingId}`);
   } catch (e) {
     if (isRedirectError(e)) throw e;

@@ -1,3 +1,4 @@
+import { Button as ShadcnButton } from "@ui/components/shadcn/button";
 import { cn } from "@ui/lib/utils";
 import { cva } from "class-variance-authority";
 import { Plus } from "lucide-react";
@@ -18,17 +19,29 @@ const createButtonVariants = cva(
   },
 );
 
-// ButtonHTMLAttributes 확장
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface CreateButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "full" | "icon";
   children?: ReactNode;
+  asChild?: boolean;
 }
 
-export function CreateButton({ variant = "full", children, className, ...props }: Props) {
+export function CreateButton({ variant = "full", children, className, asChild, type, ...props }: CreateButtonProps) {
   return (
-    <button type="button" className={cn(createButtonVariants({ variant }), className)} {...props}>
-      <Plus size={32} aria-hidden="true" />
-      {children}
-    </button>
+    <ShadcnButton
+      className={cn(createButtonVariants({ variant }), className)}
+      variant="default"
+      asChild={asChild}
+      type={asChild ? undefined : (type ?? "button")} // asChild가 아닐 때만 기본 type을 button으로 설정
+      {...props}
+    >
+      {asChild ? (
+        children
+      ) : (
+        <>
+          <Plus className="size-8" aria-hidden="true" />
+          {children}
+        </>
+      )}
+    </ShadcnButton>
   );
 }

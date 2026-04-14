@@ -1,7 +1,11 @@
-import type { MeetingWithHost } from "@moum-zip/api";
-import { type CreatedFilterKey, fetchMyMeetings, type MypageMoimCard, mapCreatedMeeting } from "../model";
+import { fetchMyMeetings, type MypageMoimCard, mapCreatedMeeting } from "../model";
 
 const CREATED_MEETINGS_PAGE_SIZE = 100;
+
+interface CreatedMeetingCards {
+  ended: MypageMoimCard[];
+  ongoing: MypageMoimCard[];
+}
 
 const isCompletedMeeting = (dateTime: string | null) => {
   if (!dateTime) {
@@ -11,15 +15,29 @@ const isCompletedMeeting = (dateTime: string | null) => {
   return new Date(dateTime).getTime() < Date.now();
 };
 
-const getComparableTime = (dateTime: string | null, createdFilter: CreatedFilterKey) => {
+const getComparableTime = (dateTime: string | null, isOngoingMeeting: boolean) => {
   if (!dateTime) {
-    return createdFilter === "ongoing" ? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER;
+    return isOngoingMeeting ? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER;
   }
 
   return new Date(dateTime).getTime();
 };
 
-export const getCreatedMeetingCards = async (createdFilter: CreatedFilterKey): Promise<MypageMoimCard[]> => {
+const mapCreatedMeetings = (
+  meetings: Awaited<ReturnType<typeof fetchMyMeetings<"created">>>["data"],
+  isOngoingMeeting: boolean,
+) => {
+  return meetings
+    .sort((left, right) => {
+      const leftTime = getComparableTime(left.dateTime, isOngoingMeeting);
+      const rightTime = getComparableTime(right.dateTime, isOngoingMeeting);
+
+      return isOngoingMeeting ? leftTime - rightTime : rightTime - leftTime;
+    })
+    .map((meeting, index) => mapCreatedMeeting(meeting, index));
+};
+
+export const getCreatedMeetingCards = async (): Promise<CreatedMeetingCards> => {
   const response = await fetchMyMeetings({
     type: "created",
     sortBy: "dateTime",
@@ -27,17 +45,11 @@ export const getCreatedMeetingCards = async (createdFilter: CreatedFilterKey): P
     size: CREATED_MEETINGS_PAGE_SIZE,
   });
 
-  const isCreatedOngoing = createdFilter === "ongoing";
-  const filteredMeetings = (response.data as MeetingWithHost[])
-    .filter((meeting) =>
-      isCreatedOngoing ? !isCompletedMeeting(meeting.dateTime) : isCompletedMeeting(meeting.dateTime),
-    )
-    .sort((left, right) => {
-      const leftTime = getComparableTime(left.dateTime, createdFilter);
-      const rightTime = getComparableTime(right.dateTime, createdFilter);
+  const ongoingMeetings = response.data.filter((meeting) => !isCompletedMeeting(meeting.dateTime));
+  const endedMeetings = response.data.filter((meeting) => isCompletedMeeting(meeting.dateTime));
 
-      return isCreatedOngoing ? leftTime - rightTime : rightTime - leftTime;
-    });
-
-  return filteredMeetings.map((meeting, index) => mapCreatedMeeting(meeting, index));
+  return {
+    ongoing: mapCreatedMeetings(ongoingMeetings, true),
+    ended: mapCreatedMeetings(endedMeetings, false),
+  };
 };

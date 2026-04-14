@@ -1,8 +1,8 @@
 import type { SearchResultsResponse } from "@/entities/gathering";
 
-import type { SearchResultsQueryState } from "../model/search-params";
+import type { SearchRequestQueryState } from "../model/types";
 
-interface GetSearchResultsRequest extends SearchResultsQueryState {
+interface GetSearchResultsRequest extends SearchRequestQueryState {
   cursor?: string | null;
   size?: number;
 }
@@ -12,10 +12,12 @@ export const getSearchResults = async ({
   cursor,
   dateSortId,
   deadlineSortId,
+  keyword,
   locationId,
   size,
 }: GetSearchResultsRequest): Promise<SearchResultsResponse> => {
   const searchParams = new URLSearchParams();
+  const normalizedKeyword = keyword?.trim();
 
   if (categoryId !== "all") {
     searchParams.set("category", categoryId);
@@ -31,6 +33,10 @@ export const getSearchResults = async ({
 
   if (deadlineSortId !== "default") {
     searchParams.set("deadlineSort", deadlineSortId);
+  }
+
+  if (normalizedKeyword) {
+    searchParams.set("keyword", normalizedKeyword);
   }
 
   if (cursor) {

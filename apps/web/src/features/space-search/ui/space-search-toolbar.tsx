@@ -1,119 +1,149 @@
 import { Dropdown, Filter, TabButton } from "@ui/components";
+import { ChevronDown } from "@ui/icons";
+import type { ReactNode } from "react";
+
+import { cn } from "@/shared/lib/cn";
 
 import type {
-  SpaceSearchCategory,
-  SpaceSearchDateSortId,
-  SpaceSearchDeadlineSortId,
-  SpaceSearchFilter,
-  SpaceSearchLocationId,
-  SpaceSearchQueryState,
+  SearchCategory,
+  SearchDateSortId,
+  SearchDeadlineSortId,
+  SearchFilter,
+  SearchLocationId,
+  SearchQueryState,
 } from "../model/types";
 
-interface SpaceSearchToolbarProps {
-  categories: SpaceSearchCategory[];
-  filters: SpaceSearchFilter[];
-  onCategoryChange: (categoryId: SpaceSearchCategory["id"]) => void;
-  onDateSortChange: (dateSortId: SpaceSearchDateSortId) => void;
-  onDeadlineSortChange: (deadlineSortId: SpaceSearchDeadlineSortId) => void;
-  onLocationChange: (locationId: SpaceSearchLocationId) => void;
-  selectedCategoryId: SpaceSearchQueryState["categoryId"];
-  selectedDateSortId: SpaceSearchQueryState["dateSortId"];
-  selectedDeadlineSortId: SpaceSearchQueryState["deadlineSortId"];
-  selectedLocationId: SpaceSearchQueryState["locationId"];
+interface SearchToolbarProps {
+  categories: SearchCategory[];
+  filters: SearchFilter[];
+  keywordBar?: ReactNode;
+  onFilterOpenChange: (filterId: SearchFilter["id"], nextIsOpen: boolean) => void;
+  onCategoryChange: (categoryId: SearchCategory["id"]) => void;
+  onDateSortChange: (dateSortId: SearchDateSortId) => void;
+  onDeadlineSortChange: (deadlineSortId: SearchDeadlineSortId) => void;
+  onLocationChange: (locationId: SearchLocationId) => void;
+  openedFilterId: SearchFilter["id"] | null;
+  selectedCategoryId: SearchQueryState["categoryId"];
+  selectedDateSortId: SearchQueryState["dateSortId"];
+  selectedDeadlineSortId: SearchQueryState["deadlineSortId"];
+  selectedLocationId: SearchQueryState["locationId"];
 }
 
-const getSelectedFilterOptionId = (
-  filterId: SpaceSearchFilter["id"],
-  {
-    selectedDateSortId,
-    selectedDeadlineSortId,
-    selectedLocationId,
-  }: Pick<SpaceSearchToolbarProps, "selectedDateSortId" | "selectedDeadlineSortId" | "selectedLocationId">,
-) => {
-  if (filterId === "date") {
-    return selectedDateSortId;
-  }
+const CATEGORY_TAB_CLASS_NAME =
+  "transition-[transform,background-color] duration-200 ease-out motion-reduce:transition-none lg:group-hover/tab:-translate-y-0.5 motion-reduce:lg:group-hover/tab:translate-y-0";
+const FILTER_TRIGGER_CLASS_NAME =
+  "cursor-pointer rounded-full text-sm transition-[background-color,border-color,color,box-shadow]";
+const FILTER_CHEVRON_CLASS_NAME = "transition-transform duration-200 ease-out motion-reduce:transition-none";
 
-  if (filterId === "location") {
-    return selectedLocationId;
-  }
-
-  return selectedDeadlineSortId;
+const getFilterTriggerClassName = (isOpen: boolean, isSelected: boolean) => {
+  return cn(
+    FILTER_TRIGGER_CLASS_NAME,
+    isOpen && !isSelected && "text-foreground/70",
+    isSelected && "border border-primary/35 bg-primary/10 shadow-[inset_0_0_0_1px_rgba(31,95,76,0.02)]",
+  );
 };
 
-export const SpaceSearchToolbar = ({
+const getFilterChevronClassName = (isOpen: boolean, isSelected: boolean) => {
+  return cn(FILTER_CHEVRON_CLASS_NAME, isSelected && "text-primary", isOpen && "rotate-180");
+};
+
+export const SearchToolbar = ({
   categories,
   filters,
+  keywordBar,
+  onFilterOpenChange,
   onCategoryChange,
   onDateSortChange,
   onDeadlineSortChange,
   onLocationChange,
+  openedFilterId,
   selectedCategoryId,
   selectedDateSortId,
   selectedDeadlineSortId,
   selectedLocationId,
-}: SpaceSearchToolbarProps) => {
-  const handleFilterChange = (filterId: SpaceSearchFilter["id"], optionId: string) => {
+}: SearchToolbarProps) => {
+  const selectedFilterOptionIdById: Record<SearchFilter["id"], string> = {
+    date: selectedDateSortId,
+    deadline: selectedDeadlineSortId,
+    location: selectedLocationId,
+  };
+
+  const handleFilterChange = (filterId: SearchFilter["id"], optionId: string) => {
     if (filterId === "date") {
-      onDateSortChange(optionId as SpaceSearchDateSortId);
+      onDateSortChange(optionId as SearchDateSortId);
       return;
     }
 
     if (filterId === "location") {
-      onLocationChange(optionId as SpaceSearchLocationId);
+      onLocationChange(optionId as SearchLocationId);
       return;
     }
 
-    onDeadlineSortChange(optionId as SpaceSearchDeadlineSortId);
+    onDeadlineSortChange(optionId as SearchDeadlineSortId);
   };
 
   return (
     <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="no-scrollbar flex flex-wrap items-center gap-2 overflow-x-hidden pb-1">
         {categories.map(({ id, label }) => (
-          <TabButton
-            aria-pressed={selectedCategoryId === id}
-            key={id}
-            onClick={() => onCategoryChange(id)}
-            size="small"
-            variant={selectedCategoryId === id ? "active" : "default"}
-          >
-            {label}
-          </TabButton>
+          <div className="group/tab rounded-[1rem] p-0.5" key={id}>
+            <TabButton
+              aria-pressed={selectedCategoryId === id}
+              className={cn(
+                CATEGORY_TAB_CLASS_NAME,
+                selectedCategoryId !== id && "bg-muted hover:bg-border-subtle",
+                selectedCategoryId === id && "lg:-translate-y-0.5",
+              )}
+              onClick={() => onCategoryChange(id)}
+              size="small"
+              variant={selectedCategoryId === id ? "active" : "default"}
+            >
+              {label}
+            </TabButton>
+          </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-0.5 gap-y-1 lg:justify-end">
-        {filters.map((filter) => {
-          const defaultOption = filter.options[0];
-          const selectedOptionId = getSelectedFilterOptionId(filter.id, {
-            selectedDateSortId,
-            selectedDeadlineSortId,
-            selectedLocationId,
-          });
-          const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:items-center lg:justify-end">
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 sm:min-w-0 sm:justify-start lg:justify-end">
+          {filters.map((filter) => {
+            const defaultOption = filter.options[0];
+            const selectedOptionId = selectedFilterOptionIdById[filter.id];
+            const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
+            const isOpen = openedFilterId === filter.id;
+            const isSelected = selectedOption.id !== defaultOption?.id;
 
-          return (
-            <Dropdown key={filter.id}>
-              <Dropdown.Trigger>
-                <Filter
-                  className="text-sm"
-                  label={selectedOption.label}
-                  leftIcon={null}
-                  selected={selectedOption.id !== defaultOption?.id}
-                  size="small"
-                />
-              </Dropdown.Trigger>
-              <Dropdown.Content align="end">
-                {filter.options.map((option) => (
-                  <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
-                    {option.label}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Content>
-            </Dropdown>
-          );
-        })}
+            return (
+              <Dropdown
+                key={filter.id}
+                onOpenChange={(nextIsOpen) => onFilterOpenChange(filter.id, nextIsOpen)}
+                open={isOpen}
+              >
+                <Dropdown.Trigger>
+                  <Filter
+                    className={getFilterTriggerClassName(isOpen, isSelected)}
+                    label={selectedOption.label}
+                    leftIcon={null}
+                    rightIcon={
+                      <ChevronDown className={getFilterChevronClassName(isOpen, isSelected)} strokeWidth={1.8} />
+                    }
+                    selected={isSelected}
+                    size="small"
+                  />
+                </Dropdown.Trigger>
+                <Dropdown.Content align="end">
+                  {filter.options.map((option) => (
+                    <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
+                      {option.label}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Content>
+              </Dropdown>
+            );
+          })}
+        </div>
+
+        {keywordBar ? <div className="w-full sm:justify-self-end lg:hidden">{keywordBar}</div> : null}
       </div>
     </section>
   );

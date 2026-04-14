@@ -15,6 +15,11 @@ interface ProfileEditModalProps {
   profile: MypageProfile;
 }
 
+interface PresignedImageResponse {
+  presignedUrl: string;
+  publicUrl: string;
+}
+
 const ERROR_MESSAGES = {
   EMPTY_NAME: "이름을 입력해주세요.",
   NAME_TOO_LONG: "이름은 20자 이하로 입력해주세요.",
@@ -160,10 +165,7 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
         throw new Error("PRESIGNED_URL_REQUEST_FAILED");
       }
 
-      const { presignedUrl, publicUrl } = (await response.json()) as {
-        presignedUrl: string;
-        publicUrl: string;
-      };
+      const { presignedUrl, publicUrl }: PresignedImageResponse = await response.json();
 
       // 2) 발급받은 URL로 파일을 직접 업로드한 뒤 publicUrl을 저장 액션에 넘깁니다.
       const uploadResponse = await fetch(presignedUrl, {

@@ -1,28 +1,21 @@
-"use client";
-
 import { Button } from "@ui/components";
-import { useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 
-import { ROUTES } from "@/shared/config/routes";
-import { showRequiredToast } from "@/shared/lib/toast-utils";
+import { cn } from "@/shared/lib/cn";
 
-interface SpaceCardJoinButtonProps extends Omit<ComponentProps<typeof Button>, "onClick"> {
-  isAuthenticated: boolean;
-  meetingId: string;
-}
+interface SpaceCardJoinButtonProps extends Omit<ComponentProps<typeof Button>, "asChild" | "icon" | "onClick"> {}
 
-export const SpaceCardJoinButton = ({ isAuthenticated, meetingId, ...props }: SpaceCardJoinButtonProps) => {
-  const router = useRouter();
-
-  const handleClick = () => {
-    if (!isAuthenticated) {
-      showRequiredToast("로그인 후 이용할 수 있어요.");
-      return;
-    }
-
-    router.push(`${ROUTES.moimDetail}/${meetingId}`);
-  };
-
-  return <Button {...props} onClick={handleClick} />;
+export const SpaceCardJoinButton = ({ children, className, disabled, ...props }: SpaceCardJoinButtonProps) => {
+  return (
+    <Button
+      {...props}
+      asChild
+      className={cn(
+        className,
+        disabled && "cursor-not-allowed bg-slate-100 text-slate-600 opacity-60 hover:bg-slate-100",
+      )}
+    >
+      <span>{children}</span>
+    </Button>
+  );
 };

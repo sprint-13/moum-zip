@@ -3,10 +3,11 @@
 import { Search } from "@moum-zip/ui/icons";
 
 interface SpaceControlProps {
-  activeTab: "ongoing" | "archived";
-  onTabChange: (tab: "ongoing" | "archived") => void;
+  activeTab: "ongoing" | "archived" | "pending";
+  onTabChange: (tab: "ongoing" | "archived" | "pending") => void;
   ongoingSpacesNumber: number;
   archivedSpacesNumber: number;
+  pendingSpaceNumber: number;
   query: string;
   onQueryChange: (query: string) => void;
 }
@@ -16,6 +17,7 @@ export const SpaceControl = ({
   onTabChange,
   ongoingSpacesNumber,
   archivedSpacesNumber,
+  pendingSpaceNumber,
   query,
   onQueryChange,
 }: SpaceControlProps) => {
@@ -38,6 +40,15 @@ export const SpaceControl = ({
           className={`flex-1 rounded-xl px-8 py-2.5 font-bold text-sm transition-all data-[active=true]:bg-white data-[active=false]:text-slate-500 data-[active=true]:text-primary data-[active=true]:shadow-md data-[active=false]:hover:text-slate-700 md:flex-none`}
         >
           아카이브 <span className="ml-1 font-medium opacity-50">{archivedSpacesNumber}</span>
+        </button>{" "}
+        <button
+          type="button"
+          onClick={() => onTabChange("pending")}
+          data-active={activeTab === "pending"}
+          aria-pressed={activeTab === "pending"}
+          className={`flex-1 rounded-xl px-8 py-2.5 font-bold text-sm transition-all data-[active=true]:bg-white data-[active=false]:text-slate-500 data-[active=true]:text-primary data-[active=true]:shadow-md data-[active=false]:hover:text-slate-700 md:flex-none`}
+        >
+          승인 대기중 <span className="ml-1 font-medium opacity-50">{pendingSpaceNumber}</span>
         </button>
       </div>
 

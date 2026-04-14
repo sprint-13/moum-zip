@@ -2,53 +2,52 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { uploadImage } from "@/_pages/moim-create/use-cases/upload-image";
-import { useMoimCreateForm } from "@/features/moim-create/model/use-moim-create-form";
+import { useMoimCreateForm } from "@/features/moim-create/hooks/use-moim-create-form";
+import { useMoimFormImageUpload } from "@/features/moim-create/hooks/use-moim-form-image-upload";
+import { trackMoimCreateCanceled } from "@/features/moim-create/lib/moim-create-events";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
+import { AlertModal } from "@/shared/ui";
 
 export const MoimCreateForm = () => {
   const router = useRouter();
-  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { form, onSubmit, state, isPending } = useMoimCreateForm();
-  const { setError, clearErrors } = form;
+  const { isImageUploading, handleImageUpload } = useMoimFormImageUpload(form);
 
-  const handleImageUpload = async (onChange: (url: string) => void) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/jpeg,image/png,image/webp,image/gif";
+  // 폼 취소 - 아직 이탈 확정 아님, 확인 모달만 active
+  const handleCancelClick = () => {
+    setIsCancelModalOpen(true);
+  };
 
-    input.onchange = async (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      setIsImageUploading(true);
-      try {
-        const publicUrl = await uploadImage(file);
-        onChange(publicUrl);
-        clearErrors("image");
-      } catch {
-        setError("image", {
-          type: "manual",
-          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
-        });
-      } finally {
-        setIsImageUploading(false);
-      }
-    };
-
-    input.click();
+  // 모달 나가기 - 이탈 확정 → 트래킹 후 뒤로가기
+  const handleCancelConfirm = () => {
+    trackMoimCreateCanceled();
+    router.back();
+    setIsCancelModalOpen(false);
   };
 
   return (
-    <MoimFormFields
-      form={form}
-      onSubmit={onSubmit}
-      state={state}
-      isPending={isPending}
-      isImageUploading={isImageUploading}
-      submitLabel={isPending ? "생성 중" : "모임 만들기"}
-      onCancel={() => router.back()}
-      onImageUpload={handleImageUpload}
-    />
+    <>
+      <MoimFormFields
+        form={form}
+        onSubmit={onSubmit}
+        state={state}
+        isPending={isPending}
+        isImageUploading={isImageUploading}
+        submitLabel={isPending ? "생성 중" : "모임 만들기"}
+        onCancel={handleCancelClick}
+        onImageUpload={handleImageUpload}
+      />
+
+      <AlertModal open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+        <AlertModal.Content
+          title="작성을 취소하시겠어요?"
+          description="작성 중인 내용은 저장되지 않고 사라집니다."
+          cancelText="계속 작성"
+          actionText="나가기"
+          onAction={handleCancelConfirm}
+        />
+      </AlertModal>
+    </>
   );
 };

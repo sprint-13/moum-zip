@@ -2,21 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@moum-zip/ui/components";
-import { useEffect } from "react";
+import { startTransition, useActionState, useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import type { z } from "zod";
 
-import type { ScheduleWithStatus } from "@/entities/schedule";
+import { type ScheduleWithStatus, scheduleSchema } from "@/entities/schedule";
 import { toDatetimeLocalKST } from "@/shared/lib/date";
 import { DatePicker, TimePicker } from "@/shared/ui";
 import { createScheduleAction, updateScheduleAction } from "../actions";
-
-const scheduleSchema = z.object({
-  title: z.string().min(1, "제목을 입력해주세요."),
-  description: z.string().optional(),
-  date: z.string().min(1, "날짜를 선택해주세요."),
-  time: z.string().min(1, "시간을 선택해주세요."),
-});
 
 type ScheduleFormValues = z.infer<typeof scheduleSchema>;
 
@@ -29,12 +22,20 @@ interface ScheduleFormProps {
 export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
   const isEdit = !!editTarget;
 
+  const boundAction = useMemo(
+    () =>
+      isEdit ? updateScheduleAction.bind(null, slug, String(editTarget!.id)) : createScheduleAction.bind(null, slug),
+    [isEdit, slug, editTarget?.id],
+  );
+
+  const [state, formAction, isPending] = useActionState(boundAction, null);
+
   const {
     register,
     handleSubmit,
     reset,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleSchema as any),
     defaultValues: { title: "", description: "", date: "", time: "" },
@@ -49,25 +50,24 @@ export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
     }
   }, [editTarget, isEdit, reset]);
 
-  async function onSubmit(data: ScheduleFormValues) {
-    try {
-      const formData = new FormData();
-      formData.set("title", data.title);
-      formData.set("description", data.description ?? "");
-      formData.set("startAt", `${data.date}T${data.time}`);
-
-      if (isEdit && editTarget) {
-        await updateScheduleAction(slug, editTarget.id, formData);
-      } else {
-        await createScheduleAction(slug, formData);
-      }
+  useEffect(() => {
+    if (state?.ok) {
       onClose();
-    } catch (err) {
-      toast({
-        message: err instanceof Error ? err.message : "일정 생성 중 오류가 발생했습니다.",
-        size: "small",
-      });
+    } else if (state?.ok === false) {
+      toast({ message: state.message, size: "small" });
     }
+  }, [state, onClose]);
+
+  function onSubmit(data: ScheduleFormValues) {
+    const formData = new FormData();
+    formData.set("title", data.title);
+    formData.set("description", data.description ?? "");
+    formData.set("date", data.date);
+    formData.set("time", data.time);
+
+    startTransition(() => {
+      formAction(formData);
+    });
   }
 
   return (
@@ -84,7 +84,7 @@ export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
               id="title"
               type="text"
               placeholder="일정 제목을 입력하세요"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
               {...register("title")}
             />
@@ -99,7 +99,7 @@ export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
               id="description"
               placeholder="일정에 대한 설명을 입력하세요"
               rows={3}
-              disabled={isSubmitting}
+              disabled={isPending}
               className="resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
               {...register("description")}
             />
@@ -130,17 +130,17 @@ export function ScheduleForm({ slug, editTarget, onClose }: ScheduleFormProps) {
             <button
               type="button"
               onClick={onClose}
-              disabled={isSubmitting}
+              disabled={isPending}
               className="rounded-lg border border-border px-5 py-2 font-medium text-neutral-600 text-sm transition-colors hover:bg-muted disabled:opacity-50"
             >
               취소
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground text-sm transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {isSubmitting ? "저장 중..." : isEdit ? "수정 완료" : "일정 추가"}
+              {isPending ? "저장 중..." : isEdit ? "수정 완료" : "일정 추가"}
             </button>
           </div>
         </form>

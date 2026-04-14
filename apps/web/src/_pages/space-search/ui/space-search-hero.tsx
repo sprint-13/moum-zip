@@ -1,6 +1,14 @@
-import { SPACE_SEARCH_HERO_CONTENT } from "../constants";
+"use client";
 
-export const SpaceSearchHero = () => {
+import type { ReactNode } from "react";
+
+import { SEARCH_HERO_CONTENT } from "../constants";
+
+interface SearchHeroProps {
+  desktopSearchBar?: ReactNode;
+}
+
+export const SearchHero = ({ desktopSearchBar }: SearchHeroProps) => {
   return (
     <section className="relative bg-accent sm:overflow-hidden sm:rounded-[2rem]">
       <picture className="block aspect-375/192 w-full bg-muted sm:aspect-696/244 lg:aspect-1280/244">
@@ -17,15 +25,19 @@ export const SpaceSearchHero = () => {
         />
       </picture>
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center">
-        <div className="w-full px-4 py-8 sm:px-10 sm:py-10 lg:px-14">
-          <div className="flex max-w-84 flex-col gap-2">
-            <p className={`font-medium text-green-600 text-sm leading-6 tracking-[-0.02em]`}>
-              {SPACE_SEARCH_HERO_CONTENT.description}
-            </p>
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <div className="flex h-full w-full items-center px-4 py-8 sm:px-10 sm:py-8 lg:px-14">
+          <div className="flex max-w-84 flex-col gap-2 lg:max-w-104 lg:gap-3">
             <h1 className="font-semibold text-[2rem] text-foreground leading-[1.2] tracking-[-0.04em] sm:text-[2.25rem]">
-              {SPACE_SEARCH_HERO_CONTENT.title}
+              {SEARCH_HERO_CONTENT.title}
             </h1>
+            <p className="font-medium text-green-600 text-sm leading-6 tracking-[-0.02em]">
+              {SEARCH_HERO_CONTENT.description}
+            </p>
+
+            {desktopSearchBar ? (
+              <div className="pointer-events-auto hidden lg:block lg:w-xl">{desktopSearchBar}</div>
+            ) : null}
           </div>
         </div>
       </div>

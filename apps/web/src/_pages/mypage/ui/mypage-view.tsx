@@ -15,7 +15,7 @@ const createdMoimFilters: Array<{ key: CreatedFilterKey; label: string }> = [
   { key: "ended", label: "진행 종료" },
 ];
 
-interface MypagePageProps {
+interface MypageViewProps {
   initialFavoriteList: FavoriteList;
   profile: MypageProfile;
   tabs: Array<{ key: MypageTabKey; label: string }>;
@@ -31,12 +31,13 @@ export function MypageView({
   moims,
   createdMoims,
   enableRemoteFetch = true,
-}: MypagePageProps) {
+}: MypageViewProps) {
   const {
     createdFilter,
     joinedMeetings,
     createdMeetings,
     likedMeetings,
+    enterableMeetingIds,
     isJoinedError,
     isCreatedError,
     isLikedError,
@@ -52,6 +53,7 @@ export function MypageView({
     moims,
     createdMoims,
     enableRemoteFetch,
+    profile,
   });
 
   return (
@@ -134,6 +136,7 @@ export function MypageView({
                   onRetry={() => void refetchLikedMeetings()}
                   onToggleLike={handleToggleLike}
                   onEnterSpace={handleEnterSpace}
+                  canShowActionButton={(moim) => enterableMeetingIds.has(moim.id)}
                 />
               </Tabs.Content>
             </div>

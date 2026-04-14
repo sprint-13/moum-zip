@@ -1,7 +1,6 @@
 import { Calendar, ChevronRight, MapPin, Users } from "@moum-zip/ui/icons";
 import Link from "next/link";
 import type { SpaceInfo } from "@/entities/spaces/model/types";
-import { cn } from "@/shared/lib/cn";
 import { formatDate } from "@/shared/lib/date";
 import { SpaceInfoCardHeader } from "./space-info-card/space-info-card-header";
 import { SpaceInfoCardLabel } from "./space-info-card/space-info-card-label";
@@ -13,14 +12,7 @@ interface SpaceInfoCardProps {
 
 export const SpaceInfoGridCard = ({ space }: SpaceInfoCardProps) => {
   const cardContent = (
-    <div
-      className={cn(
-        "group mb-6 flex w-full flex-col gap-6 overflow-hidden rounded-lg border border-slate-100 bg-white p-4 transition-all duration-300",
-        space.isApproved
-          ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary/10"
-          : "cursor-not-allowed opacity-60",
-      )}
-    >
+    <div className="group mb-6 flex w-full flex-col gap-6 overflow-hidden rounded-lg border border-slate-100 bg-white p-4 transition-all duration-300cursor-pointer hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary/10">
       <SpaceInfoCardHeader space={space} />
 
       {space.image ? <SpaceInfoCardThumbnail thumbnailUrl={space.image} name={space.name} /> : null}
@@ -41,14 +33,16 @@ export const SpaceInfoGridCard = ({ space }: SpaceInfoCardProps) => {
             <ChevronRight className="size-5" />
           </div>
         ) : (
-          <span className="font-semibold text-slate-400 text-sm">승인 대기 중</span>
+          <p className="inline-flex h-9 items-center justify-center font-semibold text-base text-slate-400">
+            승인 대기 중
+          </p>
         )}
       </div>
     </div>
   );
 
   if (!space.isApproved) {
-    return <div className="w-full">{cardContent}</div>;
+    return <div className="w-full cursor-not-allowed opacity-60">{cardContent}</div>;
   }
 
   return (

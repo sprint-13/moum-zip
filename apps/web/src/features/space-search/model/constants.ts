@@ -1,8 +1,8 @@
 import { GATHERING_CATEGORY_SPECS, getGatheringCategoryLabel } from "@/entities/gathering";
 
-import type { SpaceSearchCategory, SpaceSearchFilter, SpaceSearchQueryState } from "./types";
+import type { SearchCategory, SearchFilter, SearchQueryState } from "./types";
 
-export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
+export const SEARCH_CATEGORIES: SearchCategory[] = [
   { id: "all", label: "전체" },
   ...GATHERING_CATEGORY_SPECS.map(({ id }) => ({
     id,
@@ -10,7 +10,7 @@ export const SPACE_SEARCH_CATEGORIES: SpaceSearchCategory[] = [
   })),
 ];
 
-export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
+export const SEARCH_FILTERS: SearchFilter[] = [
   {
     id: "date",
     label: "최신/오래된 순",
@@ -40,9 +40,15 @@ export const SPACE_SEARCH_FILTERS: SpaceSearchFilter[] = [
   },
 ];
 
-export const SPACE_SEARCH_INITIAL_QUERY_STATE: SpaceSearchQueryState = {
+export const SEARCH_FILTER_QUERY_STATE: SearchQueryState = {
   categoryId: "all",
   dateSortId: "default",
   deadlineSortId: "default",
+  keyword: "",
   locationId: "all",
+};
+
+export const SEARCH_INITIAL_QUERY_STATE: SearchQueryState = {
+  ...SEARCH_FILTER_QUERY_STATE,
+  dateSortId: "latest",
 };

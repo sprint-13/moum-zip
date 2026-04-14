@@ -1,9 +1,11 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import { spaceQueries } from "@/entities/spaces";
 import { deleteCommentUseCase } from "@/features/space/use-cases/delete-comment";
 import { updateCommentUseCase } from "@/features/space/use-cases/update-comment";
 import { isAuth } from "@/shared/api/server";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 async function getAuthAndSpace(slug: string) {
   const auth = await isAuth();
@@ -22,7 +24,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ slug: string; "post-id": string; "comment-id": string }> },
 ) {
-  const { slug, "post-id": postId, "comment-id": commentId } = await params;
+  const { slug, "comment-id": commentId } = await params;
   const result = await getAuthAndSpace(slug);
   if ("error" in result) {
     const status = result.error === "Unauthorized" ? 401 : result.error === "NotFound" ? 404 : 403;
@@ -32,6 +34,11 @@ export async function PATCH(
   const { membership } = result;
   try {
     const { content } = await request.json();
+
+    if (typeof content !== "string" || !content.trim()) {
+      return NextResponse.json({ error: "Content is required" }, { status: 400 });
+    }
+
     await updateCommentUseCase(commentId, content, { userId: membership.userId, role: membership.role });
     return NextResponse.json({});
   } catch (err) {
@@ -53,7 +60,12 @@ export async function DELETE(
 
   const { membership } = result;
   try {
-    await deleteCommentUseCase(commentId, postId, { userId: membership.userId, role: membership.role });
+    const { authorId } = await deleteCommentUseCase(commentId, postId, {
+      userId: membership.userId,
+      role: membership.role,
+    });
+    revalidateTag(CACHE_TAGS.grass(result.space.id, authorId), { expire: 0 });
+    revalidatePath(`/${slug}`);
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     console.error("[DELETE /api/.../comments/[comment-id]]", err);

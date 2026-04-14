@@ -8,13 +8,19 @@ import { type UpdateProfileResult, updateProfile } from "./use-cases/update-prof
 
 export type UpdateProfileActionState = UpdateProfileResult | null;
 
+const getFormDataStringValue = (formData: FormData, key: string) => {
+  const value = formData.get(key);
+
+  return typeof value === "string" ? value : null;
+};
+
 export const updateProfileAction = async (
   _: UpdateProfileActionState,
   formData: FormData,
 ): Promise<UpdateProfileActionState> => {
   // 서버 액션은 입력 파싱과 후처리만 담당하고, 검증/호출 로직은 use-case에 둡니다.
-  const name = (formData.get("name") as string | null) ?? "";
-  const image = (formData.get("image") as string | null) ?? undefined;
+  const name = getFormDataStringValue(formData, "name") ?? "";
+  const image = getFormDataStringValue(formData, "image") ?? undefined;
   const authedApi = await getApi();
   const result = await updateProfile({ name, image }, { userApi: authedApi.user });
 
