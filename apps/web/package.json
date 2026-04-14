@@ -22,6 +22,7 @@
     "@moum-zip/api": "workspace:*",
     "@moum-zip/ui": "workspace:*",
     "@neondatabase/serverless": "^1.0.2",
+    "@sentry/nextjs": "^10.48.0",
     "@tanstack/react-query": "^5.90.21",
     "@tiptap/core": "^3.22.2",
     "@tiptap/extension-placeholder": "^3.22.2",

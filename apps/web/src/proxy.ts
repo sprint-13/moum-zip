@@ -39,14 +39,31 @@ async function refreshTokens(refreshToken: string) {
       body: JSON.stringify({ refreshToken }),
     });
 
-    if (!res.ok) return null;
+    // 401 정상 플로우 (토큰 만료) - Sentry 전송 안 함
+    if (res.status === 401) return null;
+
+    // 5xx(서버 문제) - Sentry로 전송
+    if (!res.ok) {
+      if (res.status >= 500) {
+        try {
+          const { captureException } = await import("@sentry/nextjs");
+          captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
+        } catch {}
+      }
+      return null;
+    }
 
     const { accessToken, refreshToken: newRefreshToken } = await res.json();
 
     if (typeof accessToken !== "string" || typeof newRefreshToken !== "string") return null;
 
     return { accessToken, refreshToken: newRefreshToken };
-  } catch {
+  } catch (error) {
+    // 네트워크 단절 - Sentry로 전송
+    try {
+      const { captureException } = await import("@sentry/nextjs");
+      captureException(error);
+    } catch {}
     return null;
   }
 }
