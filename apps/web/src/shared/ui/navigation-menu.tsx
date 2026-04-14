@@ -1,5 +1,5 @@
 import type { NotificationsResult } from "@/entities/notification/model/types";
-import { getNotifications } from "@/features/notification/use-cases/get-notifications";
+import { getNotifications } from "@/features/notification/use-cases/get-notification";
 import { getApi, isAuth } from "@/shared/api/server";
 import { NavigationMenuClient } from "./navigation-menu-client";
 

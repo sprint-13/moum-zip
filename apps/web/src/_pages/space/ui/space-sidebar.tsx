@@ -1,6 +1,6 @@
 import { Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
 import type { ComponentType, ReactNode } from "react";
-import { getNotifications } from "@/features/notification/use-cases/get-notifications";
+import { getNotifications } from "@/features/notification/use-cases/get-notification";
 import type { SpaceContext } from "@/features/space/lib/get-space-context";
 import { MobileHeader } from "./sidebar/mobile-header";
 import { MobileTabBar } from "./sidebar/mobile-tab-bar";

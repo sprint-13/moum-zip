@@ -1,7 +1,7 @@
 import { mapNotificationsResponse } from "@/entities/notification/model/mapper";
 import type { NotificationItem, NotificationsResult } from "@/entities/notification/model/types";
 import { getApi, isAuth } from "@/shared/api/server";
-import { getSpaceNotifications } from "./get-space-notifications";
+import { getSpaceNotifications } from "./get-space-notification";
 
 type GetNotificationsParams = {
   isRead?: boolean;

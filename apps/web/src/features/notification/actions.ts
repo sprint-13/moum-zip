@@ -1,10 +1,10 @@
 "use server";
 
-import { deleteAllNotifications } from "@/features/notification/use-cases/delete-all-notifications";
-import { deleteAllSpaceNotifications } from "@/features/notification/use-cases/delete-all-space-notifications";
-import { getNotifications } from "@/features/notification/use-cases/get-notifications";
-import { readAllNotifications } from "@/features/notification/use-cases/read-all-notifications";
-import { readAllSpaceNotifications } from "@/features/notification/use-cases/read-all-space-notifications";
+import { deleteAllNotifications } from "@/features/notification/use-cases/delete-all-notification";
+import { deleteAllSpaceNotifications } from "@/features/notification/use-cases/delete-all-space-notification";
+import { getNotifications } from "@/features/notification/use-cases/get-notification";
+import { readAllNotifications } from "@/features/notification/use-cases/read-all-notification";
+import { readAllSpaceNotifications } from "@/features/notification/use-cases/read-all-space-notification";
 import { readNotification } from "@/features/notification/use-cases/read-notification";
 import { readSpaceNotification } from "@/features/notification/use-cases/read-space-notification";
 import { isAuth } from "@/shared/api/server";

@@ -1,6 +1,6 @@
 import type { PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
-import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notifications";
+import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notification";
 
 export interface CreatePostInput {
   spaceId: string;

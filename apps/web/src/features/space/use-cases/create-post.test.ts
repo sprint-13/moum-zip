@@ -12,7 +12,7 @@ vi.mock("@/features/notification/use-cases/create-space-member-notifications", (
 }));
 
 import { postQueries } from "@/entities/post/queries";
-import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notifications";
+import { createSpaceMemberNotifications } from "@/features/notification/use-cases/create-space-member-notification";
 
 const mockCreate = vi.mocked(postQueries.create);
 const mockCreateSpaceMemberNotifications = vi.mocked(createSpaceMemberNotifications);
