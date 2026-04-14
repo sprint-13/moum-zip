@@ -19,7 +19,7 @@ describe("parseSearchQueryState", () => {
 
     expect(queryState).toEqual({
       categoryId: "all",
-      dateSortId: "default",
+      dateSortId: "latest",
       deadlineSortId: "default",
       keyword: "offline",
       locationId: "online",
@@ -33,8 +33,20 @@ describe("parseSearchQueryState", () => {
 
     expect(queryState).toEqual({
       categoryId: "all",
-      dateSortId: "default",
+      dateSortId: "latest",
       deadlineSortId: "default",
+      keyword: "",
+      locationId: "all",
+    });
+  });
+
+  it("URL로 마감 정렬에 진입하면 날짜 정렬을 default로 맞춘다", () => {
+    const queryState = parseSearchQueryState(new URLSearchParams("deadlineSort=fast"));
+
+    expect(queryState).toEqual({
+      categoryId: "all",
+      dateSortId: "default",
+      deadlineSortId: "fast",
       keyword: "",
       locationId: "all",
     });
@@ -42,7 +54,7 @@ describe("parseSearchQueryState", () => {
 });
 
 describe("buildSearchHref", () => {
-  it("keyword가 비어 있으면 URL에 포함하지 않는다", () => {
+  it("keyword가 비어 있어도 기본값과 다른 날짜 정렬은 URL에 유지한다", () => {
     const href = buildSearchHref("/search", {
       categoryId: "all",
       dateSortId: "default",
@@ -51,10 +63,10 @@ describe("buildSearchHref", () => {
       locationId: "all",
     });
 
-    expect(href).toBe("/search");
+    expect(href).toBe("/search?dateSort=default");
   });
 
-  it("keyword를 trim한 뒤 다른 필터와 함께 URL을 구성한다", () => {
+  it("keyword를 trim하고 다른 필터와 함께 URL을 구성한다", () => {
     const href = buildSearchHref("/search", {
       categoryId: "study",
       dateSortId: "default",
@@ -63,6 +75,6 @@ describe("buildSearchHref", () => {
       locationId: "online",
     });
 
-    expect(href).toBe("/search?category=study&location=online&keyword=offline");
+    expect(href).toBe("/search?category=study&dateSort=default&location=online&keyword=offline");
   });
 });

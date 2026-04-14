@@ -61,6 +61,6 @@ export interface SpaceCardItem {
   isLiked?: boolean;
   maxParticipants: number;
   metaChips: SpaceCardMetaChip[];
-  status?: SpaceCardStatus;
+  statuses?: SpaceCardStatus[];
   title: string;
 }

@@ -11,6 +11,7 @@ export interface SearchResultItem {
   description: string | null;
   id: string;
   image: string | null;
+  isJoined?: boolean;
   isLiked: boolean;
   location: GatheringLocation;
   participantCount: number;

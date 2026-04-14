@@ -9,11 +9,11 @@ import { getQueryClient } from "@/shared/lib/get-query-client";
 type SearchParams = Record<string, string | string[] | undefined>;
 
 interface SearchPageProps {
-  searchParams?: Promise<SearchParams> | SearchParams;
+  searchParams?: Promise<SearchParams>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const resolvedSearchParams = await searchParams;
+  const resolvedSearchParams = (await searchParams) ?? {};
   const queryState = parseSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
   const queryClient = getQueryClient();
