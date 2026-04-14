@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AppError } from "@/shared/lib/error";
+import { NotFoundError } from "@/shared/lib/error";
 import { updatePostUseCase } from "./update-post";
 
 vi.mock("@/entities/post/queries", () => ({
@@ -70,7 +70,7 @@ describe("updatePostUseCase", () => {
     mockFindById.mockResolvedValue([]);
 
     await expect(updatePostUseCase(BASE_INPUT, { userId: 1, role: "member" })).rejects.toThrow(
-      new AppError("POST_NOT_FOUND"),
+      new NotFoundError("POST_NOT_FOUND"),
     );
     expect(mockUpdateById).not.toHaveBeenCalled();
   });
@@ -79,7 +79,7 @@ describe("updatePostUseCase", () => {
     mockFindById.mockResolvedValue([{ post: { ...BASE_POST, spaceId: "other-space" }, author: BASE_AUTHOR }]);
 
     await expect(updatePostUseCase(BASE_INPUT, { userId: 1, role: "manager" })).rejects.toThrow(
-      new AppError("POST_NOT_FOUND"),
+      new NotFoundError("POST_NOT_FOUND"),
     );
     expect(mockUpdateById).not.toHaveBeenCalled();
   });
