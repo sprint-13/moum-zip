@@ -1,4 +1,5 @@
 import type { FavoriteList, FavoriteWithMeeting, JoinedMeeting, MeetingWithHost } from "@moum-zip/api";
+import { DomainError, ERROR_CODES } from "@/shared/lib/error";
 import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 
 const FAVORITES_PAGE_SIZE = 100;
@@ -93,7 +94,9 @@ export const fetchAllMyFavorites = async (
 
     // 비정상적인 hasMore/cursor 응답으로 인한 무한 루프를 방지합니다.
     if (pageCount > MAX_FAVORITES_PAGE_COUNT) {
-      throw new Error("즐겨찾기 목록 페이지네이션 한도를 초과했습니다.");
+      throw new DomainError(ERROR_CODES.INVALID_REQUEST, {
+        message: "즐겨찾기 목록 페이지네이션 한도를 초과했습니다.",
+      });
     }
 
     const response = await fetchMyFavorites({

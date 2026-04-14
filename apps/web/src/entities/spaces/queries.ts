@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import { type NewSpaceDB, spaces } from "@/shared/db/scheme";
 import { CACHE_TAGS } from "@/shared/lib/cache";
+import { ApiError, ERROR_CODES } from "@/shared/lib/error";
 
 // meetingId -> space 조회 -> location, themeColor, status, modules
 export const spaceQueries = {
@@ -24,7 +25,9 @@ export const spaceQueries = {
   create: async (data: NewSpaceDB) => {
     const [result] = await db.insert(spaces).values(data).returning();
     if (!result) {
-      throw new Error("Space 저장 결과를 받아오지 못했습니다.");
+      throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+        message: "Space 저장 결과를 받아오지 못했습니다.",
+      });
     }
     return result;
   },
@@ -32,7 +35,9 @@ export const spaceQueries = {
     const [result] = await db.update(spaces).set(data).where(eq(spaces.meetingId, meetingId)).returning();
 
     if (!result) {
-      throw new Error("Space 저장 결과를 받아오지 못했습니다.");
+      throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+        message: "Space 저장 결과를 받아오지 못했습니다.",
+      });
     }
 
     return result;
