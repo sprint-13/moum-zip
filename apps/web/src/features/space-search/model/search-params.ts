@@ -66,7 +66,7 @@ export const parseSearchQueryState = (searchParams: SearchParamSource): SearchQu
   const keyword = getSearchParamValue(searchParams, "keyword");
   const locationId = getSearchParamValue(searchParams, "location");
 
-  return {
+  const parsedQueryState: SearchQueryState = {
     categoryId: categoryId && isSearchCategoryId(categoryId) ? categoryId : SEARCH_INITIAL_QUERY_STATE.categoryId,
     dateSortId: dateSortId && isSearchDateSortId(dateSortId) ? dateSortId : SEARCH_INITIAL_QUERY_STATE.dateSortId,
     deadlineSortId:
@@ -76,6 +76,22 @@ export const parseSearchQueryState = (searchParams: SearchParamSource): SearchQu
     keyword: normalizeSearchKeyword(keyword),
     locationId: locationId && isSearchLocationId(locationId) ? locationId : SEARCH_INITIAL_QUERY_STATE.locationId,
   };
+
+  if (parsedQueryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
+    return {
+      ...parsedQueryState,
+      dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
+    };
+  }
+
+  if (parsedQueryState.dateSortId !== SEARCH_INITIAL_QUERY_STATE.dateSortId) {
+    return {
+      ...parsedQueryState,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
+    };
+  }
+
+  return parsedQueryState;
 };
 
 export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchRequestCategoryId => {

@@ -39,6 +39,18 @@ describe("parseSearchQueryState", () => {
       locationId: "all",
     });
   });
+
+  it("URL로 마감 정렬에 진입하면 날짜 정렬을 default로 맞춘다", () => {
+    const queryState = parseSearchQueryState(new URLSearchParams("deadlineSort=fast"));
+
+    expect(queryState).toEqual({
+      categoryId: "all",
+      dateSortId: "default",
+      deadlineSortId: "fast",
+      keyword: "",
+      locationId: "all",
+    });
+  });
 });
 
 describe("buildSearchHref", () => {
