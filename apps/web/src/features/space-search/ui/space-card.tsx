@@ -106,7 +106,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
         <div className="relative w-full shrink-0 sm:w-full md:w-auto">
           <Image
             alt={imageAlt}
-            className={cn(cardImageClassName, isRegistClosed && "saturate-20 lg:group-hover/card:scale-100")}
+            className={cn(cardImageClassName, isRegistClosed && "saturate-[0.2] lg:group-hover/card:scale-100")}
             height={340}
             src={imageSrc}
             unoptimized
