@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getSpaceListRemote } from "@/_pages/spaces/use-cases/get-space-list";
+import { getSpaceListUsecase } from "@/_pages/spaces/use-cases/get-space-list";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get("cursor") ?? undefined;
 
   try {
-    const data = await getSpaceListRemote(cursor);
+    const data = await getSpaceListUsecase(cursor);
 
     return NextResponse.json(data);
   } catch (err) {

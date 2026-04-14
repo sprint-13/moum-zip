@@ -1,41 +1,41 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getSpaceListRemote } from "./get-space-list";
+import { getSpaceListUsecase } from "./get-space-list";
 
 const mockGetJoined = vi.fn();
 
 vi.mock("@/shared/api/server", () => ({
   getApi: vi.fn(),
-  isAuth: vi.fn().mockResolvedValue({ authenticated: true, userId: 1 }),
+  isAuth: vi.fn(),
 }));
 
-vi.mock("@/entities/spaces/queries", () => ({
-  spaceQueries: {
-    findByMeetingIds: vi.fn(),
+vi.mock("@/features/space/queries", () => ({
+  spaceAndMemberJoinQueries: {
+    getJoinedInfomation: vi.fn(),
   },
 }));
 
-vi.mock("./get-joined-space-infos", () => ({
-  getJoinedSpaceInfosUseCase: vi.fn(),
+vi.mock("@/features/space/mapper", () => ({
+  mapSpaceInfoList: vi.fn(),
 }));
 
-import { spaceQueries } from "@/entities/spaces/queries";
-import { getApi } from "@/shared/api/server";
-import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
+import { mapSpaceInfoList } from "@/features/space/mapper";
+import { spaceAndMemberJoinQueries } from "@/features/space/queries";
+import { getApi, isAuth } from "@/shared/api/server";
 
 const mockGetApiClient = vi.mocked(getApi);
-const mockFindByMeetingIds = vi.mocked(spaceQueries.findByMeetingIds);
-const mockGetJoinedSpaceInfos = vi.mocked(getJoinedSpaceInfosUseCase);
+const mockIsAuth = vi.mocked(isAuth);
+const mockGetJoinedInfomation = vi.mocked(spaceAndMemberJoinQueries.getJoinedInfomation);
+const mockMapSpaceInfoList = vi.mocked(mapSpaceInfoList);
 
 const mockSpaceInfo = {
   spaceId: "space-1",
   name: "테스트 스페이스",
   image: null,
-  meetingId: 1,
   status: "ongoing" as const,
   slug: "slug-1",
   capacity: 10,
   type: "study" as const,
-  location: "서울",
+  location: "online" as const,
   themeColor: "#FF0000",
   startDate: "2026-03-26T00:00:00.000Z",
   modules: ["bulletin"],
@@ -56,18 +56,19 @@ function setupAuthApi(getJoinedResponse: object = { data: mockJoinedMeetingList 
   } as unknown as Awaited<ReturnType<typeof getApi>>);
 }
 
-describe("getSpaceListRemote", () => {
+describe("getSpaceListUsecase", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFindByMeetingIds.mockResolvedValue([]);
-    mockGetJoinedSpaceInfos.mockResolvedValue([]);
+    mockIsAuth.mockResolvedValue({ authenticated: true, userId: 1 });
+    mockGetJoinedInfomation.mockResolvedValue([]);
+    mockMapSpaceInfoList.mockReturnValue([]);
   });
 
   it("스페이스 목록을 반환한다", async () => {
     setupAuthApi();
-    mockGetJoinedSpaceInfos.mockResolvedValue([mockSpaceInfo]);
+    mockMapSpaceInfoList.mockReturnValue([mockSpaceInfo]);
 
-    const result = await getSpaceListRemote();
+    const result = await getSpaceListUsecase();
 
     expect(result.data).toEqual([mockSpaceInfo]);
     expect(result.nextCursor).toBeNull();
@@ -77,7 +78,7 @@ describe("getSpaceListRemote", () => {
   it("cursor 없이 호출하면 getJoined에 cursor가 전달되지 않는다", async () => {
     setupAuthApi();
 
-    await getSpaceListRemote();
+    await getSpaceListUsecase();
 
     expect(mockGetJoined).toHaveBeenCalledWith({ cursor: undefined, size: 10 });
   });
@@ -85,7 +86,7 @@ describe("getSpaceListRemote", () => {
   it("cursor를 전달하면 getJoined에 cursor가 전달된다", async () => {
     setupAuthApi();
 
-    await getSpaceListRemote("cursor-abc");
+    await getSpaceListUsecase("cursor-abc");
 
     expect(mockGetJoined).toHaveBeenCalledWith({ cursor: "cursor-abc", size: 10 });
   });
@@ -95,36 +96,54 @@ describe("getSpaceListRemote", () => {
       data: { data: [{ id: 1 }], nextCursor: "next-cursor-xyz", hasMore: true },
     });
 
-    const result = await getSpaceListRemote();
+    const result = await getSpaceListUsecase();
 
     expect(result.nextCursor).toBe("next-cursor-xyz");
     expect(result.hasMore).toBe(true);
   });
 
-  it("meetingId 목록으로 spaceQueries.findByMeetingIds를 호출한다", async () => {
+  it("meetingId 목록으로 getJoinedInfomation을 호출한다", async () => {
     setupAuthApi({
       data: { data: [{ id: 10 }, { id: 20 }], nextCursor: null, hasMore: false },
     });
 
-    await getSpaceListRemote();
+    await getSpaceListUsecase();
 
-    expect(mockFindByMeetingIds).toHaveBeenCalledWith([10, 20]);
+    expect(mockGetJoinedInfomation).toHaveBeenCalledWith([10, 20], 1);
+  });
+
+  it("meetingId가 없으면 getJoinedInfomation을 호출하지 않고 빈 배열을 반환한다", async () => {
+    setupAuthApi({
+      data: { data: [], nextCursor: null, hasMore: false },
+    });
+
+    const result = await getSpaceListUsecase();
+
+    expect(mockGetJoinedInfomation).not.toHaveBeenCalled();
+    expect(result.data).toEqual([]);
+  });
+
+  it("userId가 null이면 UNAUTHENTICATED 에러를 던진다", async () => {
+    mockIsAuth.mockResolvedValue({ authenticated: false, userId: null });
+    setupAuthApi();
+
+    await expect(getSpaceListUsecase()).rejects.toThrow("UNAUTHENTICATED");
   });
 
   it("getApi가 실패하면 해당 에러를 그대로 던진다", async () => {
     mockGetApiClient.mockRejectedValue(new Error("no token"));
 
-    await expect(getSpaceListRemote()).rejects.toThrow("no token");
+    await expect(getSpaceListUsecase()).rejects.toThrow("no token");
   });
 
-  it("API가 401을 응답하면 'Unauthorized' 에러를 던진다", async () => {
+  it("API가 401을 응답하면 UNAUTHENTICATED 에러를 던진다", async () => {
     mockGetApiClient.mockResolvedValue({
       meetings: {
         getJoined: mockGetJoined.mockRejectedValue({ status: 401 }),
       },
     } as unknown as Awaited<ReturnType<typeof getApi>>);
 
-    await expect(getSpaceListRemote()).rejects.toThrow("Unauthorized");
+    await expect(getSpaceListUsecase()).rejects.toThrow("UNAUTHENTICATED");
   });
 
   it("API가 그 외 에러를 응답하면 'Failed to fetch meetings' 에러를 던진다", async () => {
@@ -134,6 +153,6 @@ describe("getSpaceListRemote", () => {
       },
     } as unknown as Awaited<ReturnType<typeof getApi>>);
 
-    await expect(getSpaceListRemote()).rejects.toThrow("Failed to fetch meetings");
+    await expect(getSpaceListUsecase()).rejects.toThrow("Failed to fetch meetings");
   });
 });

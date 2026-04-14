@@ -1,37 +1,42 @@
-import { spaceQueries } from "@/entities/spaces/queries";
+import { mapSpaceInfoList } from "@/features/space/mapper";
+import { spaceAndMemberJoinQueries } from "@/features/space/queries";
 import { getApi, isAuth } from "@/shared/api/server";
+import { AppError } from "@/shared/lib/error";
 import { safe } from "@/shared/lib/safe";
-import { getJoinedSpaceInfosUseCase } from "./get-joined-space-infos";
 
-export const getSpaceListRemote = async (cursor?: string) => {
-  const [api, { userId }] = await Promise.all([getApi(), isAuth()]);
+export const getSpaceListUsecase = async (cursor?: string) => {
+  const api = await getApi();
+  const { userId } = await isAuth();
 
-  const joinedMeetings = await safe(api.meetings.getJoined({ cursor, size: 10 }), {
+  if (userId === null) throw new AppError("UNAUTHENTICATED");
+
+  const { data: joinedMeetings } = await safe(api.meetings.getJoined({ cursor, size: 10 }), {
     401: () => {
-      throw Error("Unauthorized");
+      throw new AppError("UNAUTHENTICATED");
     },
     default: () => {
       throw Error("Failed to fetch meetings");
     },
   });
 
-  const meetingIds = joinedMeetings.data.data.map((m) => m.id);
+  const meetingIds = joinedMeetings.data.map((m) => m.id);
 
   if (meetingIds.length === 0) {
     return {
       data: [],
-      nextCursor: joinedMeetings.data.nextCursor,
-      hasMore: joinedMeetings.data.hasMore,
+      nextCursor: joinedMeetings.nextCursor,
+      hasMore: joinedMeetings.hasMore,
     };
   }
 
-  const spacesFromDB = await spaceQueries.findByMeetingIds(meetingIds);
+  const spaceStats = await spaceAndMemberJoinQueries.getJoinedInfomation(meetingIds, userId);
+  const spaceStatsMap: Map<number, (typeof spaceStats)[0]> = new Map(spaceStats.map((s) => [s.meetingId, s]));
 
-  const spaces = await getJoinedSpaceInfosUseCase(joinedMeetings.data, spacesFromDB, userId ?? 0);
+  const data = mapSpaceInfoList(joinedMeetings, spaceStatsMap);
 
   return {
-    data: spaces,
-    nextCursor: joinedMeetings.data.nextCursor,
-    hasMore: joinedMeetings.data.hasMore,
+    data,
+    nextCursor: joinedMeetings.nextCursor,
+    hasMore: joinedMeetings.hasMore,
   };
 };
