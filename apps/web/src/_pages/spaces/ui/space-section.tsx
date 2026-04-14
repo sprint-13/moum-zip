@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useEffect, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import type { SpaceInfo } from "@/entities/spaces";
 import { useSpaceList } from "../hooks/use-space-list";
 import { NoSpaceCard } from "./no-space-card";
@@ -36,10 +36,13 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const spaces = data.pages.flatMap((page) => page.data);
-  const ongoingSpaces = spaces.filter((space) => space.status === "ongoing" && space.isApproved === true);
-  const archivedSpaces = spaces.filter((space) => space.status === "archived");
-  const pendingSpaces = spaces.filter((space) => space.isApproved === false);
+  const spaces = useMemo(() => data.pages.flatMap((page) => page.data), [data.pages]);
+  const ongoingSpaces = useMemo(
+    () => spaces.filter((space) => space.status === "ongoing" && space.isApproved === true),
+    [spaces],
+  );
+  const archivedSpaces = useMemo(() => spaces.filter((space) => space.status === "archived"), [spaces]);
+  const pendingSpaces = useMemo(() => spaces.filter((space) => space.isApproved === false), [spaces]);
 
   const normalizedQuery = deferredQuery.trim().toLowerCase();
   const filterByQuery = (space: SpaceInfo) =>
