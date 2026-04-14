@@ -94,7 +94,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
         className={cn(
           cardClassName,
           isRegistClosed &&
-            "bg-card/83 opacity-83 shadow-[0_8px_18px_rgba(17,17,17,0.07)] lg:group-hover/card:translate-y-0 lg:group-hover/card:shadow-[0_10px_24px_rgba(17,17,17,0.09)]",
+            "bg-card/83 opacity-90 shadow-[0_8px_18px_rgba(17,17,17,0.07)] lg:group-hover/card:translate-y-0 lg:group-hover/card:shadow-[0_10px_24px_rgba(17,17,17,0.09)]",
         )}
       >
         <Link
@@ -106,7 +106,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
         <div className="relative w-full shrink-0 sm:w-full md:w-auto">
           <Image
             alt={imageAlt}
-            className={cn(cardImageClassName, isRegistClosed && "saturate-50 lg:group-hover/card:scale-100")}
+            className={cn(cardImageClassName, isRegistClosed && "saturate-20 lg:group-hover/card:scale-100")}
             height={340}
             src={imageSrc}
             unoptimized

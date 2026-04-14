@@ -35,6 +35,28 @@ describe("result-mappers", () => {
     expect(result.statuses).toEqual([{ label: "신청 완료" }, { label: "개설 확정" }]);
   });
 
+  it("신청 완료 상태만 있으면 해당 배지만 표시한다", () => {
+    const item = createSearchResultItem({
+      confirmedAt: null,
+      isJoined: true,
+    });
+
+    const result = mapSearchResultItemToSpaceCardItem(item);
+
+    expect(result.statuses).toEqual([{ label: "신청 완료" }]);
+  });
+
+  it("개설 확정 상태만 있으면 해당 배지만 표시한다", () => {
+    const item = createSearchResultItem({
+      confirmedAt: "2026-04-13T09:00:00",
+      isJoined: undefined,
+    });
+
+    const result = mapSearchResultItemToSpaceCardItem(item);
+
+    expect(result.statuses).toEqual([{ label: "개설 확정" }]);
+  });
+
   it("표시할 상태가 없으면 상태 배열을 만들지 않는다", () => {
     const item = createSearchResultItem({
       confirmedAt: null,
