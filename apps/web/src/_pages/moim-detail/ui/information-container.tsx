@@ -36,7 +36,9 @@ interface ActionButtonProps {
 
 const ActionButton = ({ label, onClick, variant = "primary", disabled = false }: ActionButtonProps) => {
   const secondaryClassName =
-    variant === "secondary" ? "border border-primary bg-white text-green-600 hover:bg-green-50" : "";
+    variant === "secondary"
+      ? "border border-primary bg-white text-green-600 hover:bg-green-50 hover:text-green-700"
+      : "";
 
   const successClassName =
     variant === "success"
