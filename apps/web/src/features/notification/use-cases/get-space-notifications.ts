@@ -19,6 +19,9 @@ type InternalNotificationCursor = {
   id: string;
 };
 
+const DEFAULT_PAGE_SIZE = 10;
+const MAX_PAGE_SIZE = 50;
+
 const VALID_NOTIFICATION_TYPES = new Set<NotificationItem["type"]>([
   "MEETING_CONFIRMED",
   "MEETING_CANCELED",
@@ -31,9 +34,10 @@ const VALID_NOTIFICATION_TYPES = new Set<NotificationItem["type"]>([
 ]);
 
 export async function getSpaceNotifications(
-  { userId, cursor, size = 10, isRead }: GetSpaceNotificationsParams,
+  { userId, cursor, size = DEFAULT_PAGE_SIZE, isRead }: GetSpaceNotificationsParams,
   { database = db }: Deps = {},
 ): Promise<NotificationsResult> {
+  const pageSize = Number.isSafeInteger(size) && size > 0 ? Math.min(size, MAX_PAGE_SIZE) : DEFAULT_PAGE_SIZE;
   const parsedCursor = parseCursor(cursor);
 
   const baseConditions = [
@@ -49,17 +53,17 @@ export async function getSpaceNotifications(
         ? and(
             ...baseConditions,
             or(
-              lt(notifications.createdAt, new Date(parsedCursor.createdAt)),
-              and(eq(notifications.createdAt, new Date(parsedCursor.createdAt)), lt(notifications.id, parsedCursor.id)),
+              lt(notifications.createdAt, parsedCursor.createdAt),
+              and(eq(notifications.createdAt, parsedCursor.createdAt), lt(notifications.id, parsedCursor.id)),
             ),
           )
         : and(...baseConditions),
     )
     .orderBy(desc(notifications.createdAt), desc(notifications.id))
-    .limit(size + 1);
+    .limit(pageSize + 1);
 
-  const hasMore = rows.length > size;
-  const pageRows = hasMore ? rows.slice(0, size) : rows;
+  const hasMore = rows.length > pageSize;
+  const pageRows = hasMore ? rows.slice(0, pageSize) : rows;
 
   const data = pageRows.map(
     (row): NotificationItem => ({
@@ -70,7 +74,7 @@ export async function getSpaceNotifications(
       message: row.message,
       data: normalizeNotificationData(row.data),
       isRead: row.isRead,
-      createdAt: row.createdAt ? new Date(row.createdAt).toISOString() : null,
+      createdAt: row.createdAt,
       source: "internal",
     }),
   );
@@ -82,7 +86,7 @@ export async function getSpaceNotifications(
     nextCursor:
       hasMore && lastRow?.createdAt
         ? createCursor({
-            createdAt: new Date(lastRow.createdAt).toISOString(),
+            createdAt: lastRow.createdAt,
             id: String(lastRow.id),
           })
         : null,
