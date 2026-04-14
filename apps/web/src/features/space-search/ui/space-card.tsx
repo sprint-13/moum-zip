@@ -42,6 +42,8 @@ const cardImageClassName =
   "h-39 w-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100 2xl:size-42.5";
 const cardTitleClassName =
   "min-w-0 flex-1 truncate font-semibold text-foreground text-xl leading-normal tracking-[-0.04em] transition-colors duration-300 motion-reduce:transition-none";
+const spaceCardImageSizes =
+  "(min-width: 1536px) 170px, (min-width: 1024px) 160px, (min-width: 768px) 170px, (min-width: 640px) calc(100vw - 3.5rem), calc(100vw - 2.5rem)";
 
 const MetaChip = ({ chip }: MetaChipProps) => {
   return (
@@ -108,8 +110,8 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
             alt={imageAlt}
             className={cn(cardImageClassName, isRegistClosed && "saturate-[0.2] lg:group-hover/card:scale-100")}
             height={340}
+            sizes={spaceCardImageSizes}
             src={imageSrc}
-            unoptimized
             width={340}
           />
           <div className="absolute top-4 right-4 z-20 sm:hidden">
