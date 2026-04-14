@@ -251,8 +251,9 @@ export function NotificationMenu({
               throw new Error(result.message);
             }
           }
-
-          router.refresh();
+          if (!href) {
+            router.refresh();
+          }
         }
 
         setOpen(false);
