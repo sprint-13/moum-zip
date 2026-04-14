@@ -44,5 +44,6 @@ export const SEARCH_INITIAL_QUERY_STATE: SearchQueryState = {
   categoryId: "all",
   dateSortId: "default",
   deadlineSortId: "default",
+  keyword: "",
   locationId: "all",
 };

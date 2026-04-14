@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { getNextSearchQueryState } from "../model/next-search-query-state";
-import { buildSearchHref, parseSearchQueryState } from "../model/search-params";
+import { buildSearchHref, normalizeSearchKeyword, parseSearchQueryState } from "../model/search-params";
 import type { SearchDateSortId, SearchDeadlineSortId, SearchLocationId, SearchQueryState } from "../model/types";
 
 type HistoryMode = "push" | "replace";
@@ -74,6 +74,26 @@ export const useSearchQueryState = ({ queryState }: UseSearchQueryStateProps) =>
     );
   };
 
+  const handleKeywordChange = (keyword: string) => {
+    const normalizedKeyword = normalizeSearchKeyword(keyword);
+
+    updateQueryState(
+      (currentQueryState) =>
+        getNextSearchQueryState(currentQueryState, { type: "keyword", keyword: normalizedKeyword }),
+      "replace",
+    );
+  };
+
+  const handleResetFiltersForKeyword = (keyword: string) => {
+    const normalizedKeyword = normalizeSearchKeyword(keyword);
+
+    updateQueryState(
+      (currentQueryState) =>
+        getNextSearchQueryState(currentQueryState, { type: "reset-filters-for-keyword", keyword: normalizedKeyword }),
+      "replace",
+    );
+  };
+
   const handleDeadlineSortChange = (deadlineSortId: SearchDeadlineSortId) => {
     updateQueryState(
       (currentQueryState) => getNextSearchQueryState(currentQueryState, { type: "deadline-sort", deadlineSortId }),
@@ -86,6 +106,8 @@ export const useSearchQueryState = ({ queryState }: UseSearchQueryStateProps) =>
     handleCategoryChange,
     handleDateSortChange,
     handleDeadlineSortChange,
+    handleKeywordChange,
     handleLocationChange,
+    handleResetFiltersForKeyword,
   };
 };
