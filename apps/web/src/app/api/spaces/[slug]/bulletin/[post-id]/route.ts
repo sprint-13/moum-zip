@@ -1,4 +1,3 @@
-import { updateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { memberQueries } from "@/entities/member";
 import type { PostCategory } from "@/entities/post";
@@ -7,7 +6,6 @@ import { deletePostUseCase } from "@/features/space/use-cases/delete-post";
 import { getPostInfo } from "@/features/space/use-cases/get-post-detail";
 import { updatePostUseCase } from "@/features/space/use-cases/update-post";
 import { isAuth } from "@/shared/api/server";
-import { CACHE_TAGS } from "@/shared/lib/cache";
 import { AppError } from "@/shared/lib/error";
 
 async function getAuthAndSpace(slug: string) {
@@ -58,7 +56,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
       { postId, spaceId: space.id, title, content, category: category as PostCategory },
       { userId: membership.userId, role: membership.role },
     );
-    updateTag(CACHE_TAGS.bulletin(space.id));
     return NextResponse.json({ postId });
   } catch (err) {
     if (err instanceof AppError && err.code === "POST_NOT_FOUND") {
@@ -80,7 +77,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const { space, membership } = result;
   try {
     await deletePostUseCase(postId, space.id, { userId: membership.userId, role: membership.role });
-    updateTag(CACHE_TAGS.bulletin(space.id));
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     if (err instanceof AppError && err.code === "POST_NOT_FOUND") {

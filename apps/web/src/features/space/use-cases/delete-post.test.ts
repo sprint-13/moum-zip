@@ -42,7 +42,7 @@ describe("deletePostUseCase", () => {
     const result = await deletePostUseCase("post-1", "space-1", { userId: 1, role: "member" });
 
     expect(mockDeleteById).toHaveBeenCalledWith("post-1");
-    expect(result).toEqual({ postId: "post-1" });
+    expect(result).toEqual({ postId: "post-1", authorId: 1 });
   });
 
   it("manager는 타인의 게시글을 삭제할 수 있다", async () => {
@@ -51,7 +51,7 @@ describe("deletePostUseCase", () => {
     const result = await deletePostUseCase("post-1", "space-1", { userId: 1, role: "manager" });
 
     expect(mockDeleteById).toHaveBeenCalledWith("post-1");
-    expect(result).toEqual({ postId: "post-1" });
+    expect(result).toEqual({ postId: "post-1", authorId: 99 });
   });
 
   it("존재하지 않는 게시글 삭제 시 AppError(POST_NOT_FOUND)를 던진다", async () => {

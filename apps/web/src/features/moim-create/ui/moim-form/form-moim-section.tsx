@@ -140,8 +140,22 @@ export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false 
             )}
           />
 
-          <FormDateTimeRow control={control} dateName="date" timeName="time" label="모임 일정" />
-          <FormDateTimeRow control={control} dateName="deadlineDate" timeName="deadlineTime" label="모집 마감 날짜" />
+          <FormDateTimeRow
+            control={control}
+            trigger={trigger}
+            dateName="date"
+            timeName="time"
+            label="모임 일정"
+            amplitudeStep="datetime"
+          />
+          <FormDateTimeRow
+            control={control}
+            trigger={trigger}
+            dateName="deadlineDate"
+            timeName="deadlineTime"
+            label="모집 마감 날짜"
+            amplitudeStep="deadline_datetime"
+          />
         </div>
       </div>
     </>

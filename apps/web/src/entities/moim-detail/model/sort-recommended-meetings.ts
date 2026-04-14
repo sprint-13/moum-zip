@@ -96,7 +96,7 @@ export const sortRecommendedMeetings = <T extends RecommendedMeetingBase>(
   meetings: T[],
   currentMeeting: CurrentMeetingBase,
 ) => {
-  return [...meetings]
+  const sortedMeetings = [...meetings]
     .filter((meeting) => meeting.id !== currentMeeting.id)
     .sort((a, b) => {
       const aPriority = getMatchPriority(a, currentMeeting);
@@ -121,6 +121,18 @@ export const sortRecommendedMeetings = <T extends RecommendedMeetingBase>(
       }
 
       return (b.participantCount ?? 0) - (a.participantCount ?? 0);
-    })
-    .slice(0, RECOMMEND_LIMIT);
+    });
+
+  const uniqueMeetings = sortedMeetings.reduce<T[]>((accumulator, meeting) => {
+    const isDuplicatedMeeting = accumulator.some((candidate) => candidate.id === meeting.id);
+
+    if (isDuplicatedMeeting) {
+      return accumulator;
+    }
+
+    accumulator.push(meeting);
+    return accumulator;
+  }, []);
+
+  return uniqueMeetings.slice(0, RECOMMEND_LIMIT);
 };

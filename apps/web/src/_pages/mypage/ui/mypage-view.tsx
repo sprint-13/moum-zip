@@ -37,6 +37,7 @@ export function MypageView({
     joinedMeetings,
     createdMeetings,
     likedMeetings,
+    enterableMeetingIds,
     isJoinedError,
     isCreatedError,
     isLikedError,
@@ -52,6 +53,7 @@ export function MypageView({
     moims,
     createdMoims,
     enableRemoteFetch,
+    profile,
   });
 
   return (
@@ -134,6 +136,7 @@ export function MypageView({
                   onRetry={() => void refetchLikedMeetings()}
                   onToggleLike={handleToggleLike}
                   onEnterSpace={handleEnterSpace}
+                  canShowActionButton={(moim) => enterableMeetingIds.has(moim.id)}
                 />
               </Tabs.Content>
             </div>

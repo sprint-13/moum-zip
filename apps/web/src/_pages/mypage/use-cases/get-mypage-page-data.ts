@@ -52,9 +52,9 @@ export const getMypagePageData = async ({
     profile,
     moims: {
       joined: joinedMeetings.data.map((meeting, index) =>
-        mapJoinedMeeting(meeting, index, favoriteMeetingIds.has(meeting.id)),
+        mapJoinedMeeting(meeting, index, user.id, favoriteMeetingIds.has(meeting.id)),
       ),
-      liked: favoritesList.data.map(mapFavoriteMeeting),
+      liked: favoritesList.data.map((favorite, index) => mapFavoriteMeeting(favorite, index, user.id)),
     },
     createdMoims: {
       ongoing: [],

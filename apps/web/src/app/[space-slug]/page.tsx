@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { DashboardAttendanceSection } from "./_components/dashboard-attendance-section";
+import { DashboardGrassSection } from "./_components/dashboard-grass-section";
 import { DashboardPostSection } from "./_components/dashboard-post-section";
 import { DashboardScheduleSection } from "./_components/dashboard-schedule-section";
 
@@ -24,6 +25,9 @@ export default async function SpacePage({ params }: { params: Promise<{ "space-s
         <SpaceBodyRight>
           <Suspense fallback={<DashboardAttendanceSkeleton />}>
             <DashboardAttendanceSection spaceId={space.spaceId} userId={membership.userId} slug={slug} />
+          </Suspense>
+          <Suspense fallback={<DashboardGrassSkeleton />}>
+            <DashboardGrassSection spaceId={space.spaceId} userId={membership.userId} />
           </Suspense>
         </SpaceBodyRight>
       </SpaceBody>
@@ -64,6 +68,27 @@ function DashboardAttendanceSkeleton() {
       </div>
       <div className="h-20 rounded-lg bg-muted" />
       <div className="h-11 rounded-lg bg-muted" />
+    </div>
+  );
+}
+
+function DashboardGrassSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-4 rounded-lg border border-border bg-background p-5 shadow-sm">
+      <div className="flex flex-col gap-1.5">
+        <div className="h-5 w-20 rounded bg-muted" />
+        <div className="h-4 w-40 rounded bg-muted" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="h-16 rounded-lg bg-muted" />
+        <div className="h-16 rounded-lg bg-muted" />
+      </div>
+      <div className="grid grid-cols-12 gap-1.5">
+        {Array.from({ length: 84 }).map((_, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+          <div key={index} className="h-3.5 w-3.5 rounded-[4px] bg-muted" />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AmplitudeInit } from "@/amplitude";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.className} ${pretendard.variable} bg-background-secondary antialiased`}>
+        <AmplitudeInit />
         {children}
       </body>
     </html>
