@@ -6,9 +6,9 @@ import { cn } from "@ui/lib/utils";
 import { useState } from "react";
 import CrownIcon from "@/_pages/moim-detail/assets/crown.svg";
 import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
-import { AlertModal } from "@/_pages/moim-detail/ui/alert-modal";
 import type { InformationData } from "@/entities/moim-detail";
 import { LikeButton } from "@/features/moim-detail/ui/like-button";
+import { AlertModal } from "@/shared/ui";
 
 type ViewType = "member" | "manager";
 type ActionButtonVariant = "primary" | "secondary" | "success";
