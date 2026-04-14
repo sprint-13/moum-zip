@@ -7,7 +7,7 @@ vi.mock("@/entities/post/queries", () => ({
   },
 }));
 
-vi.mock("@/features/notification/use-cases/create-space-member-notifications", () => ({
+vi.mock("@/features/notification/use-cases/create-space-member-notification", () => ({
   createSpaceMemberNotifications: vi.fn(),
 }));
 
