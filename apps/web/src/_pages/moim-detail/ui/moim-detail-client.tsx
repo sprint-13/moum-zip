@@ -304,7 +304,11 @@ export const MoimDetailClient = ({
             </div>
           </section>
 
-          <DescriptionSection description={initialDescription} />
+          <DescriptionSection
+            description={initialDescription}
+            hostName={state.informationData.hostName}
+            hostImage={state.informationData.hostImage}
+          />
 
           <section className="flex flex-col gap-4">
             <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
