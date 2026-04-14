@@ -24,6 +24,8 @@ storybook-static
 CLAUDE.md
 *.pen
 
+.venv-fonttools
+
 # Codex subagent artifacts
 subagent-runs/
 subagent-*

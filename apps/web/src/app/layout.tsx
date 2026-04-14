@@ -4,7 +4,7 @@ import "./globals.css";
 import { AmplitudeInit } from "@/amplitude";
 
 const pretendard = localFont({
-  src: "./fonts/PretendardVariable.woff2",
+  src: "./fonts/PretendardSubset.woff2",
   display: "swap",
   variable: "--font-pretendard",
 });
