@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { getSpaceSlugAction } from "@/_pages/mypage/actions";
 import { useCreatedMeetings } from "@/_pages/mypage/hooks/use-created-meetings";
-import type { CreatedFilterKey, MypageMoimCard, MypageTabKey } from "@/_pages/mypage/model";
+import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "@/_pages/mypage/model";
 import { getFavoritesQueryOptions, getJoinedMeetingsQueryOptions } from "@/_pages/mypage/queries";
 import {
   applyFavoriteState,
   buildFavoriteMeetingIds,
   buildLikedMeetings,
+  mergeEnterableLikedMeetings,
   useToggleFavorite,
 } from "@/_pages/mypage/use-cases";
 
@@ -22,6 +23,7 @@ interface UseMypageViewStateParams {
   moims: Record<MoimTabKey, MypageMoimCard[]>;
   createdMoims: Record<CreatedFilterKey, MypageMoimCard[]>;
   enableRemoteFetch: boolean;
+  profile: MypageProfile;
 }
 
 const isMypageTabKey = (tab: string): tab is MypageTabKey => {
@@ -33,6 +35,7 @@ export const useMypageViewState = ({
   moims,
   createdMoims,
   enableRemoteFetch,
+  profile,
 }: UseMypageViewStateParams) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<MypageTabKey>("joined");
@@ -45,7 +48,7 @@ export const useMypageViewState = ({
     isError: isJoinedError,
     refetch: refetchJoinedMeetings,
   } = useQuery({
-    ...getJoinedMeetingsQueryOptions(moims.joined),
+    ...getJoinedMeetingsQueryOptions(moims.joined, profile.userId),
     enabled: enableRemoteFetch && selectedTab === "joined",
   });
 
@@ -87,8 +90,25 @@ export const useMypageViewState = ({
   const createdMeetings = createdFilter === "ongoing" ? ongoingCreatedMeetings : endedCreatedMeetings;
 
   const likedMeetings = useMemo(
-    () => buildLikedMeetings(enableRemoteFetch ? favoriteList : undefined, moims.liked, enableRemoteFetch),
-    [enableRemoteFetch, favoriteList, moims.liked],
+    () =>
+      mergeEnterableLikedMeetings(
+        buildLikedMeetings(
+          enableRemoteFetch ? favoriteList : undefined,
+          moims.liked,
+          enableRemoteFetch,
+          profile.userId,
+        ),
+        [...joinedMeetings, ...ongoingCreatedMeetings, ...endedCreatedMeetings],
+      ),
+    [
+      enableRemoteFetch,
+      endedCreatedMeetings,
+      favoriteList,
+      joinedMeetings,
+      moims.liked,
+      ongoingCreatedMeetings,
+      profile.userId,
+    ],
   );
 
   const enterableMeetingIds = useMemo(() => {
@@ -136,6 +156,7 @@ export const useMypageViewState = ({
     favoriteMutation.mutate({
       meetingId: Number(meetingId),
       nextLiked: !meeting.liked,
+      currentUserId: profile.userId,
     });
   };
 

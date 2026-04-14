@@ -23,8 +23,7 @@ const imageToneClassName: Record<MoimImageTone, string> = {
 };
 
 const metaLabelClassName = "text-muted-foreground";
-const cardWrapperClassName =
-  "group/card -m-1 w-full rounded-[2rem] p-1 focus-within:rounded-[2rem] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2";
+const cardWrapperClassName = "group/card -m-1 w-full rounded-[2rem] p-1";
 const cardClassName =
   "relative flex min-h-[24.375rem] w-full flex-col overflow-hidden rounded-3xl bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none md:min-h-[14.75rem] md:flex-row md:items-center md:gap-6 md:p-6 md:shadow-[0_10px_24px_rgba(17,17,17,0.09)] md:group-hover/card:-translate-y-0.5 md:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:md:group-hover/card:translate-y-0 xl:h-[14.75rem] xl:w-[59.875rem]";
 const cardImageClassName =
@@ -125,15 +124,17 @@ export const MoimCard = ({ moim, onToggleLike, onEnterSpace, showActionButton = 
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 md:p-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge>
-            {moim.secondaryBadge ? (
-              <Badge variant={moim.secondaryBadge.variant}>
-                {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
-                {moim.secondaryBadge.label}
-              </Badge>
-            ) : null}
-          </div>
+          {moim.primaryBadge || moim.secondaryBadge ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {moim.primaryBadge ? <Badge variant={moim.primaryBadge.variant}>{moim.primaryBadge.label}</Badge> : null}
+              {moim.secondaryBadge ? (
+                <Badge variant={moim.secondaryBadge.variant}>
+                  {moim.secondaryBadge.withIcon ? <CheckCircleIcon /> : null}
+                  {moim.secondaryBadge.label}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="space-y-5">
             <h3 className={cardTitleClassName}>{moim.title}</h3>
