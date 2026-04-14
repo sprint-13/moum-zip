@@ -260,11 +260,6 @@ export const MoimDetailClient = ({
           <button
             type="button"
             onClick={() => {
-              if (window.history.length > 1) {
-                router.back();
-                return;
-              }
-
               router.push(ROUTES.search);
             }}
             className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"

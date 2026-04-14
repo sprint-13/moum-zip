@@ -304,7 +304,7 @@ export function mapMeetingDetailToInformationData(params: {
     isLiked: getIsLiked(meeting),
     image: meeting.image ?? null,
     hostId: meeting.hostId,
-    hostName: meeting.host?.name ?? "알 수 없음",
+    hostName: meeting.host?.name?.trim() || "알 수 없음",
     hostImage: meeting.host?.image ?? null,
     viewerRole,
     isJoined,
