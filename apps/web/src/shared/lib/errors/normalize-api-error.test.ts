@@ -24,6 +24,14 @@ describe("normalizeApiError", () => {
     expect(error.code).toBe("REQUEST_FAILED");
     expect(error.message).toBe("네트워크 오류");
   });
+
+  it("401 문자열 Error는 AuthError로 정규화한다", async () => {
+    const error = await normalizeApiError(new Error("401 Unauthorized"));
+
+    expect(error).toBeInstanceOf(AuthError);
+    expect(error.code).toBe("UNAUTHORIZED");
+    expect(error.message).toBe("401 Unauthorized");
+  });
 });
 
 describe("getErrorPresentation", () => {

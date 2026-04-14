@@ -16,6 +16,26 @@ interface ParsedResponseError {
 
 const DEFAULT_ERROR_MESSAGE = "요청 처리 중 오류가 발생했습니다.";
 
+const getStatusFromMessage = (message?: string): number | undefined => {
+  if (typeof message !== "string") {
+    return undefined;
+  }
+
+  if (/\b401\b/.test(message)) {
+    return 401;
+  }
+
+  if (/\b403\b/.test(message)) {
+    return 403;
+  }
+
+  if (/\b404\b/.test(message)) {
+    return 404;
+  }
+
+  return undefined;
+};
+
 const getCodeByStatus = (status?: number): ErrorCode => {
   switch (status) {
     case 401:
@@ -113,12 +133,16 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
   }
 
   if (error instanceof Error) {
-    const code = error.name === "TypeError" ? ERROR_CODES.NETWORK_ERROR : (options.code ?? ERROR_CODES.REQUEST_FAILED);
+    const inferredStatus = getStatusFromMessage(error.message);
+    const code =
+      error.name === "TypeError"
+        ? ERROR_CODES.NETWORK_ERROR
+        : (options.code ?? getCodeByStatus(inferredStatus) ?? ERROR_CODES.REQUEST_FAILED);
 
     return buildApiError(
       code,
       error.message || options.fallbackMessage || DEFAULT_ERROR_MESSAGE,
-      undefined,
+      inferredStatus,
       undefined,
       error,
       options.shouldReport ?? true,
@@ -126,10 +150,6 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
   }
 
   if (typeof error === "object" && error !== null) {
-    const status = "status" in error && typeof error.status === "number" ? error.status : undefined;
-    const code =
-      options.code ??
-      ("code" in error && typeof error.code === "string" ? (error.code as ErrorCode) : getCodeByStatus(status));
     const message =
       ("message" in error && typeof error.message === "string"
         ? error.message
@@ -138,6 +158,12 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
           : undefined) ??
       options.fallbackMessage ??
       DEFAULT_ERROR_MESSAGE;
+    const status =
+      ("status" in error && typeof error.status === "number" ? error.status : undefined) ??
+      getStatusFromMessage(message);
+    const code =
+      options.code ??
+      ("code" in error && typeof error.code === "string" ? (error.code as ErrorCode) : getCodeByStatus(status));
 
     return buildApiError(code, message, status, error, error, options.shouldReport ?? true);
   }

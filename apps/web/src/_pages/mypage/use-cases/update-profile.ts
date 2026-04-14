@@ -1,4 +1,6 @@
 import type { UpdateUserRequest } from "@moum-zip/api";
+import { ERROR_CODES } from "@/shared/lib/error";
+import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 
 interface Deps {
   userApi: {
@@ -33,11 +35,12 @@ export const updateProfile = async (
 
     return { ok: true };
   } catch (error) {
-    if (error instanceof Response && error.status === 401) {
-      return { ok: false, error: "UNAUTHORIZED" };
-    }
+    const normalizedError = await normalizeApiError(error, {
+      fallbackMessage: "프로필 수정 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.",
+      shouldReport: false,
+    });
 
-    if (error instanceof Error && error.message.includes("401")) {
+    if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
       return { ok: false, error: "UNAUTHORIZED" };
     }
 

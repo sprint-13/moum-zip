@@ -1,14 +1,8 @@
 import type { PresignedUrlRequest } from "@moum-zip/api";
 import { NextResponse } from "next/server";
 import { getApi, isAuth } from "@/shared/api/server";
-
-function isUnauthorizedError(error: unknown): boolean {
-  if (error instanceof Response) {
-    return error.status === 401;
-  }
-
-  return error instanceof Error && error.message.includes("401");
-}
+import { ERROR_CODES } from "@/shared/lib/error";
+import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 
 export async function POST(request: Request) {
   const { authenticated } = await isAuth();
@@ -25,10 +19,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    if (isUnauthorizedError(error)) {
+    const normalizedError = await normalizeApiError(error, {
+      fallbackMessage: "이미지 업로드 URL 발급에 실패했습니다.",
+      shouldReport: false,
+    });
+
+    if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
       return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
     }
 
-    return NextResponse.json({ message: "이미지 업로드 URL 발급에 실패했습니다." }, { status: 500 });
+    return NextResponse.json({ message: normalizedError.message }, { status: 500 });
   }
 }
