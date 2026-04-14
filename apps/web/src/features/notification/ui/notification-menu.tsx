@@ -141,7 +141,7 @@ export function NotificationMenu({
   };
 
   const handleReadAll = () => {
-    if (unreadCount === 0 || isPending) {
+    if (unreadCount === 0 || isPending || isFetchingMore) {
       return;
     }
 
@@ -168,7 +168,7 @@ export function NotificationMenu({
   };
 
   const handleDeleteAll = () => {
-    if (localNotifications.length === 0 || isPending) {
+    if (localNotifications.length === 0 || isPending || isFetchingMore) {
       return;
     }
 
@@ -184,7 +184,7 @@ export function NotificationMenu({
   };
 
   const handleConfirmDeleteAll = () => {
-    if (localNotifications.length === 0 || isPending) {
+    if (localNotifications.length === 0 || isPending || isFetchingMore) {
       return;
     }
 
