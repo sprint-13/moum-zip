@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState } from "react";
-import { useForm } from "react-hook-form";
+import { type DefaultValues, useForm } from "react-hook-form";
 import { createMoimAction } from "@/_pages/moim-create/actions";
 import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim";
 import { trackMoimCreateSubmitClicked } from "@/features/moim-create/lib/moim-create-events";
 
-const MOIM_CREATE_DEFAULT_VALUES: Partial<MoimCreateFormValues> = {
+export const MOIM_CREATE_DEFAULT_VALUES: DefaultValues<MoimCreateFormValues> = {
   type: "study",
   name: "",
   capacity: undefined,
