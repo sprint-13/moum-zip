@@ -31,6 +31,16 @@ const getDeadlineTime = (date?: string | null) => {
   return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
 };
 
+const isOpenMeeting = (date?: string | null) => {
+  const deadlineTime = getDeadlineTime(date);
+
+  if (deadlineTime === Number.MAX_SAFE_INTEGER) {
+    return true;
+  }
+
+  return deadlineTime > Date.now();
+};
+
 const normalizeType = (type?: string | null) => {
   if (!type) {
     return "";
@@ -99,6 +109,13 @@ export const sortRecommendedMeetings = <T extends RecommendedMeetingBase>(
   const sortedMeetings = [...meetings]
     .filter((meeting) => meeting.id !== currentMeeting.id)
     .sort((a, b) => {
+      const aIsOpen = isOpenMeeting(a.registrationEnd) ? 1 : 0;
+      const bIsOpen = isOpenMeeting(b.registrationEnd) ? 1 : 0;
+
+      if (aIsOpen !== bIsOpen) {
+        return bIsOpen - aIsOpen;
+      }
+
       const aPriority = getMatchPriority(a, currentMeeting);
       const bPriority = getMatchPriority(b, currentMeeting);
 
@@ -107,6 +124,7 @@ export const sortRecommendedMeetings = <T extends RecommendedMeetingBase>(
       }
 
       const aSameHost = a.hostId != null && currentMeeting.hostId != null && a.hostId === currentMeeting.hostId ? 1 : 0;
+
       const bSameHost = b.hostId != null && currentMeeting.hostId != null && b.hostId === currentMeeting.hostId ? 1 : 0;
 
       if (aSameHost !== bSameHost) {
