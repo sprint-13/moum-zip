@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { mapNotificationsResponse } from "@/entities/notification/model/mapper";
 import type { NotificationItem, NotificationsResult } from "@/entities/notification/model/types";
 import { getApi, isAuth } from "@/shared/api/server";
@@ -19,7 +20,7 @@ type MergedNotificationsCursor = {
   internalCursor: string | null;
 };
 
-export async function getNotifications(
+export const getNotifications = cache(async function getNotifications(
   { isRead, cursor, size = 10 }: GetNotificationsParams = {},
   { getAuthApi = getApi, getSession = isAuth }: Deps = {},
 ): Promise<NotificationsResult> {
@@ -74,7 +75,7 @@ export async function getNotifications(
     nextCursor,
     hasMore,
   });
-}
+});
 
 function getCreatedAtTime(notification: NotificationItem) {
   // createdAt이 없는 알림은 정렬 우선순위를 가장 낮게 둡니다.
