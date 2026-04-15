@@ -2,8 +2,10 @@
 
 import { updateTag } from "next/cache";
 import type { MemberRole } from "@/entities/member";
+import { memberQueries } from "@/entities/member";
 import { createNotification } from "@/features/notification/use-cases/create-notification";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
+import { getGrassUseCase } from "@/features/space/use-cases/get-member-grass";
 import { CACHE_TAGS } from "@/shared/lib/cache";
 import { handleAppError } from "@/shared/lib/handle-app-error";
 import { addSpaceMemberUseCase, type PendingUser } from "./use-cases/add-space-member";
@@ -58,4 +60,28 @@ export async function changeRoleAction(slug: string, targetUserId: number, newRo
 
   updateTag(CACHE_TAGS.members(space.spaceId));
   updateTag(CACHE_TAGS.member(space.spaceId, targetUserId));
+}
+
+export async function exportMembersAction(slug: string) {
+  const { space, membership } = await getSpaceContext(slug);
+
+  if (membership.role !== "manager") {
+    throw new Error("권한이 없습니다.");
+  }
+
+  const members = await memberQueries.findAllBySpaceId(space.spaceId);
+
+  return members.map((m) => ({
+    nickname: m.nickname,
+    email: m.email ?? "-",
+    role: m.role,
+    joinedAt: m.joinedAt ?? "-",
+    userId: m.userId,
+  }));
+}
+
+export async function exportMemberGrassAction(slug: string, userId: number) {
+  const { space } = await getSpaceContext(slug);
+  const grass = await getGrassUseCase(space.spaceId, userId);
+  return grass;
 }
