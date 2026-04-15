@@ -7,6 +7,12 @@ interface SentryWebhookBody {
       web_url?: string;
       level?: string;
     };
+    event?: {
+      title?: string;
+      message?: string;
+      culprit?: string;
+      level?: string;
+    };
     project?: string;
   };
 }
@@ -22,12 +28,10 @@ function verifySentrySignature(payload: string, signature: string | null, secret
 
   const expected = crypto.createHmac("sha256", secret).update(payload).digest("hex");
 
-  try {
-    // 타이밍 공격 방지를 위해 timingSafeEqual로 상수 시간 비교
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+  if (signature.length !== expected.length) return false;
+
+  // 타이밍 공격 방지를 위해 timingSafeEqual로 상수 시간 비교
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
 }
 
 export async function POST(req: Request) {
@@ -60,10 +64,16 @@ export async function POST(req: Request) {
 
   const { data } = body as SentryWebhookBody;
   const issue = data?.issue;
-  const title = issue?.title ?? "Unknown Error";
-  const url = issue?.web_url ?? "";
+  const event = data?.event;
+  const title = event?.title ?? issue?.title ?? "Unknown Error";
+
+  // 빈 문자열을 넘기면 Discord가 제목을 링크로 만들지 않고 일반 텍스트로 렌더링함
+  // url이 없는 경우 undefined를 명시적으로 넘겨 해당 동작을 방지
+  const url = issue?.web_url || undefined;
   const project = data?.project ?? "";
-  const level = issue?.level ?? "error";
+
+  // issue에 없으면 event에서 level 참조
+  const level = issue?.level ?? event?.level ?? "error";
 
   const levelEmoji: Record<string, string> = {
     fatal: "💀",
@@ -82,6 +92,19 @@ export async function POST(req: Request) {
 
   const emoji = levelEmoji[level] ?? "🔴";
   const color = levelColor[level] ?? 0xff0000;
+  const MAX_LENGTH = 400;
+
+  const culpritField = event?.culprit
+    ? [{ name: "📍 발생 위치", value: `\`${event.culprit.slice(0, MAX_LENGTH)}\``, inline: false }]
+    : [];
+
+  // 에러 본문 메시지 파싱 - 길이 제한 후 코드 블록으로 표시
+  const rawMessage = event?.message ?? "";
+  const truncatedMessage =
+    rawMessage.length > MAX_LENGTH ? rawMessage.slice(0, MAX_LENGTH) + "\n… (truncated)" : rawMessage;
+  const messageField = truncatedMessage
+    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${truncatedMessage}\n\`\`\``, inline: false }]
+    : [];
 
   try {
     const response = await fetch(discordUrl, {
@@ -90,13 +113,19 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         embeds: [
           {
+            // url 지정 - 제목 자체가 Sentry 링크로 연결
             title: `${emoji} ${title}`,
             url,
             color,
             fields: [
-              { name: "Project", value: project, inline: true },
-              { name: "Level", value: level, inline: true },
+              ...culpritField,
+              { name: "🗂 프로젝트", value: project || "N/A", inline: true },
+              { name: "🚨 심각도", value: level, inline: true },
+              ...messageField,
             ],
+            footer: { text: `Sentry • ${project || "N/A"}` },
+            // 에러 발생 시각을 Discord 메시지에 기록
+            timestamp: new Date().toISOString(),
           },
         ],
       }),
