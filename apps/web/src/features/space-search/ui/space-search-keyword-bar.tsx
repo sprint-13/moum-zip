@@ -60,7 +60,7 @@ export const SearchKeywordBar = ({
               aria-label="스페이스 검색어 입력"
               className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-slate-400"
               onChange={(event) => onKeywordChange(event.target.value)}
-              placeholder="모임명, 설명, 지역, 종류, 주소 검색"
+              placeholder="스페이스명, 설명, 지역, 종류 검색"
               type="text"
               value={keyword}
             />
