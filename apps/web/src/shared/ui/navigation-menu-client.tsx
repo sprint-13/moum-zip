@@ -4,6 +4,8 @@ import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
 import { logoutAction } from "@/_pages/auth/actions";
+import type { NotificationItem } from "@/entities/notification/model/types";
+import { NotificationMenu } from "@/features/notification/ui/notification-menu";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
 import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
 import { ProfileAvatar } from "@/shared/ui";
@@ -16,9 +18,18 @@ type NavigationMenuClientProps = {
     imageUrl?: string;
     name?: string;
   } | null;
+  notifications: NotificationItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
 };
 
-export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientProps) => {
+export const NavigationMenuClient = ({
+  loggedIn,
+  user,
+  notifications,
+  nextCursor,
+  hasMore,
+}: NavigationMenuClientProps) => {
   return (
     <>
       <div className="hidden w-full py-2 md:block">
@@ -29,6 +40,7 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
                 {logo}
               </Link>
             </Gnb.Item>
+
             <Gnb.Item>
               {NAVIGATION_ROUTES.map((route) => (
                 <Gnb.Link key={route.href} asChild>
@@ -37,7 +49,8 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
               ))}
             </Gnb.Item>
           </Gnb.List>
-          <Gnb.List className="items-center gap-1 pr-4">
+
+          <Gnb.List className="items-center gap-2 pr-4">
             {loggedIn ? (
               <>
                 <Gnb.Item>
@@ -47,6 +60,11 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
                     </button>
                   </Gnb.Link>
                 </Gnb.Item>
+
+                <Gnb.Item>
+                  <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
+                </Gnb.Item>
+
                 <Gnb.Item>
                   <Link
                     href={ROUTES.mypage}
@@ -54,7 +72,7 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
                     className="inline-flex shrink-0 rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-1"
                   >
                     <ProfileAvatar
-                      className="size-11 border-border"
+                      className="size-10 border-border"
                       src={user?.imageUrl}
                       alt={user?.name ? `${user.name} 프로필 이미지` : "프로필 이미지"}
                     />
@@ -81,51 +99,61 @@ export const NavigationMenuClient = ({ loggedIn, user }: NavigationMenuClientPro
           {logo}
         </Link>
 
-        <Sheet>
-          <Sheet.Trigger asChild>
-            <button type="button" aria-label="메뉴 열기" className="rounded-md p-1 hover:bg-muted">
-              <Menu className="size-6" />
-            </button>
-          </Sheet.Trigger>
-          <Sheet.Content side="right" showCloseButton>
-            <Sheet.Header>
-              <Sheet.Title>메뉴</Sheet.Title>
-            </Sheet.Header>
-            <Sheet.List>
-              {NAVIGATION_ROUTES.map((route) => (
-                <Sheet.Item key={route.href}>
+        <div className="flex items-center gap-2">
+          {loggedIn ? (
+            <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
+          ) : null}
+
+          <Sheet>
+            <Sheet.Trigger asChild>
+              <button type="button" aria-label="메뉴 열기" className="rounded-md p-1 hover:bg-muted">
+                <Menu className="size-6" />
+              </button>
+            </Sheet.Trigger>
+
+            <Sheet.Content side="right" showCloseButton>
+              <Sheet.Header>
+                <Sheet.Title>메뉴</Sheet.Title>
+              </Sheet.Header>
+
+              <Sheet.List>
+                {NAVIGATION_ROUTES.map((route) => (
+                  <Sheet.Item key={route.href}>
+                    <Sheet.Close asChild>
+                      <Link href={route.href} className="block rounded-md p-3 font-medium text-sm">
+                        {route.label}
+                      </Link>
+                    </Sheet.Close>
+                  </Sheet.Item>
+                ))}
+
+                {loggedIn ? (
+                  <Sheet.Item>
+                    <Sheet.Close asChild>
+                      <Link href={ROUTES.mypage} className="block rounded-md p-3 font-medium text-sm">
+                        마이페이지
+                      </Link>
+                    </Sheet.Close>
+                  </Sheet.Item>
+                ) : null}
+              </Sheet.List>
+
+              <Sheet.Footer>
+                {loggedIn ? (
                   <Sheet.Close asChild>
-                    <Link href={route.href} className="block rounded-md p-3 font-medium text-sm">
-                      {route.label}
-                    </Link>
+                    <button type="button" onClick={() => logoutAction()}>
+                      로그아웃
+                    </button>
                   </Sheet.Close>
-                </Sheet.Item>
-              ))}
-              {loggedIn ? (
-                <Sheet.Item>
+                ) : (
                   <Sheet.Close asChild>
-                    <Link href={ROUTES.mypage} className="block rounded-md p-3 font-medium text-sm">
-                      마이페이지
-                    </Link>
+                    <Link href={ROUTES.login}>로그인</Link>
                   </Sheet.Close>
-                </Sheet.Item>
-              ) : null}
-            </Sheet.List>
-            <Sheet.Footer>
-              {loggedIn ? (
-                <Sheet.Close asChild>
-                  <button type="button" onClick={() => logoutAction()}>
-                    로그아웃
-                  </button>
-                </Sheet.Close>
-              ) : (
-                <Sheet.Close asChild>
-                  <Link href={ROUTES.login}>로그인</Link>
-                </Sheet.Close>
-              )}
-            </Sheet.Footer>
-          </Sheet.Content>
-        </Sheet>
+                )}
+              </Sheet.Footer>
+            </Sheet.Content>
+          </Sheet>
+        </div>
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { SEARCH_FILTER_QUERY_STATE, SEARCH_INITIAL_QUERY_STATE } from "./constants";
 import type { SearchDateSortId, SearchDeadlineSortId, SearchLocationId, SearchQueryState } from "./types";
 
 type SearchFilterChange =
@@ -24,7 +24,7 @@ export const getNextSearchQueryState = (
     return {
       ...currentQueryState,
       dateSortId: change.dateSortId,
-      deadlineSortId: SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
     };
   }
 
@@ -51,7 +51,7 @@ export const getNextSearchQueryState = (
 
   return {
     ...currentQueryState,
-    dateSortId: SEARCH_INITIAL_QUERY_STATE.dateSortId,
+    dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
     deadlineSortId: change.deadlineSortId,
   };
 };

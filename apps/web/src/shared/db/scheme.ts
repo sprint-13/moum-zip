@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { date, index, integer, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, jsonb, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
 
 export const spaces = pgTable("spaces", {
   id: text("id").primaryKey(),
@@ -47,7 +47,9 @@ export const spacePosts = pgTable(
       .notNull()
       .references(() => spaces.id),
     authorId: integer("author_id").notNull(),
-    category: text("category", { enum: ["notice", "discussion", "question", "material"] }).notNull(),
+    category: text("category", {
+      enum: ["notice", "discussion", "question", "material"],
+    }).notNull(),
     title: text("title").notNull(),
     content: text("content").notNull(),
     image: text("image"),
@@ -140,3 +142,24 @@ export const attendances = pgTable(
 
 export type Attendance = InferSelectModel<typeof attendances>;
 export type NewAttendance = InferInsertModel<typeof attendances>;
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: text("id").primaryKey(),
+    teamId: text("team_id").notNull(),
+    userId: integer("user_id").notNull(),
+    type: text("type").notNull(),
+    message: text("message").notNull(),
+    data: jsonb("data").notNull().default({}),
+    isRead: boolean("is_read").notNull().default(false),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("notifications_user_read_idx").on(table.userId, table.isRead),
+    index("notifications_user_created_idx").on(table.userId, table.createdAt),
+  ],
+);
+
+export type NotificationDB = InferSelectModel<typeof notifications>;
+export type NewNotificationDB = InferInsertModel<typeof notifications>;

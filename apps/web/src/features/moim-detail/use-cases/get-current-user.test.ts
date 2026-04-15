@@ -5,7 +5,7 @@ describe("getCurrentUser", () => {
   it("정상적으로 사용자 정보를 반환한다", async () => {
     const mockGetUser = vi.fn().mockResolvedValue({
       id: 1,
-      name: "어진",
+      name: "모음집",
       image: "profile.png",
     });
 
@@ -16,7 +16,7 @@ describe("getCurrentUser", () => {
     expect(mockGetUser).toHaveBeenCalledOnce();
     expect(result).toEqual({
       id: 1,
-      name: "어진",
+      name: "모음집",
       image: "profile.png",
     });
   });
