@@ -27,6 +27,7 @@ export interface SearchQueryState {
   categoryId: SearchCategoryId;
   dateSortId: SearchDateSortId;
   deadlineSortId: SearchDeadlineSortId;
+  keyword: string;
   locationId: SearchLocationId;
 }
 
@@ -34,6 +35,7 @@ export interface SearchRequestQueryState {
   categoryId: SearchRequestCategoryId;
   dateSortId: SearchDateSortId;
   deadlineSortId: SearchDeadlineSortId;
+  keyword: string;
   locationId: SearchLocationId;
 }
 
@@ -59,6 +61,6 @@ export interface SpaceCardItem {
   isLiked?: boolean;
   maxParticipants: number;
   metaChips: SpaceCardMetaChip[];
-  status?: SpaceCardStatus;
+  statuses?: SpaceCardStatus[];
   title: string;
 }

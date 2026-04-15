@@ -49,7 +49,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     return NextResponse.json({ error: result.error }, { status });
   }
 
-  const { auth, space } = result;
+  const { auth, space, membership } = result;
   if (typeof auth.userId !== "number") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -60,7 +60,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     const { commentId } = await createCommentUseCase({
       postId,
       spaceId: space.id,
-      authorId,
+      authorId: auth.userId as number,
+      authorName: membership.nickname,
       content,
     });
     revalidateTag(CACHE_TAGS.grass(space.id, authorId), { expire: 0 });

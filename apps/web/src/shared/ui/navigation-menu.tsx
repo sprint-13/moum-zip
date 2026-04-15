@@ -1,3 +1,5 @@
+import type { NotificationsResult } from "@/entities/notification/model/types";
+import { getNotifications } from "@/features/notification/use-cases/get-notification";
 import { getApi, isAuth } from "@/shared/api/server";
 import { NavigationMenuClient } from "./navigation-menu-client";
 
@@ -20,10 +22,41 @@ async function getNavigationUser(): Promise<NavigationUser | null> {
   }
 }
 
+async function getNavigationNotifications(): Promise<NotificationsResult> {
+  try {
+    const result = await getNotifications({ size: 10 });
+
+    return JSON.parse(JSON.stringify(result)) as NotificationsResult;
+  } catch {
+    return {
+      data: [],
+      nextCursor: null,
+      hasMore: false,
+    };
+  }
+}
+
 export async function NavigationMenu() {
   const { authenticated } = await isAuth();
 
-  const user = authenticated ? await getNavigationUser() : null;
+  const [user, notificationsResult] = authenticated
+    ? await Promise.all([getNavigationUser(), getNavigationNotifications()])
+    : [
+        null,
+        {
+          data: [],
+          nextCursor: null,
+          hasMore: false,
+        },
+      ];
 
-  return <NavigationMenuClient loggedIn={authenticated} user={user} />;
+  return (
+    <NavigationMenuClient
+      loggedIn={authenticated}
+      user={user}
+      notifications={notificationsResult.data}
+      nextCursor={notificationsResult.nextCursor}
+      hasMore={notificationsResult.hasMore}
+    />
+  );
 }

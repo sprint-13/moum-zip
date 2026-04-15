@@ -1,7 +1,6 @@
 import type { PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
-import { NotFoundError, ValidationError } from "@/shared/lib/error";
-import { ERROR_CODES } from "@/shared/lib/errors/error-codes";
+import { ERROR_CODES, NotFoundError, ValidationError } from "@/shared/lib/error";
 import { assertPermission, type Requester } from "../lib/assert-permission";
 
 export interface UpdatePostInput {
@@ -24,7 +23,17 @@ export const updatePostUseCase = async (input: UpdatePostInput, requester: Reque
     });
   }
 
-  if (!input.content.trim()) {
+  const isContentEmpty = (() => {
+    try {
+      const doc = JSON.parse(input.content);
+      const nodes: { content?: unknown[] }[] = doc?.content ?? [];
+      return nodes.every((node) => !node.content || node.content.length === 0);
+    } catch {
+      return !input.content.trim();
+    }
+  })();
+
+  if (isContentEmpty) {
     throw new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
       message: "본문을 입력해주세요.",
     });
@@ -33,14 +42,16 @@ export const updatePostUseCase = async (input: UpdatePostInput, requester: Reque
   const rows = await postQueries.findById(input.postId);
   const post = rows[0]?.post;
   if (!post || post.spaceId !== input.spaceId) {
-    throw new NotFoundError(ERROR_CODES.POST_NOT_FOUND);
+    throw new NotFoundError(ERROR_CODES.POST_NOT_FOUND, {
+      message: "게시글을 찾을 수 없습니다.",
+    });
   }
 
   assertPermission(post.authorId, requester);
 
   await postQueries.updateById(input.postId, {
     title: input.title.trim(),
-    content: input.content.trim(),
+    content: input.content,
     category: input.category,
   });
 

@@ -39,6 +39,7 @@ export const useInfiniteSearchResults = ({ isAuthenticated, queryState }: UseInf
     hasNextPage,
     isError,
     isFetchNextPageError,
+    isFetched,
     isFetching,
     isFetchingNextPage,
     isRefetchError,
@@ -46,7 +47,9 @@ export const useInfiniteSearchResults = ({ isAuthenticated, queryState }: UseInf
     isAuthenticated,
     queryState: normalizedQueryState,
   });
+  const hasSearchQueryError = isError || isRefetchError;
   const hasQueryError = isError || isRefetchError || isFetchNextPageError;
+  const isFetchingFirstPage = isFetching && !isFetchingNextPage;
   const errorMessage = hasQueryError ? "데이터를 불러오지 못했어요. 다시 시도해 주세요." : undefined;
   const items = getUniqueSearchItems(data?.pages).map(mapSearchResultItemToSpaceCardItem);
 
@@ -85,6 +88,10 @@ export const useInfiniteSearchResults = ({ isAuthenticated, queryState }: UseInf
   return {
     errorMessage,
     hasMore: Boolean(hasNextPage && !hasQueryError),
+    hasQueryError,
+    hasSearchQueryError,
+    isFetched,
+    isFetchingFirstPage,
     isFetchingNextPage,
     items,
     loadMoreRef,

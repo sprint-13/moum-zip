@@ -1,3 +1,4 @@
+export { AlertModal } from "./alert-modal";
 export { AuthCard } from "./auth-card";
 export { DatePicker } from "./date-picker";
 export { ProfileAvatar } from "./profile-avatar";

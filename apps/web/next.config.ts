@@ -1,3 +1,4 @@
+import { withSentryConfig } from "@sentry/nextjs";
 // next.config.ts
 import type { NextConfig } from "next";
 
@@ -12,6 +13,7 @@ const nextConfig: NextConfig = {
     compilationMode: "annotation",
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -61,4 +63,25 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "moum-zip-dev",
+  project: "javascript-nextjs",
+
+  // CI 환경에서만 소스맵 업로드 로그 출력
+  silent: !process.env.CI,
+
+  // 더 정확한 스택 트레이스를 위해 더 많은 소스맵 업로드
+  widenClientFileUpload: true,
+
+  // tunnelRoute: "/monitoring",
+
+  // Vercel Cron Monitors 자동 계측
+  automaticVercelMonitors: true,
+
+  webpack: {
+    // 번들 크기 최적화 - Sentry 디버그 로그 제거
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+});

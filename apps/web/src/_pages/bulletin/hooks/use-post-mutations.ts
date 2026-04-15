@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { PostCategory } from "@/entities/post";
+import type { Post, PostCategory } from "@/entities/post";
 import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 import { bulletinQueryKeys } from "../model/query-keys";
 
@@ -39,6 +39,26 @@ export function useUpdatePost(slug: string) {
         fallbackMessage: "게시글 수정에 실패했습니다.",
       });
       return res.json() as Promise<{ postId: string }>;
+    },
+    onMutate: async ({ postId, title, content, category }) => {
+      const queryKey = bulletinQueryKeys.detail(slug, postId);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Post>(queryKey);
+      if (previous) {
+        queryClient.setQueryData<Post>(queryKey, {
+          ...previous,
+          title,
+          content,
+          category,
+          updatedAt: new Date(),
+        });
+      }
+      return { previous, postId };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(bulletinQueryKeys.detail(slug, context.postId), context.previous);
+      }
     },
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });

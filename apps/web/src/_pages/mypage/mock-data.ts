@@ -1,6 +1,7 @@
 import type { CreatedFilterKey, MypageMoimCard, MypageProfile, MypageTabKey } from "./model/types";
 
 export const profileMockData: MypageProfile = {
+  userId: 1,
   name: "럽윈즈올",
   email: "lovewins@codeit.com",
 };

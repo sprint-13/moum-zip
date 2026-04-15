@@ -7,6 +7,7 @@ import { POST_CATEGORY_META, POST_CATEGORY_ORDER } from "@/_pages/bulletin/model
 import { CATEGORY_LABELS, type Post, type PostCategory } from "@/entities/post";
 import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { useCreatePost, useUpdatePost } from "../hooks/use-post-mutations";
+import { TiptapEditor } from "./tiptap-editor";
 
 interface PostWriteFormProps {
   slug: string;
@@ -33,6 +34,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
     setValue,
     formState: { errors },
     setError,
+    clearErrors,
     reset,
   } = useForm<PostWriteFormValues>({
     defaultValues: {
@@ -45,12 +47,17 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
   const selectedCategory = watch("category");
 
   const onSubmit = (values: PostWriteFormValues) => {
+    if (!values.content || values.content === "") {
+      setError("content", { message: "내용을 입력해주세요." });
+      return;
+    }
+
     if (isEdit && initialPost) {
       updatePost(
         { postId: initialPost.id, ...values },
         {
           onSuccess: ({ postId }) => {
-            router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
+            router.push(`/${slug}/bulletin/${postId}`);
           },
           onError: (err) => {
             setError("root", { message: getErrorPresentation(err).message });
@@ -63,7 +70,7 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
     createPost(values, {
       onSuccess: ({ postId }) => {
         reset();
-        router.push(`/${slug}/bulletin/${postId}?title=${encodeURIComponent(values.title)}`);
+        router.push(`/${slug}/bulletin/${postId}`);
       },
       onError: (err) => {
         setError("root", { message: getErrorPresentation(err).message });
@@ -120,18 +127,18 @@ export function PostWriteForm({ slug, initialPost }: PostWriteFormProps) {
 
       {/* 내용 */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="content" className="font-semibold text-neutral-700 text-sm">
-          내용
-        </label>
-        <textarea
-          id="content"
-          placeholder="내용을 자유롭게 작성하세요"
-          rows={14}
+        <span className="font-semibold text-neutral-700 text-sm">내용</span>
+        <TiptapEditor
+          initialContent={initialPost?.content}
           disabled={isPending}
-          className="resize-none rounded-lg border border-border bg-background px-4 py-3 text-[15px] text-foreground leading-relaxed outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
-          {...register("content", {
-            validate: (value) => value.trim().length > 0 || "내용을 입력해주세요.",
-          })}
+          onChange={(json, isEmpty) => {
+            setValue("content", json, { shouldValidate: true });
+            if (isEmpty) {
+              setError("content", { message: "내용을 입력해주세요." });
+            } else {
+              clearErrors("content");
+            }
+          }}
         />
         {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
       </div>

@@ -1,4 +1,4 @@
-import { SEARCH_CATEGORIES, SEARCH_INITIAL_QUERY_STATE } from "./constants";
+import { SEARCH_CATEGORIES, SEARCH_FILTER_QUERY_STATE, SEARCH_INITIAL_QUERY_STATE } from "./constants";
 import type {
   SearchCategoryId,
   SearchDateSortId,
@@ -55,21 +55,43 @@ const isSearchLocationId = (value: string): value is SearchLocationId => {
   return locationIds.has(value as SearchLocationId);
 };
 
+export const normalizeSearchKeyword = (keyword: string | null | undefined) => {
+  return keyword?.trim() ?? "";
+};
+
 export const parseSearchQueryState = (searchParams: SearchParamSource): SearchQueryState => {
   const categoryId = getSearchParamValue(searchParams, "category");
   const dateSortId = getSearchParamValue(searchParams, "dateSort");
   const deadlineSortId = getSearchParamValue(searchParams, "deadlineSort");
+  const keyword = getSearchParamValue(searchParams, "keyword");
   const locationId = getSearchParamValue(searchParams, "location");
 
-  return {
+  const parsedQueryState: SearchQueryState = {
     categoryId: categoryId && isSearchCategoryId(categoryId) ? categoryId : SEARCH_INITIAL_QUERY_STATE.categoryId,
     dateSortId: dateSortId && isSearchDateSortId(dateSortId) ? dateSortId : SEARCH_INITIAL_QUERY_STATE.dateSortId,
     deadlineSortId:
       deadlineSortId && isSearchDeadlineSortId(deadlineSortId)
         ? deadlineSortId
         : SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+    keyword: normalizeSearchKeyword(keyword),
     locationId: locationId && isSearchLocationId(locationId) ? locationId : SEARCH_INITIAL_QUERY_STATE.locationId,
   };
+
+  if (parsedQueryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
+    return {
+      ...parsedQueryState,
+      dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
+    };
+  }
+
+  if (parsedQueryState.dateSortId !== SEARCH_INITIAL_QUERY_STATE.dateSortId) {
+    return {
+      ...parsedQueryState,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
+    };
+  }
+
+  return parsedQueryState;
 };
 
 export const normalizeSearchCategoryId = (categoryId: SearchQueryState["categoryId"]): SearchRequestCategoryId => {
@@ -81,11 +103,14 @@ export const normalizeSearchCategoryId = (categoryId: SearchQueryState["category
 };
 
 export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchRequestQueryState => {
+  const keyword = normalizeSearchKeyword(queryState.keyword);
+
   if (queryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
     return {
       categoryId: normalizeSearchCategoryId(queryState.categoryId),
-      dateSortId: SEARCH_INITIAL_QUERY_STATE.dateSortId,
+      dateSortId: SEARCH_FILTER_QUERY_STATE.dateSortId,
       deadlineSortId: queryState.deadlineSortId,
+      keyword,
       locationId: queryState.locationId,
     };
   }
@@ -94,7 +119,8 @@ export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchR
     return {
       categoryId: normalizeSearchCategoryId(queryState.categoryId),
       dateSortId: queryState.dateSortId,
-      deadlineSortId: SEARCH_INITIAL_QUERY_STATE.deadlineSortId,
+      deadlineSortId: SEARCH_FILTER_QUERY_STATE.deadlineSortId,
+      keyword,
       locationId: queryState.locationId,
     };
   }
@@ -103,6 +129,7 @@ export const normalizeSearchQueryState = (queryState: SearchQueryState): SearchR
     categoryId: normalizeSearchCategoryId(queryState.categoryId),
     dateSortId: queryState.dateSortId,
     deadlineSortId: queryState.deadlineSortId,
+    keyword,
     locationId: queryState.locationId,
   };
 };
@@ -125,6 +152,10 @@ export const buildSearchHref = (pathname: string, queryState: SearchQueryState) 
 
   if (normalizedQueryState.deadlineSortId !== SEARCH_INITIAL_QUERY_STATE.deadlineSortId) {
     searchParams.set("deadlineSort", normalizedQueryState.deadlineSortId);
+  }
+
+  if (normalizedQueryState.keyword) {
+    searchParams.set("keyword", normalizedQueryState.keyword);
   }
 
   const queryString = searchParams.toString();

@@ -1,6 +1,11 @@
+import * as Sentry from "@sentry/nextjs";
+
 export async function register() {
   // Next.js의 Node.js 런타임에서만 실행되도록 제한
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    // Sentry 서버 설정 초기화
+    await import("../sentry.server.config");
+
     const originalFetch = global.fetch;
 
     global.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -25,4 +30,12 @@ export async function register() {
       }
     };
   }
+
+  // Edge 런타임에서 Sentry 설정 초기화
+  if (process.env.NEXT_RUNTIME === "edge") {
+    await import("../sentry.edge.config");
+  }
 }
+
+// 요청 에러를 Sentry로 자동 캡처
+export const onRequestError = Sentry.captureRequestError;

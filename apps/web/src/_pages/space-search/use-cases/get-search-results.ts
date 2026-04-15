@@ -18,6 +18,7 @@ interface GetSearchResultsInput {
   cursor?: string | null;
   dateSortId?: "default" | "latest" | "oldest";
   deadlineSortId?: "default" | "fast" | "slow";
+  keyword?: string;
   locationId?: "all" | GatheringLocation;
   size?: number;
 }
@@ -30,7 +31,7 @@ interface GetSearchResultsDeps {
 type SearchMeetingWithUserState = MeetingWithHost & {
   isCompleted?: boolean;
   isFavorited?: boolean | null;
-  isJoined?: boolean;
+  isJoined?: boolean | null;
 };
 
 const createSearchRequestParams = ({
@@ -38,6 +39,7 @@ const createSearchRequestParams = ({
   cursor,
   dateSortId,
   deadlineSortId,
+  keyword,
   locationId,
   size,
 }: GetSearchResultsInput) => {
@@ -45,6 +47,7 @@ const createSearchRequestParams = ({
 
   return {
     cursor: cursor ?? undefined,
+    keyword: keyword || undefined,
     region: locationId === "all" ? undefined : locationId,
     size,
     sortBy,
@@ -68,6 +71,7 @@ const mapSearchMeetingToItem = (meeting: SearchMeetingWithUserState): SearchResu
     description: meeting.description,
     id: String(meeting.id),
     image: meeting.image,
+    isJoined: meeting.isJoined === true ? true : undefined,
     isLiked: meeting.isFavorited ?? false,
     location: normalizeMeetingRegion(meeting.region),
     participantCount: meeting.participantCount,
@@ -104,12 +108,27 @@ const warnMissingFavoritedField = (meetings: SearchMeetingWithUserState[], isAut
   console.warn("[search] 인증된 스페이스 응답에 isFavorited 값이 없습니다", { meetingIds });
 };
 
+const warnMissingJoinedField = (meetings: SearchMeetingWithUserState[], isAuthenticatedRequest: boolean) => {
+  if (!isAuthenticatedRequest) {
+    return;
+  }
+
+  const meetingIds = meetings.filter((meeting) => meeting.isJoined == null).map((meeting) => meeting.id);
+
+  if (meetingIds.length === 0) {
+    return;
+  }
+
+  console.warn("[search] 인증된 스페이스 응답에 isJoined 값이 없습니다", { meetingIds });
+};
+
 export const getSearchResults = async (
   {
     categoryId = "all",
     cursor,
     dateSortId = "default",
     deadlineSortId = "default",
+    keyword = "",
     locationId = "all",
     size = DEFAULT_SEARCH_SIZE,
   }: GetSearchResultsInput = {},
@@ -120,6 +139,7 @@ export const getSearchResults = async (
     cursor,
     dateSortId,
     deadlineSortId,
+    keyword,
     locationId,
     size,
   });
@@ -131,6 +151,7 @@ export const getSearchResults = async (
   const meetings: SearchMeetingWithUserState[] = searchResults.data;
 
   warnMissingFavoritedField(meetings, isAuthenticatedRequest);
+  warnMissingJoinedField(meetings, isAuthenticatedRequest);
 
   return {
     hasMore: searchResults.hasMore,

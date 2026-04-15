@@ -1,0 +1,94 @@
+"use client";
+
+import Image from "next/image";
+import { getNotificationTitle, shouldShowConfirmedIcon } from "@/entities/notification/model/constants";
+import type { NotificationItem } from "@/entities/notification/model/types";
+import CheckCircleIcon from "@/features/notification/ui/icons/check-circle-icon.svg";
+import Logo from "@/shared/assets/moum-zip-logo-sm.svg";
+
+interface NotificationListItemProps {
+  notification: NotificationItem;
+  isMobile?: boolean;
+  onClick?: (notification: NotificationItem) => void | Promise<void>;
+}
+
+function formatRelativeTime(createdAt: string | null) {
+  if (!createdAt) return "";
+
+  const timestamp = new Date(createdAt).getTime();
+  if (Number.isNaN(timestamp)) return "";
+
+  const diff = Date.now() - timestamp;
+  const minute = 1000 * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  if (diff < hour) {
+    return `${Math.max(1, Math.floor(diff / minute))}분 전`;
+  }
+
+  if (diff < day) {
+    return `${Math.floor(diff / hour)}시간 전`;
+  }
+
+  return `${Math.floor(diff / day)}일 전`;
+}
+
+function getNotificationDescription(notification: NotificationItem) {
+  if (notification.type === "COMMENT") {
+    const authorName = notification.data.commentAuthorName;
+    const commentContent = notification.data.commentContent;
+
+    if (authorName && commentContent) {
+      return `'${authorName}'님의 댓글: ${commentContent}`;
+    }
+
+    if (commentContent) {
+      return commentContent;
+    }
+  }
+
+  return notification.message;
+}
+
+export function NotificationListItem({ notification, isMobile = false, onClick }: NotificationListItemProps) {
+  const title = getNotificationTitle(notification.type);
+  const showConfirmedIcon = shouldShowConfirmedIcon(notification.type);
+  const description = getNotificationDescription(notification);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onClick?.(notification)}
+      className={[
+        "flex w-full items-start gap-3 text-left transition-colors",
+        notification.isRead ? "bg-white hover:bg-muted/30" : "bg-slate-50 hover:bg-slate-100",
+        isMobile ? "px-5 py-4" : "px-5 py-4",
+      ].join(" ")}
+    >
+      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-white">
+        {notification.data.image ? (
+          <Image src={notification.data.image} alt="" fill className="object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Logo className="h-7 w-7 translate-y-[1px]" />
+          </div>
+        )}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center gap-1">
+          <strong className="font-semibold text-foreground text-xs">{title}</strong>
+          {showConfirmedIcon ? <CheckCircleIcon /> : null}
+        </div>
+
+        <p className="line-clamp-2 break-all text-muted-foreground text-sm leading-5">{description}</p>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+        {!notification.isRead ? <span className="h-1.5 w-1.5 rounded-full bg-primary" /> : null}
+        <span className="text-muted-foreground text-xs">{formatRelativeTime(notification.createdAt)}</span>
+      </div>
+    </button>
+  );
+}

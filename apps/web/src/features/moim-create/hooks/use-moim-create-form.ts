@@ -3,7 +3,7 @@ import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { createMoimAction } from "@/_pages/moim-create/actions";
 import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim";
-import { trackMoimCreateEvent } from "@/features/moim-create/lib/moim-create-events";
+import { trackMoimCreateSubmitClicked } from "@/features/moim-create/lib/moim-create-events";
 
 const MOIM_CREATE_DEFAULT_VALUES: Partial<MoimCreateFormValues> = {
   type: "study",
@@ -45,7 +45,7 @@ export const useMoimCreateForm = () => {
 
   // rhf 검증 통과 후 → FormData 변환 → 서버 액션 호출
   const onSubmit = form.handleSubmit((data) => {
-    trackMoimCreateEvent("moim_create_submit_clicked");
+    trackMoimCreateSubmitClicked();
 
     startTransition(() => {
       formAction(objectToFormData(data));

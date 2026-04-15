@@ -1,14 +1,18 @@
 "use client";
 
-import { Bell } from "@moum-zip/ui/icons";
 import { useParams, usePathname } from "next/navigation";
+import type { NotificationItem } from "@/entities/notification/model/types";
+import { NotificationMenu } from "@/features/notification/ui/notification-menu";
 import type { NavItem } from "../space-sidebar";
 
 interface MobileHeaderProps {
   navItems: NavItem[];
+  notifications: NotificationItem[];
+  nextCursor: string | null;
+  hasMore: boolean;
 }
 
-export function MobileHeader({ navItems }: MobileHeaderProps) {
+export function MobileHeader({ navItems, notifications, nextCursor, hasMore }: MobileHeaderProps) {
   const { "space-slug": spaceSlug } = useParams<{ "space-slug": string }>();
   const pathname = usePathname();
 
@@ -25,13 +29,12 @@ export function MobileHeader({ navItems }: MobileHeaderProps) {
       </div>
       <div className="flex items-center gap-1">
         {Actions && <Actions />}
-        <button
-          type="button"
-          aria-label="알림"
-          className="flex size-8 items-center justify-center rounded-md text-foreground transition-colors hover:bg-muted"
-        >
-          <Bell className="size-5" />
-        </button>
+        <NotificationMenu
+          notifications={notifications}
+          nextCursor={nextCursor}
+          hasMore={hasMore}
+          mobileVariant="dropdown"
+        />
       </div>
     </header>
   );

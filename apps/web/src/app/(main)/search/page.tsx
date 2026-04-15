@@ -1,6 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { SearchHero } from "@/_pages/space-search";
 import { getSearchPrefetchContext } from "@/_pages/space-search/lib/get-search-prefetch-context";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { normalizeSearchQueryState, parseSearchQueryState, SearchContentSection } from "@/features/space-search";
@@ -10,11 +9,11 @@ import { getQueryClient } from "@/shared/lib/get-query-client";
 type SearchParams = Record<string, string | string[] | undefined>;
 
 interface SearchPageProps {
-  searchParams?: Promise<SearchParams> | SearchParams;
+  searchParams?: Promise<SearchParams>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const resolvedSearchParams = await searchParams;
+  const resolvedSearchParams = (await searchParams) ?? {};
   const queryState = parseSearchQueryState(resolvedSearchParams);
   const normalizedQueryState = normalizeSearchQueryState(queryState);
   const queryClient = getQueryClient();
@@ -30,7 +29,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <div className="min-h-screen">
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:max-w-6xl lg:gap-8 lg:pt-6.75 2xl:max-w-7xl">
-        <SearchHero />
         <HydrationBoundary state={dehydrate(queryClient)}>
           <SearchContentSection
             categories={categories}

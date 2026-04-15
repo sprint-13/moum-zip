@@ -1,5 +1,6 @@
 import { Dropdown, Filter, TabButton } from "@ui/components";
 import { ChevronDown } from "@ui/icons";
+import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/cn";
 
@@ -15,6 +16,7 @@ import type {
 interface SearchToolbarProps {
   categories: SearchCategory[];
   filters: SearchFilter[];
+  keywordBar?: ReactNode;
   onFilterOpenChange: (filterId: SearchFilter["id"], nextIsOpen: boolean) => void;
   onCategoryChange: (categoryId: SearchCategory["id"]) => void;
   onDateSortChange: (dateSortId: SearchDateSortId) => void;
@@ -48,6 +50,7 @@ const getFilterChevronClassName = (isOpen: boolean, isSelected: boolean) => {
 export const SearchToolbar = ({
   categories,
   filters,
+  keywordBar,
   onFilterOpenChange,
   onCategoryChange,
   onDateSortChange,
@@ -101,42 +104,46 @@ export const SearchToolbar = ({
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 lg:justify-end">
-        {filters.map((filter) => {
-          const defaultOption = filter.options[0];
-          const selectedOptionId = selectedFilterOptionIdById[filter.id];
-          const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
-          const isOpen = openedFilterId === filter.id;
-          const isSelected = selectedOption.id !== defaultOption?.id;
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:items-center lg:justify-end">
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 sm:min-w-0 sm:justify-start lg:justify-end">
+          {filters.map((filter) => {
+            const defaultOption = filter.options[0];
+            const selectedOptionId = selectedFilterOptionIdById[filter.id];
+            const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
+            const isOpen = openedFilterId === filter.id;
+            const isSelected = selectedOption.id !== defaultOption?.id;
 
-          return (
-            <Dropdown
-              key={filter.id}
-              onOpenChange={(nextIsOpen) => onFilterOpenChange(filter.id, nextIsOpen)}
-              open={isOpen}
-            >
-              <Dropdown.Trigger>
-                <Filter
-                  className={getFilterTriggerClassName(isOpen, isSelected)}
-                  label={selectedOption.label}
-                  leftIcon={null}
-                  rightIcon={
-                    <ChevronDown className={getFilterChevronClassName(isOpen, isSelected)} strokeWidth={1.8} />
-                  }
-                  selected={isSelected}
-                  size="small"
-                />
-              </Dropdown.Trigger>
-              <Dropdown.Content align="end">
-                {filter.options.map((option) => (
-                  <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
-                    {option.label}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Content>
-            </Dropdown>
-          );
-        })}
+            return (
+              <Dropdown
+                key={filter.id}
+                onOpenChange={(nextIsOpen) => onFilterOpenChange(filter.id, nextIsOpen)}
+                open={isOpen}
+              >
+                <Dropdown.Trigger>
+                  <Filter
+                    className={getFilterTriggerClassName(isOpen, isSelected)}
+                    label={selectedOption.label}
+                    leftIcon={null}
+                    rightIcon={
+                      <ChevronDown className={getFilterChevronClassName(isOpen, isSelected)} strokeWidth={1.8} />
+                    }
+                    selected={isSelected}
+                    size="small"
+                  />
+                </Dropdown.Trigger>
+                <Dropdown.Content align="end">
+                  {filter.options.map((option) => (
+                    <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
+                      {option.label}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Content>
+              </Dropdown>
+            );
+          })}
+        </div>
+
+        {keywordBar ? <div className="w-full sm:justify-self-end lg:hidden">{keywordBar}</div> : null}
       </div>
     </section>
   );

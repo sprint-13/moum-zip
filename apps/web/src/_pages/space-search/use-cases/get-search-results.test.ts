@@ -43,6 +43,7 @@ describe("getSearchResults", () => {
               hostId: 1,
               createdBy: 1,
               createdAt: null,
+              isJoined: true,
               isFavorited: true,
               updatedAt: null,
               host: {
@@ -77,6 +78,7 @@ describe("getSearchResults", () => {
           description: null,
           id: "24",
           image: null,
+          isJoined: true,
           isLiked: true,
           location: "online",
           participantCount: 4,
@@ -388,6 +390,136 @@ describe("getSearchResults", () => {
           createMeetingsListResponse([
             {
               id: 866,
+              teamId: "team-1",
+              name: "Project Group",
+              type: "프로젝트",
+              region: "online",
+              address: null,
+              latitude: null,
+              longitude: null,
+              dateTime: null,
+              registrationEnd: null,
+              capacity: 10,
+              participantCount: 4,
+              image: null,
+              description: null,
+              canceledAt: null,
+              confirmedAt: null,
+              hostId: 1,
+              createdBy: 1,
+              createdAt: null,
+              updatedAt: null,
+              host: {
+                id: 1,
+                image: null,
+                name: "Host",
+              },
+            },
+          ]),
+        ),
+      };
+
+      await getSearchResults({}, { isAuthenticatedRequest: false, meetingsApi: mockMeetingsApi });
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("인증 요청인데 isJoined가 없으면 경고를 출력한다", async () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      const mockMeetingsApi = {
+        getList: vi.fn().mockResolvedValue(
+          createMeetingsListResponse([
+            {
+              id: 868,
+              teamId: "team-1",
+              name: "Project Group",
+              type: "프로젝트",
+              region: "online",
+              address: null,
+              latitude: null,
+              longitude: null,
+              dateTime: null,
+              registrationEnd: null,
+              capacity: 10,
+              participantCount: 4,
+              image: null,
+              description: null,
+              canceledAt: null,
+              confirmedAt: null,
+              hostId: 1,
+              createdBy: 1,
+              createdAt: null,
+              isFavorited: false,
+              updatedAt: null,
+              host: {
+                id: 1,
+                image: null,
+                name: "Host",
+              },
+            },
+          ]),
+        ),
+      };
+
+      await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
+
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 스페이스 응답에 isJoined 값이 없습니다", {
+        meetingIds: [868],
+      });
+    });
+
+    it("인증 요청인데 isJoined가 null이어도 경고를 출력한다", async () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      const mockMeetingsApi = {
+        getList: vi.fn().mockResolvedValue(
+          createMeetingsListResponse([
+            {
+              id: 869,
+              teamId: "team-1",
+              name: "Project Group",
+              type: "프로젝트",
+              region: "online",
+              address: null,
+              latitude: null,
+              longitude: null,
+              dateTime: null,
+              registrationEnd: null,
+              capacity: 10,
+              participantCount: 4,
+              image: null,
+              description: null,
+              canceledAt: null,
+              confirmedAt: null,
+              hostId: 1,
+              createdBy: 1,
+              createdAt: null,
+              isFavorited: false,
+              isJoined: null,
+              updatedAt: null,
+              host: {
+                id: 1,
+                image: null,
+                name: "Host",
+              },
+            },
+          ]),
+        ),
+      };
+
+      await getSearchResults({}, { isAuthenticatedRequest: true, meetingsApi: mockMeetingsApi });
+
+      expect(warnSpy).toHaveBeenCalledWith("[search] 인증된 스페이스 응답에 isJoined 값이 없습니다", {
+        meetingIds: [869],
+      });
+    });
+
+    it("비로그인 공개 조회에서는 isJoined가 없어도 경고를 출력하지 않는다", async () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      const mockMeetingsApi = {
+        getList: vi.fn().mockResolvedValue(
+          createMeetingsListResponse([
+            {
+              id: 870,
               teamId: "team-1",
               name: "Project Group",
               type: "프로젝트",
