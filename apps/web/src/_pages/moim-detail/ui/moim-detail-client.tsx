@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft } from "@moum-zip/ui/icons";
 import { toast } from "@ui/components";
 import Image from "next/image";
 import Link from "next/link";
@@ -254,88 +255,107 @@ export const MoimDetailClient = ({
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pt-6 pb-20 sm:px-6 lg:pt-8">
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
-          <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
-            {state.informationData.image ? (
-              <Image src={state.informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
-                이미지 영역
-              </div>
-            )}
-          </div>
+      <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-20 sm:px-6">
+        <div className="flex items-center py-2">
+          <button
+            type="button"
+            onClick={() => {
+              router.push(ROUTES.search);
+            }}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            aria-label="뒤로가기"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+        </div>
 
-          <div className="flex h-full w-full flex-col gap-4">
-            <InformationContainer
-              data={state.informationData}
-              viewType={viewType}
-              isLoggedIn={!!currentUser.id}
-              isParticipating={state.isParticipating}
-              onToggleLike={handleToggleMeetingLike}
-              onParticipateToggle={handleParticipateToggle}
-              onShare={handleShare}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onLoginAction={handleLoginAction}
-            />
+        <div className="flex flex-col gap-12">
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
+            <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
+              {state.informationData.image ? (
+                <Image src={state.informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
+                  이미지 영역
+                </div>
+              )}
+            </div>
 
-            <PersonnelContainer data={state.personnelData} />
-          </div>
-        </section>
+            <div className="flex h-full w-full flex-col gap-4">
+              <InformationContainer
+                data={state.informationData}
+                viewType={viewType}
+                isLoggedIn={!!currentUser.id}
+                isParticipating={state.isParticipating}
+                onToggleLike={handleToggleMeetingLike}
+                onParticipateToggle={handleParticipateToggle}
+                onShare={handleShare}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onLoginAction={handleLoginAction}
+              />
 
-        <DescriptionSection description={initialDescription} />
+              <PersonnelContainer data={state.personnelData} />
+            </div>
+          </section>
 
-        <section className="flex flex-col gap-4">
-          <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
+          <DescriptionSection
+            description={initialDescription}
+            hostName={state.informationData.hostName}
+            hostImage={state.informationData.hostImage}
+          />
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
-            {state.recommendedMeetings.map((meeting) => {
-              const isRecommendedLikePending = state.pendingRecommendedLikeIds.includes(meeting.id);
+          <section className="flex flex-col gap-4">
+            <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
 
-              return (
-                <Link
-                  key={meeting.id}
-                  href={`${ROUTES.moimDetail}/${meeting.id}`}
-                  className="block cursor-pointer"
-                  onClick={(event) => {
-                    const target = event.target as HTMLElement;
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
+              {state.recommendedMeetings.map((meeting) => {
+                const isRecommendedLikePending = state.pendingRecommendedLikeIds.includes(meeting.id);
 
-                    if (target.closest("button")) {
-                      event.preventDefault();
-                    }
-                  }}
-                >
-                  <CompactCard
-                    image={
-                      meeting.image ? (
-                        <Image src={meeting.image} alt={meeting.title} fill className="object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
-                          이미지 영역
-                        </div>
-                      )
-                    }
-                    deadlineLabel={meeting.deadlineLabel}
-                    dateLabel={meeting.dateLabel}
-                    timeLabel={meeting.timeLabel}
-                    title={meeting.title}
-                    locationIcon={<LocationIcon />}
-                    locationText={meeting.locationText}
-                    isLiked={meeting.isLiked}
-                    onLike={() => {
-                      if (isRecommendedLikePending) {
-                        return false;
+                return (
+                  <Link
+                    key={meeting.id}
+                    href={`${ROUTES.moimDetail}/${meeting.id}`}
+                    className="block cursor-pointer"
+                    onClick={(event) => {
+                      const target = event.target as HTMLElement;
+
+                      if (target.closest("button")) {
+                        event.preventDefault();
                       }
-
-                      return handleToggleRecommendedLike(meeting.id);
                     }}
-                  />
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+                  >
+                    <CompactCard
+                      image={
+                        meeting.image ? (
+                          <Image src={meeting.image} alt={meeting.title} fill className="object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
+                            이미지 영역
+                          </div>
+                        )
+                      }
+                      deadlineLabel={meeting.deadlineLabel}
+                      dateLabel={meeting.dateLabel}
+                      timeLabel={meeting.timeLabel}
+                      title={meeting.title}
+                      locationIcon={<LocationIcon />}
+                      locationText={meeting.locationText}
+                      isLiked={meeting.isLiked}
+                      onLike={() => {
+                        if (isRecommendedLikePending) {
+                          return false;
+                        }
+
+                        return handleToggleRecommendedLike(meeting.id);
+                      }}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );
