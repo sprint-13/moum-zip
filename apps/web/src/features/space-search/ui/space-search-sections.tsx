@@ -77,7 +77,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
   };
 
   return (
-    <div className="flex flex-col gap-4 lg:gap-6">
+    <div className="flex w-full min-w-112.5 flex-col gap-4 lg:gap-6">
       <SearchHero
         desktopSearchBar={
           <SearchKeywordBar
@@ -90,7 +90,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
           />
         }
       />
-      <div className="px-4 sm:px-0">
+      <div className="min-w-112.5 px-4 sm:px-0">
         <SearchToolbar
           categories={categories}
           filters={SEARCH_FILTERS}
@@ -115,7 +115,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
           selectedLocationId={activeQueryState.locationId}
         />
       </div>
-      <div className="px-4 sm:px-0">
+      <div className="min-w-112.5 px-4 sm:px-0">
         <SearchResults
           errorMessage={errorMessage}
           hasMore={hasMore}

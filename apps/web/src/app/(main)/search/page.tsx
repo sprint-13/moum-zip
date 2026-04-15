@@ -28,7 +28,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:max-w-6xl lg:gap-8 lg:pt-6.75 2xl:max-w-7xl">
+      <main className="mx-auto flex w-full min-w-112.5 max-w-7xl flex-col gap-6 pt-6 pb-24 sm:px-6 lg:max-w-6xl lg:gap-8 lg:pt-6.75 2xl:max-w-7xl">
         <HydrationBoundary state={dehydrate(queryClient)}>
           <SearchContentSection
             categories={categories}
