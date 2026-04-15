@@ -2,14 +2,13 @@ import { LoadingIndicator } from "@ui/components";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MoimDetailClient } from "@/_pages/moim-detail";
+import { RecommendedMeetingsSection } from "@/_pages/moim-detail/ui/recommended-meetings-section";
 import {
   getIsJoined,
   mapMeetingDetailToDescription,
   mapMeetingDetailToInformationData,
   mapMeetingDetailToPersonnelBaseData,
-  mapMeetingToRecommendedMeetingData,
   mapParticipantsToParticipantData,
-  sortRecommendedMeetings,
 } from "@/entities/moim-detail";
 import { getCurrentUser } from "@/features/moim-detail/use-cases/get-current-user";
 import { getApi, isAuth } from "@/shared/api/server";
@@ -24,29 +23,10 @@ interface MoimDetailContentProps {
   meetingId: number;
 }
 
-type RecommendedMeetingItem = Parameters<typeof mapMeetingToRecommendedMeetingData>[0];
-
-type CurrentMeetingSortable = {
-  id: number;
-  type?: string | null;
-  region?: string | null;
-  hostId?: number | null;
-};
-
 type CurrentUserData = {
   id: number | null;
   name: string | null;
   image: string | null;
-};
-
-type MeetingsPageResponse<T> = {
-  data: T[];
-  nextCursor: string | null;
-};
-
-type ResponseWithArrayData = {
-  data: unknown[];
-  nextCursor?: unknown;
 };
 
 const EMPTY_USER: CurrentUserData = {
@@ -64,73 +44,6 @@ const ERROR_FALLBACK = (
     </p>
   </div>
 );
-
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === "object" && value !== null;
-};
-
-const isRecommendedMeetingItem = (value: unknown): value is RecommendedMeetingItem => {
-  return isRecord(value) && "id" in value && typeof value.id === "number";
-};
-
-const hasArrayData = (value: unknown): value is ResponseWithArrayData => {
-  return isRecord(value) && "data" in value && Array.isArray(value.data);
-};
-
-const parseMeetingsPage = <T,>(response: unknown): MeetingsPageResponse<T> => {
-  if (hasArrayData(response)) {
-    return {
-      data: response.data as T[],
-      nextCursor: typeof response.nextCursor === "string" ? response.nextCursor : null,
-    };
-  }
-
-  if (isRecord(response) && "data" in response && hasArrayData(response.data)) {
-    return {
-      data: response.data.data as T[],
-      nextCursor:
-        typeof response.data.nextCursor === "string"
-          ? response.data.nextCursor
-          : typeof response.nextCursor === "string"
-            ? response.nextCursor
-            : null,
-    };
-  }
-
-  const resolved = isRecord(response) && "data" in response ? response.data : response;
-
-  if (Array.isArray(resolved)) {
-    return {
-      data: resolved as T[],
-      nextCursor: null,
-    };
-  }
-
-  return {
-    data: [],
-    nextCursor: null,
-  };
-};
-
-const getAllMeetings = async (apiClient: Awaited<ReturnType<typeof getApi>>) => {
-  const allMeetings: RecommendedMeetingItem[] = [];
-  let cursor: string | null = null;
-
-  while (true) {
-    const response = await apiClient.meetings.getList(cursor ? { cursor } : undefined);
-    const { data, nextCursor } = parseMeetingsPage<RecommendedMeetingItem>(response);
-
-    allMeetings.push(...data.filter(isRecommendedMeetingItem));
-
-    if (!nextCursor) {
-      break;
-    }
-
-    cursor = nextCursor;
-  }
-
-  return allMeetings;
-};
 
 const getCurrentUserOrEmpty = async (apiClient: Awaited<ReturnType<typeof getApi>>): Promise<CurrentUserData> => {
   const { authenticated } = await isAuth();
@@ -156,10 +69,9 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
   const currentUser = await getCurrentUserOrEmpty(apiClient);
 
   try {
-    const [meetingDetailResult, participantsResult, allMeetingsResult] = await Promise.allSettled([
+    const [meetingDetailResult, participantsResult] = await Promise.allSettled([
       apiClient.meetings.getDetail(meetingId),
       apiClient.meetings.participants.getList(meetingId),
-      getAllMeetings(apiClient),
     ]);
 
     if (meetingDetailResult.status !== "fulfilled" || participantsResult.status !== "fulfilled") {
@@ -168,7 +80,6 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
 
     const meetingDetailResponse = meetingDetailResult.value;
     const participantsResponse = participantsResult.value;
-    const allMeetings = allMeetingsResult.status === "fulfilled" ? allMeetingsResult.value : [];
 
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
     const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;
@@ -194,27 +105,21 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
       extraCount: Math.max(meetingDetail.participantCount - mappedParticipants.length, 0),
     };
 
-    const sortableMeetingDetail: CurrentMeetingSortable = {
-      id: meetingDetail.id,
-      type: meetingDetail.type,
-      region: meetingDetail.region,
-      hostId: meetingDetail.hostId,
-    };
-
-    const recommendedMeetings = sortRecommendedMeetings(allMeetings, sortableMeetingDetail).map(
-      mapMeetingToRecommendedMeetingData,
-    );
-
     return (
-      <MoimDetailClient
-        meetingId={meetingId}
-        currentUser={currentUser}
-        initialInformationData={informationData}
-        initialDescription={description}
-        initialPersonnelData={personnelData}
-        initialRecommendedMeetings={recommendedMeetings}
-        initialIsParticipating={isJoined}
-      />
+      <>
+        <MoimDetailClient
+          meetingId={meetingId}
+          currentUser={currentUser}
+          initialInformationData={informationData}
+          initialDescription={description}
+          initialPersonnelData={personnelData}
+          initialIsParticipating={isJoined}
+        />
+
+        <Suspense fallback={null}>
+          <RecommendedMeetingsSection meetingId={meetingId} />
+        </Suspense>
+      </>
     );
   } catch {
     return ERROR_FALLBACK;

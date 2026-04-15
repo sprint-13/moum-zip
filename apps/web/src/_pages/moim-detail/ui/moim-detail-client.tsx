@@ -3,16 +3,14 @@
 import { ChevronLeft } from "@moum-zip/ui/icons";
 import { toast } from "@ui/components";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer } from "react";
-import { CompactCard, DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
+import { DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
-import LocationIcon from "@/_pages/moim-detail/assets/location.svg";
-import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
 import { createMoimDetailInitialState, moimDetailReducer } from "@/_pages/moim-detail/model/moim-detail-reducer";
-import type { InformationData, ParticipantData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
+import type { InformationData, ParticipantData, PersonnelData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
+import { copyToClipboard } from "../lib/copy-to-clipboard";
 
 interface CurrentUser {
   id: number | null;
@@ -26,7 +24,6 @@ interface MoimDetailClientProps {
   initialInformationData: InformationData;
   initialDescription: string;
   initialPersonnelData: PersonnelData;
-  initialRecommendedMeetings: RecommendedMeetingData[];
   initialIsParticipating: boolean;
 }
 
@@ -36,7 +33,6 @@ export const MoimDetailClient = ({
   initialInformationData,
   initialDescription,
   initialPersonnelData,
-  initialRecommendedMeetings,
   initialIsParticipating,
 }: MoimDetailClientProps) => {
   const router = useRouter();
@@ -47,7 +43,7 @@ export const MoimDetailClient = ({
     {
       initialInformationData,
       initialPersonnelData,
-      initialRecommendedMeetings,
+      initialRecommendedMeetings: [],
       initialIsParticipating,
     },
     createMoimDetailInitialState,
@@ -63,11 +59,11 @@ export const MoimDetailClient = ({
       payload: {
         informationData: initialInformationData,
         personnelData: initialPersonnelData,
-        recommendedMeetings: initialRecommendedMeetings,
+        recommendedMeetings: [],
         isParticipating: initialIsParticipating,
       },
     });
-  }, [initialInformationData, initialPersonnelData, initialRecommendedMeetings, initialIsParticipating]);
+  }, [initialInformationData, initialPersonnelData, initialIsParticipating]);
 
   const handleToggleMeetingLike = async (): Promise<boolean> => {
     if (state.pendingAction === "favorite") {
@@ -159,7 +155,6 @@ export const MoimDetailClient = ({
 
   const handleShare = async (targetMeetingId: number) => {
     const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
-
     const success = await copyToClipboard(shareUrl);
 
     toast({
@@ -199,56 +194,7 @@ export const MoimDetailClient = ({
   };
 
   const handleLoginAction = () => {
-    router.push(`/login?redirect=%2Fmoim-detail%2F${meetingId}`);
-  };
-
-  const handleToggleRecommendedLike = async (targetMeetingId: number): Promise<boolean> => {
-    if (state.pendingRecommendedLikeIds.includes(targetMeetingId)) {
-      return false;
-    }
-
-    if (!currentUser.id) {
-      router.push(loginRedirectPath);
-      return false;
-    }
-
-    const targetMeeting = state.recommendedMeetings.find((meeting) => meeting.id === targetMeetingId);
-
-    if (!targetMeeting) {
-      return false;
-    }
-
-    dispatch({
-      type: "ADD_PENDING_RECOMMENDED_LIKE",
-      payload: targetMeetingId,
-    });
-
-    try {
-      const result = await favoriteMeetingAction(targetMeeting.id, targetMeeting.isLiked);
-
-      if (!result.ok) {
-        toast({ message: result.message, size: "small" });
-        return false;
-      }
-
-      dispatch({
-        type: "UPDATE_RECOMMENDED_MEETING_LIKE",
-        payload: {
-          meetingId: targetMeetingId,
-          isLiked: result.data.isLiked,
-        },
-      });
-
-      return true;
-    } catch {
-      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
-      return false;
-    } finally {
-      dispatch({
-        type: "REMOVE_PENDING_RECOMMENDED_LIKE",
-        payload: targetMeetingId,
-      });
-    }
+    router.push(loginRedirectPath);
   };
 
   const viewType = state.informationData.viewerRole === "manager" ? "manager" : "member";
@@ -278,6 +224,7 @@ export const MoimDetailClient = ({
                   alt="모임 대표 이미지"
                   fill
                   priority
+                  fetchPriority="high"
                   sizes="(max-width: 767px) 100vw, 48vw"
                   className="object-cover"
                 />
@@ -311,63 +258,6 @@ export const MoimDetailClient = ({
             hostName={state.informationData.hostName}
             hostImage={state.informationData.hostImage}
           />
-
-          <section className="flex flex-col gap-4">
-            <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
-
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
-              {state.recommendedMeetings.map((meeting) => {
-                const isRecommendedLikePending = state.pendingRecommendedLikeIds.includes(meeting.id);
-
-                return (
-                  <Link
-                    key={meeting.id}
-                    href={`${ROUTES.moimDetail}/${meeting.id}`}
-                    className="block cursor-pointer"
-                    onClick={(event) => {
-                      const target = event.target as HTMLElement;
-
-                      if (target.closest("button")) {
-                        event.preventDefault();
-                      }
-                    }}
-                  >
-                    <CompactCard
-                      image={
-                        meeting.image ? (
-                          <Image
-                            src={meeting.image}
-                            alt={meeting.title}
-                            fill
-                            sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 25vw"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
-                            이미지 영역
-                          </div>
-                        )
-                      }
-                      deadlineLabel={meeting.deadlineLabel}
-                      dateLabel={meeting.dateLabel}
-                      timeLabel={meeting.timeLabel}
-                      title={meeting.title}
-                      locationIcon={<LocationIcon />}
-                      locationText={meeting.locationText}
-                      isLiked={meeting.isLiked}
-                      onLike={() => {
-                        if (isRecommendedLikePending) {
-                          return false;
-                        }
-
-                        return handleToggleRecommendedLike(meeting.id);
-                      }}
-                    />
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
         </div>
       </main>
     </div>
