@@ -17,7 +17,7 @@ export const SearchHero = ({ desktopSearchBar }: SearchHeroProps) => {
         <img
           alt=""
           className="block h-full w-full object-cover"
-          decoding="async"
+          decoding="sync"
           fetchPriority="high"
           height={192}
           src="/images/space-search/hero/banner-mb.svg"
