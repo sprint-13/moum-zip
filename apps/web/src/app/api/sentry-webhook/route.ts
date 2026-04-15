@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 interface SentryWebhookBody {
+  action?: "created" | "triggered" | "resolved" | "ignored" | "assigned";
   data?: {
     issue?: {
       title?: string;
@@ -55,20 +56,27 @@ export async function POST(req: Request) {
     return new Response("Invalid signature", { status: 401 });
   }
 
-  let body: unknown;
+  let body: SentryWebhookBody;
   try {
-    body = JSON.parse(rawBody);
+    body = JSON.parse(rawBody) as SentryWebhookBody;
   } catch {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { data } = body as SentryWebhookBody;
+  // 이슈가 생성되었거나 에러가 새로 발생했을 때만 알림 전송
+  // resolved, ignored, assigned 등의 액션은 무시 — 해결 처리해도 에러 알림이 오는 문제 방지
+  const action = body.action;
+  if (action && !["created", "triggered"].includes(action)) {
+    return new Response("Ignored action", { status: 200 });
+  }
+
+  const { data } = body;
   const issue = data?.issue;
   const event = data?.event;
-  const title = event?.title ?? issue?.title ?? "Unknown Error";
 
-  // 빈 문자열을 넘기면 Discord가 제목을 링크로 만들지 않고 일반 텍스트로 렌더링함
-  // url이 없는 경우 undefined를 명시적으로 넘겨 해당 동작을 방지
+  // Discord embed title 최대치가 256자이므로 250자로 제한
+  const title = (event?.title ?? issue?.title ?? "Unknown Error").slice(0, 250);
+
   const url = issue?.web_url || undefined;
   const project = data?.project ?? "";
 
@@ -134,6 +142,9 @@ export async function POST(req: Request) {
     // fetch 성공 != Discord 정상 처리
     // response.ok를 확인하지 않으면 Discord 측 오류를 Sentry에 알릴 수 없음
     if (!response.ok) {
+      // Discord가 왜 거부했는지 본문을 로깅 — 400이나 429 원인 파악용
+      const errorText = await response.text();
+      console.error("Discord webhook failed:", response.status, errorText);
       return new Response("Failed to send Discord notification", { status: 502 });
     }
   } catch {
