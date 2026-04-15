@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { AmplitudeInit } from "@/amplitude";
-
-const pretendard = localFont({
-  src: "./fonts/PretendardSubset.woff2",
-  display: "swap",
-  variable: "--font-pretendard",
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +14,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${pretendard.className} ${pretendard.variable} bg-background-secondary antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          crossOrigin=""
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body className="bg-background-secondary antialiased">
         <AmplitudeInit />
         {children}
       </body>
