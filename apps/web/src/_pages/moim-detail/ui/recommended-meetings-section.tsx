@@ -1,4 +1,5 @@
-import { RecommendedMeetingsClient } from "@/_pages/moim-detail/ui/recommended-meetings-client";
+import { Suspense } from "react";
+import { RecommendedMeetingsWrapper } from "@/_pages/moim-detail/ui/recommended-meetings-wrapper";
 import { mapMeetingToRecommendedMeetingData, sortRecommendedMeetings } from "@/entities/moim-detail";
 import { getApi } from "@/shared/api/server";
 
@@ -100,9 +101,7 @@ export async function RecommendedMeetingsSection({ meetingId }: Props) {
 
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
 
-    if (!meetingDetail) {
-      return null;
-    }
+    if (!meetingDetail) return null;
 
     const sortableMeetingDetail: CurrentMeetingSortable = {
       id: meetingDetail.id,
@@ -115,11 +114,25 @@ export async function RecommendedMeetingsSection({ meetingId }: Props) {
       mapMeetingToRecommendedMeetingData,
     );
 
-    if (recommendedMeetings.length === 0) {
-      return null;
-    }
+    if (recommendedMeetings.length === 0) return null;
 
-    return <RecommendedMeetingsClient meetings={recommendedMeetings} />;
+    return (
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-4 pb-20">
+        <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
+
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+              {[1, 2, 3, 4].map((num) => (
+                <div key={num} className="aspect-[162/114] w-full animate-pulse rounded-xl bg-slate-100" />
+              ))}
+            </div>
+          }
+        >
+          <RecommendedMeetingsWrapper meetings={recommendedMeetings} />
+        </Suspense>
+      </section>
+    );
   } catch {
     return null;
   }

@@ -3,7 +3,6 @@
 import { toast } from "@ui/components";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CompactCard } from "@/_pages/moim-detail";
 import { favoriteMeetingAction } from "@/_pages/moim-detail/actions";
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export function RecommendedMeetingsClient({ meetings }: Props) {
-  const router = useRouter();
   const [recommendedMeetings, setRecommendedMeetings] = useState(meetings);
   const [pendingLikeIds, setPendingLikeIds] = useState<number[]>([]);
 
@@ -49,61 +47,57 @@ export function RecommendedMeetingsClient({ meetings }: Props) {
   };
 
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-20 sm:px-6">
-      <h2 className="font-semibold text-black text-xl leading-[1.4]">이런 모임은 어때요?</h2>
+    <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
+      {recommendedMeetings.map((meeting) => {
+        const isPending = pendingLikeIds.includes(meeting.id);
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-4">
-        {recommendedMeetings.map((meeting) => {
-          const isPending = pendingLikeIds.includes(meeting.id);
+        return (
+          <Link
+            key={meeting.id}
+            href={`${ROUTES.moimDetail}/${meeting.id}`}
+            className="block cursor-pointer"
+            onClick={(event) => {
+              const target = event.target as HTMLElement;
 
-          return (
-            <Link
-              key={meeting.id}
-              href={`${ROUTES.moimDetail}/${meeting.id}`}
-              className="block cursor-pointer"
-              onClick={(event) => {
-                const target = event.target as HTMLElement;
-
-                if (target.closest("button")) {
-                  event.preventDefault();
+              if (target.closest("button")) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <CompactCard
+              image={
+                meeting.image ? (
+                  <Image
+                    src={meeting.image}
+                    alt={meeting.title}
+                    fill
+                    sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 25vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
+                    이미지 영역
+                  </div>
+                )
+              }
+              deadlineLabel={meeting.deadlineLabel}
+              dateLabel={meeting.dateLabel}
+              timeLabel={meeting.timeLabel}
+              title={meeting.title}
+              locationIcon={<LocationIcon />}
+              locationText={meeting.locationText}
+              isLiked={meeting.isLiked}
+              onLike={() => {
+                if (isPending) {
+                  return false;
                 }
+
+                return handleToggleLike(meeting.id, meeting.isLiked);
               }}
-            >
-              <CompactCard
-                image={
-                  meeting.image ? (
-                    <Image
-                      src={meeting.image}
-                      alt={meeting.title}
-                      fill
-                      sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 25vw"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
-                      이미지 영역
-                    </div>
-                  )
-                }
-                deadlineLabel={meeting.deadlineLabel}
-                dateLabel={meeting.dateLabel}
-                timeLabel={meeting.timeLabel}
-                title={meeting.title}
-                locationIcon={<LocationIcon />}
-                locationText={meeting.locationText}
-                isLiked={meeting.isLiked}
-                onLike={() => {
-                  if (isPending) {
-                    return false;
-                  }
-
-                  return handleToggleLike(meeting.id, meeting.isLiked);
-                }}
-              />
-            </Link>
-          );
-        })}
-      </div>
-    </section>
+            />
+          </Link>
+        );
+      })}
+    </div>
   );
 }
