@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { DescriptionSection, MoimDetailClient } from "@/_pages/moim-detail";
+import { ScrollReset } from "@/_pages/moim-detail/lib/scroll-reset";
 import { HeroImageSection } from "@/_pages/moim-detail/ui/hero-image-section";
 import { RecommendedMeetingsSection } from "@/_pages/moim-detail/ui/recommended-meetings-section";
 import {
@@ -112,6 +113,8 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
 
     return (
       <div className="min-h-screen">
+        <ScrollReset />
+
         <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-20 sm:px-6">
           <div className="flex items-center py-2">
             <Link
@@ -142,9 +145,7 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
               hostImage={informationData.hostImage}
             />
 
-            <Suspense fallback={null}>
-              <RecommendedMeetingsSection meetingId={meetingId} />
-            </Suspense>
+            <RecommendedMeetingsSection meetingId={meetingId} />
           </div>
         </main>
       </div>
