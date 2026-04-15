@@ -1,15 +1,19 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import type { Metadata } from "next";
 
+import { getSearchMetadata, type SearchMetadataParams } from "@/_pages/space-search/lib/get-search-metadata";
 import { getSearchPrefetchContext } from "@/_pages/space-search/lib/get-search-prefetch-context";
 import { getSearchCategories } from "@/_pages/space-search/use-cases/get-search-categories";
 import { normalizeSearchQueryState, parseSearchQueryState, SearchContentSection } from "@/features/space-search";
 import { SearchCreateButton } from "@/features/space-search/ui/space-search-create-button";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
-type SearchParams = Record<string, string | string[] | undefined>;
-
 interface SearchPageProps {
-  searchParams?: Promise<SearchParams>;
+  searchParams?: Promise<SearchMetadataParams>;
+}
+
+export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+  return getSearchMetadata(searchParams);
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
