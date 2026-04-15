@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  enabled: process.env.NODE_ENV === "production", // 배포 환경에서만 에러 트래킹 활성화
   integrations: [Sentry.replayIntegration()],
 
   // 일반 세션은 녹화하지 않음
