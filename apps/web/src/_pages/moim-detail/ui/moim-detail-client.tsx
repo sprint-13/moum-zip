@@ -2,7 +2,7 @@
 
 import { toast } from "@ui/components";
 import { useRouter } from "next/navigation";
-import { useEffect, useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import { InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
 import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
@@ -45,19 +45,7 @@ export const MoimDetailClient = ({
     createMoimDetailInitialState,
   );
 
-  useEffect(() => {
-    dispatch({
-      type: "RESET",
-      payload: {
-        informationData: initialInformationData,
-        personnelData: initialPersonnelData,
-        recommendedMeetings: [],
-        isParticipating: initialIsParticipating,
-      },
-    });
-  }, [initialInformationData, initialPersonnelData, initialIsParticipating]);
-
-  const handleToggleMeetingLike = async (): Promise<boolean> => {
+  const handleToggleMeetingLike = useCallback(async (): Promise<boolean> => {
     if (state.pendingAction === "favorite") {
       return false;
     }
@@ -89,63 +77,82 @@ export const MoimDetailClient = ({
     } finally {
       dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
-  };
+  }, [
+    currentUser.id,
+    loginRedirectPath,
+    router,
+    state.informationData.id,
+    state.informationData.isLiked,
+    state.pendingAction,
+  ]);
 
-  const handleParticipateToggle = async (targetMeetingId: number, nextParticipating: boolean) => {
-    if (state.pendingAction === "join") {
-      return;
-    }
+  const handleParticipateToggle = useCallback(
+    async (targetMeetingId: number, nextParticipating: boolean) => {
+      if (state.pendingAction === "join") {
+        return;
+      }
 
-    const previousState = {
-      informationData: state.informationData,
-      personnelData: state.personnelData,
-      isParticipating: state.isParticipating,
-    };
+      const previousState = {
+        informationData: state.informationData,
+        personnelData: state.personnelData,
+        isParticipating: state.isParticipating,
+      };
 
-    const optimisticParticipant: ParticipantData | null = currentUser.id
-      ? {
-          id: currentUser.id,
-          name: currentUser.name ?? "나",
-          image: currentUser.image ?? null,
+      const optimisticParticipant: ParticipantData | null = currentUser.id
+        ? {
+            id: currentUser.id,
+            name: currentUser.name ?? "나",
+            image: currentUser.image ?? null,
+          }
+        : null;
+
+      dispatch({ type: "SET_PENDING_ACTION", payload: "join" });
+
+      dispatch({
+        type: "OPTIMISTIC_PARTICIPATION",
+        payload: {
+          nextParticipating,
+          participant: optimisticParticipant,
+          userId: currentUser.id,
+        },
+      });
+
+      try {
+        const result = await joinMeetingAction(targetMeetingId, previousState.isParticipating);
+
+        if (!result.ok) {
+          dispatch({
+            type: "ROLLBACK_PARTICIPATION",
+            payload: previousState,
+          });
+          toast({ message: result.message, size: "small" });
+          return;
         }
-      : null;
 
-    dispatch({ type: "SET_PENDING_ACTION", payload: "join" });
-
-    dispatch({
-      type: "OPTIMISTIC_PARTICIPATION",
-      payload: {
-        nextParticipating,
-        participant: optimisticParticipant,
-        userId: currentUser.id,
-      },
-    });
-
-    try {
-      const result = await joinMeetingAction(targetMeetingId, previousState.isParticipating);
-
-      if (!result.ok) {
+        router.refresh();
+      } catch {
         dispatch({
           type: "ROLLBACK_PARTICIPATION",
           payload: previousState,
         });
-        toast({ message: result.message, size: "small" });
-        return;
+        toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
+      } finally {
+        dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
       }
+    },
+    [
+      currentUser.id,
+      currentUser.image,
+      currentUser.name,
+      router,
+      state.informationData,
+      state.isParticipating,
+      state.pendingAction,
+      state.personnelData,
+    ],
+  );
 
-      router.refresh();
-    } catch {
-      dispatch({
-        type: "ROLLBACK_PARTICIPATION",
-        payload: previousState,
-      });
-      toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
-    } finally {
-      dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
-    }
-  };
-
-  const handleShare = async (targetMeetingId: number) => {
+  const handleShare = useCallback(async (targetMeetingId: number) => {
     const shareUrl = `${window.location.origin}/moim-detail/${targetMeetingId}`;
     const success = await copyToClipboard(shareUrl);
 
@@ -155,39 +162,45 @@ export const MoimDetailClient = ({
       size: "small",
       duration: 2000,
     });
-  };
+  }, []);
 
-  const handleEdit = (targetMeetingId: number) => {
-    router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
-  };
+  const handleEdit = useCallback(
+    (targetMeetingId: number) => {
+      router.push(`${ROUTES.moimEdit}/${targetMeetingId}`);
+    },
+    [router],
+  );
 
-  const handleDelete = async (targetMeetingId: number) => {
-    if (state.pendingAction === "delete") {
-      return;
-    }
-
-    dispatch({ type: "SET_PENDING_ACTION", payload: "delete" });
-
-    try {
-      const result = await deleteMeetingAction(targetMeetingId);
-
-      if (!result.ok) {
-        toast({ message: result.message, size: "small" });
+  const handleDelete = useCallback(
+    async (targetMeetingId: number) => {
+      if (state.pendingAction === "delete") {
         return;
       }
 
-      toast({ message: "모임이 삭제되었습니다.", size: "small" });
-      router.replace(ROUTES.search);
-    } catch {
-      toast({ message: "모임 삭제 중 오류가 발생했습니다.", size: "small" });
-    } finally {
-      dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
-    }
-  };
+      dispatch({ type: "SET_PENDING_ACTION", payload: "delete" });
 
-  const handleLoginAction = () => {
+      try {
+        const result = await deleteMeetingAction(targetMeetingId);
+
+        if (!result.ok) {
+          toast({ message: result.message, size: "small" });
+          return;
+        }
+
+        toast({ message: "모임이 삭제되었습니다.", size: "small" });
+        router.replace(ROUTES.search);
+      } catch {
+        toast({ message: "모임 삭제 중 오류가 발생했습니다.", size: "small" });
+      } finally {
+        dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
+      }
+    },
+    [router, state.pendingAction],
+  );
+
+  const handleLoginAction = useCallback(() => {
     router.push(loginRedirectPath);
-  };
+  }, [loginRedirectPath, router]);
 
   const viewType = state.informationData.viewerRole === "manager" ? "manager" : "member";
 
