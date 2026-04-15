@@ -7,6 +7,7 @@ import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { updateMoim } from "@/features/moim-edit/use-cases/moim-update";
 import { ROUTES } from "@/shared/config/routes";
 import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 export type UpdateMoimActionState = {
   ok: false;
@@ -33,6 +34,10 @@ export const updateMoimAction = async (
   try {
     parsed = parseMoimFormData(formData);
   } catch (error) {
+    await reportError(error, {
+      fallbackMessage: "입력값이 올바르지 않습니다.",
+      tags: { scope: "moim-edit-action", stage: "parse" },
+    });
     return {
       ok: false,
       error: await getErrorMessage(error, {
@@ -52,6 +57,10 @@ export const updateMoimAction = async (
     redirect(`${ROUTES.moimDetail}/${meetingId}`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
+    await reportError(error, {
+      fallbackMessage: "모임 수정에 실패했습니다.",
+      tags: { scope: "moim-edit-action", stage: "submit" },
+    });
 
     return {
       ok: false,

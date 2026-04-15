@@ -16,6 +16,18 @@ interface ParsedResponseError {
 
 const DEFAULT_ERROR_MESSAGE = "요청 처리 중 오류가 발생했습니다.";
 
+const getDefaultShouldReport = (status: number | undefined, code: ErrorCode) => {
+  if (typeof status === "number") {
+    return status >= 500;
+  }
+
+  return (
+    code === ERROR_CODES.INTERNAL_SERVER_ERROR ||
+    code === ERROR_CODES.NETWORK_ERROR ||
+    code === ERROR_CODES.REQUEST_FAILED
+  );
+};
+
 const getStatusFromMessage = (message?: string): number | undefined => {
   if (typeof message !== "string") {
     return undefined;
@@ -128,7 +140,7 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
       error.status,
       parsedError.details ?? parsedError,
       error,
-      options.shouldReport ?? error.status >= 500,
+      options.shouldReport ?? getDefaultShouldReport(error.status, code),
     );
   }
 
@@ -145,7 +157,7 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
       inferredStatus,
       undefined,
       error,
-      options.shouldReport ?? true,
+      options.shouldReport ?? getDefaultShouldReport(inferredStatus, code),
     );
   }
 
@@ -165,7 +177,14 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
       options.code ??
       ("code" in error && typeof error.code === "string" ? (error.code as ErrorCode) : getCodeByStatus(status));
 
-    return buildApiError(code, message, status, error, error, options.shouldReport ?? true);
+    return buildApiError(
+      code,
+      message,
+      status,
+      error,
+      error,
+      options.shouldReport ?? getDefaultShouldReport(status, code),
+    );
   }
 
   return buildApiError(
@@ -174,7 +193,7 @@ export const normalizeApiError = async (error: unknown, options: NormalizeApiErr
     undefined,
     undefined,
     error,
-    options.shouldReport ?? true,
+    options.shouldReport ?? getDefaultShouldReport(undefined, options.code ?? ERROR_CODES.REQUEST_FAILED),
   );
 };
 

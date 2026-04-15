@@ -5,6 +5,7 @@ import { kstInputToDate, scheduleSchema } from "@/entities/schedule";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { CACHE_TAGS } from "@/shared/lib/cache";
 import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
+import { reportError } from "@/shared/lib/errors/report-error";
 import { handleAppError } from "@/shared/lib/handle-app-error";
 import { checkAttendanceUseCase } from "./use-cases/check-attendance";
 import { createScheduleUseCase } from "./use-cases/create-schedule";
@@ -48,6 +49,10 @@ export async function createScheduleAction(
       startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
     });
   } catch (err) {
+    await reportError(err, {
+      fallbackMessage: "일정 생성 중 오류가 발생했습니다.",
+      tags: { scope: "schedule-action", stage: "create" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(err, {
@@ -82,6 +87,10 @@ export async function updateScheduleAction(
       startAt: kstInputToDate(`${validatedFields.data.date}T${validatedFields.data.time}`),
     });
   } catch (err) {
+    await reportError(err, {
+      fallbackMessage: "일정 수정 중 오류가 발생했습니다.",
+      tags: { scope: "schedule-action", stage: "update" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(err, {

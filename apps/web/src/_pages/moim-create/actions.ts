@@ -7,6 +7,7 @@ import { type MoimCreateFormValues, parseMoimFormData } from "@/entities/moim";
 import { getApi, isAuth } from "@/shared/api/server";
 import { ROUTES } from "@/shared/config/routes";
 import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 export type CreateMoimActionState = {
   ok: false;
@@ -29,6 +30,10 @@ export const createMoimAction = async (
   try {
     parsed = parseMoimFormData(formData);
   } catch (error) {
+    await reportError(error, {
+      fallbackMessage: "입력값이 올바르지 않습니다.",
+      tags: { scope: "moim-create-action", stage: "parse" },
+    });
     return {
       ok: false,
       error: await getErrorMessage(error, {
@@ -48,6 +53,10 @@ export const createMoimAction = async (
     redirect(`${ROUTES.moimDetail}/${meeting.id}`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
+    await reportError(error, {
+      fallbackMessage: "모임 생성에 실패했습니다.",
+      tags: { scope: "moim-create-action", stage: "submit" },
+    });
     return {
       ok: false,
       error: await getErrorMessage(error, {

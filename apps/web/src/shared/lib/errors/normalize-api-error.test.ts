@@ -32,6 +32,31 @@ describe("normalizeApiError", () => {
     expect(error.code).toBe("UNAUTHORIZED");
     expect(error.message).toBe("401 Unauthorized");
   });
+
+  it("401 인증 에러는 기본적으로 리포트하지 않는다", async () => {
+    const error = await normalizeApiError(new Error("401 Unauthorized"));
+
+    expect(error.shouldReport).toBe(false);
+  });
+
+  it("5xx 응답 에러는 기본적으로 리포트한다", async () => {
+    const error = await normalizeApiError(
+      new Response(JSON.stringify({ message: "서버 오류가 발생했습니다." }), {
+        status: 500,
+        statusText: "Internal Server Error",
+      }),
+    );
+
+    expect(error.code).toBe("INTERNAL_SERVER_ERROR");
+    expect(error.shouldReport).toBe(true);
+  });
+
+  it("네트워크 에러는 기본적으로 리포트한다", async () => {
+    const error = await normalizeApiError(new TypeError("Failed to fetch"));
+
+    expect(error.code).toBe("NETWORK_ERROR");
+    expect(error.shouldReport).toBe(true);
+  });
 });
 
 describe("getErrorPresentation", () => {

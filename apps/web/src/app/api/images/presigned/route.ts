@@ -2,7 +2,7 @@ import type { PresignedUrlRequest } from "@moum-zip/api";
 import { NextResponse } from "next/server";
 import { getApi, isAuth } from "@/shared/api/server";
 import { ERROR_CODES } from "@/shared/lib/error";
-import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 export async function POST(request: Request) {
   const { authenticated } = await isAuth();
@@ -19,9 +19,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    const normalizedError = await normalizeApiError(error, {
+    const normalizedError = await reportError(error, {
       fallbackMessage: "이미지 업로드 URL 발급에 실패했습니다.",
       shouldReport: false,
+      tags: { scope: "images-presigned-route" },
     });
 
     if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
