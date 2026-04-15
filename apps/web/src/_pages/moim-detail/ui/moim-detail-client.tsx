@@ -273,7 +273,14 @@ export const MoimDetailClient = ({
           <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
             <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
               {state.informationData.image ? (
-                <Image src={state.informationData.image} alt="모임 대표 이미지" fill className="object-cover" />
+                <Image
+                  src={state.informationData.image}
+                  alt="모임 대표 이미지"
+                  fill
+                  priority
+                  sizes="(max-width: 767px) 100vw, 48vw"
+                  className="object-cover"
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
                   이미지 영역
@@ -328,7 +335,13 @@ export const MoimDetailClient = ({
                     <CompactCard
                       image={
                         meeting.image ? (
-                          <Image src={meeting.image} alt={meeting.title} fill className="object-cover" />
+                          <Image
+                            src={meeting.image}
+                            alt={meeting.title}
+                            fill
+                            sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 25vw"
+                            className="object-cover"
+                          />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-xs md:text-sm">
                             이미지 영역
