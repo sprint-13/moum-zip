@@ -1,16 +1,14 @@
 "use client";
 
-import { ChevronLeft } from "@moum-zip/ui/icons";
 import { toast } from "@ui/components";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer } from "react";
-import { DescriptionSection, InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
+import { InformationContainer, PersonnelContainer } from "@/_pages/moim-detail";
 import { deleteMeetingAction, favoriteMeetingAction, joinMeetingAction } from "@/_pages/moim-detail/actions";
+import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
 import { createMoimDetailInitialState, moimDetailReducer } from "@/_pages/moim-detail/model/moim-detail-reducer";
 import type { InformationData, ParticipantData, PersonnelData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
-import { copyToClipboard } from "../lib/copy-to-clipboard";
 
 interface CurrentUser {
   id: number | null;
@@ -22,7 +20,6 @@ interface MoimDetailClientProps {
   meetingId: number;
   currentUser: CurrentUser;
   initialInformationData: InformationData;
-  initialDescription: string;
   initialPersonnelData: PersonnelData;
   initialIsParticipating: boolean;
 }
@@ -31,7 +28,6 @@ export const MoimDetailClient = ({
   meetingId,
   currentUser,
   initialInformationData,
-  initialDescription,
   initialPersonnelData,
   initialIsParticipating,
 }: MoimDetailClientProps) => {
@@ -48,10 +44,6 @@ export const MoimDetailClient = ({
     },
     createMoimDetailInitialState,
   );
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, []);
 
   useEffect(() => {
     dispatch({
@@ -200,66 +192,21 @@ export const MoimDetailClient = ({
   const viewType = state.informationData.viewerRole === "manager" ? "manager" : "member";
 
   return (
-    <div className="min-h-screen">
-      <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-20 sm:px-6">
-        <div className="flex items-center py-2">
-          <button
-            type="button"
-            onClick={() => {
-              router.push(ROUTES.search);
-            }}
-            className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-            aria-label="뒤로가기"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-        </div>
+    <div className="flex h-full w-full flex-col gap-4">
+      <InformationContainer
+        data={state.informationData}
+        viewType={viewType}
+        isLoggedIn={!!currentUser.id}
+        isParticipating={state.isParticipating}
+        onToggleLike={handleToggleMeetingLike}
+        onParticipateToggle={handleParticipateToggle}
+        onShare={handleShare}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onLoginAction={handleLoginAction}
+      />
 
-        <div className="flex flex-col gap-12">
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
-            <div className="relative aspect-[630/400] h-full w-full overflow-hidden rounded-[16px] md:rounded-[20px]">
-              {state.informationData.image ? (
-                <Image
-                  src={state.informationData.image}
-                  alt="모임 대표 이미지"
-                  fill
-                  priority
-                  fetchPriority="high"
-                  sizes="(max-width: 767px) 100vw, 48vw"
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400 text-sm">
-                  이미지 영역
-                </div>
-              )}
-            </div>
-
-            <div className="flex h-full w-full flex-col gap-4">
-              <InformationContainer
-                data={state.informationData}
-                viewType={viewType}
-                isLoggedIn={!!currentUser.id}
-                isParticipating={state.isParticipating}
-                onToggleLike={handleToggleMeetingLike}
-                onParticipateToggle={handleParticipateToggle}
-                onShare={handleShare}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onLoginAction={handleLoginAction}
-              />
-
-              <PersonnelContainer data={state.personnelData} />
-            </div>
-          </section>
-
-          <DescriptionSection
-            description={initialDescription}
-            hostName={state.informationData.hostName}
-            hostImage={state.informationData.hostImage}
-          />
-        </div>
-      </main>
+      <PersonnelContainer data={state.personnelData} />
     </div>
   );
 };

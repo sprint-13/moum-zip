@@ -1,7 +1,10 @@
+import { ChevronLeft } from "@moum-zip/ui/icons";
 import { LoadingIndicator } from "@ui/components";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { MoimDetailClient } from "@/_pages/moim-detail";
+import { DescriptionSection, MoimDetailClient } from "@/_pages/moim-detail";
+import { HeroImageSection } from "@/_pages/moim-detail/ui/hero-image-section";
 import { RecommendedMeetingsSection } from "@/_pages/moim-detail/ui/recommended-meetings-section";
 import {
   getIsJoined,
@@ -12,6 +15,7 @@ import {
 } from "@/entities/moim-detail";
 import { getCurrentUser } from "@/features/moim-detail/use-cases/get-current-user";
 import { getApi, isAuth } from "@/shared/api/server";
+import { ROUTES } from "@/shared/config/routes";
 
 interface PageProps {
   params: Promise<{
@@ -82,6 +86,7 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
     const participantsResponse = participantsResult.value;
 
     const meetingDetail = "data" in meetingDetailResponse ? meetingDetailResponse.data : meetingDetailResponse;
+
     const participantsList = "data" in participantsResponse ? participantsResponse.data : participantsResponse;
 
     if (!meetingDetail || !participantsList) {
@@ -106,20 +111,43 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
     };
 
     return (
-      <>
-        <MoimDetailClient
-          meetingId={meetingId}
-          currentUser={currentUser}
-          initialInformationData={informationData}
-          initialDescription={description}
-          initialPersonnelData={personnelData}
-          initialIsParticipating={isJoined}
-        />
+      <div className="min-h-screen">
+        <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-20 sm:px-6">
+          <div className="flex items-center py-2">
+            <Link
+              href={ROUTES.search}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              aria-label="뒤로가기"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Link>
+          </div>
 
-        <Suspense fallback={null}>
-          <RecommendedMeetingsSection meetingId={meetingId} />
-        </Suspense>
-      </>
+          <div className="flex flex-col gap-12">
+            <section className="grid grid-cols-1 gap-4 md:grid-cols-[0.95fr_1.05fr] md:items-stretch">
+              <HeroImageSection image={meetingDetail.image ?? null} />
+
+              <MoimDetailClient
+                meetingId={meetingId}
+                currentUser={currentUser}
+                initialInformationData={informationData}
+                initialPersonnelData={personnelData}
+                initialIsParticipating={isJoined}
+              />
+            </section>
+
+            <DescriptionSection
+              description={description}
+              hostName={informationData.hostName}
+              hostImage={informationData.hostImage}
+            />
+
+            <Suspense fallback={null}>
+              <RecommendedMeetingsSection meetingId={meetingId} />
+            </Suspense>
+          </div>
+        </main>
+      </div>
     );
   } catch {
     return ERROR_FALLBACK;
