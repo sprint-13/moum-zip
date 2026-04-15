@@ -33,11 +33,55 @@ export default async function BulletinPage({ params }: { params: Promise<{ "spac
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
-          <BulletinInfoCard spaceId={space.spaceId} memberCount={space.capacity} />
-          <BulletinPopularPostCard spaceId={space.spaceId} slug={slug} />
+          <Suspense fallback={<BulletinInfoCardSkeleton />}>
+            <BulletinInfoCard spaceId={space.spaceId} memberCount={space.capacity} />
+          </Suspense>
+          <Suspense fallback={<BulletinPopularPostCardSkeleton />}>
+            <BulletinPopularPostCard spaceId={space.spaceId} slug={slug} />
+          </Suspense>
         </SpaceBodyRight>
       </SpaceBody>
     </>
+  );
+}
+
+function BulletinInfoCardSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-4 rounded-xl border border-border bg-background p-5 shadow-sm">
+      <div className="h-5 w-20 rounded bg-muted" />
+      <div className="flex justify-around">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="h-6 w-8 rounded bg-muted" />
+          <div className="h-4 w-14 rounded bg-muted" />
+        </div>
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="h-6 w-8 rounded bg-muted" />
+          <div className="h-4 w-14 rounded bg-muted" />
+        </div>
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="h-6 w-8 rounded bg-muted" />
+          <div className="h-4 w-14 rounded bg-muted" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BulletinPopularPostCardSkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-5 rounded-xl border border-border bg-background p-5 shadow-sm">
+      <div className="h-5 w-20 rounded bg-muted" />
+      {Array.from({ length: 3 }).map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: skeleton
+        <div key={i} className="flex items-start gap-3">
+          <div className="h-8 w-8 shrink-0 rounded-full bg-muted" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <div className="h-4 w-full rounded bg-muted" />
+            <div className="h-3 w-8 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
