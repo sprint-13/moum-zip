@@ -17,5 +17,13 @@ export const landingMetadata: Metadata = {
     description: LANDING_PAGE_DESCRIPTION,
     url: RESOLVED_SITE_URL,
     type: "website",
+    images: [
+      {
+        url: "/og/landing.png",
+        width: 1200,
+        height: 630,
+        alt: "모음.zip 랜딩 페이지",
+      },
+    ],
   },
 };

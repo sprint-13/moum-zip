@@ -23,6 +23,14 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: DEFAULT_SITE_TITLE,
     description: DEFAULT_SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/og/landing.png",
+        width: 1200,
+        height: 630,
+        alt: "모음.zip 랜딩 페이지",
+      },
+    ],
   },
 };
 
