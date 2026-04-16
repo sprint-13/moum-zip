@@ -153,6 +153,25 @@ describe("getSpaceMemberGrassUseCase", () => {
       activeDays: 2,
     });
   });
+  it("어제와 오늘이 모두 비어 있으면 streak는 0일이다", async () => {
+    repository.countPostsByDateRange.setRows([
+      { date: "2026-04-06", count: 1 },
+      { date: "2026-04-07", count: 1 },
+    ]);
+
+    const useCase = createGetGrassUseCase({
+      repository,
+      getTodayDateKey: () => "2026-04-09",
+    });
+    const result = await useCase("space-1", 7, { days: 4 });
+
+    expect(result.summary).toEqual({
+      todayScore: 0,
+      currentStreak: 0,
+      recentScore: 4,
+      activeDays: 2,
+    });
+  });
 });
 
 const createCountStub = () => {
