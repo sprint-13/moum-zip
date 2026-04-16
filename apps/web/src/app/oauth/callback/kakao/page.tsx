@@ -27,7 +27,7 @@ function KakaoCallbackContent() {
 
     const handleCallback = async () => {
       try {
-        // 1. 카카오 인가 코드 → access_token 교환 (Route Handler에서 처리)
+        // 카카오 인가 코드 -> access_token 교환 (Route Handler에서 처리)
         const tokenRes = await fetch(`/api/oauth/kakao?code=${code}`);
         if (!tokenRes.ok) {
           router.replace(ROUTES.login);
@@ -35,10 +35,10 @@ function KakaoCallbackContent() {
         }
         const { accessToken: kakaoAccessToken } = await tokenRes.json();
 
-        // 2. 카카오 access_token → 백엔드 JWT 발급
+        // 카카오 access_token -> 백엔드 JWT 발급
         const { accessToken, refreshToken } = await loginWithKakao(kakaoAccessToken);
 
-        // 3. httpOnly 쿠키에 저장
+        // httpOnly 쿠키에 저장
         const res = await fetch("/api/auth/token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -48,7 +48,7 @@ function KakaoCallbackContent() {
         });
 
         if (res.ok) {
-          // 풀 리로드로 쿠키 반영
+          // 쿠키 반영을 위해 홈으로 새 요청 (클라이언트 이동 X)
           window.location.replace(ROUTES.home);
         } else {
           router.replace(ROUTES.login);

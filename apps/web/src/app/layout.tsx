@@ -21,6 +21,7 @@ export default function RootLayout({
           crossOrigin=""
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
+        <script src="https://accounts.google.com/gsi/client" async />
       </head>
       <body className="bg-background-secondary antialiased">
         <AmplitudeInit />
