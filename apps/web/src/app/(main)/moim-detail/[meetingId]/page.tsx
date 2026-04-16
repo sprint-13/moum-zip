@@ -27,10 +27,15 @@ interface MoimDetailContentProps {
 }
 
 const parseMeetingId = (value: string) => {
-  const numericMeetingId = Number(value);
+  // "001", "1e3", " 12 " 같은 느슨한 숫자 형식을 막고 순수한 10진수 경로 id만 허용
+  if (!/^[1-9]\d*$/.test(value)) {
+    notFound();
+  }
+
+  const numericMeetingId = Number.parseInt(value, 10);
 
   // 메타데이터 생성 시에도 기존 페이지 렌더링과 동일한 notFound 정책을 따르도록 하기 위해 추가
-  if (!Number.isInteger(numericMeetingId) || numericMeetingId <= 0) {
+  if (!Number.isSafeInteger(numericMeetingId)) {
     notFound();
   }
 

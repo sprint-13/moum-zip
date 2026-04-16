@@ -42,7 +42,8 @@ export const getMoimDetailUrls = async (): Promise<string[]> => {
     }
 
     return [...meetingDetailUrls];
-  } catch {
+  } catch (error) {
+    console.error("getMoimDetailUrls failed", error);
     return [];
   }
 };
