@@ -3,33 +3,20 @@
 import { Gnb, Sheet } from "@moum-zip/ui/components";
 import { Menu } from "@moum-zip/ui/icons";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { logoutAction } from "@/_pages/auth/actions";
-import type { NotificationItem } from "@/entities/notification/model/types";
-import { NotificationMenu } from "@/features/notification/ui/notification-menu";
 import Logo from "@/shared/assets/moum-zip-logo.svg";
 import { NAVIGATION_ROUTES, ROUTES } from "@/shared/config/routes";
-import { ProfileAvatar } from "@/shared/ui";
 
 const logo = <Logo className="block h-8 w-auto" aria-hidden preserveAspectRatio="xMidYMid meet" />;
 
 type NavigationMenuClientProps = {
   loggedIn: boolean;
-  user?: {
-    imageUrl?: string;
-    name?: string;
-  } | null;
-  notifications: NotificationItem[];
-  nextCursor: string | null;
-  hasMore: boolean;
+  notificationsSlot?: ReactNode;
+  userSlot?: ReactNode;
 };
 
-export const NavigationMenuClient = ({
-  loggedIn,
-  user,
-  notifications,
-  nextCursor,
-  hasMore,
-}: NavigationMenuClientProps) => {
+export const NavigationMenuClient = ({ loggedIn, notificationsSlot, userSlot }: NavigationMenuClientProps) => {
   return (
     <>
       <div className="hidden w-full py-2 md:block">
@@ -62,21 +49,11 @@ export const NavigationMenuClient = ({
                 </Gnb.Item>
 
                 <Gnb.Item>
-                  <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
+                  <div className="h-9 w-9">{notificationsSlot}</div>
                 </Gnb.Item>
 
                 <Gnb.Item>
-                  <Link
-                    href={ROUTES.mypage}
-                    aria-label="마이페이지로 이동"
-                    className="inline-flex shrink-0 rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-1"
-                  >
-                    <ProfileAvatar
-                      className="size-10 border-border"
-                      src={user?.imageUrl}
-                      alt={user?.name ? `${user.name} 프로필 이미지` : "프로필 이미지"}
-                    />
-                  </Link>
+                  <div className="size-10">{userSlot}</div>
                 </Gnb.Item>
               </>
             ) : (
@@ -100,9 +77,7 @@ export const NavigationMenuClient = ({
         </Link>
 
         <div className="flex items-center gap-2">
-          {loggedIn ? (
-            <NotificationMenu notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
-          ) : null}
+          <div className="h-9 w-9">{notificationsSlot}</div>
 
           <Sheet>
             <Sheet.Trigger asChild>
