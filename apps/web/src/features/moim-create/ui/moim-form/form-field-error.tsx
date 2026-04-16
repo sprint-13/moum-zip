@@ -8,8 +8,6 @@ type FieldErrorProps = {
 export const FieldError = ({ message, className }: FieldErrorProps) => {
   const hasMessage = Boolean(message);
 
-  if (!message) return null;
-
   return (
     <p
       role={hasMessage ? "alert" : undefined}
