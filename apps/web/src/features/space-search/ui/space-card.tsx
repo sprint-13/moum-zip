@@ -1,3 +1,4 @@
+import { BookOpen, Headphones, Monitor } from "@moum-zip/ui/icons";
 import { CheckCircleIcon, LabeledProgressBar, Tag } from "@ui/components";
 import Image from "next/image";
 import Link from "next/link";
@@ -65,6 +66,7 @@ const SpaceCardStatus = ({ className, label }: { className?: string; label: stri
 export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   const {
     category,
+    categoryId,
     currentParticipants,
     deadlineLabel,
     district,
@@ -80,6 +82,8 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
   } = item;
   const displayTitle = truncateTitle(title);
   const detailHref = `${ROUTES.moimDetail}/${meetingId}`;
+  const LocationIcon = district === "online" ? Headphones : LocationPinIcon;
+  const CategoryIcon = categoryId === "study" ? BookOpen : Monitor;
 
   const joinButtonClassName = cn(
     "h-12 min-w-26 shrink-0 whitespace-nowrap px-6 text-base leading-6 tracking-[-0.02em] lg:h-11 lg:min-w-24 lg:px-5 lg:text-sm 2xl:h-12 2xl:min-w-26 2xl:px-6 2xl:text-base",
@@ -134,9 +138,10 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
                 ))}
               </div>
               <p className="mt-1.5 inline-flex items-center gap-1 font-medium text-muted-foreground text-sm leading-5 tracking-[-0.02em]">
-                <LocationPinIcon aria-hidden="true" className="size-4 shrink-0" />
+                <LocationIcon aria-hidden="true" className="size-4 shrink-0" />
                 <span>{district}</span>
                 <span aria-hidden="true">|</span>
+                <CategoryIcon aria-hidden="true" className="size-4 shrink-0" />
                 <span>{category}</span>
               </p>
             </div>
