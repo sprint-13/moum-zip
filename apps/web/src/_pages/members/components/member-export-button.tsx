@@ -94,12 +94,12 @@ type JsPDFWithAutoTable = import("jspdf").jsPDF;
 type AutoTableFn = typeof import("jspdf-autotable").default;
 
 const drawPageHeader = (doc: JsPDFWithAutoTable, title: string, subtitle: string, logoBase64: string) => {
-  doc.addImage(logoBase64, "PNG", 172, 8, 24, 8);
+  doc.addImage(logoBase64, "PNG", 14, 21, 13, 4.5);
 
   doc.setFont("Pretendard", "bold");
   doc.setFontSize(PDF_STYLES.title.size);
   doc.setTextColor(...PDF_STYLES.title.color);
-  doc.text(title, 14, 26);
+  doc.text(title, 30, 26);
 
   doc.setFont("Pretendard", "normal");
   doc.setFontSize(PDF_STYLES.subtitle.size);
