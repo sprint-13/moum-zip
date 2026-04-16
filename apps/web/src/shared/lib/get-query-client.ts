@@ -5,8 +5,7 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        retry: shouldRetryQueryError,
-        staleTime: 60 * 1000,
+        staleTime: 60 * 1000 * 5,
       },
       mutations: {
         retry: false,
