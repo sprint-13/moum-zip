@@ -1,62 +1,26 @@
-import type { NotificationsResult } from "@/entities/notification/model/types";
-import { getNotifications } from "@/features/notification/use-cases/get-notification";
-import { getApi, isAuth } from "@/shared/api/server";
+import { Suspense } from "react";
+import {
+  NavigationNotificationsServer,
+  NotificationBellFallback,
+} from "@/features/notification/ui/navigation-notifications";
+import { isAuth } from "@/shared/api/server";
 import { NavigationMenuClient } from "./navigation-menu-client";
-
-type NavigationUser = {
-  imageUrl?: string;
-  name?: string;
-};
-
-async function getNavigationUser(): Promise<NavigationUser | null> {
-  try {
-    const api = await getApi();
-    const response = await api.user.getUser();
-
-    return {
-      imageUrl: response.data.image ?? undefined,
-      name: response.data.name,
-    };
-  } catch {
-    return null;
-  }
-}
-
-async function getNavigationNotifications(): Promise<NotificationsResult> {
-  try {
-    const result = await getNotifications({ size: 10 });
-
-    return JSON.parse(JSON.stringify(result)) as NotificationsResult;
-  } catch {
-    return {
-      data: [],
-      nextCursor: null,
-      hasMore: false,
-    };
-  }
-}
+import { NavigationUserServer } from "./navigation-user";
 
 export async function NavigationMenu() {
   const { authenticated } = await isAuth();
 
-  const [user, notificationsResult] = authenticated
-    ? await Promise.all([getNavigationUser(), getNavigationNotifications()])
-    : [
-        null,
-        {
-          data: [],
-          nextCursor: null,
-          hasMore: false,
-        },
-      ];
+  const notificationsSlot = authenticated ? (
+    <Suspense fallback={<NotificationBellFallback />}>
+      <NavigationNotificationsServer />
+    </Suspense>
+  ) : null;
 
-  return (
-    <NavigationMenuClient
-      loggedIn={authenticated}
-      user={user}
-      notifications={notificationsResult.data}
-      nextCursor={notificationsResult.nextCursor}
-      hasMore={notificationsResult.hasMore}
-    />
-  );
+  const userSlot = authenticated ? (
+    <Suspense fallback={null}>
+      <NavigationUserServer />
+    </Suspense>
+  ) : null;
+
+  return <NavigationMenuClient loggedIn={authenticated} notificationsSlot={notificationsSlot} userSlot={userSlot} />;
 }
