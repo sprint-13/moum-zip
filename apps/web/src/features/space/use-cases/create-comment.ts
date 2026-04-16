@@ -1,6 +1,6 @@
 import { commentQueries, postQueries } from "@/entities/post/queries";
 import { createNotification } from "@/features/notification/use-cases/create-notification";
-import { AppError } from "@/shared/lib/error";
+import { ERROR_CODES, NotFoundError, ValidationError } from "@/shared/lib/error";
 
 export interface CreateCommentInput {
   postId: string;
@@ -15,14 +15,22 @@ export interface CreateCommentInput {
  * - 빈 내용 유효성 검사
  * - UUID 생성 후 DB 저장 (트랜잭션: commentCount 동시 증가)
  */
-export async function createCommentUseCase(input: CreateCommentInput): Promise<{ commentId: string }> {
+export const createCommentUseCase = async (input: CreateCommentInput): Promise<{ commentId: string }> => {
   const trimmedContent = input.content.trim();
 
-  if (!trimmedContent) throw new Error("댓글 내용을 입력해주세요.");
+  if (!trimmedContent) {
+    throw new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
+      message: "댓글 내용을 입력해주세요.",
+    });
+  }
 
   const postRows = await postQueries.findById(input.postId);
   const post = postRows[0];
-  if (!post || post.post.spaceId !== input.spaceId) throw new AppError("POST_NOT_FOUND");
+  if (!post || post.post.spaceId !== input.spaceId) {
+    throw new NotFoundError(ERROR_CODES.POST_NOT_FOUND, {
+      message: "게시글을 찾을 수 없습니다.",
+    });
+  }
 
   const comment = await commentQueries.create({
     id: crypto.randomUUID(),
@@ -55,4 +63,4 @@ export async function createCommentUseCase(input: CreateCommentInput): Promise<{
   }
 
   return { commentId: comment.id };
-}
+};

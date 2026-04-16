@@ -6,13 +6,18 @@ import { parseMoimFormData } from "@/entities/moim/model/parse-moim-form-data";
 import type { MoimCreateFormValues } from "@/entities/moim/model/schema";
 import { updateMoim } from "@/features/moim-edit/use-cases/moim-update";
 import { ROUTES } from "@/shared/config/routes";
+import { getErrorMessage } from "@/shared/lib/errors/get-error-message";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 export type UpdateMoimActionState = {
   ok: false;
   error: string;
 } | null;
 
-export async function updateMoimAction(_: UpdateMoimActionState, formData: FormData): Promise<UpdateMoimActionState> {
+export const updateMoimAction = async (
+  _: UpdateMoimActionState,
+  formData: FormData,
+): Promise<UpdateMoimActionState> => {
   // 1. meetingId 꺼내기 (없으면 에러)
   const meetingId = Number(formData.get("meetingId"));
 
@@ -28,10 +33,16 @@ export async function updateMoimAction(_: UpdateMoimActionState, formData: FormD
 
   try {
     parsed = parseMoimFormData(formData);
-  } catch (e) {
+  } catch (error) {
+    await reportError(error, {
+      fallbackMessage: "입력값이 올바르지 않습니다.",
+      tags: { scope: "moim-edit-action", stage: "parse" },
+    });
     return {
       ok: false,
-      error: e instanceof Error ? e.message : "입력값이 올바르지 않습니다.",
+      error: await getErrorMessage(error, {
+        fallbackMessage: "입력값이 올바르지 않습니다.",
+      }),
     };
   }
 
@@ -44,12 +55,18 @@ export async function updateMoimAction(_: UpdateMoimActionState, formData: FormD
 
     // 4. 성공 시 상세 페이지로 이동
     redirect(`${ROUTES.moimDetail}/${meetingId}`);
-  } catch (e) {
-    if (isRedirectError(e)) throw e;
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    await reportError(error, {
+      fallbackMessage: "모임 수정에 실패했습니다.",
+      tags: { scope: "moim-edit-action", stage: "submit" },
+    });
 
     return {
       ok: false,
-      error: e instanceof Error ? e.message : "모임 수정에 실패했습니다.",
+      error: await getErrorMessage(error, {
+        fallbackMessage: "모임 수정에 실패했습니다.",
+      }),
     };
   }
-}
+};

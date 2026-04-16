@@ -1,10 +1,15 @@
 import { defaultShouldDehydrateQuery, isServer, QueryClient } from "@tanstack/react-query";
+import { shouldRetryQueryError } from "./errors/query-error-policy";
 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
+        retry: shouldRetryQueryError,
         staleTime: 60 * 1000,
+      },
+      mutations: {
+        retry: false,
       },
       dehydrate: {
         // include pending queries in dehydration

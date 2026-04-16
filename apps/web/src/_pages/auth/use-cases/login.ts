@@ -1,6 +1,8 @@
 import { TokenService } from "@/entities/auth/model/token-service";
 import type { LoginResponse } from "@/entities/auth/model/types";
 import { api } from "@/shared/api";
+import { ERROR_CODES } from "@/shared/lib/error";
+import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 
 type Deps = {
   authApi?: {
@@ -12,10 +14,10 @@ export type LoginResult =
   | { ok: true; data: LoginResponse }
   | { ok: false; error: "INVALID_CREDENTIALS" | "INVALID_TOKEN" | "SERVER_ERROR" };
 
-export async function loginRemote(
+export const loginRemote = async (
   input: { email: string; password: string },
   { authApi = api.auth }: Deps = {},
-): Promise<LoginResult> {
+): Promise<LoginResult> => {
   try {
     // 로그인 요청
     const { data } = await authApi.login(input);
@@ -27,18 +29,15 @@ export async function loginRemote(
 
     return { ok: true, data };
   } catch (err) {
-    console.error("[login] 에러:", err);
+    const normalizedError = await normalizeApiError(err, {
+      fallbackMessage: "로그인에 실패했습니다.",
+      shouldReport: false,
+    });
 
-    // Response 객체로 오는 경우
-    if (err instanceof Response && err.status === 401) {
-      return { ok: false, error: "INVALID_CREDENTIALS" };
-    }
-
-    // Error 객체로 오는 경우
-    if (err instanceof Error && err.message.includes("401")) {
+    if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
       return { ok: false, error: "INVALID_CREDENTIALS" };
     }
 
     return { ok: false, error: "SERVER_ERROR" };
   }
-}
+};
