@@ -1,5 +1,6 @@
 import { memberQueries } from "@/entities/member";
 import { getApi } from "@/shared/api/server";
+import { ApiError, ERROR_CODES } from "@/shared/lib/error";
 import { safe } from "@/shared/lib/safe";
 
 export interface PendingMember {
@@ -16,12 +17,14 @@ export interface GetPendingMembersResult {
  * 스페이스(미팅)의 대기 중인 참가자 목록 조회.
  * joinedAt이 null인 참가자를 대기 중으로 간주한다.
  */
-export async function getPendingMembersUseCase(spaceId: string): Promise<GetPendingMembersResult> {
+export const getPendingMembersUseCase = async (spaceId: string): Promise<GetPendingMembersResult> => {
   const api = await getApi();
 
   const { data } = await safe(api.meetings.participants.getList(Number(spaceId), { size: 20 }), {
     default: () => {
-      throw new Error("Failed to fetch pending members");
+      throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+        message: "참가 대기 멤버를 불러오지 못했습니다.",
+      });
     },
   });
 
@@ -39,4 +42,4 @@ export async function getPendingMembersUseCase(spaceId: string): Promise<GetPend
     }));
 
   return { pendingMembers };
-}
+};

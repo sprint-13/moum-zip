@@ -12,11 +12,13 @@ import {
   spaceSm,
 } from "@/_pages/landing";
 import styles from "@/_pages/landing/landing.module.css";
+import { LandingPageTracking } from "@/_pages/landing/ui/landing-page-tracking";
 import { cn } from "@/shared/lib/cn";
 
 export default function Home() {
   return (
     <>
+      <LandingPageTracking />
       <section
         className={cn(
           styles["landing-bg-gradient"],
@@ -33,8 +35,8 @@ export default function Home() {
               <span className="block">작은 한 걸음도 혼자가 아니면 가벼워집니다.</span>
               <span className="block">당신의 첫 모임, 모음.zip이 도와드릴게요.</span>
             </p>
-            <LandingCtaButton size="medium" className="mt-12 min-w-0 max-w-[132px] md:hidden" />
-            <LandingCtaButton size="large" className="mt-12 hidden w-[168px] min-w-0 md:inline-flex" />
+            <LandingCtaButton size="medium" section="hero" className="mt-12 min-w-0 max-w-[132px] md:hidden" />
+            <LandingCtaButton size="large" section="hero" className="mt-12 hidden w-[168px] min-w-0 md:inline-flex" />
           </div>
           <Image
             src={heroImage}
@@ -42,6 +44,7 @@ export default function Home() {
             width={812}
             height={628}
             priority
+            fetchPriority="high"
             sizes="(max-width: 767px) 90vw, (max-width: 1280px) 50vw, 800px"
             className="w-[90vw] object-contain md:absolute md:top-[80%] md:-right-[24px] md:w-[50vw] lg:top-[60%] lg:right-[-10%] xl:top-[138px] xl:-right-[16%] xl:w-[58vw] xl:max-w-[800px]"
           />
@@ -84,7 +87,7 @@ export default function Home() {
               alt="모임 스페이스 UI 화면"
               width={335}
               height={536}
-              sizes="(max-width: 767px) min(100vw, 335px), 0px"
+              sizes="(max-width: 767px) 100vw, 0px"
               className="w-full md:hidden"
             />
             <Image
@@ -124,8 +127,8 @@ export default function Home() {
             <span className="relative block text-gray-950">혼자 시작하기 어려웠던 일들,</span>
             <span className="relative mt-2 block text-green-600">모음.zip에서 함께 해요</span>
           </h2>
-          <LandingCtaButton size="medium" className="min-w-0 max-w-[140px] md:hidden" />
-          <LandingCtaButton size="large" className="hidden w-[168px] min-w-0 md:inline-flex" />
+          <LandingCtaButton size="medium" section="bottom" className="min-w-0 max-w-[140px] md:hidden" />
+          <LandingCtaButton size="large" section="bottom" className="hidden w-[168px] min-w-0 md:inline-flex" />
         </div>
       </section>
     </>

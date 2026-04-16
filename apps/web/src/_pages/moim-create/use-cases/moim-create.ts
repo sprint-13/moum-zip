@@ -2,6 +2,7 @@ import { memberQueries } from "@/entities/member";
 import type { MoimCreateFormValues } from "@/entities/moim";
 import { spaceQueries } from "@/entities/spaces";
 import type { ApiClient } from "@/shared/api";
+import { ApiError, ERROR_CODES } from "@/shared/lib/error";
 
 // 모임 생성 API 호출 후, 로컬 space, 스페이스 멤버(매니저)까지 저장
 // API 클라이언트와 userId는 Server Action에서 주입
@@ -12,7 +13,7 @@ export type CreateMoimDeps = {
   userApi: Pick<ApiClient["user"], "getUser">;
 };
 
-export async function createMoim(formData: MoimCreateFormValues, { userId, meetingsApi, userApi }: CreateMoimDeps) {
+export const createMoim = async (formData: MoimCreateFormValues, { userId, meetingsApi, userApi }: CreateMoimDeps) => {
   const meetingPayload = {
     name: formData.name,
     type: formData.type === "study" ? "스터디" : "프로젝트",
@@ -25,12 +26,22 @@ export async function createMoim(formData: MoimCreateFormValues, { userId, meeti
   };
 
   const userRes = await userApi.getUser();
-  if (!userRes.ok || !userRes.data) throw new Error("유저 정보를 불러오지 못했습니다.");
+  if (!userRes.ok || !userRes.data) {
+    throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+      details: userRes,
+      message: "유저 정보를 불러오지 못했습니다.",
+    });
+  }
   const me = userRes.data;
 
   // 외부 API 호출 - 모임 생성
   const res = await meetingsApi.create(meetingPayload);
-  if (!res.ok) throw new Error("모임 생성에 실패했습니다.");
+  if (!res.ok) {
+    throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+      details: res,
+      message: "모임 생성에 실패했습니다.",
+    });
+  }
   const meeting = res.data as { id: number };
 
   // 로컬 DB - SPACE
@@ -56,4 +67,4 @@ export async function createMoim(formData: MoimCreateFormValues, { userId, meeti
   });
 
   return { meeting, space };
-}
+};

@@ -27,6 +27,8 @@ export interface InformationData {
   isLiked: boolean;
   image: string | null;
   hostId: number;
+  hostName: string;
+  hostImage: string | null;
   viewerRole: ViewerRole;
   isJoined: boolean;
   status: MeetingStatus;
