@@ -64,6 +64,14 @@ export const getSearchMetadata = async (
       description: SEARCH_PAGE_DESCRIPTION,
       url: ROUTES.search,
       type: "website",
+      images: [
+        {
+          url: "/og/search.png",
+          width: 1200,
+          height: 630,
+          alt: "모음.zip 검색 페이지",
+        },
+      ],
     },
   };
 };
