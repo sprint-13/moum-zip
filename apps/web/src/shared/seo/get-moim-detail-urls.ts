@@ -51,7 +51,8 @@ export const getMoimDetailUrls = async (): Promise<string[]> => {
 
     return [...meetingDetailUrls];
   } catch (error) {
-    console.error("getMoimDetailUrls failed", error);
+    const errorMessage = error instanceof Error ? error.message : "unknown";
+    console.error("getMoimDetailUrls failed", errorMessage);
     return [];
   }
 };

@@ -12,6 +12,8 @@ import type {
 type SearchParamRecord = Record<string, string | string[] | undefined>;
 type SearchParamSource = SearchParamRecord | { get(name: string): string | null } | undefined;
 
+export const SEARCH_QUERY_PARAM_KEYS = ["category", "dateSort", "deadlineSort", "keyword", "location"] as const;
+
 const categoryIds = new Set<SearchCategoryId>(SEARCH_CATEGORIES.map(({ id }) => id));
 const dateSortIds = new Set<SearchDateSortId>(["default", "latest", "oldest"]);
 const deadlineSortIds = new Set<SearchDeadlineSortId>(["default", "fast", "slow"]);

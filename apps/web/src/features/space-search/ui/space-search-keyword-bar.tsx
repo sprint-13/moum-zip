@@ -79,7 +79,7 @@ export const SearchKeywordBar = ({
   }
 
   return (
-    <form className={cn("w-full min-w-80 sm:w-[15.5rem]", className)} onSubmit={handleSubmit}>
+    <form className={cn("w-full min-w-80 sm:min-w-0", className)} onSubmit={handleSubmit}>
       <div className="group flex min-w-80 items-center rounded-full border border-slate-200 bg-white/95 p-1 shadow-[0_6px_18px_rgba(15,23,42,0.06)] transition-all focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10">
         <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
           <Search className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-primary" />
