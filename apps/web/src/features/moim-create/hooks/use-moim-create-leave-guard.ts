@@ -26,9 +26,16 @@ export const useMoimCreateLeaveGuard = ({ isDirty }: UseMoimCreateLeaveGuardOpti
     isCancelModalOpenRef.current = isCancelModalOpen;
   }, [isCancelModalOpen]);
 
-  // dirty 상태가 처음 활성화될 때만 방어용 history entry 추가
+  // dirty 상태일 때만 guard entry를 1회 삽입하고,
+  // dirty 해제 시에는 다음 입력에서 다시 삽입될 수 있도록 상태 초기화
   useEffect(() => {
-    if (!isDirty || guardInsertedRef.current) return;
+    if (!isDirty) {
+      // dirty 해제 시 guard 상태 초기화
+      guardInsertedRef.current = false;
+      return;
+    }
+
+    if (guardInsertedRef.current) return;
 
     guardInsertedRef.current = true;
     window.history.pushState({ __moim_leave__: true }, "", window.location.href);
@@ -74,10 +81,21 @@ export const useMoimCreateLeaveGuard = ({ isDirty }: UseMoimCreateLeaveGuardOpti
     setIsCancelModalOpen(false);
   }, []);
 
-  // 나가기 - guard를 해제하고 /search로 이동
+  // guard entry가 남아있는 경우,
+  // 뒤로가기 복귀를 방지하기 위해 먼저 소비한 뒤 /search로 이동
   const leaveToSearch = useCallback(() => {
     allowLeaveRef.current = true;
     setIsCancelModalOpen(false);
+    if (guardInsertedRef.current) {
+      const handleOnce = () => {
+        window.removeEventListener("popstate", handleOnce);
+        guardInsertedRef.current = false;
+        router.replace(SEARCH_PATH);
+      };
+      window.addEventListener("popstate", handleOnce);
+      window.history.back();
+      return;
+    }
     router.replace(SEARCH_PATH);
   }, [router]);
 
