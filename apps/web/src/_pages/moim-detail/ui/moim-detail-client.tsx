@@ -13,6 +13,7 @@ import { copyToClipboard } from "@/_pages/moim-detail/lib/copy-to-clipboard";
 import { createMoimDetailInitialState, moimDetailReducer } from "@/_pages/moim-detail/model/moim-detail-reducer";
 import type { InformationData, ParticipantData, PersonnelData, RecommendedMeetingData } from "@/entities/moim-detail";
 import { ROUTES } from "@/shared/config/routes";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 
 interface CurrentUser {
   id: number | null;
@@ -95,8 +96,8 @@ export const MoimDetailClient = ({
       });
 
       return true;
-    } catch {
-      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
+    } catch (error) {
+      toast({ message: getErrorPresentation(error).message, size: "small" });
       return false;
     } finally {
       dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
@@ -146,12 +147,12 @@ export const MoimDetailClient = ({
       }
 
       router.refresh();
-    } catch {
+    } catch (error) {
       dispatch({
         type: "ROLLBACK_PARTICIPATION",
         payload: previousState,
       });
-      toast({ message: "참여 처리 중 오류가 발생했습니다.", size: "small" });
+      toast({ message: getErrorPresentation(error).message, size: "small" });
     } finally {
       dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
@@ -191,8 +192,8 @@ export const MoimDetailClient = ({
 
       toast({ message: "모임이 삭제되었습니다.", size: "small" });
       router.replace(ROUTES.search);
-    } catch {
-      toast({ message: "모임 삭제 중 오류가 발생했습니다.", size: "small" });
+    } catch (error) {
+      toast({ message: getErrorPresentation(error).message, size: "small" });
     } finally {
       dispatch({ type: "SET_PENDING_ACTION", payload: "idle" });
     }
@@ -240,8 +241,8 @@ export const MoimDetailClient = ({
       });
 
       return true;
-    } catch {
-      toast({ message: "좋아요 처리 중 오류가 발생했습니다.", size: "small" });
+    } catch (error) {
+      toast({ message: getErrorPresentation(error).message, size: "small" });
       return false;
     } finally {
       dispatch({

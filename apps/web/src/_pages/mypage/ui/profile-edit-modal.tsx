@@ -7,6 +7,9 @@ import { cn } from "@ui/lib/utils";
 import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
 import type { MypageProfile } from "@/_pages/mypage/model/types";
+import { ApiError, ERROR_CODES, ValidationError } from "@/shared/lib/error";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
+import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 import { ProfileAvatar } from "@/shared/ui";
 
 interface ProfileEditModalProps {
@@ -137,8 +140,13 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
     }
 
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      toast({
+      const error = new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
+        field: "image",
         message: "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
+      });
+
+      toast({
+        message: getErrorPresentation(error).message,
         size: "small",
       });
       event.target.value = "";
@@ -162,7 +170,9 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
       });
 
       if (!response.ok) {
-        throw new Error("PRESIGNED_URL_REQUEST_FAILED");
+        throw await normalizeApiError(response, {
+          fallbackMessage: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+        });
       }
 
       const { presignedUrl, publicUrl }: PresignedImageResponse = await response.json();
@@ -177,7 +187,11 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("IMAGE_UPLOAD_FAILED");
+        throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+          message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+          shouldReport: uploadResponse.status >= 500,
+          status: uploadResponse.status,
+        });
       }
 
       setUploadedImageUrl(publicUrl);
@@ -186,9 +200,13 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
         message: "프로필 이미지를 업로드했어요.",
         size: "small",
       });
-    } catch (_error) {
+    } catch (error) {
+      const normalizedError = await normalizeApiError(error, {
+        fallbackMessage: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+      });
+
       toast({
-        message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+        message: getErrorPresentation(normalizedError).message,
         size: "small",
       });
     } finally {

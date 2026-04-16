@@ -1,5 +1,7 @@
+import { cacheLife, cacheTag } from "next/cache";
 import type { Post, PostCategory } from "@/entities/post";
 import { postQueries } from "@/entities/post/queries";
+import { CACHE_TAGS } from "@/shared/lib/cache";
 
 const PAGE_SIZE = 5;
 
@@ -20,6 +22,10 @@ export async function getBulletinPostsUseCase(
   spaceId: string,
   opts: { category?: PostCategory; page?: number } = {},
 ): Promise<GetBulletinPostsResult> {
+  "use cache";
+  cacheTag(CACHE_TAGS.bulletin(spaceId));
+  cacheLife({ revalidate: 600, expire: 3600 });
+
   const page = opts.page ?? 1;
   const offset = (page - 1) * PAGE_SIZE;
 

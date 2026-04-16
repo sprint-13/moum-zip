@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { AppError } from "./error";
+import { ERROR_CODES } from "./error";
+import { isAppError } from "./errors/is-app-error";
 
 /**
  * AppError를 Next.js 네비게이션으로 변환하는 에러 핸들러.
@@ -8,21 +9,27 @@ import { AppError } from "./error";
  * @example
  * const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
  */
-export function handleAppError(error: unknown): never {
-  if (error instanceof AppError) {
+export const handleAppError = (error: unknown): never => {
+  if (isAppError(error)) {
     switch (error.code) {
-      case "UNAUTHENTICATED":
+      case ERROR_CODES.UNAUTHENTICATED:
         redirect("/login");
         break;
-      case "SPACE_NOT_FOUND":
+      case ERROR_CODES.NOT_FOUND:
         notFound();
         break;
-      case "SPACE_ACCESS_DENIED":
+      case ERROR_CODES.SPACE_NOT_FOUND:
         notFound();
         break;
-      case "POST_NOT_FOUND":
+      case ERROR_CODES.SPACE_ACCESS_DENIED:
+        notFound();
+        break;
+      case ERROR_CODES.POST_NOT_FOUND:
+        notFound();
+        break;
+      case ERROR_CODES.COMMENT_NOT_FOUND:
         notFound();
     }
   }
   throw error;
-}
+};

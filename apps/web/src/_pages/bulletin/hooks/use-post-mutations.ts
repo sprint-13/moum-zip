@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Post, PostCategory } from "@/entities/post";
+import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 import { bulletinQueryKeys } from "../model/query-keys";
 
 export function useCreatePost(slug: string) {
@@ -13,7 +14,9 @@ export function useCreatePost(slug: string) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "게시글 작성에 실패했습니다.");
+      await throwIfNotOk(res, {
+        fallbackMessage: "게시글 작성에 실패했습니다.",
+      });
       return res.json() as Promise<{ postId: string }>;
     },
     onSuccess: () => {
@@ -32,7 +35,9 @@ export function useUpdatePost(slug: string) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(rest),
       });
-      if (!res.ok) throw new Error((await res.json()).error ?? "게시글 수정에 실패했습니다.");
+      await throwIfNotOk(res, {
+        fallbackMessage: "게시글 수정에 실패했습니다.",
+      });
       return res.json() as Promise<{ postId: string }>;
     },
     onMutate: async ({ postId, title, content, category }) => {
@@ -67,7 +72,11 @@ export function useDeletePost(slug: string) {
   return useMutation({
     mutationFn: async (postId: string) => {
       const res = await fetch(`/api/spaces/${slug}/bulletin/${postId}`, { method: "DELETE" });
-      if (!res.ok && res.status !== 204) throw new Error("게시글 삭제에 실패했습니다.");
+      if (!res.ok && res.status !== 204) {
+        await throwIfNotOk(res, {
+          fallbackMessage: "게시글 삭제에 실패했습니다.",
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bulletinQueryKeys.all(slug) });
