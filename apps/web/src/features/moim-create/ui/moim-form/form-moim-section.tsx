@@ -74,7 +74,14 @@ export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false 
             max={1000}
             isDestructive={!!errors.capacity}
             message={errors.capacity?.message}
-            {...register("capacity", { valueAsNumber: true })}
+            {...register("capacity", {
+              setValueAs: (value) => {
+                if (value === "" || value == null) return undefined;
+
+                const parsed = Number(value);
+                return Number.isNaN(parsed) ? undefined : parsed;
+              },
+            })}
             onKeyDown={(event) => {
               if (["-", "e", "E", "+"].includes(event.key)) {
                 event.preventDefault();

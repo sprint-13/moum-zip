@@ -1,29 +1,24 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useMoimCreateForm } from "@/features/moim-create/hooks/use-moim-create-form";
+import { MOIM_CREATE_DEFAULT_VALUES, useMoimCreateForm } from "@/features/moim-create/hooks/use-moim-create-form";
+import { useMoimCreateLeaveGuard } from "@/features/moim-create/hooks/use-moim-create-leave-guard";
 import { useMoimFormImageUpload } from "@/features/moim-create/hooks/use-moim-form-image-upload";
 import { trackMoimCreateCanceled } from "@/features/moim-create/lib/moim-create-events";
 import { MoimFormFields } from "@/features/moim-create/ui/moim-form-fields";
 import { AlertModal } from "@/shared/ui";
 
 export const MoimCreateForm = () => {
-  const router = useRouter();
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { form, onSubmit, state, isPending } = useMoimCreateForm();
   const { isImageUploading, handleImageUpload } = useMoimFormImageUpload(form);
 
-  // 폼 취소 - 아직 이탈 확정 아님, 확인 모달만 active
-  const handleCancelClick = () => {
-    setIsCancelModalOpen(true);
-  };
+  const { isCancelModalOpen, leaveToSearch, handleCancelClick, handleCancelModalOpenChange } = useMoimCreateLeaveGuard({
+    isDirty: form.formState.isDirty,
+  });
 
-  // 모달 나가기 - 이탈 확정 → 트래킹 후 뒤로가기
   const handleCancelConfirm = () => {
     trackMoimCreateCanceled();
-    router.back();
-    setIsCancelModalOpen(false);
+    form.reset(MOIM_CREATE_DEFAULT_VALUES);
+    leaveToSearch();
   };
 
   return (
@@ -39,7 +34,7 @@ export const MoimCreateForm = () => {
         onImageUpload={handleImageUpload}
       />
 
-      <AlertModal open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+      <AlertModal open={isCancelModalOpen} onOpenChange={handleCancelModalOpenChange}>
         <AlertModal.Content
           title="작성을 취소하시겠어요?"
           description="작성 중인 내용은 저장되지 않고 사라집니다."
