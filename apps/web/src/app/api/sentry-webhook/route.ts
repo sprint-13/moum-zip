@@ -102,16 +102,18 @@ export async function POST(req: Request) {
   const color = levelColor[level] ?? 0xff0000;
   const MAX_LENGTH = 400;
 
+  // 백틱을 escape해서 Discord 코드블록이 깨지는 걸 방지
+  const escapeBackticks = (str: string) => str.replace(/`/g, "\\`");
+
   const culpritField = event?.culprit
-    ? [{ name: "📍 발생 위치", value: `\`${event.culprit.slice(0, MAX_LENGTH)}\``, inline: false }]
+    ? [{ name: "📍 발생 위치", value: `\`${escapeBackticks(event.culprit.slice(0, MAX_LENGTH))}\``, inline: false }]
     : [];
 
-  // 에러 본문 메시지 파싱 - 길이 제한 후 코드 블록으로 표시
   const rawMessage = event?.message ?? "";
   const truncatedMessage =
     rawMessage.length > MAX_LENGTH ? rawMessage.slice(0, MAX_LENGTH) + "\n… (truncated)" : rawMessage;
   const messageField = truncatedMessage
-    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${truncatedMessage}\n\`\`\``, inline: false }]
+    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${escapeBackticks(truncatedMessage)}\n\`\`\``, inline: false }]
     : [];
 
   try {
@@ -142,7 +144,7 @@ export async function POST(req: Request) {
     // fetch 성공 != Discord 정상 처리
     // response.ok를 확인하지 않으면 Discord 측 오류를 Sentry에 알릴 수 없음
     if (!response.ok) {
-      // Discord가 왜 거부했는지 본문을 로깅 — 400이나 429 원인 파악용
+      // Discord가 왜 거부했는지 본문을 로깅 - 400이나 429 원인 파악용
       const errorText = await response.text();
       console.error("Discord webhook failed:", response.status, errorText);
       return new Response("Failed to send Discord notification", { status: 502 });
