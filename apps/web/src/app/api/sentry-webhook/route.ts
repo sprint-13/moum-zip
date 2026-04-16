@@ -102,18 +102,24 @@ export async function POST(req: Request) {
   const color = levelColor[level] ?? 0xff0000;
   const MAX_LENGTH = 400;
 
-  // 백틱을 escape해서 Discord 코드블록이 깨지는 걸 방지
-  const escapeBackticks = (str: string) => str.replace(/`/g, "\\`");
+  // 백틱이 있으면 인라인 코드와 코드 블록이 중간에 닫히므로 '로 대체
+  function escapeInlineCode(value: string): string {
+    return value.replace(/`/g, "'").replace(/\s+/g, " ").trim();
+  }
 
-  const culpritField = event?.culprit
-    ? [{ name: "📍 발생 위치", value: `\`${escapeBackticks(event.culprit.slice(0, MAX_LENGTH))}\``, inline: false }]
-    : [];
+  // ``` 가 있으면 코드 블록이 중간에 닫히므로 중간에 빈 문자 삽입
+  function escapeCodeBlock(value: string): string {
+    return value.replace(/```/g, "`\u200b``");
+  }
 
-  const rawMessage = event?.message ?? "";
+  const culprit = event?.culprit ? escapeInlineCode(event.culprit).slice(0, MAX_LENGTH) : "";
+  const culpritField = culprit ? [{ name: "📍 발생 위치", value: `\`${culprit}\``, inline: false }] : [];
+
+  const rawMessage = event?.message ? escapeCodeBlock(event.message) : "";
   const truncatedMessage =
     rawMessage.length > MAX_LENGTH ? rawMessage.slice(0, MAX_LENGTH) + "\n… (truncated)" : rawMessage;
   const messageField = truncatedMessage
-    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${escapeBackticks(truncatedMessage)}\n\`\`\``, inline: false }]
+    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${truncatedMessage}\n\`\`\``, inline: false }]
     : [];
 
   try {
