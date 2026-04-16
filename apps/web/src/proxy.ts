@@ -15,7 +15,7 @@ import { reportError } from "@/shared/lib/errors/report-error";
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/search", "/oauth", "/moim-detail"];
 
 // 미들웨어 실행 건너뛰는 경로
-const EXCLUDED_PATHS = ["/_next", "/api", "/fonts", "/favicon"];
+const EXCLUDED_PATHS = ["/_next", "/api", "/fonts", "/favicon", "/robots.txt", "/sitemap.xml"];
 
 function isExcluded(pathname: string) {
   return EXCLUDED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

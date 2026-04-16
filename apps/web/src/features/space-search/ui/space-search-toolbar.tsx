@@ -83,7 +83,7 @@ export const SearchToolbar = ({
   };
 
   return (
-    <section className="flex w-full min-w-80 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <section className="grid w-full min-w-80 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:items-center lg:justify-between">
       <div className="no-scrollbar flex w-full min-w-80 flex-wrap items-center gap-2 overflow-x-hidden pb-1">
         {categories.map(({ id, label }) => (
           <div className="group/tab rounded-[1rem] p-0.5" key={id}>
@@ -104,47 +104,45 @@ export const SearchToolbar = ({
         ))}
       </div>
 
-      <div className="grid w-full min-w-80 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:w-auto lg:items-center lg:justify-end">
-        <div className="flex w-full min-w-80 flex-wrap items-center gap-x-1.5 gap-y-1 sm:justify-start lg:w-auto lg:justify-end">
-          {filters.map((filter) => {
-            const defaultOption = filter.options[0];
-            const selectedOptionId = selectedFilterOptionIdById[filter.id];
-            const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
-            const isOpen = openedFilterId === filter.id;
-            const isSelected = selectedOption.id !== defaultOption?.id;
+      <div className="flex w-full min-w-80 flex-nowrap items-center gap-x-1.5 overflow-hidden sm:flex-wrap sm:justify-center sm:gap-y-1 sm:overflow-visible lg:justify-end">
+        {filters.map((filter) => {
+          const defaultOption = filter.options[0];
+          const selectedOptionId = selectedFilterOptionIdById[filter.id];
+          const selectedOption = filter.options.find(({ id }) => id === selectedOptionId) ?? defaultOption;
+          const isOpen = openedFilterId === filter.id;
+          const isSelected = selectedOption.id !== defaultOption?.id;
 
-            return (
-              <Dropdown
-                key={filter.id}
-                onOpenChange={(nextIsOpen) => onFilterOpenChange(filter.id, nextIsOpen)}
-                open={isOpen}
-              >
-                <Dropdown.Trigger>
-                  <Filter
-                    className={getFilterTriggerClassName(isOpen, isSelected)}
-                    label={selectedOption.label}
-                    leftIcon={null}
-                    rightIcon={
-                      <ChevronDown className={getFilterChevronClassName(isOpen, isSelected)} strokeWidth={1.8} />
-                    }
-                    selected={isSelected}
-                    size="small"
-                  />
-                </Dropdown.Trigger>
-                <Dropdown.Content align="end">
-                  {filter.options.map((option) => (
-                    <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
-                      {option.label}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Content>
-              </Dropdown>
-            );
-          })}
-        </div>
-
-        {keywordBar ? <div className="flex w-full min-w-80 justify-end lg:hidden">{keywordBar}</div> : null}
+          return (
+            <Dropdown
+              key={filter.id}
+              onOpenChange={(nextIsOpen) => onFilterOpenChange(filter.id, nextIsOpen)}
+              open={isOpen}
+            >
+              <Dropdown.Trigger>
+                <Filter
+                  className={getFilterTriggerClassName(isOpen, isSelected)}
+                  label={selectedOption.label}
+                  leftIcon={null}
+                  rightIcon={
+                    <ChevronDown className={getFilterChevronClassName(isOpen, isSelected)} strokeWidth={1.8} />
+                  }
+                  selected={isSelected}
+                  size="small"
+                />
+              </Dropdown.Trigger>
+              <Dropdown.Content align="end">
+                {filter.options.map((option) => (
+                  <Dropdown.Item key={option.id} onSelect={() => handleFilterChange(filter.id, option.id)}>
+                    {option.label}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Content>
+            </Dropdown>
+          );
+        })}
       </div>
+
+      {keywordBar ? <div className="flex w-full min-w-80 justify-end sm:col-span-2 lg:hidden">{keywordBar}</div> : null}
     </section>
   );
 };

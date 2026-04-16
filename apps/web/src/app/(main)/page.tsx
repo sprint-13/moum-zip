@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import {
   bgDoubleOval,
@@ -12,8 +13,11 @@ import {
   spaceSm,
 } from "@/_pages/landing";
 import styles from "@/_pages/landing/landing.module.css";
+import { landingMetadata } from "@/_pages/landing/lib/landing-metadata";
 import { LandingPageTracking } from "@/_pages/landing/ui/landing-page-tracking";
 import { cn } from "@/shared/lib/cn";
+
+export const metadata: Metadata = landingMetadata;
 
 export default function Home() {
   return (
