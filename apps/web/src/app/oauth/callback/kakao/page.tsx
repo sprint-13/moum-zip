@@ -3,45 +3,51 @@
 import { LoadingIndicator } from "@moum-zip/ui/components";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import { loginWithKakao } from "@/_pages/auth/use-cases/social-login";
 import { ROUTES } from "@/shared/config/routes";
 
-function OAuthCallbackContent() {
+function KakaoCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const handledRef = useRef(false);
 
   useEffect(() => {
-    // 토큰 처리 중복 실행 방지
+    // 중복 실행 방지
     if (handledRef.current) return;
     handledRef.current = true;
 
-    const accessToken = searchParams.get("accessToken");
-    const refreshToken = searchParams.get("refreshToken");
-    // 백엔드 OAuth 실패 시 ?error=... 형태로 넘어오는 케이스 대비
+    const code = searchParams.get("code");
     const error = searchParams.get("error");
 
-    // 토큰이 없거나 에러가 있으면 로그인 페이지로 이동
-    if (error || !accessToken || !refreshToken) {
+    // 카카오 로그인 실패 시 ?error=... 형태로 넘어오는 케이스 대비
+    if (error || !code) {
       router.replace(ROUTES.login);
       return;
     }
 
     const handleCallback = async () => {
       try {
-        // 토큰을 URL에서 즉시 제거 (히스토리/Referer 헤더로 토큰 노출 방지)
-        window.history.replaceState({}, "", window.location.pathname);
+        // 1. 카카오 인가 코드 → access_token 교환 (Route Handler에서 처리)
+        const tokenRes = await fetch(`/api/oauth/kakao?code=${code}`);
+        if (!tokenRes.ok) {
+          router.replace(ROUTES.login);
+          return;
+        }
+        const { accessToken: kakaoAccessToken } = await tokenRes.json();
 
-        // httpOnly 쿠키는 서버에서만 set 가능하므로 Route Handler에 위임
+        // 2. 카카오 access_token → 백엔드 JWT 발급
+        const { accessToken, refreshToken } = await loginWithKakao(kakaoAccessToken);
+
+        // 3. httpOnly 쿠키에 저장
         const res = await fetch("/api/auth/token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accessToken, refreshToken }),
           credentials: "include",
-          referrerPolicy: "no-referrer", // Referer 헤더로 토큰 노출 방지
+          referrerPolicy: "no-referrer",
         });
 
         if (res.ok) {
-          // router.replace는 서버 컴포넌트를 재실행하지 않아 네비게이션 상태가 바뀌지 않음
           // 풀 리로드로 쿠키 반영
           window.location.replace(ROUTES.home);
         } else {
@@ -58,10 +64,10 @@ function OAuthCallbackContent() {
   return <LoadingIndicator fullScreen text="로그인 처리 중" />;
 }
 
-export default function OAuthCallbackPage() {
+export default function KakaoCallbackPage() {
   return (
     <Suspense fallback={<LoadingIndicator fullScreen text="로그인 처리 중" />}>
-      <OAuthCallbackContent />
+      <KakaoCallbackContent />
     </Suspense>
   );
 }
