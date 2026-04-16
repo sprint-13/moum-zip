@@ -1,18 +1,15 @@
 "use client";
 
 import { useParams, usePathname } from "next/navigation";
-import type { NotificationItem } from "@/entities/notification/model/types";
-import { NotificationMenu } from "@/features/notification/ui/notification-menu";
+import type { ReactNode } from "react";
 import type { NavItem } from "../space-sidebar";
 
 interface MobileHeaderProps {
   navItems: NavItem[];
-  notifications: NotificationItem[];
-  nextCursor: string | null;
-  hasMore: boolean;
+  notificationSlot: ReactNode;
 }
 
-export function MobileHeader({ navItems, notifications, nextCursor, hasMore }: MobileHeaderProps) {
+export function MobileHeader({ navItems, notificationSlot }: MobileHeaderProps) {
   const { "space-slug": spaceSlug } = useParams<{ "space-slug": string }>();
   const pathname = usePathname();
 
@@ -29,12 +26,7 @@ export function MobileHeader({ navItems, notifications, nextCursor, hasMore }: M
       </div>
       <div className="flex items-center gap-1">
         {Actions && <Actions />}
-        <NotificationMenu
-          notifications={notifications}
-          nextCursor={nextCursor}
-          hasMore={hasMore}
-          mobileVariant="dropdown"
-        />
+        {notificationSlot}
       </div>
     </header>
   );
