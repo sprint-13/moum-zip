@@ -36,9 +36,9 @@ const deadlineTagClassName = cn(
   "2xl:[&>span:last-child]:max-w-none 2xl:[&>span:last-child]:overflow-visible 2xl:[&>span:last-child]:text-clip 2xl:[&>span:last-child]:text-xs 2xl:[&>span:last-child]:leading-4",
   "lg:[&>svg]:size-[1.125rem] 2xl:[&>svg]:size-5",
 );
-const cardWrapperClassName = "group/card -m-1 rounded-[2.25rem] p-1";
+const cardWrapperClassName = "group/card min-w-0 -m-1 rounded-[2.25rem] p-1";
 const cardClassName =
-  "relative flex w-full min-w-80 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 2xl:gap-6 2xl:p-6";
+  "relative flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 lg:group-hover/card:-translate-y-0.5 lg:group-hover/card:shadow-[0_16px_32px_rgba(17,17,17,0.14)] motion-reduce:lg:group-hover/card:translate-y-0 2xl:gap-6 2xl:p-6";
 const cardImageClassName =
   "h-39 w-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 lg:group-hover/card:scale-[1.015] motion-reduce:lg:group-hover/card:scale-100 2xl:size-42.5";
 const cardTitleClassName =
@@ -123,7 +123,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 sm:p-0">
+        <div className="flex min-w-0 flex-1 flex-col gap-5 p-4 sm:p-0 lg:gap-2 2xl:gap-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -153,7 +153,7 @@ export const SpaceCard = ({ isAuthenticated, item }: SpaceCardProps) => {
 
           <div className="flex items-end justify-between gap-3 lg:gap-2.5 2xl:gap-3">
             <div className="flex min-w-0 flex-1 flex-col gap-6 sm:gap-4 lg:gap-3.5 2xl:gap-4">
-              <div className="flex items-center gap-1.5 whitespace-nowrap">
+              <div className="flex items-center gap-1.5 whitespace-nowrap lg:mb-4 xl:mb-0">
                 <div className="flex items-center gap-2">
                   {metaChips.map((chip) => (
                     <MetaChip chip={chip} key={chip.id} />
