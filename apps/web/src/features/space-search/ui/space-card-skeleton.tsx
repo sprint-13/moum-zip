@@ -1,5 +1,5 @@
 const skeletonCardClassName =
-  "relative flex w-full min-w-0 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6";
+  "relative flex w-full min-w-80 flex-col gap-0 overflow-hidden rounded-[2rem] bg-card shadow-[0_10px_24px_rgba(17,17,17,0.09)] sm:gap-6 sm:overflow-visible sm:p-6 md:flex-row md:items-center lg:gap-5 lg:p-5 2xl:gap-6 2xl:p-6";
 const skeletonImageClassName =
   "h-39 w-full rounded-none bg-muted sm:h-50 sm:rounded-3xl md:size-42.5 lg:size-40 2xl:size-42.5";
 const skeletonBlockClassName = "rounded-full bg-muted";
