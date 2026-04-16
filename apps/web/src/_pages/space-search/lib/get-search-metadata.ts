@@ -23,8 +23,15 @@ const isDefaultSearchPage = (searchParams: SearchMetadataParams) => {
   }
 
   const queryState = parseSearchQueryState(searchParams);
+  const hasRawQueryEntries = Object.values(searchParams).some((value) => {
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
 
-  return buildSearchHref(ROUTES.search, queryState) === ROUTES.search;
+    return value !== undefined;
+  });
+
+  return !hasRawQueryEntries && buildSearchHref(ROUTES.search, queryState) === ROUTES.search;
 };
 
 export const getSearchMetadata = async (

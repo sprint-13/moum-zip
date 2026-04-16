@@ -4,6 +4,7 @@ import { ROUTES } from "@/shared/config/routes";
 import { RESOLVED_SITE_URL } from "@/shared/config/site";
 
 const SITEMAP_PAGE_SIZE = 100;
+const SITEMAP_MAX_PAGE_COUNT = 100;
 
 const buildMoimDetailUrl = (meetingId: number) => {
   return new URL(`${ROUTES.moimDetail}/${meetingId}`, RESOLVED_SITE_URL).toString();
@@ -24,9 +25,16 @@ export const getMoimDetailUrls = async (): Promise<string[]> => {
     const meetingDetailUrls = new Set<string>();
     const visitedCursors = new Set<string | null>();
     let cursor: string | undefined;
+    let pageCount = 0;
 
     while (!visitedCursors.has(cursor ?? null)) {
+      if (pageCount >= SITEMAP_MAX_PAGE_COUNT) {
+        console.warn("getMoimDetailUrls reached max page count", { maxPages: SITEMAP_MAX_PAGE_COUNT });
+        break;
+      }
+
       visitedCursors.add(cursor ?? null);
+      pageCount += 1;
 
       const page = await getMeetingsPage(cursor);
 
