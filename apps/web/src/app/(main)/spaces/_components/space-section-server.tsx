@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/nextjs";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { SpaceSection } from "@/_pages/spaces";
-import { getSpaceListRemote } from "@/_pages/spaces/use-cases/get-space-list";
+import { getSpaceListUsecase } from "@/_pages/spaces/use-cases/get-space-list";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
 export async function SpaceSectionServer() {
@@ -10,7 +10,7 @@ export async function SpaceSectionServer() {
   await queryClient
     .prefetchInfiniteQuery({
       queryKey: ["space-list"],
-      queryFn: ({ pageParam }) => getSpaceListRemote(pageParam as string | undefined),
+      queryFn: ({ pageParam }) => getSpaceListUsecase(pageParam as string | undefined),
       initialPageParam: undefined as string | undefined,
     })
     .catch((error: unknown) => {
