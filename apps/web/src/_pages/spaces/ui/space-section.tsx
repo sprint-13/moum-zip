@@ -87,8 +87,8 @@ export const SpaceSection = ({ className }: SpaceSectionProps) => {
         onQueryChange={setQuery}
       />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {displaySpaces.map((space) => (
-          <SpaceInfoGridCard key={space.spaceId} space={space} />
+        {displaySpaces.map((space, index) => (
+          <SpaceInfoGridCard key={space.spaceId} space={space} priority={index === 0} />
         ))}
         {emptyMessage ? <NoSpaceCard message={emptyMessage} /> : null}
       </div>
