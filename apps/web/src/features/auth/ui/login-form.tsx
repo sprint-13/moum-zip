@@ -5,7 +5,7 @@ import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { loginAction } from "@/_pages/auth/actions";
-import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login-url";
+import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login";
 import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
