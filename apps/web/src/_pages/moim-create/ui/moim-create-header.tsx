@@ -9,6 +9,8 @@ export const MoimCreateHeader = () => {
         alt=""
         width={102}
         height={82}
+        priority
+        fetchPriority="high"
         sizes="(max-width: 767px) 70px, 102px"
         className="h-[56px] w-[70px] md:h-[82px] md:w-[102px]"
       />
