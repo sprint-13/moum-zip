@@ -7,6 +7,7 @@ import { favoriteMeeting } from "@/features/moim-detail/use-cases/favorite-meeti
 import { getCurrentUser } from "@/features/moim-detail/use-cases/get-current-user";
 import { joinMeeting } from "@/features/moim-detail/use-cases/join-meeting";
 import { getApi, isAuth } from "@/shared/api/server";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 type ActionResult<T> = { ok: true; data: T } | { ok: false; message: string };
 
@@ -55,6 +56,9 @@ export async function getCurrentUserAction(): Promise<ActionResult<CurrentUserDa
       data,
     };
   } catch (error) {
+    await reportError(error, {
+      tags: { scope: "moim-detail-action", stage: "get-current-user" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -77,6 +81,9 @@ export async function favoriteMeetingAction(
       data,
     };
   } catch (error) {
+    await reportError(error, {
+      tags: { scope: "moim-detail-action", stage: "favorite" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -99,6 +106,9 @@ export async function joinMeetingAction(
       data,
     };
   } catch (error) {
+    await reportError(error, {
+      tags: { scope: "moim-detail-action", stage: "join" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(error),
@@ -118,6 +128,9 @@ export async function deleteMeetingAction(meetingId: number): Promise<ActionResu
       data,
     };
   } catch (error) {
+    await reportError(error, {
+      tags: { scope: "moim-detail-action", stage: "delete" },
+    });
     return {
       ok: false,
       message: await getErrorMessage(error),

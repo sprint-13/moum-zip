@@ -28,6 +28,8 @@ import {
   Users,
 } from "@moum-zip/api/index";
 import { API_BASE_URL as baseUrl, TEAM_ID as teamId } from "@/shared/config/env";
+import { ApiError, ERROR_CODES } from "@/shared/lib/error";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 // ─────────────────────────────────────────────────────────────
 // createAuthFetch
@@ -79,8 +81,15 @@ function createAuthFetch(
       // 5xx(서버 문제) - Sentry로 전송
       // 401, 400 등 클라이언트 에러는 onAuthFailed()로 처리
       if (refreshResponse.status >= 500) {
-        const { captureException } = await import("@sentry/nextjs");
-        captureException(new Error(`토큰 갱신 서버 에러: ${refreshResponse.status}`));
+        await reportError(
+          new ApiError(ERROR_CODES.INTERNAL_SERVER_ERROR, {
+            message: `토큰 갱신 서버 에러: ${refreshResponse.status}`,
+            status: refreshResponse.status,
+          }),
+          {
+            tags: { scope: "auth-refresh", runtime: "shared-api" },
+          },
+        );
       }
       await onAuthFailed();
       return new Response(null, { status: 401 });

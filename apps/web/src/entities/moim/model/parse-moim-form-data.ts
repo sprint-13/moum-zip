@@ -1,4 +1,5 @@
 import { type MoimCreateFormValues, moimCreateSchema } from "@/entities/moim/model/schema";
+import { ERROR_CODES, ValidationError } from "@/shared/lib/error";
 
 export const parseMoimFormData = (formData: FormData): MoimCreateFormValues => {
   const raw = {
@@ -18,7 +19,9 @@ export const parseMoimFormData = (formData: FormData): MoimCreateFormValues => {
 
   const parsed = moimCreateSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new Error(parsed.error.issues[0]?.message ?? "입력값이 올바르지 않습니다.");
+    throw new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
+      message: parsed.error.issues[0]?.message ?? "입력값이 올바르지 않습니다.",
+    });
   }
 
   return parsed.data;

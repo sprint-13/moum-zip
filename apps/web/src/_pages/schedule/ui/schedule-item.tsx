@@ -8,6 +8,7 @@ import { hasPermission, useSpaceContext } from "@/features/space";
 import { useAlertModal } from "@/features/space/hooks/use-alert-modal";
 import { AlertModal } from "@/features/space/ui/alert-modal";
 import { formatDate } from "@/shared/lib/date";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { deleteScheduleAction } from "../actions";
 
 interface ScheduleItemProps {
@@ -42,9 +43,9 @@ export function ScheduleItem({ schedule, onEdit }: ScheduleItemProps) {
     startTransition(async () => {
       try {
         await deleteScheduleAction(space.slug, schedule.id);
-      } catch (err) {
+      } catch (error) {
         toast({
-          message: err instanceof Error ? err.message : "일정 삭제에 실패했습니다.",
+          message: getErrorPresentation(error).message,
           size: "small",
         });
       }
