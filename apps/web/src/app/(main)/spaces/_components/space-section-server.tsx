@@ -2,6 +2,7 @@ import { captureException } from "@sentry/nextjs";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { SpaceSection } from "@/_pages/spaces";
 import { getSpaceListUsecase } from "@/_pages/spaces/use-cases/get-space-list";
+import { AppError } from "@/shared/lib/error";
 import { getQueryClient } from "@/shared/lib/get-query-client";
 
 export async function SpaceSectionServer() {
@@ -14,9 +15,9 @@ export async function SpaceSectionServer() {
       initialPageParam: undefined as string | undefined,
     })
     .catch((error: unknown) => {
-      // 토큰 만료(Unauthorized)는 클라이언트 fetch로 조용히 폴백
+      // AppError는 클라이언트 fetch로 조용히 폴백
       // 그 외 예상치 못한 에러는 Sentry에 기록
-      if (error instanceof Error && error.message === "Unauthorized") return;
+      if (error instanceof AppError) return;
       captureException(error);
     });
 
