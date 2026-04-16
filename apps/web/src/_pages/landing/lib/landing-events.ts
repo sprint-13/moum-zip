@@ -36,8 +36,19 @@ const track = <EventName extends LandingEventName>(
 
 // 랜딩 진입
 export const trackLandingEntered = () => {
+  let referrer = "direct";
+
+  if (typeof document !== "undefined" && document.referrer) {
+    try {
+      const parsed = new URL(document.referrer);
+      referrer = parsed.origin;
+    } catch {
+      referrer = "direct";
+    }
+  }
+
   track("landing_entered", {
-    referrer: typeof document !== "undefined" ? document.referrer || "direct" : "direct",
+    referrer,
   });
 };
 
