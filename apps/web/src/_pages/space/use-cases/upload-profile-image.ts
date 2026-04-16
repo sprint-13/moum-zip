@@ -1,6 +1,6 @@
 import { ApiError, ValidationError } from "@/shared/lib/error";
 import { ERROR_CODES } from "@/shared/lib/errors/error-codes";
-import { throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
+import { normalizeApiError, throwIfNotOk } from "@/shared/lib/errors/normalize-api-error";
 
 const PROFILE_IMAGE_FOLDER = "users";
 
@@ -43,23 +43,29 @@ const parseProfileImageUploadUrl = (value: unknown): ProfileImageUploadUrl => {
 };
 
 const getProfileImageUploadUrl = async (fileName: string, contentType: string): Promise<ProfileImageUploadUrl> => {
-  const response = await fetch("/api/images/presigned", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      fileName,
-      contentType,
-      folder: PROFILE_IMAGE_FOLDER,
-    }),
-  });
+  try {
+    const response = await fetch("/api/images/presigned", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fileName,
+        contentType,
+        folder: PROFILE_IMAGE_FOLDER,
+      }),
+    });
 
-  await throwIfNotOk(response, {
-    fallbackMessage: "프로필 이미지 업로드 URL 발급에 실패했어요.",
-  });
+    await throwIfNotOk(response, {
+      fallbackMessage: "프로필 이미지 업로드 URL 발급에 실패했어요.",
+    });
 
-  return parseProfileImageUploadUrl(await response.json());
+    return parseProfileImageUploadUrl(await response.json());
+  } catch (error) {
+    throw await normalizeApiError(error, {
+      fallbackMessage: "프로필 이미지 업로드 URL 발급에 실패했어요.",
+    });
+  }
 };
 
 export const uploadProfileImage = async (file: File): Promise<string> => {
@@ -70,17 +76,24 @@ export const uploadProfileImage = async (file: File): Promise<string> => {
   }
 
   const { presignedUrl, publicUrl } = await getProfileImageUploadUrl(file.name, file.type);
-  const response = await fetch(presignedUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": file.type,
-    },
-    body: file,
-  });
 
-  await throwIfNotOk(response, {
-    fallbackMessage: "프로필 이미지 업로드에 실패했어요.",
-  });
+  try {
+    const response = await fetch(presignedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+
+    await throwIfNotOk(response, {
+      fallbackMessage: "프로필 이미지 업로드에 실패했어요.",
+    });
+  } catch (error) {
+    throw await normalizeApiError(error, {
+      fallbackMessage: "프로필 이미지 업로드에 실패했어요.",
+    });
+  }
 
   return publicUrl;
 };

@@ -23,11 +23,16 @@ export async function POST(request: Request) {
       fallbackMessage: "이미지 업로드 URL 발급에 실패했습니다.",
       tags: { scope: "images-presigned-route" },
     });
+    const status = normalizedError.status ?? 500;
 
     if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
       return NextResponse.json({ message: "로그인이 필요합니다." }, { status: 401 });
     }
 
-    return NextResponse.json({ message: normalizedError.message }, { status: 500 });
+    if (status >= 500) {
+      return NextResponse.json({ message: "이미지 업로드 URL 발급에 실패했습니다." }, { status });
+    }
+
+    return NextResponse.json({ message: normalizedError.message }, { status });
   }
 }

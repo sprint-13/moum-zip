@@ -188,7 +188,6 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
 
       if (!uploadResponse.ok) {
         throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
-          cause: uploadResponse,
           message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
           shouldReport: uploadResponse.status >= 500,
           status: uploadResponse.status,
