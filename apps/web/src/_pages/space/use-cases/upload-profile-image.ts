@@ -57,7 +57,6 @@ const getProfileImageUploadUrl = async (fileName: string, contentType: string): 
 
   await throwIfNotOk(response, {
     fallbackMessage: "프로필 이미지 업로드 URL 발급에 실패했어요.",
-    shouldReport: false,
   });
 
   return parseProfileImageUploadUrl(await response.json());
@@ -81,7 +80,6 @@ export const uploadProfileImage = async (file: File): Promise<string> => {
 
   await throwIfNotOk(response, {
     fallbackMessage: "프로필 이미지 업로드에 실패했어요.",
-    shouldReport: false,
   });
 
   return publicUrl;

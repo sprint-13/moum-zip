@@ -7,8 +7,7 @@ import { cn } from "@ui/lib/utils";
 import { type ChangeEvent, startTransition, useActionState, useEffect, useId, useRef, useState } from "react";
 import { updateProfileAction } from "@/_pages/mypage/actions";
 import type { MypageProfile } from "@/_pages/mypage/model/types";
-import { ValidationError } from "@/shared/lib/error";
-import { ERROR_CODES } from "@/shared/lib/errors/error-codes";
+import { ApiError, ERROR_CODES, ValidationError } from "@/shared/lib/error";
 import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 import { ProfileAvatar } from "@/shared/ui";
@@ -188,8 +187,11 @@ export function ProfileEditModal({ isOpen, onClose, profile }: ProfileEditModalP
       });
 
       if (!uploadResponse.ok) {
-        throw await normalizeApiError(uploadResponse, {
-          fallbackMessage: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+        throw new ApiError(ERROR_CODES.REQUEST_FAILED, {
+          cause: uploadResponse,
+          message: "프로필 이미지 업로드에 실패했어요. 다시 시도해주세요.",
+          shouldReport: uploadResponse.status >= 500,
+          status: uploadResponse.status,
         });
       }
 

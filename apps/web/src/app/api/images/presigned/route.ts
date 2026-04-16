@@ -21,7 +21,6 @@ export async function POST(request: Request) {
   } catch (error) {
     const normalizedError = await reportError(error, {
       fallbackMessage: "이미지 업로드 URL 발급에 실패했습니다.",
-      shouldReport: false,
       tags: { scope: "images-presigned-route" },
     });
 
