@@ -8,6 +8,8 @@ import {
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/shared/lib/cookies";
+import { ApiError, ERROR_CODES } from "@/shared/lib/error";
+import { reportError } from "@/shared/lib/errors/report-error";
 
 // 비로그인 유저도 접근 가능한 공개 경로
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/search", "/oauth", "/moim-detail"];
@@ -45,10 +47,15 @@ async function refreshTokens(refreshToken: string) {
     // 5xx(서버 문제) - Sentry로 전송
     if (!res.ok) {
       if (res.status >= 500) {
-        try {
-          const { captureException } = await import("@sentry/nextjs");
-          captureException(new Error(`토큰 갱신 서버 에러: ${res.status}`));
-        } catch {}
+        await reportError(
+          new ApiError(ERROR_CODES.INTERNAL_SERVER_ERROR, {
+            message: `토큰 갱신 서버 에러: ${res.status}`,
+            status: res.status,
+          }),
+          {
+            tags: { scope: "auth-refresh", runtime: "proxy" },
+          },
+        );
       }
       return null;
     }
@@ -60,10 +67,10 @@ async function refreshTokens(refreshToken: string) {
     return { accessToken, refreshToken: newRefreshToken };
   } catch (error) {
     // 네트워크 단절 - Sentry로 전송
-    try {
-      const { captureException } = await import("@sentry/nextjs");
-      captureException(error);
-    } catch {}
+    await reportError(error, {
+      fallbackMessage: "토큰 갱신 중 네트워크 오류가 발생했습니다.",
+      tags: { scope: "auth-refresh", runtime: "proxy" },
+    });
     return null;
   }
 }

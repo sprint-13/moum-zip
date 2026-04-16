@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     environment: "jsdom",
+    env: {
+      DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+    },
   },
 });

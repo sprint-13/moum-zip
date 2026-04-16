@@ -4,6 +4,9 @@ import { ChevronsUpDown } from "@moum-zip/ui/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveSpaceMemberProfileUseCase } from "@/_pages/space/use-cases/save-space-member-profile";
 import { isAllowedProfileImageType } from "@/_pages/space/use-cases/upload-profile-image";
+import { ValidationError } from "@/shared/lib/error";
+import { ERROR_CODES } from "@/shared/lib/errors/error-codes";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileEditModal } from "./profile-edit-modal";
 import { useSidebar } from "./sidebar";
@@ -21,29 +24,11 @@ interface SidebarProfileDraft {
   nickname: string;
 }
 
-const ALLOWED_PROFILE_SAVE_ERROR_MESSAGES = new Set([
-  "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
-  "닉네임을 입력해 주세요.",
-  "닉네임은 20자 이하로 입력해 주세요.",
-  "멤버 정보를 찾을 수 없습니다.",
-  "프로필 이미지 업로드 URL 발급에 실패했어요.",
-  "프로필 이미지 업로드 URL 정보가 올바르지 않아요",
-  "프로필 이미지 업로드에 실패했어요.",
-]);
-
 const createSidebarProfile = ({ avatarUrl, email, name }: Omit<SidebarFooterProps, "slug">): SidebarProfileDraft => ({
   avatarUrl,
   email,
   nickname: name,
 });
-
-const getProfileSaveErrorMessage = (error: unknown) => {
-  if (!(error instanceof Error) || !ALLOWED_PROFILE_SAVE_ERROR_MESSAGES.has(error.message)) {
-    return "프로필 저장에 실패했어요. 다시 시도해 주세요.";
-  }
-
-  return error.message;
-};
 
 export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterProps) => {
   const { open, setOpen } = useSidebar();
@@ -133,7 +118,12 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
 
   const handleProfileImageChange = (imageFile: File) => {
     if (!isAllowedProfileImageType(imageFile.type)) {
-      setErrorMessage("JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요");
+      const error = new ValidationError(ERROR_CODES.VALIDATION_ERROR, {
+        field: "avatarUrl",
+        message: "JPG, PNG, WebP, GIF 형식의 이미지만 업로드할 수 있어요.",
+      });
+
+      setErrorMessage(getErrorPresentation(error).message);
       return;
     }
 
@@ -193,7 +183,7 @@ export const SidebarFooter = ({ slug, name, email, avatarUrl }: SidebarFooterPro
       applyEditingSnapshot(nextProfile);
       setIsProfileModalOpen(false);
     } catch (error) {
-      setErrorMessage(getProfileSaveErrorMessage(error));
+      setErrorMessage(getErrorPresentation(error).message);
     } finally {
       setIsSaving(false);
     }

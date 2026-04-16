@@ -1,9 +1,9 @@
-import { Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
-import type { ComponentType, ReactNode } from "react";
-import { getNotifications } from "@/features/notification/use-cases/get-notification";
+import { Bell, Calendar, Hexagon, Newspaper, Users } from "@moum-zip/ui/icons";
+import { type ComponentType, type ReactNode, Suspense } from "react";
 import type { SpaceContext } from "@/features/space/lib/get-space-context";
 import { MobileHeader } from "./sidebar/mobile-header";
 import { MobileTabBar } from "./sidebar/mobile-tab-bar";
+import { NotificationBell } from "./sidebar/notification-bell";
 import { SidebarInset, SidebarPanel, SidebarProvider } from "./sidebar/sidebar";
 import { SidebarContent } from "./sidebar/sidebar-content";
 import { SidebarFooter } from "./sidebar/sidebar-footer";
@@ -30,14 +30,20 @@ interface SpaceSidebarProps {
   membership: SpaceContext["membership"];
 }
 
-export const SpaceSidebar = async ({ children, space, membership }: SpaceSidebarProps) => {
-  const {
-    data: notifications,
-    nextCursor,
-    hasMore,
-  } = await getNotifications({
-    size: 10,
-  }).catch(() => ({ data: [], nextCursor: null, hasMore: false }));
+const bellFallback = <Bell className="size-4 text-muted-foreground" />;
+
+export const SpaceSidebar = ({ children, space, membership }: SpaceSidebarProps) => {
+  const desktopNotificationSlot = (
+    <Suspense fallback={bellFallback}>
+      <NotificationBell desktopSide="right" mobileVariant="dropdown" />
+    </Suspense>
+  );
+
+  const mobileNotificationSlot = (
+    <Suspense fallback={bellFallback}>
+      <NotificationBell mobileVariant="dropdown" />
+    </Suspense>
+  );
 
   return (
     <SidebarProvider>
@@ -47,9 +53,7 @@ export const SpaceSidebar = async ({ children, space, membership }: SpaceSidebar
           icon={<Hexagon />}
           title={space.name}
           description={space.type}
-          notifications={notifications}
-          nextCursor={nextCursor}
-          hasMore={hasMore}
+          notificationSlot={desktopNotificationSlot}
         />
         <SidebarContent navItems={NAV_ITEMS} />
         <div className="mt-auto">
@@ -66,7 +70,7 @@ export const SpaceSidebar = async ({ children, space, membership }: SpaceSidebar
       <SidebarInset>
         {/* 모바일 전용: 상단 헤더 + 탭 네비게이션 */}
         <div className="flex min-h-svh flex-1 flex-col">
-          <MobileHeader navItems={NAV_ITEMS} notifications={notifications} nextCursor={nextCursor} hasMore={hasMore} />
+          <MobileHeader navItems={NAV_ITEMS} notificationSlot={mobileNotificationSlot} />
           <MobileTabBar navItems={NAV_ITEMS} />
           {children}
         </div>

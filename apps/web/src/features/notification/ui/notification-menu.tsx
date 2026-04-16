@@ -280,7 +280,7 @@ export function NotificationMenu({
       aria-label="알림 열기"
       className="relative inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted"
     >
-      <Bell className="h-6 w-6 text-slate-600" />
+      <Bell className="h-5 w-5 text-slate-500" />
       {unreadCount > 0 && <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />}
     </button>
   );

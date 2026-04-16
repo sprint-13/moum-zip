@@ -1,10 +1,17 @@
 import crypto from "node:crypto";
 
 interface SentryWebhookBody {
+  action?: "created" | "triggered" | "resolved" | "ignored" | "assigned";
   data?: {
     issue?: {
       title?: string;
       web_url?: string;
+      level?: string;
+    };
+    event?: {
+      title?: string;
+      message?: string;
+      culprit?: string;
       level?: string;
     };
     project?: string;
@@ -22,12 +29,10 @@ function verifySentrySignature(payload: string, signature: string | null, secret
 
   const expected = crypto.createHmac("sha256", secret).update(payload).digest("hex");
 
-  try {
-    // 타이밍 공격 방지를 위해 timingSafeEqual로 상수 시간 비교
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+  if (signature.length !== expected.length) return false;
+
+  // 타이밍 공격 방지를 위해 timingSafeEqual로 상수 시간 비교
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
 }
 
 export async function POST(req: Request) {
@@ -51,19 +56,32 @@ export async function POST(req: Request) {
     return new Response("Invalid signature", { status: 401 });
   }
 
-  let body: unknown;
+  let body: SentryWebhookBody;
   try {
-    body = JSON.parse(rawBody);
+    body = JSON.parse(rawBody) as SentryWebhookBody;
   } catch {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { data } = body as SentryWebhookBody;
+  // 이슈가 생성되었거나 에러가 새로 발생했을 때만 알림 전송
+  // resolved, ignored, assigned 등의 액션은 무시 — 해결 처리해도 에러 알림이 오는 문제 방지
+  const action = body.action;
+  if (action && !["created", "triggered"].includes(action)) {
+    return new Response("Ignored action", { status: 200 });
+  }
+
+  const { data } = body;
   const issue = data?.issue;
-  const title = issue?.title ?? "Unknown Error";
-  const url = issue?.web_url ?? "";
+  const event = data?.event;
+
+  // Discord embed title 최대치가 256자이므로 250자로 제한
+  const title = (event?.title ?? issue?.title ?? "Unknown Error").slice(0, 250);
+
+  const url = issue?.web_url || undefined;
   const project = data?.project ?? "";
-  const level = issue?.level ?? "error";
+
+  // issue에 없으면 event에서 level 참조
+  const level = issue?.level ?? event?.level ?? "error";
 
   const levelEmoji: Record<string, string> = {
     fatal: "💀",
@@ -82,6 +100,27 @@ export async function POST(req: Request) {
 
   const emoji = levelEmoji[level] ?? "🔴";
   const color = levelColor[level] ?? 0xff0000;
+  const MAX_LENGTH = 400;
+
+  // 백틱이 있으면 인라인 코드와 코드 블록이 중간에 닫히므로 '로 대체
+  function escapeInlineCode(value: string): string {
+    return value.replace(/`/g, "'").replace(/\s+/g, " ").trim();
+  }
+
+  // ``` 가 있으면 코드 블록이 중간에 닫히므로 중간에 빈 문자 삽입
+  function escapeCodeBlock(value: string): string {
+    return value.replace(/```/g, "`\u200b``");
+  }
+
+  const culprit = event?.culprit ? escapeInlineCode(event.culprit).slice(0, MAX_LENGTH) : "";
+  const culpritField = culprit ? [{ name: "📍 발생 위치", value: `\`${culprit}\``, inline: false }] : [];
+
+  const rawMessage = event?.message ? escapeCodeBlock(event.message) : "";
+  const truncatedMessage =
+    rawMessage.length > MAX_LENGTH ? rawMessage.slice(0, MAX_LENGTH) + "\n… (truncated)" : rawMessage;
+  const messageField = truncatedMessage
+    ? [{ name: "💬 에러 메시지", value: `\`\`\`\n${truncatedMessage}\n\`\`\``, inline: false }]
+    : [];
 
   try {
     const response = await fetch(discordUrl, {
@@ -90,13 +129,19 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         embeds: [
           {
+            // url 지정 - 제목 자체가 Sentry 링크로 연결
             title: `${emoji} ${title}`,
             url,
             color,
             fields: [
-              { name: "Project", value: project, inline: true },
-              { name: "Level", value: level, inline: true },
+              ...culpritField,
+              { name: "🗂 프로젝트", value: project || "N/A", inline: true },
+              { name: "🚨 심각도", value: level, inline: true },
+              ...messageField,
             ],
+            footer: { text: `Sentry • ${project || "N/A"}` },
+            // 에러 발생 시각을 Discord 메시지에 기록
+            timestamp: new Date().toISOString(),
           },
         ],
       }),
@@ -105,6 +150,9 @@ export async function POST(req: Request) {
     // fetch 성공 != Discord 정상 처리
     // response.ok를 확인하지 않으면 Discord 측 오류를 Sentry에 알릴 수 없음
     if (!response.ok) {
+      // Discord가 왜 거부했는지 본문을 로깅 - 400이나 429 원인 파악용
+      const errorText = await response.text();
+      console.error("Discord webhook failed:", response.status, errorText);
       return new Response("Failed to send Discord notification", { status: 502 });
     }
   } catch {

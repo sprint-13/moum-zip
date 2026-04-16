@@ -8,14 +8,15 @@ import { SpaceInfoCardThumbnail } from "./space-info-card/space-info-card-thumbn
 
 interface SpaceInfoCardProps {
   space: SpaceInfo;
+  priority?: boolean;
 }
 
-export const SpaceInfoGridCard = ({ space }: SpaceInfoCardProps) => {
+export const SpaceInfoGridCard = ({ space, priority = false }: SpaceInfoCardProps) => {
   const cardContent = (
     <div className="group mb-6 flex w-full flex-col gap-6 overflow-hidden rounded-lg border border-slate-100 bg-white p-4 transition-all duration-300cursor-pointer hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary/10">
       <SpaceInfoCardHeader space={space} />
 
-      {space.image ? <SpaceInfoCardThumbnail thumbnailUrl={space.image} name={space.name} /> : null}
+      {space.image ? <SpaceInfoCardThumbnail thumbnailUrl={space.image} name={space.name} priority={priority} /> : null}
 
       <div className="space-y-3">
         <SpaceInfoCardLabel icon={<Users className="h-3.5 w-3.5" />}>{space.capacity}명 참여 중</SpaceInfoCardLabel>

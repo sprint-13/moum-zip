@@ -1,20 +1,16 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { NotificationItem } from "@/entities/notification/model/types";
-import { NotificationMenu } from "@/features/notification/ui/notification-menu";
 import { SidebarTrigger, useSidebar } from "./sidebar";
 
 interface SidebarHeaderProps {
   icon: ReactNode;
   title: string;
   description?: string;
-  notifications: NotificationItem[];
-  nextCursor: string | null;
-  hasMore: boolean;
+  notificationSlot: ReactNode;
 }
 
-export const SidebarHeader = ({ icon, title, description, notifications, nextCursor, hasMore }: SidebarHeaderProps) => {
+export const SidebarHeader = ({ icon, title, description, notificationSlot }: SidebarHeaderProps) => {
   const { open, setOpen } = useSidebar();
 
   const iconEl = (
@@ -30,13 +26,7 @@ export const SidebarHeader = ({ icon, title, description, notifications, nextCur
           {iconEl}
         </button>
 
-        <NotificationMenu
-          notifications={notifications}
-          nextCursor={nextCursor}
-          hasMore={hasMore}
-          desktopSide="right"
-          mobileVariant="dropdown"
-        />
+        {notificationSlot}
       </div>
     );
   }
@@ -56,15 +46,7 @@ export const SidebarHeader = ({ icon, title, description, notifications, nextCur
           </div>
         </div>
 
-        <div className="shrink-0">
-          <NotificationMenu
-            notifications={notifications}
-            nextCursor={nextCursor}
-            hasMore={hasMore}
-            desktopSide="right"
-            mobileVariant="dropdown"
-          />
-        </div>
+        <div className="shrink-0">{notificationSlot}</div>
       </div>
     </div>
   );

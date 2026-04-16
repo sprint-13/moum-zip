@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { AmplitudeInit } from "@/amplitude";
 import {
@@ -9,12 +8,6 @@ import {
   RESOLVED_SITE_URL,
   SITE_NAME,
 } from "@/shared/config/site";
-
-const pretendard = localFont({
-  src: "./fonts/PretendardVariable.woff2",
-  display: "swap",
-  variable: "--font-pretendard",
-});
 
 export const metadata: Metadata = {
   metadataBase: METADATA_BASE,
@@ -40,7 +33,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${pretendard.className} ${pretendard.variable} bg-background-secondary antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          crossOrigin=""
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body className="bg-background-secondary antialiased">
         <AmplitudeInit />
         {children}
       </body>

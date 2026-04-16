@@ -2,14 +2,8 @@ import { redirect } from "next/navigation";
 import { getMypagePageData, MypageView, mypageTabs } from "@/_pages/mypage";
 import { getMyJoinedMeetings } from "@/_pages/mypage/queries/server";
 import { getApi, isAuth } from "@/shared/api/server";
-
-function isUnauthorizedError(error: unknown): boolean {
-  if (error instanceof Response) {
-    return error.status === 401;
-  }
-
-  return error instanceof Error && error.message.includes("401");
-}
+import { ERROR_CODES } from "@/shared/lib/error";
+import { normalizeApiError } from "@/shared/lib/errors/normalize-api-error";
 
 export default async function Page() {
   const { authenticated } = await isAuth();
@@ -37,10 +31,14 @@ export default async function Page() {
       />
     );
   } catch (error) {
-    if (isUnauthorizedError(error)) {
+    const normalizedError = await normalizeApiError(error, {
+      shouldReport: false,
+    });
+
+    if (normalizedError.code === ERROR_CODES.UNAUTHORIZED || normalizedError.code === ERROR_CODES.UNAUTHENTICATED) {
       redirect("/login");
     }
 
-    throw error;
+    throw normalizedError;
   }
 }

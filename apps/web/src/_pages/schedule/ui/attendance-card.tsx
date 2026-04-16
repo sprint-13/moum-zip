@@ -5,6 +5,7 @@ import { Check } from "@moum-zip/ui/icons";
 import { useTransition } from "react";
 import type { AttendanceStatus } from "@/entities/schedule";
 import { formatTodayKST } from "@/shared/lib/date";
+import { getErrorPresentation } from "@/shared/lib/errors/get-error-presentation";
 import { checkAttendanceAction } from "../actions";
 
 interface AttendanceCardProps {
@@ -22,9 +23,9 @@ export function AttendanceCard({ slug, attendance, totalMembers }: AttendanceCar
     startTransition(async () => {
       try {
         await checkAttendanceAction(slug);
-      } catch (err) {
+      } catch (error) {
         toast({
-          message: err instanceof Error ? err.message : "출석 체크에 실패했습니다.",
+          message: getErrorPresentation(error).message,
           size: "small",
         });
       }

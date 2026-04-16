@@ -16,7 +16,7 @@ export const CategoryCard = ({ category }: CategoryCardProps) => {
         alt={category.label}
         width={120}
         height={120}
-        className="h-[80px] w-[80px] md:h-[140px] md:w-[140px]"
+        className="aspect-square h-[80px] w-[80px] shrink-0 object-contain md:h-[140px] md:w-[140px]"
       />
       <span className="w-full min-w-[104px] max-w-[120px] rounded-full bg-white/50 p-1 text-center font-semibold text-sm md:text-xl">
         {category.label}
