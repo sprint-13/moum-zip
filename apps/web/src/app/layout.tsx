@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Script from "next/script";
 import { AmplitudeInit } from "@/amplitude";
 
 export const metadata: Metadata = {
@@ -21,9 +22,9 @@ export default function RootLayout({
           crossOrigin=""
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
-        <script src="https://accounts.google.com/gsi/client" async />
       </head>
       <body className="bg-background-secondary antialiased">
+        <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
         <AmplitudeInit />
         {children}
       </body>

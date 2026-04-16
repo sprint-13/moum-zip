@@ -127,13 +127,17 @@ export const SignupForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
-            // Google Identity Services SDK로 팝업 띄워 access_token 획득 후 백엔드로 전달
-            const client = google.accounts.oauth2.initTokenClient({
+            // 구글 팝업으로 access_token 획득 후 백엔드로 전달
+            const client = window.google.accounts.oauth2.initTokenClient({
               client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
               scope: "email profile",
               callback: async (response) => {
-                await loginWithGoogle(response.access_token);
-                // 쿠키 반영을 위해 홈으로 새 요청 (클라이언트 이동 X)
+                const { accessToken, refreshToken } = await loginWithGoogle(response.access_token);
+                await fetch("/api/auth/token", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ accessToken, refreshToken }),
+                });
                 window.location.replace(ROUTES.home);
               },
             });

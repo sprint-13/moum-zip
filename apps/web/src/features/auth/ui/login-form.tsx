@@ -98,11 +98,17 @@ export const LoginForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
+            // 구글 팝업으로 access_token 획득 후 백엔드로 전달
             const client = window.google.accounts.oauth2.initTokenClient({
               client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
               scope: "email profile",
               callback: async (response) => {
-                await loginWithGoogle(response.access_token);
+                const { accessToken, refreshToken } = await loginWithGoogle(response.access_token);
+                await fetch("/api/auth/token", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ accessToken, refreshToken }),
+                });
                 window.location.replace(ROUTES.home);
               },
             });
