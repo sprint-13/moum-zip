@@ -4,7 +4,7 @@ import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
-import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login";
+import { loginWithGoogle } from "@/_pages/auth/use-cases/social-login";
 import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
@@ -127,14 +127,25 @@ export const SignupForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
-            window.location.href = getGoogleLoginUrl();
+            // Google Identity Services SDK로 팝업 띄워 access_token 획득 후 백엔드로 전달
+            const client = google.accounts.oauth2.initTokenClient({
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+              scope: "email profile",
+              callback: async (response) => {
+                await loginWithGoogle(response.access_token);
+                // 쿠키 반영을 위해 홈으로 새 요청 (클라이언트 이동 X)
+                window.location.replace(ROUTES.home);
+              },
+            });
+            client.requestAccessToken();
           }}
         />
         <SocialButton
           provider="kakao"
           className="w-full md:w-[222px]"
           onClick={() => {
-            window.location.href = getKakaoLoginUrl();
+            // 카카오 로그인 페이지로 리다이렉트, 완료 후 /oauth/callback/kakao로 복귀
+            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`;
           }}
         />
       </div>
