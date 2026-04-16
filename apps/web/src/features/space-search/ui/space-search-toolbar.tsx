@@ -83,8 +83,8 @@ export const SearchToolbar = ({
   };
 
   return (
-    <section className="flex w-full min-w-112.5 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <div className="no-scrollbar flex w-full min-w-112.5 flex-wrap items-center gap-2 overflow-x-hidden pb-1">
+    <section className="flex w-full min-w-80 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="no-scrollbar flex w-full min-w-80 flex-wrap items-center gap-2 overflow-x-hidden pb-1">
         {categories.map(({ id, label }) => (
           <div className="group/tab rounded-[1rem] p-0.5" key={id}>
             <TabButton
@@ -104,8 +104,8 @@ export const SearchToolbar = ({
         ))}
       </div>
 
-      <div className="grid w-full min-w-112.5 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:w-auto lg:items-center lg:justify-end">
-        <div className="flex w-full min-w-112.5 flex-wrap items-center gap-x-1.5 gap-y-1 sm:justify-start lg:w-auto lg:justify-end">
+      <div className="grid w-full min-w-80 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:flex lg:w-auto lg:items-center lg:justify-end">
+        <div className="flex w-full min-w-80 flex-wrap items-center gap-x-1.5 gap-y-1 sm:justify-start lg:w-auto lg:justify-end">
           {filters.map((filter) => {
             const defaultOption = filter.options[0];
             const selectedOptionId = selectedFilterOptionIdById[filter.id];
@@ -143,7 +143,7 @@ export const SearchToolbar = ({
           })}
         </div>
 
-        {keywordBar ? <div className="flex w-full min-w-112.5 justify-end lg:hidden">{keywordBar}</div> : null}
+        {keywordBar ? <div className="flex w-full min-w-80 justify-end lg:hidden">{keywordBar}</div> : null}
       </div>
     </section>
   );
