@@ -10,7 +10,7 @@ vi.mock("@/shared/api/server", () => ({
 
 vi.mock("@/features/space/queries", () => ({
   spaceAndMemberJoinQueries: {
-    getJoinedInfomation: vi.fn(),
+    getJoinedInformation: vi.fn(),
   },
 }));
 
@@ -24,7 +24,7 @@ import { getApi, isAuth } from "@/shared/api/server";
 
 const mockGetApiClient = vi.mocked(getApi);
 const mockIsAuth = vi.mocked(isAuth);
-const mockGetJoinedInfomation = vi.mocked(spaceAndMemberJoinQueries.getJoinedInfomation);
+const mockGetJoinedInformation = vi.mocked(spaceAndMemberJoinQueries.getJoinedInformation);
 const mockMapSpaceInfoList = vi.mocked(mapSpaceInfoList);
 
 const mockSpaceInfo = {
@@ -60,7 +60,7 @@ describe("getSpaceListUsecase", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockIsAuth.mockResolvedValue({ authenticated: true, userId: 1 });
-    mockGetJoinedInfomation.mockResolvedValue([]);
+    mockGetJoinedInformation.mockResolvedValue([]);
     mockMapSpaceInfoList.mockReturnValue([]);
   });
 
@@ -102,24 +102,24 @@ describe("getSpaceListUsecase", () => {
     expect(result.hasMore).toBe(true);
   });
 
-  it("meetingId 목록으로 getJoinedInfomation을 호출한다", async () => {
+  it("meetingId 목록으로 getJoinedInformation을 호출한다", async () => {
     setupAuthApi({
       data: { data: [{ id: 10 }, { id: 20 }], nextCursor: null, hasMore: false },
     });
 
     await getSpaceListUsecase();
 
-    expect(mockGetJoinedInfomation).toHaveBeenCalledWith([10, 20], 1);
+    expect(mockGetJoinedInformation).toHaveBeenCalledWith([10, 20], 1);
   });
 
-  it("meetingId가 없으면 getJoinedInfomation을 호출하지 않고 빈 배열을 반환한다", async () => {
+  it("meetingId가 없으면 getJoinedInformation을 호출하지 않고 빈 배열을 반환한다", async () => {
     setupAuthApi({
       data: { data: [], nextCursor: null, hasMore: false },
     });
 
     const result = await getSpaceListUsecase();
 
-    expect(mockGetJoinedInfomation).not.toHaveBeenCalled();
+    expect(mockGetJoinedInformation).not.toHaveBeenCalled();
     expect(result.data).toEqual([]);
   });
 

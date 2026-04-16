@@ -29,7 +29,7 @@ export const getSpaceListUsecase = async (cursor?: string) => {
     };
   }
 
-  const spaceStats = await spaceAndMemberJoinQueries.getJoinedInfomation(meetingIds, userId);
+  const spaceStats = await spaceAndMemberJoinQueries.getJoinedInformation(meetingIds, userId);
   const spaceStatsMap: Map<number, (typeof spaceStats)[0]> = new Map(spaceStats.map((s) => [s.meetingId, s]));
 
   const data = mapSpaceInfoList(joinedMeetings, spaceStatsMap);

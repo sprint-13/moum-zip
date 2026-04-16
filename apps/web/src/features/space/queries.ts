@@ -4,7 +4,7 @@ import { spaceMembers, spaces } from "@/shared/db/scheme";
 
 export const spaceAndMemberJoinQueries = {
   /** spaces + spaceMembers JOIN with aggregation: memberCount, isMember */
-  getJoinedInfomation: async (meetingIds: number[], userId: number) => {
+  getJoinedInformation: async (meetingIds: number[], userId: number) => {
     return db
       .select({
         id: spaces.id,
@@ -15,7 +15,7 @@ export const spaceAndMemberJoinQueries = {
         status: spaces.status,
         modules: spaces.modules,
         memberCount: sql<number>`COUNT(${spaceMembers.id})`.mapWith(Number),
-        isMember: sql<boolean>`BOOL_OR(${spaceMembers.userId} = ${userId})`,
+        isMember: sql<boolean>`COALESCE(BOOL_OR(${spaceMembers.userId} = ${userId}), false)`,
       })
       .from(spaces)
       .leftJoin(spaceMembers, eq(spaces.id, spaceMembers.spaceId))
