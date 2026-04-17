@@ -1,6 +1,7 @@
 import { UserPlus } from "@moum-zip/ui/icons";
 import { Suspense } from "react";
 import { MemberTable } from "@/_pages/members";
+import { MemberExportButton } from "@/_pages/members/components/member-export-button";
 import { SpaceBody, SpaceBodyLeft, SpaceBodyRight, SpaceHeader } from "@/features/space";
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { parsePaginationParams } from "@/shared/lib/pagination";
@@ -28,13 +29,24 @@ export default async function SpaceMembersPage({
   const { space, membership } = await getSpaceContext(slug);
   const { page } = parsePaginationParams(await searchParams);
 
+  const buttonGroup = (
+    <div className="flex gap-2">
+      {membership.role === "manager" && <MemberExportButton />}
+      {InviteButton}
+    </div>
+  );
+
   return (
     <>
-      <SpaceHeader title="Members" buttonGroup={InviteButton} />
+      <SpaceHeader
+        title="멤버"
+        description="스페이스 멤버를 조회 및 관리하고 새로운 사용자를 승인해 보세요."
+        buttonGroup={buttonGroup}
+      />
       <SpaceBody>
         <SpaceBodyLeft>
           <Suspense fallback={<MemberTableSkeleton />}>
-            <MemberTable spaceId={space.spaceId} page={page} />
+            <MemberTable spaceId={space.spaceId} page={page} currentUserId={membership.userId} />
           </Suspense>
         </SpaceBodyLeft>
         <SpaceBodyRight>
@@ -63,9 +75,6 @@ function MemberTableSkeleton() {
           </div>
           <div className="flex-1 p-3">
             <div className="h-4 w-12 rounded bg-muted" />
-          </div>
-          <div className="w-[120px] shrink-0 p-3">
-            <div className="h-4 w-14 rounded bg-muted" />
           </div>
           <div className="w-20 shrink-0 p-3">
             <div className="mx-auto h-4 w-12 rounded bg-muted" />

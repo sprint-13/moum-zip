@@ -8,14 +8,16 @@ import { CACHE_TAGS } from "@/shared/lib/cache";
 export const memberQueries = {
   findAllBySpaceId: async (spaceId: string) => {
     return db.select().from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId)).orderBy(
-      desc(spaceMembers.role), // 관리자 우선
+      sql`CASE ${spaceMembers.role} WHEN 'manager' THEN 0 WHEN 'moderator' THEN 1 ELSE 2 END`, // 관리자 우선
       sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
     );
   },
   findUserIdsBySpaceId: async (spaceId: string) => {
     return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
   },
-  findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
+  findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number; currentUserId?: number }) => {
+    const { limit = 10, offset = 0, currentUserId } = opts ?? {};
+
     return db
       .select({
         member: spaceMembers,
@@ -23,9 +25,13 @@ export const memberQueries = {
       })
       .from(spaceMembers)
       .where(eq(spaceMembers.spaceId, spaceId))
-      .orderBy(desc(spaceMembers.role)) // TODO 정렬 방식 명시하기
-      .limit(opts?.limit ?? 10)
-      .offset(opts?.offset ?? 0);
+      .orderBy(
+        currentUserId ? desc(sql`${spaceMembers.userId} = ${currentUserId}`) : sql`1`,
+        sql`CASE ${spaceMembers.role} WHEN 'manager' THEN 0 WHEN 'moderator' THEN 1 ELSE 2 END`,
+        spaceMembers.joinedAt,
+      )
+      .limit(limit)
+      .offset(offset);
   },
   getMember: async (spaceId: string, userId: number) => {
     "use cache";

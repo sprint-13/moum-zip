@@ -5,10 +5,11 @@ import { MemberRow } from "./member-row";
 interface MemberTableProps {
   spaceId: string;
   page: number;
+  currentUserId: number;
 }
 
-export async function MemberTable({ spaceId, page }: MemberTableProps) {
-  const data = await getSpaceMembersUseCase(spaceId, { page });
+export async function MemberTable({ spaceId, page, currentUserId }: MemberTableProps) {
+  const data = await getSpaceMembersUseCase(spaceId, { page, currentUserId });
 
   return (
     <div className="flex flex-col">
@@ -29,7 +30,6 @@ export async function MemberTable({ spaceId, page }: MemberTableProps) {
         <div className="flex border-border border-b bg-primary/10">
           <div className="w-[220px] shrink-0 p-3 font-medium text-muted-foreground text-xs">Member</div>
           <div className="flex-1 p-3 font-medium text-muted-foreground text-xs">Role</div>
-          <div className="w-[120px] shrink-0 p-3 font-medium text-muted-foreground text-xs">Status</div>
           <div className="w-20 shrink-0 p-3 text-center font-medium text-muted-foreground text-xs">Actions</div>
         </div>
 
