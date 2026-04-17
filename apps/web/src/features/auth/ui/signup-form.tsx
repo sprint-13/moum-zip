@@ -1,6 +1,7 @@
 "use client";
-import { Button, InputField, SocialButton } from "@moum-zip/ui/components";
+import { Button, InputField, SocialButton, toast } from "@moum-zip/ui/components";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
@@ -24,6 +25,7 @@ const ERROR_MESSAGES = {
 export const SignupForm = () => {
   // 서버 액션 상태 관리
   const [state, formAction, isPending] = useActionState(signupAction, null);
+  const router = useRouter();
 
   const {
     register,
@@ -127,18 +129,23 @@ export const SignupForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
-            // 구글 팝업으로 access_token 획득 후 백엔드로 전달
             const client = window.google.accounts.oauth2.initTokenClient({
               client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
               scope: "email profile",
               callback: async (response) => {
-                const { accessToken, refreshToken } = await loginWithGoogle(response.access_token);
-                await fetch("/api/auth/token", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ accessToken, refreshToken }),
-                });
-                window.location.replace(ROUTES.home);
+                try {
+                  const { accessToken, refreshToken } = await loginWithGoogle(response.access_token);
+                  const res = await fetch("/api/auth/token", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ accessToken, refreshToken }),
+                  });
+                  if (!res.ok) throw new Error("토큰 저장 실패");
+                  window.location.replace(ROUTES.home);
+                } catch {
+                  toast({ message: "회원가입 중 오류가 발생했어요. 다시 시도해주세요.", size: "small" });
+                  router.replace(ROUTES.login);
+                }
               },
             });
             client.requestAccessToken();
@@ -148,8 +155,7 @@ export const SignupForm = () => {
           provider="kakao"
           className="w-full md:w-[222px]"
           onClick={() => {
-            // 카카오 로그인 페이지로 리다이렉트, 완료 후 /oauth/callback/kakao로 복귀
-            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`;
+            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!)}&response_type=code`;
           }}
         />
       </div>
