@@ -15,7 +15,12 @@ export const memberQueries = {
   findUserIdsBySpaceId: async (spaceId: string) => {
     return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
   },
-  findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number }) => {
+  findManyBySpaceId: async (
+    spaceId: string,
+    opts?: { limit?: number; offset?: number; currentUserId?: number }, // 👈 currentUserId 추가
+  ) => {
+    const { limit = 10, offset = 0, currentUserId } = opts ?? {};
+
     return db
       .select({
         member: spaceMembers,
@@ -23,9 +28,14 @@ export const memberQueries = {
       })
       .from(spaceMembers)
       .where(eq(spaceMembers.spaceId, spaceId))
-      .orderBy(desc(spaceMembers.role)) // TODO 정렬 방식 명시하기
-      .limit(opts?.limit ?? 10)
-      .offset(opts?.offset ?? 0);
+      .orderBy(
+        // 조회하는 유저 본인인 경우 최상단
+        currentUserId ? desc(sql`${spaceMembers.userId} = ${currentUserId}`) : sql`1`,
+        desc(spaceMembers.role),
+        spaceMembers.joinedAt,
+      )
+      .limit(limit)
+      .offset(offset);
   },
   getMember: async (spaceId: string, userId: number) => {
     "use cache";

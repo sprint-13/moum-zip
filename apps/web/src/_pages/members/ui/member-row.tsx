@@ -30,9 +30,15 @@ export function MemberRow({ member }: { member: Member }) {
   const [isPending, startTransition] = useTransition();
   const role = ROLE_CONFIG[member.role];
 
+  const isMe = membership.userId === member.userId;
+
   const canKick =
-    (membership.role === "manager" || (membership.role === "moderator" && member.role !== "manager")) &&
-    membership.userId !== member.userId;
+    !isMe && (membership.role === "manager" || (membership.role === "moderator" && member.role !== "manager"));
+
+  const canChangeRole =
+    !isMe && (membership.role === "manager" || (membership.role === "moderator" && member.role !== "manager"));
+
+  const showActions = canKick || canChangeRole;
 
   const handleKick = () => {
     startTransition(async () => {

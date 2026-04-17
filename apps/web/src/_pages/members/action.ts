@@ -90,10 +90,8 @@ export async function exportMembersAction(slug: string) {
 
 export async function exportMemberGrassAction(slug: string, userId: number) {
   const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
-
   if (membership.role !== "manager") {
     throw new Error("권한이 없습니다.");
   }
-
   return getGrassUseCase(space.spaceId, userId);
 }
