@@ -33,11 +33,9 @@ export function MemberRow({ member }: { member: Member }) {
   const isMe = membership.userId === member.userId;
 
   const canKick =
-    !isMe && (membership.role === "manager" || (membership.role === "moderator" && member.role !== "manager"));
+    !isMe && (membership.role === "manager" || (membership.role === "moderator" && member.role === "member"));
 
-  const canChangeRole =
-    !isMe && (membership.role === "manager" || (membership.role === "moderator" && member.role !== "manager"));
-
+  const canChangeRole = !isMe && membership.role === "manager";
   const showActions = canKick || canChangeRole;
 
   const handleKick = () => {
