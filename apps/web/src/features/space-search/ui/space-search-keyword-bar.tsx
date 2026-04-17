@@ -60,7 +60,7 @@ export const SearchKeywordBar = ({
               aria-label="스페이스 검색어 입력"
               className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-slate-400"
               onChange={(event) => onKeywordChange(event.target.value)}
-              placeholder="스페이스명, 설명, 지역, 종류 검색"
+              placeholder="모임명, 설명, 카테고리, 종류 검색"
               type="text"
               value={keyword}
             />
@@ -79,15 +79,15 @@ export const SearchKeywordBar = ({
   }
 
   return (
-    <form className={cn("w-full min-w-60 sm:w-[15.5rem]", className)} onSubmit={handleSubmit}>
-      <div className="group flex min-w-60 items-center rounded-full border border-slate-200 bg-white/95 p-1 shadow-[0_6px_18px_rgba(15,23,42,0.06)] transition-all focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10">
+    <form className={cn("w-full min-w-80 sm:min-w-0", className)} onSubmit={handleSubmit}>
+      <div className="group flex min-w-80 items-center rounded-full border border-slate-200 bg-white/95 p-1 shadow-[0_6px_18px_rgba(15,23,42,0.06)] transition-all focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10">
         <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
           <Search className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-primary" />
           <input
             aria-label="스페이스 검색어 입력"
             className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-slate-400 sm:text-sm"
             onChange={(event) => onKeywordChange(event.target.value)}
-            placeholder="스페이스 검색"
+            placeholder="모임 검색"
             type="text"
             value={keyword}
           />

@@ -11,13 +11,17 @@ interface ThemeColorSelectProps {
 export const ThemeColorSelect = ({ value, onValueChange }: ThemeColorSelectProps) => {
   return (
     <SelectBox value={value} onValueChange={onValueChange}>
-      <SelectBox.Trigger placeholder="테마를 선택하세요" />
+      <SelectBox.Trigger placeholder="테마를 선택하세요" aria-label="테마 선택" />
 
       <SelectBox.Content>
         {THEME_COLORS.map(({ label, value: colorValue, color }) => (
           <SelectBox.Item key={colorValue} value={colorValue}>
             <div className="flex items-center gap-2">
-              <span className="inline-block size-4 rounded-full" style={{ backgroundColor: color }} />
+              <span
+                aria-hidden="true"
+                className="inline-block size-4 rounded-full"
+                style={{ backgroundColor: color }}
+              />
               <span>{label}</span>
             </div>
           </SelectBox.Item>

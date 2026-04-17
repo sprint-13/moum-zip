@@ -24,6 +24,7 @@ storybook-static
 CLAUDE.md
 *.pen
 
-# Codex subagent artifacts
+# Codex run artifacts
+/plan/
 subagent-runs/
 subagent-*

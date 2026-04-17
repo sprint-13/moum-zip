@@ -110,6 +110,7 @@ export const InformationContainer = ({
   const isManager = viewType === "manager";
   const canJoin = data.actionState.canJoin;
   const canCancelJoin = data.actionState.canCancelJoin;
+  const requiresAuth = data.actionState.requiresAuth;
   const isCanceledMeeting = data.status === "canceled";
 
   const tagItems = [
@@ -207,6 +208,7 @@ export const InformationContainer = ({
     onLoginAction?.();
   };
 
+  // 비로그인 게스트는 버튼 문구만 "신청하기"로 보여주고, 실제 클릭은 handleJoinClick에서 로그인 모달로 막기
   const actionButtonProps: ActionButtonProps = isManager
     ? {
         label: "공유하기",
@@ -219,7 +221,7 @@ export const InformationContainer = ({
           onClick: handleCancelJoinClick,
           variant: "secondary",
         }
-      : canJoin
+      : canJoin || requiresAuth
         ? {
             label: "신청하기",
             onClick: handleJoinClick,

@@ -262,7 +262,9 @@ function getMeetingActionState(params: {
   const isFull = status === "full";
   const isClosedByDeadline = deadlinePassed;
 
-  const canJoin = isMember && !isJoined && !isCanceled && !isFull && !isClosedByDeadline;
+  // 게스트도 "신청하기"는 보여줘야 하므로 실제로 신청 가능한 상태를 먼저 따로 계산
+  const isJoinActionAvailable = !isJoined && !isCanceled && !isFull && !isClosedByDeadline;
+  const canJoin = isMember && isJoinActionAvailable;
   const canCancelJoin = isMember && isJoined && !isClosedByDeadline && !isCanceled;
 
   return {
@@ -271,7 +273,7 @@ function getMeetingActionState(params: {
     canCancelJoin,
     canEdit: isManager,
     canDelete: isManager,
-    requiresAuth: isGuest,
+    requiresAuth: isGuest && isJoinActionAvailable,
   };
 }
 

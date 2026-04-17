@@ -90,7 +90,7 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
           />
         }
       />
-      <div className="flex-1 px-4 sm:px-0">
+      <div className="flex w-full flex-1 flex-col gap-4 px-4 sm:px-0 lg:gap-6">
         <SearchToolbar
           categories={categories}
           filters={SEARCH_FILTERS}
@@ -114,8 +114,6 @@ export const SearchContentSection = ({ categories, isAuthenticated, queryState }
           selectedDeadlineSortId={activeQueryState.deadlineSortId}
           selectedLocationId={activeQueryState.locationId}
         />
-      </div>
-      <div className="flex-1 px-4 sm:px-0">
         <SearchResults
           errorMessage={errorMessage}
           hasMore={hasMore}

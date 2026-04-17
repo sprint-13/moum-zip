@@ -38,13 +38,13 @@ export const FormMoimSection = ({ form, onImageUpload, isImageUploading = false 
 
                 <div className="flex gap-5">
                   <CategoryTab
-                    illustration={<Image src={icoStudy} alt="" />}
+                    illustration={<Image src={icoStudy} alt="" width={160} height={160} />}
                     label="스터디"
                     selected={field.value === "study"}
                     onClick={() => field.onChange("study")}
                   />
                   <CategoryTab
-                    illustration={<Image src={icoProject} alt="" />}
+                    illustration={<Image src={icoProject} alt="" width={160} height={160} />}
                     label="프로젝트"
                     selected={field.value === "project"}
                     onClick={() => field.onChange("project")}

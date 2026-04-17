@@ -1,7 +1,9 @@
 import { LoadingIndicator } from "@ui/components";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MoimDetailClient } from "@/_pages/moim-detail";
+import { getMoimDetailMetadata } from "@/_pages/moim-detail/lib/get-moim-detail-metadata";
 import {
   getIsJoined,
   mapMeetingDetailToDescription,
@@ -23,6 +25,22 @@ interface PageProps {
 interface MoimDetailContentProps {
   meetingId: number;
 }
+
+const parseMeetingId = (value: string) => {
+  // "001", "1e3", " 12 " 같은 느슨한 숫자 형식을 막고 순수한 10진수 경로 id만 허용
+  if (!/^[1-9]\d*$/.test(value)) {
+    notFound();
+  }
+
+  const numericMeetingId = Number.parseInt(value, 10);
+
+  // 메타데이터 생성 시에도 기존 페이지 렌더링과 동일한 notFound 정책을 따르도록 하기 위해 추가
+  if (!Number.isSafeInteger(numericMeetingId)) {
+    notFound();
+  }
+
+  return numericMeetingId;
+};
 
 type RecommendedMeetingItem = Parameters<typeof mapMeetingToRecommendedMeetingData>[0];
 
@@ -221,13 +239,16 @@ const MoimDetailContent = async ({ meetingId }: MoimDetailContentProps) => {
   }
 };
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { meetingId } = await params;
+
+  // page.tsx에선 export만 하고, 실제 메타데이터 구성은 moim-detail 헬퍼 함수에 위임
+  return getMoimDetailMetadata(parseMeetingId(meetingId));
+}
+
 export default async function MoimDetailPage({ params }: PageProps) {
   const { meetingId } = await params;
-  const numericMeetingId = Number(meetingId);
-
-  if (Number.isNaN(numericMeetingId)) {
-    notFound();
-  }
+  const numericMeetingId = parseMeetingId(meetingId);
 
   return (
     <Suspense fallback={<LoadingIndicator fullScreen text="모임 정보를 불러오는 중" />}>
