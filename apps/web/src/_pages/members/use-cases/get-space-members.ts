@@ -22,19 +22,11 @@ export async function getSpaceMembersUseCase(
   spaceId: string,
   opts: { page?: number; currentUserId?: number },
 ): Promise<GetSpaceMembersResult> {
-  const { members, total, page, pageSize, totalPages } = await fetchMembers(spaceId, opts.page);
-
-  const sorted = opts.currentUserId
-    ? [
-        ...members.filter((m) => m.userId === opts.currentUserId),
-        ...members.filter((m) => m.userId !== opts.currentUserId),
-      ]
-    : members;
-
-  return { members: sorted, total, page, pageSize, totalPages };
+  const { members, total, page, pageSize, totalPages } = await fetchMembers(spaceId, opts.page, opts.currentUserId);
+  return { members, total, page, pageSize, totalPages };
 }
 
-async function fetchMembers(spaceId: string, currentPage?: number) {
+async function fetchMembers(spaceId: string, currentPage?: number, currentUserId?: number) {
   "use cache";
   cacheTag(CACHE_TAGS.members(spaceId));
   cacheLife("days");
@@ -45,10 +37,10 @@ async function fetchMembers(spaceId: string, currentPage?: number) {
   const rows = await memberQueries.findManyBySpaceId(spaceId, {
     limit: MEMBER_PAGE_SIZE,
     offset,
+    currentUserId,
   });
 
   const total = rows[0]?.total ?? 0;
   const members: Member[] = rows.map((data) => data.member);
-
   return { members, total, page, pageSize: MEMBER_PAGE_SIZE, totalPages: Math.ceil(total / MEMBER_PAGE_SIZE) };
 }

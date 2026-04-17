@@ -7,19 +7,16 @@ import { createNotification } from "@/features/notification/use-cases/create-not
 import { getSpaceContext } from "@/features/space/lib/get-space-context";
 import { getGrassUseCase } from "@/features/space/use-cases/get-member-grass";
 import { CACHE_TAGS } from "@/shared/lib/cache";
-import { DomainError, ERROR_CODES } from "@/shared/lib/error";
 import { handleAppError } from "@/shared/lib/handle-app-error";
 import { addSpaceMemberUseCase, type PendingUser } from "./use-cases/add-space-member";
 import { changeRoleUseCase } from "./use-cases/change-role";
 import { kickMemberUseCase } from "./use-cases/kick-member";
 
-export const addSpaceMemberAction = async (slug: string, pendingUser: PendingUser) => {
+export async function addSpaceMemberAction(slug: string, pendingUser: PendingUser) {
   const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
 
-  if (membership.role !== "manager") {
-    throw new DomainError(ERROR_CODES.FORBIDDEN, {
-      message: "권한이 없습니다.",
-    });
+  if (membership.role === "member") {
+    throw new Error("멤버를 승인할 권한이 없습니다.");
   }
 
   await addSpaceMemberUseCase(space.spaceId, pendingUser.userId, pendingUser.name, pendingUser.image);
@@ -35,15 +32,19 @@ export const addSpaceMemberAction = async (slug: string, pendingUser: PendingUse
         image: pendingUser.image,
       },
     });
-  } catch {
-    // 알림 생성 실패가 멤버 승인 실패로 전파되지 않도록 분리
+  } catch (error) {
+    console.error("알림 생성 실패:", error);
   }
 
   updateTag(CACHE_TAGS.members(space.spaceId));
-};
+}
 
 export async function kickMemberAction(slug: string, targetUserId: number) {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
+
+  if (membership.role === "member") {
+    throw new Error("추방 권한이 없습니다.");
+  }
 
   await kickMemberUseCase(space.spaceId, targetUserId, {
     userId: membership.userId,
@@ -54,7 +55,11 @@ export async function kickMemberAction(slug: string, targetUserId: number) {
 }
 
 export async function changeRoleAction(slug: string, targetUserId: number, newRole: MemberRole) {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
+
+  if (membership.role === "member") {
+    throw new Error("권한을 변경할 수 있는 자격이 없습니다.");
+  }
 
   await changeRoleUseCase(space.spaceId, targetUserId, newRole, {
     userId: membership.userId,
@@ -66,7 +71,7 @@ export async function changeRoleAction(slug: string, targetUserId: number, newRo
 }
 
 export async function exportMembersAction(slug: string) {
-  const { space, membership } = await getSpaceContext(slug);
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
 
   if (membership.role !== "manager") {
     throw new Error("권한이 없습니다.");
@@ -84,7 +89,11 @@ export async function exportMembersAction(slug: string) {
 }
 
 export async function exportMemberGrassAction(slug: string, userId: number) {
-  const { space } = await getSpaceContext(slug);
-  const grass = await getGrassUseCase(space.spaceId, userId);
-  return grass;
+  const { space, membership } = await getSpaceContext(slug).catch(handleAppError);
+
+  if (membership.role !== "manager") {
+    throw new Error("권한이 없습니다.");
+  }
+
+  return getGrassUseCase(space.spaceId, userId);
 }

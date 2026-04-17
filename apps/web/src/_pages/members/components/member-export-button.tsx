@@ -48,13 +48,15 @@ const INTENSITY_ALPHA: Record<number, number> = {
 
 const DEFAULT_THEME_COLOR = "#00BD7E";
 
-const formatDate = (isoString: string) =>
-  new Date(isoString).toLocaleString("ko-KR", {
+const formatDate = (isoString: string) => {
+  if (!isoString || isoString === "-") return "-";
+  return new Date(isoString).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
+};
 
 const hexToRgb = (hex: string): [number, number, number] => [
   parseInt(hex.slice(1, 3), 16),
@@ -172,6 +174,13 @@ const addMemberListPage = (
   });
 };
 
+const escapeCSV = (value: string | number): string => {
+  const str = String(value);
+  if (/^[=+\-@]/.test(str)) return `'${str}`;
+  if (/[,"\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+  return str;
+};
+
 const addMemberGrassPage = (
   doc: JsPDFWithAutoTable,
   autoTable: AutoTableFn,
@@ -182,12 +191,17 @@ const addMemberGrassPage = (
 ) => {
   doc.addPage();
 
-  const bestDay = grass.days.reduce((best: GrassDay, d: GrassDay) => (d.score > best.score ? d : best), grass.days[0]);
+  const bestDay =
+    grass.days.length > 0
+      ? grass.days.reduce((best: GrassDay, d: GrassDay) => (d.score > best.score ? d : best), grass.days[0])
+      : null;
 
   drawPageHeader(
     doc,
     `${member.nickname} · 활동 잔디 리포트`,
-    `${member.role} · 활동한 날 ${grass.summary.activeDays}일 · 최고 점수 ${bestDay.date} (${bestDay.score}점)`,
+    `${member.role} · 활동한 날 ${grass.summary.activeDays}일 · 최고 점수 ${
+      bestDay ? `${bestDay.date} (${bestDay.score}점)` : "-"
+    }`,
     logoBase64,
   );
 
@@ -294,7 +308,9 @@ export function MemberExportButton() {
             grass.summary.currentStreak,
             grass.summary.todayScore,
             grass.summary.recentScore,
-          ].join(",");
+          ]
+            .map(escapeCSV)
+            .join(",");
         })
         .join("\n");
 

@@ -1,6 +1,8 @@
+import { and, count, eq } from "drizzle-orm";
 import type { MemberRole } from "@/entities/member";
-import { memberQueries } from "@/entities/member";
 import { assertCanChangeRole, type Requester } from "@/features/space/lib/assert-permission";
+import { db } from "@/shared/db";
+import { spaceMembers } from "@/shared/db/scheme";
 
 export const changeRoleUseCase = async (
   spaceId: string,
@@ -10,15 +12,26 @@ export const changeRoleUseCase = async (
 ): Promise<void> => {
   assertCanChangeRole(requester);
 
-  // 마지막 manager 보호
-  const allMembers = await memberQueries.findAllBySpaceId(spaceId);
-  const targetMember = allMembers.find((m) => m.userId === targetUserId);
-  if (targetMember?.role === "manager" && newRole !== "manager") {
-    const managerCount = allMembers.filter((m) => m.role === "manager").length;
-    if (managerCount <= 1) {
-      throw new Error("최소 1명의 manager가 필요합니다.");
-    }
-  }
+  await db.transaction(async (tx) => {
+    const [target] = await tx
+      .select()
+      .from(spaceMembers)
+      .where(and(eq(spaceMembers.spaceId, spaceId), eq(spaceMembers.userId, targetUserId)));
 
-  await memberQueries.update(spaceId, targetUserId, { role: newRole });
+    if (!target) throw new Error("멤버를 찾을 수 없습니다.");
+
+    if (target.role === "manager" && newRole !== "manager") {
+      const [{ managerCount }] = await tx
+        .select({ managerCount: count() })
+        .from(spaceMembers)
+        .where(and(eq(spaceMembers.spaceId, spaceId), eq(spaceMembers.role, "manager")));
+
+      if (managerCount <= 1) throw new Error("최소 1명의 manager가 필요합니다.");
+    }
+
+    await tx
+      .update(spaceMembers)
+      .set({ role: newRole })
+      .where(and(eq(spaceMembers.spaceId, spaceId), eq(spaceMembers.userId, targetUserId)));
+  });
 };
