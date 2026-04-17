@@ -8,17 +8,14 @@ import { CACHE_TAGS } from "@/shared/lib/cache";
 export const memberQueries = {
   findAllBySpaceId: async (spaceId: string) => {
     return db.select().from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId)).orderBy(
-      desc(spaceMembers.role), // 관리자 우선
+      sql`CASE ${spaceMembers.role} WHEN 'manager' THEN 0 WHEN 'moderator' THEN 1 ELSE 2 END`, // 관리자 우선
       sql`${spaceMembers.nickname} ASC`, // 닉네임 가나다순
     );
   },
   findUserIdsBySpaceId: async (spaceId: string) => {
     return db.select({ userId: spaceMembers.userId }).from(spaceMembers).where(eq(spaceMembers.spaceId, spaceId));
   },
-  findManyBySpaceId: async (
-    spaceId: string,
-    opts?: { limit?: number; offset?: number; currentUserId?: number }, // 👈 currentUserId 추가
-  ) => {
+  findManyBySpaceId: async (spaceId: string, opts?: { limit?: number; offset?: number; currentUserId?: number }) => {
     const { limit = 10, offset = 0, currentUserId } = opts ?? {};
 
     return db
@@ -29,9 +26,8 @@ export const memberQueries = {
       .from(spaceMembers)
       .where(eq(spaceMembers.spaceId, spaceId))
       .orderBy(
-        // 조회하는 유저 본인인 경우 최상단
         currentUserId ? desc(sql`${spaceMembers.userId} = ${currentUserId}`) : sql`1`,
-        desc(spaceMembers.role),
+        sql`CASE ${spaceMembers.role} WHEN 'manager' THEN 0 WHEN 'moderator' THEN 1 ELSE 2 END`,
         spaceMembers.joinedAt,
       )
       .limit(limit)
