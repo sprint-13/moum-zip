@@ -12,7 +12,8 @@ export const MoimCreateForm = () => {
   const { isImageUploading, handleImageUpload } = useMoimFormImageUpload(form);
 
   const { isCancelModalOpen, leaveToSearch, handleCancelClick, handleCancelModalOpenChange } = useMoimCreateLeaveGuard({
-    isDirty: form.formState.isDirty && !isPending,
+    isDirty: form.formState.isDirty,
+    shouldBlockBeforeUnload: form.formState.isDirty && !isPending,
   });
 
   const handleCancelConfirm = () => {
