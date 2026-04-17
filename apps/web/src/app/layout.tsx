@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Script from "next/script";
 import { AmplitudeInit } from "@/amplitude";
 import {
   DEFAULT_SITE_DESCRIPTION,
@@ -17,6 +16,9 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_SITE_DESCRIPTION,
+  verification: {
+    google: "IfFsfKLBvllcItI_4GIp9tNalW6C9ZS-87uKZs9cxGU",
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -51,7 +53,6 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background-secondary antialiased">
-        <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
         <AmplitudeInit />
         {children}
       </body>
