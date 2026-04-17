@@ -28,5 +28,9 @@ export async function GET(request: NextRequest) {
 
   const { access_token } = await tokenRes.json();
 
+  if (!access_token) {
+    return NextResponse.json({ message: "카카오 토큰 응답 오류" }, { status: 400 });
+  }
+
   return NextResponse.json({ accessToken: access_token });
 }
