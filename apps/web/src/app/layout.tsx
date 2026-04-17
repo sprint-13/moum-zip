@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Script from "next/script";
 import { AmplitudeInit } from "@/amplitude";
 import {
   DEFAULT_SITE_DESCRIPTION,
@@ -50,6 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background-secondary antialiased">
+        <Script src="https://accounts.google.com/gsi/client" strategy="beforeInteractive" />
         <AmplitudeInit />
         {children}
       </body>

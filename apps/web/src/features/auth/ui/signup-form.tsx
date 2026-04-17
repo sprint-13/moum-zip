@@ -1,10 +1,10 @@
 "use client";
-import { Button, InputField, SocialButton } from "@moum-zip/ui/components";
+import { Button, InputField, SocialButton, toast } from "@moum-zip/ui/components";
 import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
-import { getGoogleLoginUrl, getKakaoLoginUrl } from "@/_pages/auth/use-cases/social-login-url";
+import { loginWithGoogle } from "@/_pages/auth/use-cases/social-login";
 import { ROUTES } from "@/shared/config/routes";
 import { PasswordInput } from "./password-input";
 
@@ -127,14 +127,33 @@ export const SignupForm = () => {
           provider="google"
           className="w-full md:w-[222px]"
           onClick={() => {
-            window.location.href = getGoogleLoginUrl();
+            const client = window.google.accounts.oauth2.initTokenClient({
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+              scope: "email profile",
+              callback: async (response) => {
+                try {
+                  const { accessToken, refreshToken } = await loginWithGoogle(response.access_token);
+                  const res = await fetch("/api/auth/token", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ accessToken, refreshToken }),
+                  });
+                  if (!res.ok) throw new Error("토큰 저장 실패");
+                  window.location.replace(ROUTES.home);
+                } catch {
+                  toast({ message: "회원가입 중 오류가 발생했어요. 다시 시도해주세요.", size: "small" });
+                  window.location.replace(ROUTES.signup);
+                }
+              },
+            });
+            client.requestAccessToken();
           }}
         />
         <SocialButton
           provider="kakao"
           className="w-full md:w-[222px]"
           onClick={() => {
-            window.location.href = getKakaoLoginUrl();
+            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!)}&response_type=code`;
           }}
         />
       </div>
