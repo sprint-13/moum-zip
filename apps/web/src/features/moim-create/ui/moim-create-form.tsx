@@ -13,6 +13,7 @@ export const MoimCreateForm = () => {
 
   const { isCancelModalOpen, leaveToSearch, handleCancelClick, handleCancelModalOpenChange } = useMoimCreateLeaveGuard({
     isDirty: form.formState.isDirty,
+    shouldBlockBeforeUnload: form.formState.isDirty && !isPending,
   });
 
   const handleCancelConfirm = () => {

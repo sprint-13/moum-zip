@@ -7,11 +7,16 @@ const SEARCH_PATH = "/search";
 
 type UseMoimCreateLeaveGuardOptions = {
   isDirty: boolean;
+  shouldBlockBeforeUnload?: boolean;
 };
 
 // 사용자가 작성 중일 때 브라우저 이탈을 제어하기 위한 hook
 // - 뒤로가기 / 새로고침 시 바로 이탈하지 않고 확인 모달을 띄움
-export const useMoimCreateLeaveGuard = ({ isDirty }: UseMoimCreateLeaveGuardOptions) => {
+export const useMoimCreateLeaveGuard = ({
+  isDirty,
+  shouldBlockBeforeUnload: shouldBlockBeforeUnloadProp,
+}: UseMoimCreateLeaveGuardOptions) => {
+  const shouldBlockBeforeUnload = shouldBlockBeforeUnloadProp ?? isDirty;
   const router = useRouter();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
@@ -61,7 +66,7 @@ export const useMoimCreateLeaveGuard = ({ isDirty }: UseMoimCreateLeaveGuardOpti
   // - 브라우저 정책상 커스텀 모달은 불가능, 기본 경고만 표시 가능
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (allowLeaveRef.current || !isDirty) return;
+      if (allowLeaveRef.current || !shouldBlockBeforeUnload) return;
 
       event.preventDefault();
       event.returnValue = ""; // 일부 브라우저 호환용
@@ -69,7 +74,7 @@ export const useMoimCreateLeaveGuard = ({ isDirty }: UseMoimCreateLeaveGuardOpti
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  }, [shouldBlockBeforeUnload]);
 
   // 모달 열기 / 닫기 상태 제어
   const openCancelModal = useCallback(() => {
