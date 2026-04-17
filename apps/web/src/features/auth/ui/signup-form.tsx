@@ -1,7 +1,6 @@
 "use client";
 import { Button, InputField, SocialButton, toast } from "@moum-zip/ui/components";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { signupAction } from "@/_pages/auth/actions";
@@ -25,7 +24,6 @@ const ERROR_MESSAGES = {
 export const SignupForm = () => {
   // 서버 액션 상태 관리
   const [state, formAction, isPending] = useActionState(signupAction, null);
-  const router = useRouter();
 
   const {
     register,
@@ -144,7 +142,7 @@ export const SignupForm = () => {
                   window.location.replace(ROUTES.home);
                 } catch {
                   toast({ message: "회원가입 중 오류가 발생했어요. 다시 시도해주세요.", size: "small" });
-                  router.replace(ROUTES.login);
+                  window.location.replace(ROUTES.signup);
                 }
               },
             });

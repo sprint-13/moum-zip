@@ -2,7 +2,6 @@
 
 import { Button, InputField, SocialButton, toast } from "@moum-zip/ui/components";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { loginAction } from "@/_pages/auth/actions";
@@ -23,7 +22,6 @@ const ERROR_MESSAGES = {
 
 export const LoginForm = () => {
   const [state, formAction, isPending] = useActionState(loginAction, null);
-  const router = useRouter();
 
   const {
     register,
@@ -115,7 +113,7 @@ export const LoginForm = () => {
                   window.location.replace(ROUTES.home);
                 } catch {
                   toast({ message: "로그인 중 오류가 발생했어요. 다시 시도해주세요.", size: "small" });
-                  router.replace(ROUTES.login);
+                  window.location.replace(ROUTES.login);
                 }
               },
             });
